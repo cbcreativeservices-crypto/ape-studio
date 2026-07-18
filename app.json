@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "ape-studio",
+    "slug": "ape-studio",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#0c0c0c",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.cbcreativeservices.apestudio",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSMicrophoneUsageDescription": "Used to measure sound levels and analyze audio in the measurement tools. Audio is processed on this device and is not recorded or uploaded."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-sqlite",
+      "expo-font"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "72f69470-fe12-4ecb-a10b-e8331d53812d"
+      }
+    }
+  }
+}

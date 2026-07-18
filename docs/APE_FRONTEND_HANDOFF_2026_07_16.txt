@@ -1,0 +1,106 @@
+APE STUDIO - HANDOFF TO CLAUDE COWORK (BACKEND / GOVERNANCE)
+Date: 2026-07-16
+From: Client (RN/Expo) frontend session
+In reply to: APE_CLAUDE_CODE_HANDOFF_2026_07_16.md (backend image pipeline +
+v2.13 route-backs)
+Project: yjgolswjggmlpeowvtxr (LIVE). No backend changes were made from this
+session - read-only SQL inspection only (schemas, grants, function defs).
+
+===========================================================================
+1) YOUR 2026-07-16 ASKS - ALL DONE
+===========================================================================
+S1 COURSE-CARD WIRING: done. CARD_IMAGE map rewritten to the standardized
+   tier_key WebP set per ape_course_card_map_FINAL_STANDARDIZED_2026_07_16.
+   All 25 bucket files verified HTTP 200. Coming-soon topic stubs now carry
+   their own art (keyed by display name). Client also ADDED the 2 catalog
+   cards it lacked: "Live Sound" and "Worship Sound" (renamed from Worship,
+   Booth) - carousel now matches your 25-card order, with ALL single-topic
+   cards alphabetized A-Z on the right (Worship Sound last).
+S2 GLOSSARY IMAGES: confirmed NO CHANGE NEEDED - the client had no
+   glossary_media reads at all. (See 2B below: it now HAS one, built to the
+   contract: url from glossary_media + storage base prefix + onError
+   fallback, so the 3 pending XLR images degrade gracefully. Verified live:
+   3-5mm-connector.webp 200, xlrm.webp 400 -> fallback path exercised.)
+
+===========================================================================
+2) V2.13 ROUTE-BACKS - MIGRATED (your section 4)
+===========================================================================
+2A register_commercial_user: WIRED. After ensureSession, client calls
+   rpc('register_commercial_user', { p_nickname, p_favorites }). Nickname
+   defaults to the email local-part (CM5 form has no nickname field yet).
+   p_favorites = device-local favorites array. status 'already_registered'
+   treated as success. NOTE: the deployed function body ignores p_favorites
+   - favorites migration silently no-ops until the backend stores it.
+2B Catalog: getPublicCatalog() now reads public_courses +
+   public_course_topics + achievements (grants verified for anon and
+   authenticated), cached per app run, bundled-seed fallback on any error.
+   Topic names PREFER the seed's public names (no academic codes rule);
+   server rows own the structure. Consumers migrated: Course Select,
+   commercial Dashboard, Landing.
+2C Study fetch: fetchTopicItems() now queries glossary_study_v (one query
+   by achievement_id, incl. server-masked common_mistakes); any error or
+   empty result falls back to the legacy base-glossary path. Glossary
+   detail reads via glossary_full_v were already in place.
+
+===========================================================================
+3) NEW FRONTEND SINCE 07-15 (for currency)
+===========================================================================
+- Flashcards: term images from glossary_media on the TERM side (title below
+  image, centered), prefetched for instant swiping; 1.5s on-screen dwell
+  required before a term can be marked known/flagged (anti quick-scroll
+  tagging; shake-to-known honors it too); long-press filter term-list popup
+  now scrolls.
+- Matching: definitions show EXACTLY one sentence, and the sentence can
+  never contain its own term/abbreviation (leak-checked with plural +
+  hyphen variants; all-leak definitions get the term masked as ___). Cell
+  line-caps removed so text never crops.
+- Awards restructure (client data only - see section 4 asks):
+  * Certificates: Level-2 Professional Track tier REMOVED (its 5 track
+    certificates no longer appear anywhere); intro no longer says
+    "professional track".
+  * Diplomas: TWO Level-2 tracks - "Academy Professional Diploma - Music"
+    and "- Audio"; topic assignment per track pending Booth.
+  * Hall of Fame RENAMED "Masters" (button + page headline), accent GREEN,
+    now Level 3. Perks: METAL TAG ONLY (t-shirt dropped 2026-07-16); the
+    shipping-policy paragraph about verifying "T-shirt size" was edited to
+    drop it - governance should update the canonical policy text to match.
+  * EVERY award tier now requires BOTH pre-requisites: "Pro Audio Safety"
+    AND "Workplace Skills" (the renamed Professional Networking).
+  * Pre-reqs and Requirements render side-by-side; programs below; the
+    "working draft" banner removed.
+- Course cards show "N TOPICS" in blue under course titles; upgrade sheet
+  shows USD 99.99 introductory lifetime price (through end of year).
+
+===========================================================================
+4) BACKEND ACTION ITEMS (new / updated)
+===========================================================================
+A) AWARDS MODEL (updated shape): tiers now = Cert L1 (topic
+   specializations) / Diploma L2 x2 tracks (Music, Audio) / Masters L3.
+   Dual pre-reqs on every tier: Pro Audio Safety + Workplace Skills.
+   Masters fulfillment = metal tag only (no t-shirt) - update the Master
+   Graduate Package policy copy + any fulfillment fields (drop shirt size).
+B) CURRICULUM RENAME (unchanged ask, name settled): "Workplace Skills" is
+   the name the client now displays for the renamed Professional
+   Networking topic; networking content -> Music Entrepreneurship.
+C) CATALOG: client added "Live Sound" and "Worship Sound" as coming-soon
+   TOPIC stubs (client-side only). When these become real single-topic
+   public courses, add rows to public_courses/public_course_topics and the
+   client picks them up automatically (names currently display from the
+   client stub list).
+D) p_favorites storage in register_commercial_user (accepted but unused).
+E) DIPLOMA TRACKS: awaiting Booth's topic assignment for Music vs Audio.
+
+CARRYOVERS (from 07-15 doc, still open): B-1 study gate 200 vs spec 600;
+has_academy_access EXECUTE grant for anon/free (glossary_full_v 403s);
+per-term hazard flags + (R)/(TM) data; flashcard required_passes 2->1;
+pricing SSoT (intro price end-of-year expiry is static client copy).
+
+===========================================================================
+5) VERIFICATION STATE AT HANDOFF
+===========================================================================
+- npx tsc --noEmit: clean. Metro iOS dev bundle: HTTP 200.
+- All 25 course-card WebPs: HTTP 200 from the public bucket.
+- Matching leak rule verified against edge cases (leak-avoid, all-leak
+  mask, hyphen/plural variants, clean pass-through).
+- Current dev build 76e2f5ee (2026-07-15, expo-sensors included) - all of
+  the above is JS-only, no new native build required.

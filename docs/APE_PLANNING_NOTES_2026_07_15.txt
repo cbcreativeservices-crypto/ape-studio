@@ -1,0 +1,24 @@
+APE STUDIO - PLANNING NOTES (Booth, 2026-07-15)
+================================================
+
+1) CURRICULUM RENAME (pending)
+   - The "Professional Networking" topic is currently a REQUIREMENT of every
+     award tier (Certificates L1/L2, Diploma L3, Hall of Fame L4) - added to
+     src/screens/awards/awardsData.ts on 2026-07-15.
+   - PLANNED: rename the topic to "Workplace Professionalism".
+   - PLANNED: move the networking content into "Music Entrepreneurship".
+   - When this lands: update awardsData.ts requirements lists, topic seeds,
+     and any glossary/topic references. Backend curriculum change - route to
+     the backend session.
+
+2) INSTRUCTIONAL ONBOARDING TUTORIALS (to plan)
+   - Need a plan for instructional onboarding tutorials covering ALL screens:
+     Course Select, Dashboard, Flashcards, Fill-in-the-Blank, Matching, Quiz,
+     Glossary, Achievements/Progress, Profile, Settings, Tools hub, Awards.
+   - Prior art already in the app to build on:
+     * CoachMark component (self-retiring hints; used in Glossary/Flashcards)
+     * StudyFsOverlay first-2-opens guide (full-screen mode instructions)
+     * Flashcards full-screen guide (fires after 2 reviewed terms, max 2 shows)
+   - Decide: per-screen coach marks vs. a guided first-run tour vs. both;
+     persistence keys; how tutorials replay (Settings entry?); commercial vs.
+     institutional differences.

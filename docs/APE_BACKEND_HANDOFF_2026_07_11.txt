@@ -1,0 +1,253 @@
+===============================================================================
+AP&E STUDIO  --  BACKEND HANDOFF  --  2026-07-11
+From: RN/Expo client session (ape-studio).  To: backend Claude chat.
+===============================================================================
+
+PURPOSE
+  Everything below was built CLIENT-SIDE this session and is either behind the
+  commercialMode flag or persisted device-local (AsyncStorage). NO backend
+  changes were made. This doc lists what the backend chat needs to build so the
+  client stubs can be wired to real server data. Items are grouped NEW (this
+  session) and CARRIED-OVER (from the CM1-CM7 commercial rebuild).
+
+STANDING RULES (unchanged)
+  - Server decides gating / entitlement / grading. Client only RENDERS.
+  - Backend is the source of truth; never implement entitlement decisions on the
+    client.
+  - Supabase project: yjgolswjggmlpeowvtxr (schema was v2.12; a v2.13 migration
+    for public_courses was anticipated).
+  - Free topics = gs0 (Professional Audio Safety) and gs36 (DAW Skills -- NEVER
+    "DAW Fundamentals").
+  - No academic course numbers in public/commercial UI.
+
+
+===============================================================================
+TOP PRIORITIES FOR THIS BACKEND SESSION (updated 2026-07-11 pm)
+===============================================================================
+  P0. GRANT EXECUTE ON has_academy_access -> unblocks common_mistakes EVERYWHERE.
+      RIGHT NOW selecting common_mistakes from glossary_full_v 403s for
+      anon/authenticated ("permission denied for function has_academy_access").
+      The client works around it (non-fatal, shows nothing), so mistakes are NULL
+      for EVERYONE incl. academy until this runs. See item F. One line:
+        GRANT EXECUTE ON FUNCTION has_academy_access(uuid) TO anon, authenticated;
+
+  P1. PAYMENTS / CURRENCY (the paywall). PaywallScreen shows 3 tiers (Lifetime
+      $99.99, Annual $59.99/yr, Monthly $9.99/mo) -- ILLUSTRATIVE, CONTINUE is
+      inert. Needs: store products (RevenueCat or StoreKit/Play Billing),
+      localized pricing/currency, a purchase -> ENTITLEMENT path the client can
+      read, restore-purchases, and the lapse/renew states. This is the "currency"
+      work. Client renders whatever entitlement the server reports (see P2).
+
+  P2. ENTITLEMENT source of truth + register_commercial_user RPC.
+      EntitlementProvider states (anonymous|free|academy|lapsed) are MOCK dev
+      toggles. Server must own entitlement (drives caps: commonMistakes,
+      audioTools, allTopics, freeTopics, syncedProgress, completionRecords).
+      register_commercial_user is stubbed (favorites migration logged, RPC not
+      deployed). A purchase (P1) must flip entitlement -> academy.
+
+  P3. FREE-TOPIC flashcard mistakes exception (item E) -- free users should see
+      common_mistakes in the 2 free topics' FLASHCARDS only (gs0, gs36).
+
+  P4. CONTENT for the 8 coming-soon standalone TOPIC stubs + public_courses
+      tables (item C). New/expanded catalog topics need achievements (gs) + copy.
+
+  P5. Daily-term delivery job (item A) + public/networking profile table (item B).
+
+
+===============================================================================
+NEW THIS SESSION -- needs backend
+===============================================================================
+
+A) DAILY TERM notification
+   Client: Settings has a "Daily Term" toggle. Persisted device-local at
+     key  ape:settings.dailyTerms   (LocalSettings, src/features/settings/store.ts).
+   Intent: deliver ONE glossary term per day to the user via push.
+   Backend needs:
+     - expo-notifications is NOT installed in the app yet -> a new EAS build is
+       required once it is added (client task, flagged).
+     - A scheduling mechanism / job that selects a daily term and pushes it.
+     - Decide term-selection policy (random, spaced-repetition, by course, etc.).
+     - The server notification_preferences table was intentionally NOT modified
+       this session (it is frozen). Decide whether "daily term" becomes a real
+       column there or a separate mechanism.
+
+B) PUBLIC / NETWORKING PROFILE  (+ employer directory + consent)
+   Client: commercial ProfileScreen now has an editable form:
+     - Name (text)
+     - Email (text)
+     - Audio interests (multi-select chips)
+     - "Contactable by employers" consent toggle (default OFF)
+   Persisted device-local at key  ape:publicProfile
+     (src/features/profile/publicProfile.ts).
+     Type PublicProfile = { name, email, interests: string[], contactConsent }.
+     INTEREST_TOPICS (17 options) is defined in that same file.
+   Design constraint from product: collect NO sensitive data beyond email.
+   Backend needs:
+     - A profile table to persist name / email / interests / consent per user.
+     - An employer + networking DIRECTORY that lists ONLY users whose
+       contactConsent = true (consent-gated visibility). Contact must not expose
+       more than the user opted into.
+     - Sync path from the client store to the server (currently local only).
+     - Confirm the INTEREST_TOPICS taxonomy is acceptable or supply a canonical
+       list to store against.
+
+C) EIGHT NEW STANDALONE TOPIC CARDS (catalog)
+   Client: 8 placeholder cards added to the commercial Course Select carousel,
+     card kind 'comingTopic', rendered locked (gold) with the standard
+     "[lock] ACADEMY MODE" button. Names (src/screens/courses/CourseSelectionScreen.tsx
+     -> COMING_TOPICS):
+       1. Assisted Listening Systems
+       2. Commercial 70/100V Systems
+       3. Corporate AV
+       4. DJ
+       5. Architectural Audio
+       6. Vehicle Audio
+       7. HiFi Consumer Audio
+       8. Audio Technician
+   Notes / decisions for backend:
+     - Several overlap existing seed topics: "Assisted Listening Systems" (gs17)
+       & "Corporate AV" (gs19) live inside "Sound Reinforcement Systems"; "Vehicle
+       Audio" (gs22) and consumer/commercial/distributed audio topics exist too.
+       Decide: promote to STANDALONE catalog topics, cross-list (shared
+       completion), or both.
+     - "Commercial 70/100V Systems", "DJ", "Architectural Audio", "HiFi Consumer
+       Audio", "Audio Technician" are NEW/expanded -- need achievements (new
+       global_sequence values), glossary/content, and placement.
+     - These are empty stubs by design; user will develop the content with the
+       backend chat next. Once real topics/gs exist, replace the COMING_TOPICS
+       stub list with real 'public' cards (topicCount drives COURSE vs TOPIC
+       label).
+
+D) SECURITY FLAG -- Common Mistakes reaches the client even when locked
+   Client: for free/unentitled users the glossary "Common Mistakes" section is
+     now shown VEILED (the real text enciphered + blurred, with an upgrade CTA)
+     instead of a plain lock message. This is a CONVERSION driver.
+   IMPORTANT: the veil is COSMETIC. The real common_mistakes text is still
+     FETCHED to the device (GlossaryScreen query selects common_mistakes for all
+     users) and garbled in the UI. A determined user could read the true text
+     from the network response.
+   Backend should decide whether to gate the common_mistakes column server-side
+     (RLS / a view / an entitlement-aware RPC) so unentitled users never receive
+     the real text. If server-gating lands, the client can veil a placeholder
+     instead of the real string. Flagged for governance -- product may accept the
+     current exposure for now, but it should be a conscious decision.
+
+
+E) FREE-TOPIC FLASHCARD common_mistakes are now masked (regression from item D)
+   Context: glossary_full_v masks common_mistakes to NULL for ALL non-academy
+   users, GLOBALLY. The study/flashcards path now reads common_mistakes from that
+   view (src/features/study/api.ts fetchTopicItems), so free users get NULL for
+   EVERY topic -- including the 2 FREE topics.
+   Product rule (restored): a free user SHOULD see common_mistakes in the 2 free
+   topics' FLASHCARDS (gs0 Professional Audio Safety, gs36 DAW Skills). That was
+   the pre-view behavior ("mistakes lock is GLOSSARY-only; flashcards ungated").
+   Glossary itself stays veiled/locked for free users -- this exception is the
+   STUDY/flashcard path for the free topics only.
+   Client status: FlashcardsScreen already renders common_mistakes when present
+   (`common_mistakes ?? definition`), so NO client change is needed -- it will
+   display them the moment the server provides them. The masking is server-side;
+   the client cannot un-mask.
+   Backend needs (pick one): expose common_mistakes for free-topic terms (gs0,
+   gs36) to non-academy users -- e.g. a study-scoped view/RPC that returns real
+   common_mistakes for those gs even when has_academy_access=false, OR add a
+   free-topic exception to glossary_full_v's masking. Keep the GLOSSARY masking
+   for those same terms (glossary stays veiled for free users).
+
+
+F) URGENT -- glossary_full_v.common_mistakes is UNREADABLE by clients (crash)
+   Selecting common_mistakes from public.glossary_full_v as anon/authenticated
+   fails: ERROR 42501 "permission denied for function has_academy_access". The
+   view's mask is  CASE WHEN has_academy_access(auth.uid()) THEN common_mistakes
+   ELSE NULL END, and the querying role lacks EXECUTE on has_academy_access, so
+   the whole row select 403s the moment common_mistakes is in the column list.
+   Impact (pre-client-fix): "Could not load this topic" on Flashcards/Matching/
+   FITB, and glossary term details stuck on "Loading..." for free users.
+   Client workaround shipped (2026-07-11): base fields are read from base
+   `glossary`; common_mistakes is fetched from glossary_full_v in a SEPARATE
+   NON-FATAL query (failure -> null). So the app no longer crashes, BUT
+   common_mistakes will be NULL for EVERYONE (incl. academy) until the backend
+   fixes the grant.
+   Backend fix required: GRANT EXECUTE ON FUNCTION has_academy_access(uuid) TO
+   anon, authenticated;  (and confirm the function body is safe for a null uid --
+   it already returns false for null, tested). Once granted, the client's
+   non-fatal query will start returning real/masked values automatically -- no
+   further client change needed.
+   (Also note item B's earlier finding: base `glossary` now has column-level
+   grants only, which breaks PostgREST embedding -- the client no longer embeds.)
+
+
+G) HAZARD FLAGS + TRADEMARK MARKS in glossary content (data, not client logic)
+   Client shows a CAUTION badge on terms that are dangerous to touch (shock /
+   chemical / burn / injury) -- on the glossary detail AND flashcards -- driven
+   RIGHT NOW by an INTERIM keyword heuristic (src/lib/hazard.ts) on the term
+   name. That will miss/over-flag. Backend should add a real per-term boolean
+   (e.g. glossary.hazard or a safety category); the client will switch to it.
+   Also: proprietary company/product names in term + definition text must carry
+   the required (R)/(TM) marks -- the client cannot know which names are
+   trademarks; bake the marks into the content.
+
+H) FEEDBACK destination (client opens mailto, never auto-sends). "Suggest a
+   correction" (glossary, auto-tagged with the term) + Settings > Feedback
+   (report bug / suggest term / definition fix / feature suggestion) currently
+   target  profechano@yahoo.com  (src/lib/feedback.ts SUPPORT_EMAIL). Swap to a
+   real support inbox / form endpoint when one exists.
+
+
+===============================================================================
+CARRIED-OVER -- commercial rebuild (CM1-CM7) still needs backend
+===============================================================================
+
+  1. register_commercial_user RPC
+     - Stubbed in src/features/commercial/commercialAuth.ts (logs args + migrates
+       favorites from ape:glossaryFavs / ape:glossaryRecent). The real RPC is NOT
+       deployed; client does not call it. Needs real signup + favorites migration.
+
+  2. Entitlement source of truth
+     - EntitlementProvider states (anonymous | free | academy | lapsed) are MOCK
+       (dev toggles only). Server must own entitlement; capsFor() is client render
+       logic that maps entitlement -> capability flags.
+
+  3. Paywall / in-app purchase
+     - PaywallScreen shows 3 tiers (Lifetime $99.99, Annual $59.99/yr SAVE 50%,
+       Monthly $9.99/mo) -- prices ILLUSTRATIVE. CONTINUE is inert. Needs store
+       products (RevenueCat / StoreKit) + purchase -> entitlement wiring. Product
+       config + pricing is a governance decision.
+
+  4. public_courses / public_course_topics tables (v2.13 migration)
+     - Client currently reads the LOCAL seed: src/data/public_courses_seed.json
+       via src/data/publicCourses.ts. Swap to querying the server tables when the
+       migration deploys. gs (global_sequence) resolves to achievement UUIDs at
+       runtime -- never hardcode UUIDs.
+
+
+===============================================================================
+CLIENT FILE / KEY REFERENCE  (for the backend chat)
+===============================================================================
+  Device-local keys (AsyncStorage):
+    ape:settings.dailyTerms      -> LocalSettings.dailyTerms
+    ape:publicProfile            -> PublicProfile (name/email/interests/consent)
+    ape:glossaryFavs, ape:glossaryRecent -> favorites (migrate on signup)
+    ape:lastPublicCourseOrder    -> commercial dashboard last course
+
+  Files:
+    src/features/settings/store.ts          (LocalSettings, dailyTerms, hapticsEnabled)
+    src/features/profile/publicProfile.ts   (PublicProfile, INTEREST_TOPICS)
+    src/features/commercial/commercialAuth.ts (register_commercial_user stub)
+    src/features/commercial/EntitlementProvider.tsx (mock entitlement, capsFor)
+    src/features/commercial/commercialDashboard.ts  (server-truth-wins statusFor)
+    src/data/public_courses_seed.json + publicCourses.ts (catalog SSoT, local)
+    src/screens/courses/CourseSelectionScreen.tsx    (COMING_TOPICS stubs)
+    src/screens/glossary/GlossaryScreen.tsx          (veiled common_mistakes)
+    src/theme/tokens.ts  (albumTitleFor: Black->"First Record", then
+                           Silver/Gold/Platinum/Diamond "<tier> Record")
+
+  Client state: commercialMode default OFF (flag OFF = byte-identical to the
+  institutional app). All commercial UI is behind that flag.
+
+  Client verification each change: `npx tsc --noEmit` clean + Metro bundle HTTP
+  200. Current work is JS-only (reload on device). expo-haptics IS linked;
+  expo-notifications is NOT (needs install + new EAS build for item A).
+
+===============================================================================
+END OF HANDOFF
+===============================================================================

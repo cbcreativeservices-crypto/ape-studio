@@ -1,0 +1,110 @@
+APE STUDIO - HANDOFF TO PROJECT CHAT (BACKEND / GOVERNANCE)
+Date: 2026-07-15
+From: Client (RN/Expo) build session
+Project: Pro Audio Training Academy - Supabase project yjgolswjggmlpeowvtxr (LIVE)
+Standing rule: NO backend changes were made this session. Client renders;
+server decides gating/entitlement/grading.
+
+===========================================================================
+0) BUILD / DEVICE CURRENCY
+===========================================================================
+- NEW EAS iOS dev build shipped 2026-07-15: build 76e2f5ee (development
+  profile, internal). It adds the expo-sensors native module.
+- Shake gestures are now LIVE on that build:
+    * Flashcards full screen: shake = mark term Known
+    * Fill-in-Blank / Matching full screen: shake = previous question
+  Shake code is guarded (lazy require) so older builds no-op, never crash.
+- New JS-bundled fonts (no native impact): Cinzel, Yellowtail (script used
+  for the engraved Dashboard method legends; Magneto is commercial and was
+  rejected for licensing).
+
+===========================================================================
+1) CLIENT CHANGES SINCE THE 2026-07-11 HANDOFF (summary)
+===========================================================================
+- Course Select: AWARDS row (Certificates / Diplomas / Hall of Fame) above
+  the carousel; 3 new coming-topic cards (Theatrical Sound, Audio
+  Electronics, Road Crew); cards/logo shrunk 7 pct; color-coded scroll dots
+  (green=free, purple=course, amber=topic); course cards show "N TOPICS" in
+  blue under the title; tools tutorial line moved inside the tools card.
+- NEW Awards feature (client-only, data-driven):
+    src/screens/awards/awardsData.ts + AwardsScreen.tsx, route "Awards".
+    3 swipeable pages; per-tier Pre-Requisite / Requirements / Programs /
+    Graduates-Receive lists; collapsible Master Graduate Package Shipping
+    Policy (full 7-paragraph text); "working draft" banner shown.
+- Dashboard: engraved metal method titles (script font, virtual 3D
+  engraving, ADA labels kept); Start button blue darkened to match the
+  flashcards icon; topic panel darkened / texture removed.
+- Study methods: full-screen mode on all 3 methods (minimal chrome,
+  first-2-opens instruction guide, filters carry over); long-press filter
+  chips list their terms; swipe-to-browse strip added below Matching and
+  Fill-in-Blank questions; flashcards swipe-down reveals the LAST enabled
+  definition section (swipe-up = first).
+- Glossary: caution (danger-to-touch) icon chip next to hazardous terms in
+  list + popup; search DONE button removed (keyboard Done covers it), clear
+  X moved right.
+- Commercial: UpgradeSheet now shows USD 99.99 introductory LIFETIME price,
+  "available through the end of the year"; PaywallScreen lifetime plan line
+  matches. Store wiring still inert (awaits products ruling).
+
+===========================================================================
+2) BACKEND ACTION ITEMS (new this session)
+===========================================================================
+A) AWARDS MODEL (new). Client ships static award definitions. Server will
+   eventually own: award eligibility evaluation, earned-award records,
+   fulfillment data (shipping address, T-shirt size), and the Hall of Fame
+   3-month-minimum-membership rule. Draft requirements now include the
+   "Professional Networking" topic in EVERY tier (Cert L1, Cert L2,
+   Diploma L3, Hall of Fame L4).
+B) CURRICULUM RENAME (planned, ratified by Booth 2026-07-15):
+   - Rename topic "Professional Networking" -> "Workplace Professionalism".
+   - Move networking content into "Music Entrepreneurship".
+   - On landing: client updates awardsData.ts lists; backend updates topic
+     seeds/names and any dependent gating.
+C) PRICING / STORE PRODUCTS (governance): USD 99.99 introductory lifetime
+   price valid through end of 2026 is now displayed in the client. Store
+   products (StoreKit/RevenueCat) + server entitlement issuance still
+   pending the products ruling. The end-of-year expiry needs a server-side
+   source of truth eventually (client copy is static text today).
+D) STUDY DISPLAY NOTE (informational, no action): client now mirrors
+   item_states locally (AsyncStorage) and merges them over server rows for
+   DISPLAY ONLY (LED + Start/Continue label), because the dashboard's
+   focus-reload raced the record_study_progress flush. Gates (completion /
+   time / accuracy) still read ONLY server fields. record_study_progress
+   contract unchanged.
+E) SWIPE-BYPASS SEMANTICS (informational): browsing questions by swipe in
+   Matching / Fill-in-Blank does NOT call the session touch(), so idle
+   swiping does not keep the active-seconds accrual alive. Events sent to
+   record_study_progress are unchanged in shape.
+
+===========================================================================
+3) CARRYOVER ITEMS (still open from 2026-07-11 handoff)
+===========================================================================
+F) has_academy_access(auth.uid()) EXECUTE grant for anon/free roles is
+   still missing -> selecting common_mistakes via glossary_full_v returns
+   403 for them. Client degrades non-fatally (mistakes hidden) but the
+   veil/tease flow wants the masked NULL instead of an error.
+G) register_commercial_user RPC not deployed -> commercial users have no
+   users row; client renders entitlement-only display until then.
+H) Glossary data flags requested: per-term hazard flag (shock / chemical /
+   burn / injury) to replace the client keyword heuristic in
+   src/lib/hazard.ts; required (R)/(TM) marks on proprietary names in
+   term/definition content.
+I) Flashcards display-vs-gate: if display 100 pct should equal the gate,
+   set flashcard required views to 1 server-side (client displays one
+   thorough pass as 100 pct).
+
+===========================================================================
+4) PLANNING NOTES FILED (see docs/APE_PLANNING_NOTES_2026_07_15.txt)
+===========================================================================
+- Curriculum rename (item B above).
+- Instructional onboarding tutorials to be planned for ALL screens
+  (Course Select, Dashboard, 3 study methods, Quiz, Glossary, Progress,
+  Profile, Settings, Tools, Awards). Existing building blocks: CoachMark,
+  StudyFsOverlay first-2-opens guide, flashcards full-screen guide.
+
+===========================================================================
+5) VERIFICATION STATE AT HANDOFF
+===========================================================================
+- npx tsc --noEmit: clean.
+- Metro dev bundle (iOS, dev): HTTP 200.
+- No backend/schema/RPC changes made from this session.

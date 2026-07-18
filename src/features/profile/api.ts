@@ -1,0 +1,168 @@
+/**
+ * Profile / Achievements / Gallery data layer — RLS-scoped reads only.
+ * Album Level: tier = f(complete_count / 50) — denominator FIXED at 50 (D-5),
+ * counted from server status rows, never client math over raw events.
+ * Also feeds a tiny global store so the tab bar's AlbumDisc tracks live tier.
+ */
+import { useSyncExternalStore } from 'react';
+import { supabase } from '../../lib/supabase';
+import { albumTierFor, type AlbumTierName } from '../../theme/tokens';
+
+export const ALBUM_DENOMINATOR = 50; // locked (D-5)
+
+/* ---- tiny external store: live album tier for the tab bar ---- */
+let currentTier: AlbumTierName = 'Black';
+const listeners = new Set<() => void>();
+
+function setTier(tier: AlbumTierName) {
+  if (tier === currentTier) return;
+  currentTier = tier;
+  listeners.forEach((l) => l());
+}
+
+export function useAlbumTier(): AlbumTierName {
+  return useSyncExternalStore(
+    (cb) => {
+      listeners.add(cb);
+      return () => listeners.delete(cb);
+    },
+    () => currentTier,
+  );
+}
+
+/* ---- fetches ---- */
+
+export type ProfileData = {
+  nickname: string | null;
+  apeStudentId: string;
+  initials: string;
+  photoUrl: string | null;
+  earnedCerts: Set<'mic' | 'rec' | 'mix' | 'pa'>;
+  completeCount: number;
+  overallPct: number;
+  tierName: AlbumTierName;
+};
+
+export async function fetchProfile(): Promise<ProfileData> {
+  const { data: user, error } = await supabase
+    .from('users')
+    .select('id, nickname, ape_student_id, first_name, last_name_initial, photo_url')
+    .single();
+  if (error || !user) throw new Error('user_not_found');
+
+  const [{ data: badges }, { count: completeCount }] = await Promise.all([
+    supabase.from('student_badges').select('badge_name_snapshot').eq('user_id', user.id),
+    supabase
+      .from('student_achievement_progress')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .eq('status', 'complete'),
+  ]);
+
+  const earnedCerts = new Set<'mic' | 'rec' | 'mix' | 'pa'>();
+  for (const b of badges ?? []) {
+    const key = (b.badge_name_snapshot ?? '').split(' ')[0]?.toLowerCase();
+    if (key === 'mic' || key === 'rec' || key === 'mix' || key === 'pa') earnedCerts.add(key);
+  }
+
+  const done = completeCount ?? 0;
+  const overallPct = Math.floor((done / ALBUM_DENOMINATOR) * 100);
+  const tier = albumTierFor(overallPct);
+  setTier(tier.name);
+
+  const initials =
+    `${(user.first_name ?? user.nickname ?? '?').charAt(0)}${user.last_name_initial ?? ''}`.toUpperCase();
+
+  return {
+    nickname: user.nickname,
+    apeStudentId: user.ape_student_id,
+    initials,
+    photoUrl: user.photo_url,
+    earnedCerts,
+    completeCount: done,
+    overallPct,
+    tierName: tier.name,
+  };
+}
+
+export type AchievementTile = {
+  id: string;
+  name: string;
+  courseCode: string;
+  color: string;
+  iconUrl: string | null;
+  /** 1-based grid position (achievements.global_sequence). */
+  position: number;
+  status: 'complete' | 'passed_incomplete' | 'unlocked' | 'locked';
+};
+
+const FALLBACK_CYCLE = ['#2f9bff', '#37e05f', '#ffc233', '#b45bff', '#ff8a1e'];
+
+export async function fetchAchievements(): Promise<{ tiles: AchievementTile[]; earned: number }> {
+  const { data: user, error } = await supabase.from('users').select('id').single();
+  if (error || !user) throw new Error('user_not_found');
+
+  const [{ data: rows, error: aErr }, { data: prog, error: pErr }] = await Promise.all([
+    // All achievements (incl. inactive future topics) so their trophy art
+    // previews in the grid at its permanent slot (Booth 2026-07-09).
+    supabase
+      .from('achievements')
+      .select('id, name, sequence_in_course, global_sequence, icon_url, courses!inner(code, sequence, color_hex)')
+      .order('global_sequence'),
+    supabase.from('student_achievement_progress').select('achievement_id, status').eq('user_id', user.id),
+  ]);
+  if (aErr) throw aErr;
+  if (pErr) throw pErr;
+
+  const statusById = new Map((prog ?? []).map((p: any) => [p.achievement_id, p.status]));
+  const sorted = (rows ?? []).sort(
+    (a: any, b: any) =>
+      a.courses.sequence - b.courses.sequence || a.sequence_in_course - b.sequence_in_course,
+  );
+
+  const tiles: AchievementTile[] = sorted.map((r: any, i: number) => ({
+    id: r.id,
+    name: r.name,
+    courseCode: r.courses.code,
+    color: r.courses.color_hex || FALLBACK_CYCLE[i % FALLBACK_CYCLE.length],
+    iconUrl: r.icon_url ?? null,
+    position: r.global_sequence ?? i + 1,
+    status: (statusById.get(r.id) as AchievementTile['status']) ?? 'locked',
+  }));
+
+  const earned = tiles.filter((t) => t.status === 'complete').length;
+  setTier(albumTierFor(Math.floor((earned / ALBUM_DENOMINATOR) * 100)).name);
+  return { tiles, earned };
+}
+
+export type GalleryEntry = {
+  achievementId: string;
+  name: string;
+  courseCode: string;
+  color: string;
+  iconUrl: string | null;
+  dateEarned: string;
+};
+
+export async function fetchGallery(): Promise<GalleryEntry[]> {
+  const { data: user, error } = await supabase.from('users').select('id').single();
+  if (error || !user) throw new Error('user_not_found');
+
+  const { data, error: gErr } = await supabase
+    .from('student_achievement_progress')
+    .select('achievement_id, date_earned, achievements!inner(name, icon_url, courses!inner(code, color_hex))')
+    .eq('user_id', user.id)
+    .eq('status', 'complete')
+    .not('date_earned', 'is', null)
+    .order('date_earned', { ascending: false }); // newest first (locked)
+  if (gErr) throw gErr;
+
+  return (data ?? []).map((r: any, i: number) => ({
+    achievementId: r.achievement_id,
+    name: r.achievements.name,
+    courseCode: r.achievements.courses.code,
+    color: r.achievements.courses.color_hex || FALLBACK_CYCLE[i % FALLBACK_CYCLE.length],
+    iconUrl: r.achievements.icon_url ?? null,
+    dateEarned: r.date_earned,
+  }));
+}

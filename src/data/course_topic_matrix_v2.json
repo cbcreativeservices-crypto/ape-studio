@@ -1,0 +1,1384 @@
+{
+  "schema": "ape_course_topic_matrix",
+  "version": "v2",
+  "generated_note": "exported from AP&E Matrix editor",
+  "subject_count": 26,
+  "topic_count": 203,
+  "subjects": [
+    {
+      "order": 1,
+      "name": "Foundations & Safety",
+      "topics": [
+        {
+          "gs": 100,
+          "order": 1,
+          "name": "Professional Audio Safety",
+          "is_new": false
+        },
+        {
+          "gs": 120,
+          "order": 2,
+          "name": "Grounding & Electrical",
+          "is_new": false
+        }
+      ]
+    },
+    {
+      "order": 2,
+      "name": "Mics, Amps, & Speakers",
+      "topics": [
+        {
+          "gs": 190,
+          "order": 1,
+          "name": "Microphone Types & Transducers",
+          "is_new": false
+        },
+        {
+          "gs": 200,
+          "order": 2,
+          "name": "Microphone Specs & Characteristics",
+          "is_new": false
+        },
+        {
+          "gs": 240,
+          "order": 3,
+          "name": "Loudspeaker Types & Drivers",
+          "is_new": false
+        },
+        {
+          "gs": 250,
+          "order": 4,
+          "name": "Enclosures & Crossovers",
+          "is_new": false
+        },
+        {
+          "gs": 260,
+          "order": 5,
+          "name": "Loudspeaker Specs & Behavior",
+          "is_new": false
+        },
+        {
+          "gs": 220,
+          "order": 6,
+          "name": "Mic Controls, Power & Mounting",
+          "is_new": false
+        },
+        {
+          "gs": 270,
+          "order": 7,
+          "name": "Amplifiers",
+          "is_new": false
+        },
+        {
+          "gs": 230,
+          "order": 8,
+          "name": "Specialized & Application Microphones",
+          "is_new": false
+        }
+      ]
+    },
+    {
+      "order": 3,
+      "name": "Cables & Connectivity",
+      "topics": [
+        {
+          "gs": 150,
+          "order": 1,
+          "name": "Signal Path & Levels",
+          "is_new": false
+        },
+        {
+          "gs": 160,
+          "order": 2,
+          "name": "Connectors & Plugs",
+          "is_new": false
+        },
+        {
+          "gs": 170,
+          "order": 3,
+          "name": "Cables & Wiring",
+          "is_new": false
+        },
+        {
+          "gs": 180,
+          "order": 4,
+          "name": "I/O Connections",
+          "is_new": false
+        }
+      ]
+    },
+    {
+      "order": 4,
+      "name": "Consoles",
+      "topics": [
+        {
+          "gs": 290,
+          "order": 1,
+          "name": "Console Architecture & Signal Flow",
+          "is_new": false
+        },
+        {
+          "gs": 300,
+          "order": 2,
+          "name": "Channel Strip & Processing",
+          "is_new": false
+        },
+        {
+          "gs": 310,
+          "order": 3,
+          "name": "Buses, Routing & Matrix",
+          "is_new": false
+        },
+        {
+          "gs": 320,
+          "order": 4,
+          "name": "Digital Console Workflow & Recall",
+          "is_new": false
+        }
+      ]
+    },
+    {
+      "order": 5,
+      "name": "Recorders",
+      "topics": [
+        {
+          "gs": 330,
+          "order": 1,
+          "name": "Recorder Types & Formats",
+          "is_new": false
+        },
+        {
+          "gs": 340,
+          "order": 2,
+          "name": "Audio File Formats & Media",
+          "is_new": false
+        },
+        {
+          "gs": 350,
+          "order": 3,
+          "name": "Recording Transport & Controls",
+          "is_new": false
+        },
+        {
+          "gs": 360,
+          "order": 4,
+          "name": "Storage, Backup & Archival",
+          "is_new": false
+        },
+        {
+          "gs": 1780,
+          "order": 5,
+          "name": "Analog Tape / Tape Machines",
+          "is_new": false
+        },
+        {
+          "gs": 1790,
+          "order": 6,
+          "name": "Vinyl / Disc Mastering",
+          "is_new": false
+        },
+        {
+          "gs": 1800,
+          "order": 7,
+          "name": "Audio Restoration & Archival",
+          "is_new": false
+        }
+      ]
+    },
+    {
+      "order": 6,
+      "name": "Racks  & Infrastructure",
+      "topics": [
+        {
+          "gs": 370,
+          "order": 1,
+          "name": "Racks, Patchbays & Wiring Infrastructure",
+          "is_new": false
+        },
+        {
+          "gs": 380,
+          "order": 2,
+          "name": "Studio/Stage Furniture & Mounting",
+          "is_new": false
+        },
+        {
+          "gs": 390,
+          "order": 3,
+          "name": "Physical Controls & Hardware",
+          "is_new": false
+        },
+        {
+          "gs": 400,
+          "order": 4,
+          "name": "Power & Signal Distribution Hardware",
+          "is_new": false
+        },
+        {
+          "gs": 410,
+          "order": 5,
+          "name": "Documentation & Diagrams",
+          "is_new": false
+        },
+        {
+          "gs": 420,
+          "order": 6,
+          "name": "Dante Fundamentals & Routing",
+          "is_new": false
+        },
+        {
+          "gs": 430,
+          "order": 7,
+          "name": "Dante Devices, Modules & Certification",
+          "is_new": false
+        },
+        {
+          "gs": 440,
+          "order": 8,
+          "name": "Clocking, Redundancy & Network Management",
+          "is_new": false
+        },
+        {
+          "gs": 450,
+          "order": 9,
+          "name": "Control Surfaces & Machine Control",
+          "is_new": false
+        },
+        {
+          "gs": 130,
+          "order": 10,
+          "name": "Power Fundamentals, Distribution & Quality",
+          "is_new": false
+        },
+        {
+          "gs": 140,
+          "order": 11,
+          "name": "Batteries, Backup & Touring Power",
+          "is_new": false
+        },
+        {
+          "gs": 1760,
+          "order": 12,
+          "name": "Studio & Facility Design",
+          "is_new": false
+        },
+        {
+          "gs": 1770,
+          "order": 13,
+          "name": "Studio Acoustics & Design",
+          "is_new": false
+        }
+      ]
+    },
+    {
+      "order": 7,
+      "name": "Signal Processing",
+      "topics": [
+        {
+          "gs": 460,
+          "order": 1,
+          "name": "Equalization (EQ)",
+          "is_new": false
+        },
+        {
+          "gs": 470,
+          "order": 2,
+          "name": "Dynamics Processing",
+          "is_new": false
+        },
+        {
+          "gs": 480,
+          "order": 3,
+          "name": "Reverb",
+          "is_new": false
+        },
+        {
+          "gs": 490,
+          "order": 4,
+          "name": "Delay & Time-Based Effects",
+          "is_new": false
+        }
+      ]
+    },
+    {
+      "order": 8,
+      "name": "Acoustics & Measurement",
+      "topics": [
+        {
+          "gs": 500,
+          "order": 1,
+          "name": "Acoustic Principles & Room Behavior",
+          "is_new": false
+        },
+        {
+          "gs": 510,
+          "order": 2,
+          "name": "Absorption & Bass Trapping",
+          "is_new": false
+        },
+        {
+          "gs": 520,
+          "order": 3,
+          "name": "Diffusion & Materials",
+          "is_new": false
+        },
+        {
+          "gs": 530,
+          "order": 4,
+          "name": "Room Treatment Layout & Application",
+          "is_new": false
+        },
+        {
+          "gs": 540,
+          "order": 5,
+          "name": "Measurement Fundamentals & Metering",
+          "is_new": false
+        },
+        {
+          "gs": 550,
+          "order": 6,
+          "name": "Acoustic & Room Measurement",
+          "is_new": false
+        },
+        {
+          "gs": 560,
+          "order": 7,
+          "name": "Signal Analysis & Test Equipment",
+          "is_new": false
+        },
+        {
+          "gs": 570,
+          "order": 8,
+          "name": "System Optimization",
+          "is_new": false
+        },
+        {
+          "gs": 110,
+          "order": 9,
+          "name": "Sound & Acoustics",
+          "is_new": false
+        },
+        {
+          "gs": 860,
+          "order": 10,
+          "name": "Architectural Audio (commercial card)",
+          "is_new": false
+        }
+      ]
+    },
+    {
+      "order": 9,
+      "name": "Troubleshooting",
+      "topics": [
+        {
+          "gs": 580,
+          "order": 1,
+          "name": "Signal & Connection Troubleshooting",
+          "is_new": false
+        },
+        {
+          "gs": 590,
+          "order": 2,
+          "name": "System & Live Troubleshooting Method",
+          "is_new": false
+        },
+        {
+          "gs": 600,
+          "order": 3,
+          "name": "Patch & Routing Diagnostics",
+          "is_new": false
+        },
+        {
+          "gs": 610,
+          "order": 4,
+          "name": "System Maintenance",
+          "is_new": false
+        }
+      ]
+    },
+    {
+      "order": 10,
+      "name": "Live Sound & Deployment",
+      "topics": [
+        {
+          "gs": 620,
+          "order": 1,
+          "name": "Analog Live Sound",
+          "is_new": false
+        },
+        {
+          "gs": 630,
+          "order": 2,
+          "name": "Digital Live Sound",
+          "is_new": false
+        },
+        {
+          "gs": 640,
+          "order": 3,
+          "name": "System Deployment & Rigging",
+          "is_new": false
+        },
+        {
+          "gs": 650,
+          "order": 4,
+          "name": "System Tuning & Alignment",
+          "is_new": false
+        },
+        {
+          "gs": 660,
+          "order": 5,
+          "name": "RF Wireless Systems",
+          "is_new": false
+        }
+      ]
+    },
+    {
+      "order": 11,
+      "name": "DJ Audio",
+      "topics": [
+        {
+          "gs": 670,
+          "order": 1,
+          "name": "DJ Performance & Turntablism",
+          "is_new": false
+        },
+        {
+          "gs": 680,
+          "order": 2,
+          "name": "DJ Equipment & Software",
+          "is_new": false
+        },
+        {
+          "gs": 690,
+          "order": 3,
+          "name": "Beatmatching, Mixing & FX",
+          "is_new": false
+        }
+      ]
+    },
+    {
+      "order": 12,
+      "name": "Venue, Stagecraft & Rigging Terminology",
+      "topics": [
+        {
+          "gs": 710,
+          "order": 1,
+          "name": "Venue Architecture & Spaces",
+          "is_new": false
+        },
+        {
+          "gs": 720,
+          "order": 2,
+          "name": "Stage Geography & Backstage",
+          "is_new": false
+        },
+        {
+          "gs": 730,
+          "order": 3,
+          "name": "House & Audience Areas",
+          "is_new": false
+        },
+        {
+          "gs": 740,
+          "order": 4,
+          "name": "Stage Platforms, Scenery & Soft Goods",
+          "is_new": false
+        },
+        {
+          "gs": 750,
+          "order": 5,
+          "name": "Fly Systems & Overhead Access",
+          "is_new": false
+        },
+        {
+          "gs": 760,
+          "order": 6,
+          "name": "Rigging Hardware, Loads & Motorized Flying",
+          "is_new": false
+        },
+        {
+          "gs": 770,
+          "order": 7,
+          "name": "Orchestra Pit & Ensemble Layout",
+          "is_new": false
+        },
+        {
+          "gs": 780,
+          "order": 8,
+          "name": "Show Control, Cueing & Communications",
+          "is_new": false
+        },
+        {
+          "gs": 790,
+          "order": 9,
+          "name": "Theatrical Sound (commercial card)",
+          "is_new": false
+        },
+        {
+          "gs": 800,
+          "order": 10,
+          "name": "Worship Sound (commercial card)",
+          "is_new": false
+        }
+      ]
+    },
+    {
+      "order": 13,
+      "name": "Install, Commercial, & AV",
+      "topics": [
+        {
+          "gs": 810,
+          "order": 1,
+          "name": "Audio System Design",
+          "is_new": false
+        },
+        {
+          "gs": 820,
+          "order": 2,
+          "name": "Corporate AV",
+          "is_new": false
+        },
+        {
+          "gs": 830,
+          "order": 3,
+          "name": "Commercial 70/100V Systems",
+          "is_new": false
+        },
+        {
+          "gs": 840,
+          "order": 4,
+          "name": "Distributed Audio Systems",
+          "is_new": false
+        },
+        {
+          "gs": 850,
+          "order": 5,
+          "name": "Assisted Listening Systems",
+          "is_new": false
+        },
+        {
+          "gs": 870,
+          "order": 6,
+          "name": "Audio Technician (commercial card)",
+          "is_new": false
+        }
+      ]
+    },
+    {
+      "order": 14,
+      "name": "Consumer, Home & Vehicle",
+      "topics": [
+        {
+          "gs": 940,
+          "order": 1,
+          "name": "HiFi Consumer Audio",
+          "is_new": false
+        },
+        {
+          "gs": 950,
+          "order": 2,
+          "name": "Home Theater & Residential AV",
+          "is_new": false
+        },
+        {
+          "gs": 960,
+          "order": 3,
+          "name": "Vehicle Audio",
+          "is_new": false
+        }
+      ]
+    },
+    {
+      "order": 15,
+      "name": "Electronic Music",
+      "topics": [
+        {
+          "gs": 1400,
+          "order": 1,
+          "name": "Synthesis Types, Modular & CV",
+          "is_new": false
+        },
+        {
+          "gs": 1390,
+          "order": 2,
+          "name": "Filters, Envelopes & Modulation",
+          "is_new": false
+        },
+        {
+          "gs": 1380,
+          "order": 3,
+          "name": "Synthesis Fundamentals & Oscillators",
+          "is_new": false
+        },
+        {
+          "gs": 1370,
+          "order": 4,
+          "name": "Drum Programming & Beat-Making",
+          "is_new": false
+        },
+        {
+          "gs": 1360,
+          "order": 5,
+          "name": "Sample Editing & Manipulation",
+          "is_new": false
+        },
+        {
+          "gs": 1350,
+          "order": 6,
+          "name": "Sampling Fundamentals & Instruments",
+          "is_new": false
+        },
+        {
+          "gs": 1340,
+          "order": 7,
+          "name": "Plugins & Virtual Instruments",
+          "is_new": false
+        }
+      ]
+    },
+    {
+      "order": 16,
+      "name": "Studio Recording",
+      "topics": [
+        {
+          "gs": 990,
+          "order": 1,
+          "name": "Recording Fundamentals & Signal Chain",
+          "is_new": false
+        },
+        {
+          "gs": 1000,
+          "order": 2,
+          "name": "Microphone Technique for Recording",
+          "is_new": false
+        },
+        {
+          "gs": 1010,
+          "order": 3,
+          "name": "Session Setup & Signal Flow",
+          "is_new": false
+        },
+        {
+          "gs": 1012,
+          "order": 4,
+          "name": "Session Workflow, Takes & Documentation",
+          "is_new": false
+        },
+        {
+          "gs": 1020,
+          "order": 5,
+          "name": "Instrument Recording — Strings & Guitar",
+          "is_new": false
+        },
+        {
+          "gs": 1022,
+          "order": 6,
+          "name": "Instrument Recording — Drums & Percussion",
+          "is_new": false
+        },
+        {
+          "gs": 1024,
+          "order": 7,
+          "name": "Instrument Recording — Keys, Winds & Brass",
+          "is_new": false
+        },
+        {
+          "gs": 1030,
+          "order": 8,
+          "name": "Studio Recording Craft — Advanced",
+          "is_new": false
+        },
+        {
+          "gs": 1040,
+          "order": 9,
+          "name": "Drum-Kit Recording",
+          "is_new": false
+        },
+        {
+          "gs": 1050,
+          "order": 10,
+          "name": "Guitar, Bass & Amp Recording",
+          "is_new": false
+        },
+        {
+          "gs": 1060,
+          "order": 11,
+          "name": "Band Tracking Workflow & Arrangement",
+          "is_new": false
+        },
+        {
+          "gs": 1070,
+          "order": 12,
+          "name": "Vocal & Overdub Production",
+          "is_new": false
+        },
+        {
+          "gs": 212,
+          "order": 13,
+          "name": "Instrument & Close Miking Techniques",
+          "is_new": false
+        },
+        {
+          "gs": 210,
+          "order": 14,
+          "name": "Stereo & Ensemble Miking Techniques",
+          "is_new": false
+        }
+      ]
+    },
+    {
+      "order": 17,
+      "name": "Mastering",
+      "topics": [
+        {
+          "gs": 1160,
+          "order": 1,
+          "name": "Mastering Fundamentals & Chain",
+          "is_new": false
+        },
+        {
+          "gs": 1170,
+          "order": 2,
+          "name": "Loudness, Dynamics & QC",
+          "is_new": false
+        },
+        {
+          "gs": 1150,
+          "order": 3,
+          "name": "Creative & Advanced Mix Processing",
+          "is_new": false
+        },
+        {
+          "gs": 1180,
+          "order": 4,
+          "name": "Delivery Formats & Metadata",
+          "is_new": false
+        },
+        {
+          "gs": 1200,
+          "order": 5,
+          "name": "Broadcast / Radio Production & Air Chain",
+          "is_new": false
+        },
+        {
+          "gs": 1210,
+          "order": 6,
+          "name": "Streaming & Distribution",
+          "is_new": false
+        },
+        {
+          "gs": 1220,
+          "order": 7,
+          "name": "Broadcast Loudness & Compliance",
+          "is_new": false
+        },
+        {
+          "gs": 1230,
+          "order": 8,
+          "name": "Sound for Picture — Post Workflow & Deliverables",
+          "is_new": false
+        },
+        {
+          "gs": 1232,
+          "order": 9,
+          "name": "Production Sound & Field Recording",
+          "is_new": false
+        },
+        {
+          "gs": 1080,
+          "order": 10,
+          "name": "Mix Fundamentals & Workflow",
+          "is_new": false
+        }
+      ]
+    },
+    {
+      "order": 18,
+      "name": "Studio: Mixing",
+      "topics": [
+        {
+          "gs": 1090,
+          "order": 1,
+          "name": "Instrument Mixing — Drums & Percussion",
+          "is_new": false
+        },
+        {
+          "gs": 1100,
+          "order": 2,
+          "name": "Instrument Mixing — Guitars, Bass & Keys",
+          "is_new": false
+        },
+        {
+          "gs": 1110,
+          "order": 3,
+          "name": "Vocal Mixing",
+          "is_new": false
+        },
+        {
+          "gs": 1120,
+          "order": 4,
+          "name": "Orchestral, Choir & Acoustic-Ensemble Mixing",
+          "is_new": false
+        },
+        {
+          "gs": 1130,
+          "order": 5,
+          "name": "Mix Automation & Recall",
+          "is_new": false
+        },
+        {
+          "gs": 1140,
+          "order": 6,
+          "name": "Mix Bus, Loudness & Translation",
+          "is_new": false
+        },
+        {
+          "gs": 1190,
+          "order": 7,
+          "name": "Podcast Production",
+          "is_new": false
+        },
+        {
+          "gs": 1234,
+          "order": 8,
+          "name": "Re-Recording & Final Mix",
+          "is_new": false
+        }
+      ]
+    },
+    {
+      "order": 19,
+      "name": "Computer & Electronic Music",
+      "topics": [
+        {
+          "gs": 1330,
+          "order": 1,
+          "name": "MIDI",
+          "is_new": false
+        },
+        {
+          "gs": 1240,
+          "order": 2,
+          "name": "DAW Fundamentals & Session Management",
+          "is_new": false
+        },
+        {
+          "gs": 1250,
+          "order": 3,
+          "name": "Editing & Comping",
+          "is_new": false
+        },
+        {
+          "gs": 1260,
+          "order": 4,
+          "name": "In-the-Box Mixing & Automation",
+          "is_new": false
+        },
+        {
+          "gs": 1270,
+          "order": 5,
+          "name": "DAW: Logic",
+          "is_new": false
+        },
+        {
+          "gs": 1280,
+          "order": 6,
+          "name": "DAW: Cubase/Nuendo",
+          "is_new": false
+        },
+        {
+          "gs": 1290,
+          "order": 7,
+          "name": "DAW: REAPER",
+          "is_new": false
+        },
+        {
+          "gs": 1300,
+          "order": 8,
+          "name": "DAW: Ableton Live",
+          "is_new": false
+        },
+        {
+          "gs": 1310,
+          "order": 9,
+          "name": "DAW: Studio One",
+          "is_new": false
+        },
+        {
+          "gs": 1320,
+          "order": 10,
+          "name": "DAW: Digital Performer/Reason",
+          "is_new": false
+        }
+      ]
+    },
+    {
+      "order": 20,
+      "name": "Hearing, Perception & Listening",
+      "topics": [
+        {
+          "gs": 1410,
+          "order": 1,
+          "name": "Hearing Anatomy & Function",
+          "is_new": false
+        },
+        {
+          "gs": 1420,
+          "order": 2,
+          "name": "Hearing Protection & Occupational Health",
+          "is_new": false
+        },
+        {
+          "gs": 1430,
+          "order": 3,
+          "name": "Hearing Disorders & Health",
+          "is_new": false
+        },
+        {
+          "gs": 1440,
+          "order": 4,
+          "name": "Psychoacoustics",
+          "is_new": false
+        },
+        {
+          "gs": 1450,
+          "order": 5,
+          "name": "Spatial Hearing & Localization",
+          "is_new": false
+        },
+        {
+          "gs": 1460,
+          "order": 6,
+          "name": "Speech Intelligibility",
+          "is_new": false
+        },
+        {
+          "gs": 1470,
+          "order": 7,
+          "name": "Loudness & Listening Environments",
+          "is_new": false
+        },
+        {
+          "gs": 1480,
+          "order": 8,
+          "name": "Music Perception",
+          "is_new": false
+        },
+        {
+          "gs": 1490,
+          "order": 9,
+          "name": "Voice & Vocal Perception",
+          "is_new": false
+        },
+        {
+          "gs": 1500,
+          "order": 10,
+          "name": "Ear Training",
+          "is_new": false
+        },
+        {
+          "gs": 1510,
+          "order": 11,
+          "name": "Tonal & Timbre Descriptors",
+          "is_new": false
+        },
+        {
+          "gs": 1520,
+          "order": 12,
+          "name": "Listening Slang & Sound Identification",
+          "is_new": false
+        },
+        {
+          "gs": 1530,
+          "order": 13,
+          "name": "Monitoring & Audio Evaluation",
+          "is_new": false
+        }
+      ]
+    },
+    {
+      "order": 21,
+      "name": "Studio: Ear Training & Instrument Sound ID",
+      "topics": [
+        {
+          "gs": 1540,
+          "order": 1,
+          "name": "Attack, Decay, Resonance & Artifact Identification",
+          "is_new": false
+        },
+        {
+          "gs": 1550,
+          "order": 2,
+          "name": "Strings, Guitar & Keys",
+          "is_new": false
+        },
+        {
+          "gs": 1560,
+          "order": 3,
+          "name": "Drums & Percussion",
+          "is_new": false
+        },
+        {
+          "gs": 1570,
+          "order": 4,
+          "name": "Winds, Brass & Organ",
+          "is_new": false
+        }
+      ]
+    },
+    {
+      "order": 22,
+      "name": "Career, Business & Industry",
+      "topics": [
+        {
+          "gs": 1580,
+          "order": 1,
+          "name": "Project Management",
+          "is_new": false
+        },
+        {
+          "gs": 1590,
+          "order": 2,
+          "name": "Workplace Skills",
+          "is_new": false
+        },
+        {
+          "gs": 1600,
+          "order": 3,
+          "name": "Audio Career Exploration",
+          "is_new": false
+        },
+        {
+          "gs": 1610,
+          "order": 4,
+          "name": "Portfolio Development",
+          "is_new": false
+        },
+        {
+          "gs": 1620,
+          "order": 5,
+          "name": "Copyright, Publishing & Licensing",
+          "is_new": false
+        },
+        {
+          "gs": 1630,
+          "order": 6,
+          "name": "Music Entrepreneurship",
+          "is_new": false
+        },
+        {
+          "gs": 1640,
+          "order": 7,
+          "name": "Industry Foundations",
+          "is_new": false
+        }
+      ]
+    },
+    {
+      "order": 23,
+      "name": "Immersive & Screen Sound",
+      "topics": [
+        {
+          "gs": 1650,
+          "order": 1,
+          "name": "Immersive Formats & Delivery",
+          "is_new": false
+        },
+        {
+          "gs": 1660,
+          "order": 2,
+          "name": "Object & Bed Panning / Authoring",
+          "is_new": false
+        },
+        {
+          "gs": 1670,
+          "order": 3,
+          "name": "Immersive Monitoring & Calibration",
+          "is_new": false
+        },
+        {
+          "gs": 1680,
+          "order": 4,
+          "name": "Immersive Music Production & Delivery",
+          "is_new": false
+        },
+        {
+          "gs": 1690,
+          "order": 5,
+          "name": "Film Scoring",
+          "is_new": false
+        },
+        {
+          "gs": 1700,
+          "order": 6,
+          "name": "Dialogue Editing",
+          "is_new": false
+        },
+        {
+          "gs": 1710,
+          "order": 7,
+          "name": "ADR & Looping",
+          "is_new": false
+        },
+        {
+          "gs": 1720,
+          "order": 8,
+          "name": "Dubbing & Localization",
+          "is_new": false
+        },
+        {
+          "gs": 1730,
+          "order": 9,
+          "name": "Foley Performance & Recording",
+          "is_new": false
+        },
+        {
+          "gs": 1732,
+          "order": 10,
+          "name": "SFX Editorial & Sound Design",
+          "is_new": false
+        },
+        {
+          "gs": 1740,
+          "order": 11,
+          "name": "Game Audio",
+          "is_new": false
+        },
+        {
+          "gs": 1750,
+          "order": 12,
+          "name": "Themed Entertainment / Haunt Audio",
+          "is_new": false
+        }
+      ]
+    },
+    {
+      "order": 24,
+      "name": "Audio Engineering & Development",
+      "topics": [
+        {
+          "gs": 1810,
+          "order": 1,
+          "name": "Preamp & Converter Engineering",
+          "is_new": false
+        },
+        {
+          "gs": 1820,
+          "order": 2,
+          "name": "Loudspeaker / Transducer Engineering",
+          "is_new": false
+        },
+        {
+          "gs": 1830,
+          "order": 3,
+          "name": "Audio Plugin & DSP Development",
+          "is_new": false
+        },
+        {
+          "gs": 1840,
+          "order": 4,
+          "name": "Cloud & Emerging Production",
+          "is_new": false
+        },
+        {
+          "gs": 970,
+          "order": 5,
+          "name": "Soldering",
+          "is_new": false
+        },
+        {
+          "gs": 980,
+          "order": 6,
+          "name": "Repair",
+          "is_new": false
+        },
+        {
+          "gs": 880,
+          "order": 7,
+          "name": "Passive Components",
+          "is_new": false
+        },
+        {
+          "gs": 882,
+          "order": 8,
+          "name": "Electromechanical Parts & Hardware",
+          "is_new": false
+        },
+        {
+          "gs": 890,
+          "order": 9,
+          "name": "Active Devices & Semiconductors",
+          "is_new": false
+        },
+        {
+          "gs": 900,
+          "order": 10,
+          "name": "Circuits & Topologies",
+          "is_new": false
+        },
+        {
+          "gs": 910,
+          "order": 11,
+          "name": "PCB, Assembly & Soldering",
+          "is_new": false
+        },
+        {
+          "gs": 920,
+          "order": 12,
+          "name": "Bench Test, Measurement & Repair",
+          "is_new": false
+        },
+        {
+          "gs": 930,
+          "order": 13,
+          "name": "Manufacturing & Production",
+          "is_new": false
+        },
+        {
+          "gs": 280,
+          "order": 14,
+          "name": "Vacuum Tubes",
+          "is_new": false
+        }
+      ]
+    },
+    {
+      "order": 25,
+      "name": "AI Audio",
+      "topics": [
+        {
+          "gs": 1850,
+          "order": 1,
+          "name": "AI Music Generation & Composition",
+          "is_new": false
+        },
+        {
+          "gs": 1860,
+          "order": 2,
+          "name": "AI Voice & Speech",
+          "is_new": false
+        },
+        {
+          "gs": 1870,
+          "order": 3,
+          "name": "AI Source Separation & Restoration",
+          "is_new": false
+        },
+        {
+          "gs": 1880,
+          "order": 4,
+          "name": "AI Mixing/Mastering & Adaptive Processing",
+          "is_new": false
+        },
+        {
+          "gs": 1890,
+          "order": 5,
+          "name": "Neural Amp Modeling & Neural Synthesis",
+          "is_new": false
+        },
+        {
+          "gs": 1900,
+          "order": 6,
+          "name": "Music Information Retrieval",
+          "is_new": false
+        },
+        {
+          "gs": 1910,
+          "order": 7,
+          "name": "AI/ML Foundations for Audio",
+          "is_new": false
+        },
+        {
+          "gs": 1920,
+          "order": 8,
+          "name": "AI Audio Ethics, Rights & Provenance",
+          "is_new": false
+        }
+      ]
+    },
+    {
+      "order": 26,
+      "name": "Live Sound Production",
+      "topics": [
+        {
+          "gs": 1930,
+          "order": 1,
+          "name": "Live Sound — Crew Roles & Departments",
+          "is_new": false
+        },
+        {
+          "gs": 1940,
+          "order": 2,
+          "name": "Live Sound — Production Documents & Advancing",
+          "is_new": false
+        },
+        {
+          "gs": 1950,
+          "order": 3,
+          "name": "Live Sound — Load-In / Setup / Strike / Load-Out",
+          "is_new": false
+        },
+        {
+          "gs": 1960,
+          "order": 4,
+          "name": "Live Sound — Stage Patch & Signal Distribution",
+          "is_new": false
+        },
+        {
+          "gs": 1970,
+          "order": 5,
+          "name": "Live Sound — FOH Mixing Workflow",
+          "is_new": false
+        },
+        {
+          "gs": 1980,
+          "order": 6,
+          "name": "Live Sound — Monitor Engineering",
+          "is_new": false
+        },
+        {
+          "gs": 1990,
+          "order": 7,
+          "name": "Live Sound — Soundcheck / Rehearsal / Virtual Soundcheck",
+          "is_new": false
+        },
+        {
+          "gs": 2000,
+          "order": 8,
+          "name": "Live Sound — PA Deployment & System Engineering",
+          "is_new": false
+        },
+        {
+          "gs": 2010,
+          "order": 9,
+          "name": "Live Sound — Festival Changeovers & Guest-Engineer",
+          "is_new": false
+        },
+        {
+          "gs": 2020,
+          "order": 10,
+          "name": "Live Sound — Communication & Show Calls",
+          "is_new": false
+        },
+        {
+          "gs": 2030,
+          "order": 11,
+          "name": "Live Sound — Troubleshooting & Emergency",
+          "is_new": false
+        },
+        {
+          "gs": 2040,
+          "order": 12,
+          "name": "Live Sound — Concert-Audio Slang",
+          "is_new": false
+        },
+        {
+          "gs": 700,
+          "order": 13,
+          "name": "Road Crew",
+          "is_new": false
+        }
+      ]
+    }
+  ],
+  "deleted": []
+}
