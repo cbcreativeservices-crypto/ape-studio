@@ -13,6 +13,7 @@ import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { devBypass } from '../../config/devMode';
 import { colors, fonts } from '../../theme/tokens';
+import { LowLightDim } from '../settings/LowLightLayer';
 import { INTRO_STORAGE_PREFIX, SCREEN_INTROS, type IntroKey } from './screenIntros';
 
 export function useScreenIntro(key: IntroKey) {
@@ -44,7 +45,7 @@ export function useScreenIntro(key: IntroKey) {
   return { visible, dismiss };
 }
 
-function IntroSheet({ introKey, onDismiss }: { introKey: IntroKey; onDismiss: () => void }) {
+export function IntroSheet({ introKey, onDismiss }: { introKey: IntroKey; onDismiss: () => void }) {
   const copy = SCREEN_INTROS[introKey];
   return (
     <Modal transparent animationType="fade" visible statusBarTranslucent onRequestClose={onDismiss}>
@@ -59,6 +60,7 @@ function IntroSheet({ introKey, onDismiss }: { introKey: IntroKey; onDismiss: ()
           <Text style={styles.dismissHint}>TAP ANYWHERE TO CONTINUE</Text>
         </View>
       </Pressable>
+      <LowLightDim />
     </Modal>
   );
 }
@@ -101,7 +103,7 @@ const styles = StyleSheet.create({
   tag: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 2, color: '#b98a20' },
   title: { fontFamily: fonts.oswaldMedium, fontSize: 24, color: colors.textPrimary },
   rule: { width: 44, height: 2, backgroundColor: colors.amber, borderRadius: 1 },
-  body: { fontFamily: fonts.barlowRegular, fontSize: 15, lineHeight: 22, color: colors.textSecondary },
+  body: { fontFamily: fonts.barlowMedium, fontSize: 15.5, lineHeight: 23, color: colors.textSecondary },
   dismissHint: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 11,

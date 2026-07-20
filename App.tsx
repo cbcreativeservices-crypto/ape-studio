@@ -10,6 +10,7 @@ import { DarkTheme, NavigationContainer, type Theme } from '@react-navigation/na
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { EntitlementProvider } from './src/features/commercial/EntitlementProvider';
+import { LowLightDim } from './src/features/settings/LowLightLayer';
 import { colors, fontAssets } from './src/theme/tokens';
 
 const navTheme: Theme = {
@@ -39,9 +40,14 @@ export default function App() {
       {/* Commercial entitlement context (CM1) — inert while commercialMode is
           OFF; no consumers yet, so app behavior is unchanged. */}
       <EntitlementProvider>
-        <NavigationContainer theme={navTheme}>
-          <RootNavigator />
-        </NavigationContainer>
+        {/* Navigator + the global low-light dim wash (the toggle lives on the
+            Profile screen). pointer-transparent, so it never blocks touches. */}
+        <View style={{ flex: 1 }}>
+          <NavigationContainer theme={navTheme}>
+            <RootNavigator />
+          </NavigationContainer>
+          <LowLightDim />
+        </View>
       </EntitlementProvider>
     </SafeAreaProvider>
   );

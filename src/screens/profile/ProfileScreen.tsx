@@ -10,8 +10,9 @@
  * 120 vs 160px). Layout ships at 120×120 with a stub pattern; encoding wires
  * after the ruling (react-native-qrcode-svg already installed).
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -22,16 +23,82 @@ import { Toggle } from '../../components/Toggle';
 import { albumTitleFor, colors, fonts } from '../../theme/tokens';
 import { fetchProfile, type ProfileData } from '../../features/profile/api';
 import {
+  DIFFICULTY_LEVELS,
   EMPTY_PUBLIC_PROFILE,
   INTEREST_TOPICS,
+  LEARNING_GOALS,
   loadPublicProfile,
   savePublicProfile,
   type PublicProfile,
 } from '../../features/profile/publicProfile';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { LowLightRow } from '../../features/settings/LowLightLayer';
+import { DevVisualIndex } from '../../features/dev/DevVisualIndex';
+import { useTermList } from '../../features/flags/flaggedStore';
+import {
+  COREQ_TOPIC_GS,
+  PROGRAM_PATHS,
+  SPECIALIZED_CERTIFICATES,
+} from '../awards/awardsData';
+import { MATRIX_SUBJECTS } from '../../data/courseTopicMatrix';
 import { COPY } from '../../lib/copy';
 
 const CERTS: CertKey[] = ['mic', 'rec', 'mix', 'pa'];
+
+// The Awards screen persists the chosen goals under these keys (user request
+// 2026-07-18: the Profile shows/edits them). Editing opens the Awards pickers.
+const SPEC_CERT_KEY = 'ape:specCert';
+const PROGRAM_PATH_KEY = 'ape:programPath';
+
+// gs → topic name (for the goal "map"), resolved against the v2 matrix.
+const TOPIC_NAME_BY_GS = new Map(
+  MATRIX_SUBJECTS.flatMap((s) => s.topics.map((t) => [t.gs, t.name] as const)),
+);
+const nameForGs = (gs: number) => TOPIC_NAME_BY_GS.get(gs) ?? `Topic gs${gs}`;
+
+/** One compact statistic row with a subtle separator. */
+function StatRow({ label, value, last }: { label: string; value: string; last?: boolean }) {
+  return (
+    <View style={[styles.statRow, !last && styles.statRowRule]}>
+      <Text style={styles.statLabel}>{label}</Text>
+      <Text style={styles.statValue}>{value}</Text>
+    </View>
+  );
+}
+
+/** Single/multi-select chip group in the app's existing chip style. */
+function ChoiceChips({
+  options,
+  isOn,
+  onPick,
+  onLongPick,
+}: {
+  options: readonly string[];
+  isOn: (o: string) => boolean;
+  onPick: (o: string) => void;
+  onLongPick?: (o: string) => void;
+}) {
+  return (
+    <View style={styles.chipWrap}>
+      {options.map((o) => {
+        const on = isOn(o);
+        return (
+          <Pressable
+            key={o}
+            onPress={() => onPick(o)}
+            onLongPress={onLongPick ? () => onLongPick(o) : undefined}
+            delayLongPress={350}
+            style={[styles.interestChip, on && styles.interestChipOn]}
+            accessibilityRole="button"
+            accessibilityState={{ selected: on }}
+          >
+            <Text style={[styles.interestChipText, on && styles.interestChipTextOn]}>{o}</Text>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
 
 /** Static stand-in blocks approximating the design's QR mock (C-3 pending). */
 const STUB_BLOCKS = [
@@ -55,18 +122,34 @@ export function ProfileScreen() {
   const { commercialMode, caps, entitlement } = useEntitlement();
   // Public / networking profile (device-local for now — backend frozen).
   const [pub, setPub] = useState<PublicProfile>(EMPTY_PUBLIC_PROFILE);
+  // Chosen goals (persisted by the Awards pickers; edited by opening them).
+  const [specCert, setSpecCert] = useState<string | null>(null);
+  const [programPath, setProgramPath] = useState<string | null>(null);
+  // "Terms learned" — the self-assessed KNOWN list (client-side; no server metric
+  // exists while the backend is frozen).
+  const known = useTermList('known');
 
   useFocusEffect(
     useCallback(() => {
       fetchProfile()
         .then(setProfile)
         .catch(() => {});
+      // Re-read goals each time the screen refocuses (e.g. after editing them
+      // on the Awards screen).
+      AsyncStorage.getItem(SPEC_CERT_KEY).then(setSpecCert);
+      AsyncStorage.getItem(PROGRAM_PATH_KEY).then(setProgramPath);
     }, []),
   );
 
   useEffect(() => {
     loadPublicProfile().then(setPub);
   }, []);
+
+  const specCertData = useMemo(
+    () => SPECIALIZED_CERTIFICATES.find((c) => c.name === specCert) ?? null,
+    [specCert],
+  );
+  const programData = useMemo(() => PROGRAM_PATHS.find((p) => p.name === programPath) ?? null, [programPath]);
 
   const setPubKey = useCallback(<K extends keyof PublicProfile>(key: K, value: PublicProfile[K]) => {
     setPub((prev) => {
@@ -81,13 +164,25 @@ export function ProfileScreen() {
       setPub((prev) => {
         const has = prev.interests.includes(topic);
         const interests = has ? prev.interests.filter((t) => t !== topic) : [...prev.interests, topic];
-        const next = { ...prev, interests };
+        // Dropping the primary interest clears the primary flag too.
+        const primaryInterest = has && prev.primaryInterest === topic ? '' : prev.primaryInterest;
+        const next = { ...prev, interests, primaryInterest };
         void savePublicProfile(next);
         return next;
       });
     },
     [],
   );
+
+  // Hold an interest to promote it to PRIMARY (adds it if not already selected).
+  const promotePrimary = useCallback((topic: string) => {
+    setPub((prev) => {
+      const interests = prev.interests.includes(topic) ? prev.interests : [...prev.interests, topic];
+      const next = { ...prev, interests, primaryInterest: topic };
+      void savePublicProfile(next);
+      return next;
+    });
+  }, []);
 
   const cell = 96 / 7; // stub grid geometry inside the 112px QR box (8px padding)
 
@@ -130,25 +225,33 @@ export function ProfileScreen() {
             </Pressable>
           </View>
 
-          {/* ID card — avatar + nickname ONLY (no QR / no AP&E ID). */}
-          <View style={styles.idCard}>
+          {/* Low-light mode toggle at the top (user request 2026-07-18). */}
+          <LowLightRow />
+
+          {/* TEMPORARY dev tool (user request 2026-07-18) — visual index of every
+              screen + popup. Remove before release. */}
+          <DevVisualIndex />
+
+          {/* 1 — STUDENT IDENTITY CARD (user request 2026-07-18): avatar (photo
+              or initials), name, membership, understated Student ID. */}
+          <View style={styles.identityCard}>
             {profile?.photoUrl ? (
-              <Image source={{ uri: profile.photoUrl }} style={styles.avatarImg} />
+              <Image source={{ uri: profile.photoUrl }} style={styles.avatar} />
             ) : (
               <LinearGradient colors={['#ffd35e', '#f09e1a']} style={styles.avatar}>
-                <Text style={styles.avatarInitials}>{profile?.initials ?? '–'}</Text>
+                <Text style={styles.avatarInitials}>{profile?.initials || '—'}</Text>
               </LinearGradient>
             )}
-            <Text style={styles.nickname}>{(profile?.nickname ?? '—').toUpperCase()}</Text>
+            <Text style={styles.identityName}>{pub.name || profile?.nickname || 'Add your name'}</Text>
             <Text style={styles.planTag}>
               {academy ? 'ACADEMY MEMBER' : entitlement === 'lapsed' ? 'MEMBERSHIP LAPSED' : 'REFERENCE MODE'}
             </Text>
+            {profile?.apeStudentId ? <Text style={styles.identityMeta}>ID · {profile.apeStudentId}</Text> : null}
           </View>
 
-          {/* Album Level (live for all users now). */}
+          {/* 2 — ALBUM LEVEL (unchanged). */}
           <View style={[styles.panel, styles.albumRow]}>
             <View style={{ flexShrink: 1 }}>
-              {/* Subtitle sits ABOVE the album-level title (Booth 2026-07-11). */}
               <Text style={styles.tierMeta}>{profile?.overallPct ?? 0}% - Full Course Certification</Text>
               <Text style={styles.tierName}>
                 ALBUM LEVEL: {albumTitleFor(profile?.tierName ?? 'Black').toUpperCase()}
@@ -160,30 +263,163 @@ export function ProfileScreen() {
             </View>
           </View>
 
-          {/* Completion records — records stay visible for academy + lapsed. */}
+          {/* 3 — CURRENT LEARNING FOCUS. */}
+          <Pressable
+            style={styles.panel}
+            onPress={() => (navigation as any).navigate((profile?.completeCount ?? 0) > 0 ? 'Study' : 'Home')}
+            accessibilityRole="button"
+          >
+            <Text style={styles.panelEyebrow}>CURRENT FOCUS</Text>
+            {(profile?.overallPct ?? 0) > 0 ? (
+              <>
+                <Text style={styles.focusTitle}>Full Course Certification</Text>
+                <Text style={styles.focusPct}>{profile?.overallPct ?? 0}% complete</Text>
+                <Text style={styles.linkCta}>Continue →</Text>
+              </>
+            ) : (
+              <Text style={styles.emptyLine}>Choose your first topic →</Text>
+            )}
+          </Pressable>
+
+          {/* 4a — CERTIFICATE GOAL (Specialization). Tap opens the Awards picker. */}
+          <Pressable
+            style={styles.panel}
+            onPress={() => (navigation as any).navigate('Awards', { category: 'specialization' })}
+            accessibilityRole="button"
+          >
+            <Text style={styles.panelEyebrow}>CERTIFICATE GOAL</Text>
+            {specCertData ? (
+              <>
+                <Text style={styles.goalTitle}>{specCertData.name}</Text>
+                <Text style={styles.goalSub}>Specialized Certificate · 3 topics</Text>
+                <Text style={styles.goalMapHead}>SPECIALIZATION TOPICS</Text>
+                {specCertData.specializationTopics.map((gs) => (
+                  <Text key={gs} style={styles.goalMapItem}>
+                    • {nameForGs(gs)}
+                  </Text>
+                ))}
+                <Text style={styles.goalMapHead}>REQUIRED CORE · complete once, then waived</Text>
+                {COREQ_TOPIC_GS.map((gs) => (
+                  <Text key={gs} style={styles.goalCoreItem}>
+                    ✓ {nameForGs(gs)}
+                  </Text>
+                ))}
+                <Text style={styles.linkCta}>Change goal ›</Text>
+              </>
+            ) : (
+              <Text style={styles.emptyLine}>Set your certificate goal ›</Text>
+            )}
+          </Pressable>
+
+          {/* 4b — PROGRAM GOAL (can differ from the certificate goal). */}
+          <Pressable
+            style={styles.panel}
+            onPress={() => (navigation as any).navigate('Awards', { category: 'program' })}
+            accessibilityRole="button"
+          >
+            <Text style={styles.panelEyebrow}>PROGRAM GOAL</Text>
+            {programData ? (
+              <>
+                <Text style={styles.goalTitle}>{programData.name}</Text>
+                <Text style={styles.goalSub}>
+                  Academy Program Certificate · {programData.requiredTopics.length} topics
+                  {programData.electiveChooseOne?.length ? ' + 1 elective' : ''}
+                </Text>
+                <Text style={styles.goalMapHead}>REQUIRED CORE · complete once, then waived</Text>
+                {COREQ_TOPIC_GS.map((gs) => (
+                  <Text key={gs} style={styles.goalCoreItem}>
+                    ✓ {nameForGs(gs)}
+                  </Text>
+                ))}
+                <Text style={styles.linkCta}>View full topic map ›</Text>
+              </>
+            ) : (
+              <Text style={styles.emptyLine}>Set your program goal ›</Text>
+            )}
+          </Pressable>
+
+          {/* 5 — STUDENT STATISTICS. */}
           <View style={styles.panel}>
-            <Text style={styles.panelEyebrow}>COMPLETION RECORDS</Text>
+            <Text style={styles.panelEyebrow}>STATISTICS</Text>
+            <StatRow label="Terms Learned" value={String(known.size)} />
+            <StatRow label="Topics Completed" value={String(profile?.completeCount ?? 0)} />
+            <StatRow label="Quizzes Passed" value="—" />
+            <StatRow label="Study Streak" value="—" last />
             {caps.completionRecords ? (
               <Pressable
                 onPress={() => (navigation as any).navigate('Achievements')}
                 accessibilityRole="button"
                 accessibilityLabel="View trophies and records"
-                style={styles.recordRow}
               >
-                <Text style={styles.recordCount}>{profile?.completeCount ?? 0}</Text>
-                <Text style={styles.recordLabel}>TOPICS COMPLETED · VIEW TROPHIES ›</Text>
+                <Text style={[styles.linkCta, { marginTop: 10 }]}>View trophies & records ›</Text>
               </Pressable>
-            ) : (
-              <Text style={styles.recordLocked}>{COPY.upgradePhrase}</Text>
-            )}
+            ) : null}
           </View>
 
-          {/* Your networking profile — name / email / interests / consent.
-              Device-local for now (backend + employer directory pending); no
-              sensitive data beyond email is collected (Booth 2026-07-11). */}
+          {/* 6 — AUDIO INTERESTS (with a promoted PRIMARY interest). */}
           <View style={styles.panel}>
-            <Text style={styles.panelEyebrow}>YOUR PROFILE</Text>
+            <Text style={styles.panelEyebrow}>AUDIO INTERESTS</Text>
+            {pub.primaryInterest ? (
+              <>
+                <Text style={styles.fieldLabel}>Primary interest</Text>
+                <View style={styles.primaryChip}>
+                  <Text style={styles.primaryChipText}>★ {pub.primaryInterest}</Text>
+                </View>
+              </>
+            ) : null}
+            <Text style={[styles.fieldLabel, { marginTop: pub.primaryInterest ? 12 : 0 }]}>
+              Interests · hold one to make it primary
+            </Text>
+            <ChoiceChips
+              options={INTEREST_TOPICS}
+              isOn={(o) => pub.interests.includes(o)}
+              onPick={toggleInterest}
+              onLongPick={promotePrimary}
+            />
+          </View>
 
+          {/* 7 — LEARNING PREFERENCES (optional). */}
+          <View style={styles.panel}>
+            <Text style={styles.panelEyebrow}>LEARNING PREFERENCES</Text>
+            <Text style={styles.fieldLabel}>Learning goal</Text>
+            <ChoiceChips
+              options={LEARNING_GOALS}
+              isOn={(o) => pub.learningGoal === o}
+              onPick={(o) => setPubKey('learningGoal', pub.learningGoal === o ? '' : o)}
+            />
+            <Text style={[styles.fieldLabel, { marginTop: 12 }]}>Preferred difficulty</Text>
+            <ChoiceChips
+              options={DIFFICULTY_LEVELS}
+              isOn={(o) => pub.difficulty === o}
+              onPick={(o) => setPubKey('difficulty', pub.difficulty === o ? '' : o)}
+            />
+          </View>
+
+          {/* 8 — ABOUT ME (optional, understated). */}
+          <View style={styles.panel}>
+            <Text style={styles.panelEyebrow}>ABOUT ME</Text>
+            <TextInput
+              style={[styles.input, styles.bioInput]}
+              value={pub.bio}
+              onChangeText={(t) => setPubKey('bio', t)}
+              placeholder="A short line about you (optional) — e.g. Live sound engineer"
+              placeholderTextColor={colors.textMuted}
+              multiline
+              maxLength={160}
+              returnKeyType="done"
+            />
+          </View>
+
+          {/* 9 — RECENT ACTIVITY (empty state until the study-log backend lands). */}
+          <View style={styles.panel}>
+            <Text style={styles.panelEyebrow}>RECENT ACTIVITY</Text>
+            <Text style={styles.emptyLine}>No recent study activity yet — your sessions will show here.</Text>
+          </View>
+
+          {/* Account & networking — email lives here (out of the identity focus),
+              read-only display + the employer-contact consent. */}
+          <View style={styles.panel}>
+            <Text style={styles.panelEyebrow}>ACCOUNT &amp; NETWORKING</Text>
             <Text style={styles.fieldLabel}>Name</Text>
             <TextInput
               style={styles.input}
@@ -194,8 +430,7 @@ export function ProfileScreen() {
               autoCapitalize="words"
               returnKeyType="done"
             />
-
-            <Text style={styles.fieldLabel}>Email</Text>
+            <Text style={[styles.fieldLabel, { marginTop: 12 }]}>Email</Text>
             <TextInput
               style={styles.input}
               value={pub.email}
@@ -207,25 +442,6 @@ export function ProfileScreen() {
               keyboardType="email-address"
               returnKeyType="done"
             />
-
-            <Text style={[styles.fieldLabel, { marginTop: 14 }]}>Audio interests</Text>
-            <View style={styles.chipWrap}>
-              {INTEREST_TOPICS.map((topic) => {
-                const on = pub.interests.includes(topic);
-                return (
-                  <Pressable
-                    key={topic}
-                    onPress={() => toggleInterest(topic)}
-                    style={[styles.interestChip, on && styles.interestChipOn]}
-                    accessibilityRole="button"
-                    accessibilityState={{ selected: on }}
-                  >
-                    <Text style={[styles.interestChipText, on && styles.interestChipTextOn]}>{topic}</Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-
             <View style={styles.consentRow}>
               <View style={{ flex: 1, paddingRight: 12 }}>
                 <Text style={styles.fieldLabel}>Contactable by employers</Text>
@@ -380,6 +596,97 @@ const styles = StyleSheet.create({
   interestChipText: { fontFamily: fonts.barlowRegular, fontSize: 13, color: '#9a9a9a' },
   interestChipTextOn: { color: '#5bff85' },
   consentRow: { flexDirection: 'row', alignItems: 'center', marginTop: 14 },
+
+  // --- Redesigned commercial Profile (user request 2026-07-18) ---
+  identityCard: {
+    backgroundColor: '#181818',
+    borderWidth: 1,
+    borderColor: colors.deepBorder,
+    borderRadius: 12,
+    paddingVertical: 20,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+    gap: 6,
+  },
+  identityName: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 22,
+    letterSpacing: 0.6,
+    color: colors.textPrimary,
+    marginTop: 10,
+    textAlign: 'center',
+  },
+  identityMeta: { fontFamily: fonts.mono, fontSize: 11.5, letterSpacing: 0.4, color: colors.textSub, marginTop: 4 },
+
+  focusTitle: { fontFamily: fonts.oswaldMedium, fontSize: 17, color: colors.textPrimary, paddingLeft: 4 },
+  focusPct: { fontFamily: fonts.barlowSemiBold, fontSize: 13.5, color: colors.amber, paddingLeft: 4, marginTop: 2 },
+  linkCta: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 12.5,
+    letterSpacing: 1,
+    color: colors.amber,
+    paddingLeft: 4,
+    marginTop: 8,
+  },
+  emptyLine: {
+    fontFamily: fonts.barlowRegular,
+    fontStyle: 'italic',
+    fontSize: 13.5,
+    lineHeight: 19,
+    color: colors.textSub,
+    paddingLeft: 4,
+  },
+
+  goalTitle: { fontFamily: fonts.oswaldMedium, fontSize: 17.5, color: colors.textPrimary, paddingLeft: 4 },
+  goalSub: { fontFamily: fonts.barlowMedium, fontSize: 13, color: colors.textSub, paddingLeft: 4, marginTop: 2 },
+  goalMapHead: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 10.5,
+    letterSpacing: 1.4,
+    color: colors.amberLabel,
+    paddingLeft: 4,
+    marginTop: 12,
+    marginBottom: 3,
+  },
+  goalMapItem: {
+    fontFamily: fonts.barlowMedium,
+    fontSize: 14,
+    lineHeight: 21,
+    color: colors.textSecondary,
+    paddingLeft: 8,
+  },
+  goalCoreItem: {
+    fontFamily: fonts.barlowMedium,
+    fontSize: 14,
+    lineHeight: 21,
+    color: '#5bb0ff',
+    paddingLeft: 8,
+  },
+
+  statRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 9,
+    paddingHorizontal: 4,
+  },
+  statRowRule: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#2a2a2a' },
+  statLabel: { fontFamily: fonts.barlowMedium, fontSize: 15, color: colors.textSecondary },
+  statValue: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, color: colors.textPrimary },
+
+  primaryChip: {
+    alignSelf: 'flex-start',
+    marginTop: 6,
+    paddingVertical: 9,
+    paddingHorizontal: 16,
+    borderRadius: 9,
+    backgroundColor: '#241d08',
+    borderWidth: 1,
+    borderColor: 'rgba(255,180,0,.7)',
+  },
+  primaryChipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.5, color: colors.amber },
+
+  bioInput: { minHeight: 60, textAlignVertical: 'top', paddingTop: 10 },
   headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   college: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 2.3, color: '#cfcfcf' },
   gear: {

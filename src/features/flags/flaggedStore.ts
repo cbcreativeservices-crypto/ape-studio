@@ -1,11 +1,10 @@
 /**
  * flaggedStore — the user's personal TERM LISTS (Booth 2026-07-18).
  *
- * Started as the ONE shared "Flagged" list (Glossary star ↔ Flashcards ↔ the
- * Flagged dashboard topic). Booth 2026-07-18 (second order) generalized it to
- * FOUR selectable lists, togglable from any term list popup:
- *   flagged — the original shared flag list (legacy storage key kept so terms
- *             users already starred carry straight over)
+ * Started as the ONE shared list. Generalized to FOUR selectable lists,
+ * togglable from any term list popup:
+ *   bookmark — the shared BOOKMARK list (renamed from "flagged" — user request
+ *              2026-07-18; legacy storage key kept so existing terms carry over)
  *   heart   — favorites
  *   starred — the user's ★ "CUSTOM LIST" (Booth 2026-07-18 naming): their own
  *             curated term list, which will also feed their notifications.
@@ -21,7 +20,9 @@
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const FLAGGED_KEY = 'ape:glossaryFavs'; // legacy key kept for carryover
+// Storage key for the BOOKMARK list (renamed from "flagged" — user request
+// 2026-07-18); the VALUE is unchanged so existing saved terms carry over.
+export const BOOKMARK_KEY = 'ape:glossaryFavs';
 
 /** Pseudo achievementId for the user's personal dashboard topic — routes
  *  Flashcards into local-only mode (no server topic). Display name is the
@@ -30,10 +31,10 @@ export const FLAGGED_KEY = 'ape:glossaryFavs'; // legacy key kept for carryover
 export const FLAGGED_TOPIC_ID = 'flagged';
 export const FLAGGED_TOPIC_NAME = 'My Custom List';
 
-export type TermListKind = 'flagged' | 'heart' | 'starred' | 'known';
+export type TermListKind = 'bookmark' | 'heart' | 'starred' | 'known';
 
 const STORAGE_KEYS: Record<TermListKind, string> = {
-  flagged: FLAGGED_KEY,
+  bookmark: BOOKMARK_KEY,
   heart: 'ape:heartTerms',
   starred: 'ape:notifyTerms',
   known: 'ape:knownTermsGlobal',
@@ -47,7 +48,7 @@ type SetStore = {
 };
 
 const stores: Record<TermListKind, SetStore> = {
-  flagged: { ids: new Set(), hydrated: false, hydrating: null, listeners: new Set() },
+  bookmark: { ids: new Set(), hydrated: false, hydrating: null, listeners: new Set() },
   heart: { ids: new Set(), hydrated: false, hydrating: null, listeners: new Set() },
   starred: { ids: new Set(), hydrated: false, hydrating: null, listeners: new Set() },
   known: { ids: new Set(), hydrated: false, hydrating: null, listeners: new Set() },
@@ -135,24 +136,24 @@ export function useTermList(kind: TermListKind): ReadonlySet<string> {
   return snap;
 }
 
-/* ---- Legacy flagged-list API (pre-generalization callers) ---- */
+/* ---- Bookmark-list convenience API (the ⭐→🔖 list) ---- */
 
-export function getFlagged(): ReadonlySet<string> {
-  return getTermList('flagged');
+export function getBookmarks(): ReadonlySet<string> {
+  return getTermList('bookmark');
 }
 
-export function isFlagged(id: string): boolean {
-  return stores.flagged.ids.has(id);
+export function isBookmarked(id: string): boolean {
+  return stores.bookmark.ids.has(id);
 }
 
-export function toggleFlagged(id: string): boolean {
-  return toggleTermList('flagged', id);
+export function toggleBookmark(id: string): boolean {
+  return toggleTermList('bookmark', id);
 }
 
-export function unflagMany(ids: Iterable<string>): void {
-  removeManyFromTermList('flagged', ids);
+export function removeBookmarks(ids: Iterable<string>): void {
+  removeManyFromTermList('bookmark', ids);
 }
 
-export function useFlagged(): ReadonlySet<string> {
-  return useTermList('flagged');
+export function useBookmarks(): ReadonlySet<string> {
+  return useTermList('bookmark');
 }

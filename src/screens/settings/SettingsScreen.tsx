@@ -21,6 +21,7 @@ import { supabase } from '../../lib/supabase';
 import { colors, fonts } from '../../theme/tokens';
 import {
   COLOR_BLIND_MODES,
+  COMMERCIAL_NOTIFY_ROWS,
   DEFAULT_LOCAL_SETTINGS,
   FONT_SIZES,
   fetchNotificationPrefs,
@@ -94,10 +95,11 @@ export function SettingsScreen({ navigation }: Props) {
       </View>
 
       <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 20 }]}>
-        {/* NOTIFICATIONS */}
+        {/* NOTIFICATIONS — transport toggles (server) + the commercial content
+            notifications (device-local; server prefs frozen). */}
         <View>
           <Text style={styles.sectionEyebrow}>NOTIFICATIONS</Text>
-          {NOTIFICATION_ROWS.map((row, i) => (
+          {NOTIFICATION_ROWS.map((row) => (
             <View key={row.key} style={[styles.row, styles.rowBorder]}>
               <Text style={styles.rowLabel}>{row.label}</Text>
               <Toggle
@@ -107,15 +109,45 @@ export function SettingsScreen({ navigation }: Props) {
               />
             </View>
           ))}
-          {/* Daily Term — device-local (server prefs frozen). One glossary term
-              per day; delivery job pending expo-notifications (Booth 2026-07-11 #3). */}
-          <View style={styles.row}>
-            <View style={{ flex: 1, paddingRight: 12 }}>
-              <Text style={styles.rowLabel}>Daily Term</Text>
-              <Text style={styles.rowHint}>Get one audio term delivered each day.</Text>
+          {/* The 7 commercial notifications (user request 2026-07-18). */}
+          {COMMERCIAL_NOTIFY_ROWS.map((row, i) => (
+            <View key={row.key}>
+              <View style={[styles.row, i < COMMERCIAL_NOTIFY_ROWS.length - 1 && styles.rowBorder]}>
+                <View style={{ flex: 1, paddingRight: 12 }}>
+                  <Text style={styles.rowLabel}>{row.label}</Text>
+                  <Text style={styles.rowHint}>{row.hint}</Text>
+                </View>
+                <Toggle on={local[row.key]} onChange={(v) => setLocalKey(row.key, v)} />
+              </View>
+              {/* #2 threshold — days of no use before the reminder fires. */}
+              {row.key === 'notifyContinue' && local.notifyContinue ? (
+                <View style={[styles.row, styles.rowBorder, { paddingLeft: 12 }]}>
+                  <Text style={styles.rowHint}>Remind me after this many days of no use</Text>
+                  <View style={styles.stepper}>
+                    <Pressable
+                      style={styles.stepBtn}
+                      onPress={() => setLocalKey('continueDays', Math.max(1, local.continueDays - 1))}
+                      accessibilityRole="button"
+                      accessibilityLabel="Fewer days"
+                    >
+                      <Text style={styles.stepGlyph}>−</Text>
+                    </Pressable>
+                    <Text style={styles.stepValue}>
+                      {local.continueDays} {local.continueDays === 1 ? 'day' : 'days'}
+                    </Text>
+                    <Pressable
+                      style={styles.stepBtn}
+                      onPress={() => setLocalKey('continueDays', Math.min(30, local.continueDays + 1))}
+                      accessibilityRole="button"
+                      accessibilityLabel="More days"
+                    >
+                      <Text style={styles.stepGlyph}>+</Text>
+                    </Pressable>
+                  </View>
+                </View>
+              ) : null}
             </View>
-            <Toggle on={local.dailyTerms} onChange={(v) => setLocalKey('dailyTerms', v)} />
-          </View>
+          ))}
         </View>
 
         {/* DISPLAY */}
@@ -312,4 +344,19 @@ const styles = StyleSheet.create({
   cbChipActive: { backgroundColor: '#1d1607', borderColor: 'rgba(255,180,0,.65)' },
   cbChipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.9, color: '#999999' },
   cbChipTextActive: { color: colors.amber },
+
+  // "Days of no use" stepper (user request 2026-07-18).
+  stepper: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  stepBtn: {
+    width: 30,
+    height: 30,
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#141414',
+    borderWidth: 1,
+    borderColor: '#2a2a2a',
+  },
+  stepGlyph: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, color: colors.amber, marginTop: -2 },
+  stepValue: { fontFamily: fonts.barlowSemiBold, fontSize: 14, color: colors.textSecondary, minWidth: 48, textAlign: 'center' },
 });

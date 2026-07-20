@@ -1,7 +1,7 @@
 /**
  * TermSelectIcons — the selectable per-term icon row shown in term list popups
  * (Booth 2026-07-18): every listed term can be tagged into the user's lists.
- *   ⚑ flagged · ♥ heart · ★ the user's CUSTOM LIST (Booth 2026-07-18 naming;
+ *   🔖 bookmark · ♥ heart · ★ the user's CUSTOM LIST (Booth 2026-07-18 naming;
  *   it also feeds their notifications later) · ✓ known / ✗ unknown (one
  *   state — ✓ adds to the known list, ✗ removes; one of the pair is lit).
  * Lists live in flaggedStore (device-persisted, app-wide live updates).
@@ -13,12 +13,29 @@
  */
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 import { fonts } from '../../theme/tokens';
 import {
   setInTermList,
   toggleTermList,
   useTermList,
 } from './flaggedStore';
+
+/** Bookmark glyph (user request 2026-07-18 — replaces the ⚑ flag). Filled when
+ *  the term is bookmarked, outline otherwise; tints with the toggle colour. */
+export function BookmarkIcon({ color, filled, size = 16 }: { color: string; filled: boolean; size?: number }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path
+        d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"
+        fill={filled ? color : 'none'}
+        stroke={color}
+        strokeWidth={2}
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
 
 /** Small transient bubble naming the held button's action. */
 function HintBubble({ text }: { text: string }) {
@@ -88,13 +105,16 @@ export function HoldHintPressable({
 
 function IconToggle({
   glyph,
+  renderGlyph,
   on,
   onColor,
   label,
   onPress,
   onLongPress,
 }: {
-  glyph: string;
+  glyph?: string;
+  /** Custom (non-text) glyph, e.g. an SVG — receives the resolved colour. */
+  renderGlyph?: (color: string) => ReactNode;
   on: boolean;
   onColor: string;
   label: string;
@@ -102,6 +122,7 @@ function IconToggle({
   /** Hold-to-confirm (user request 2026-07-17) — shows the row bubble. */
   onLongPress?: () => void;
 }) {
+  const color = on ? onColor : '#54565c';
   return (
     <Pressable
       onPress={onPress}
@@ -112,25 +133,29 @@ function IconToggle({
       accessibilityState={{ selected: on }}
       accessibilityLabel={label}
     >
-      <Text
-        style={[
-          styles.icon,
-          on && {
-            color: onColor,
-            textShadowColor: `${onColor}80`,
-            textShadowRadius: 6,
-            textShadowOffset: { width: 0, height: 0 },
-          },
-        ]}
-      >
-        {glyph}
-      </Text>
+      {renderGlyph ? (
+        renderGlyph(color)
+      ) : (
+        <Text
+          style={[
+            styles.icon,
+            on && {
+              color: onColor,
+              textShadowColor: `${onColor}80`,
+              textShadowRadius: 6,
+              textShadowOffset: { width: 0, height: 0 },
+            },
+          ]}
+        >
+          {glyph}
+        </Text>
+      )}
     </Pressable>
   );
 }
 
 export function TermSelectIcons({ id }: { id: string }) {
-  const flagged = useTermList('flagged');
+  const bookmarked = useTermList('bookmark');
   const heart = useTermList('heart');
   const starred = useTermList('starred');
   const known = useTermList('known');
@@ -140,12 +165,12 @@ export function TermSelectIcons({ id }: { id: string }) {
     <View style={styles.row}>
       {hint ? <HintBubble text={hint} /> : null}
       <IconToggle
-        glyph="⚑"
-        on={flagged.has(id)}
+        renderGlyph={(c) => <BookmarkIcon color={c} filled={bookmarked.has(id)} />}
+        on={bookmarked.has(id)}
         onColor="#ffa64d"
-        label={flagged.has(id) ? 'Remove flag' : 'Flag term'}
-        onPress={() => toggleTermList('flagged', id)}
-        onLongPress={() => showHint(flagged.has(id) ? '⚑ Removes from Flagged' : '⚑ Adds to Flagged')}
+        label={bookmarked.has(id) ? 'Remove bookmark' : 'Bookmark term'}
+        onPress={() => toggleTermList('bookmark', id)}
+        onLongPress={() => showHint(bookmarked.has(id) ? 'Removes from Bookmarks' : 'Adds to Bookmarks')}
       />
       <IconToggle
         glyph={heart.has(id) ? '♥' : '♡'}

@@ -10,7 +10,6 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SplashScreen } from '../screens/SplashScreen';
 import { AuthScreen } from '../screens/auth/AuthScreen';
 import { ResultsScreen } from '../screens/results/ResultsScreen';
-import { TrophyAnimScreen } from '../screens/results/TrophyAnimScreen';
 import { TrophyScreen } from '../screens/results/TrophyScreen';
 import { SettingsScreen } from '../screens/settings/SettingsScreen';
 import { InstitutionalScreen } from '../screens/institutional/InstitutionalScreen';
@@ -37,7 +36,6 @@ export function RootNavigator() {
       <Stack.Screen name="Main" component={MainTabs} />
       {/* Reward loop — exits are explicit buttons/auto-advance, never a back gesture. */}
       <Stack.Screen name="Results" component={ResultsScreen} options={{ gestureEnabled: false }} />
-      <Stack.Screen name="TrophyAnim" component={TrophyAnimScreen} options={{ gestureEnabled: false }} />
       <Stack.Screen name="Trophy" component={TrophyScreen} options={{ gestureEnabled: false }} />
       {/* S11 — modal, bottom nav hidden, exits via ✕ */}
       <Stack.Screen name="Settings" component={SettingsScreen} options={{ presentation: 'modal' }} />

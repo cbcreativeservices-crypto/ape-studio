@@ -8,6 +8,7 @@
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../theme/tokens';
+import { LowLightDim } from '../settings/LowLightLayer';
 import { isIntroEmpty, type LearningIntro } from './learningIntros';
 
 const SECTIONS: { head: string; get: (i: LearningIntro) => string | undefined }[] = [
@@ -37,8 +38,10 @@ export function LearningIntroSheet({
 
   return (
     <Modal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={onBegin}>
-      <View style={styles.backdrop}>
-        <View style={[styles.card, { maxHeight: `${88}%` }]}>
+      {/* Tapping the dimmed area dismisses (never a hard block); the card
+          absorbs its own taps so content/BEGIN aren't swallowed. */}
+      <Pressable style={styles.backdrop} onPress={onBegin} accessibilityLabel="Dismiss">
+        <Pressable style={[styles.card, { maxHeight: `${88}%` }]} onPress={() => {}}>
           <View style={styles.head}>
             <Text style={styles.eyebrow}>{kind === 'course' ? 'COURSE INTRO' : 'TOPIC INTRO'}</Text>
             <Text style={styles.title}>{title}</Text>
@@ -88,8 +91,9 @@ export function LearningIntroSheet({
           <Pressable style={styles.beginBtn} onPress={onBegin} accessibilityRole="button" accessibilityLabel="Begin">
             <Text style={styles.beginText}>BEGIN</Text>
           </Pressable>
-        </View>
-      </View>
+        </Pressable>
+      </Pressable>
+      <LowLightDim />
     </Modal>
   );
 }
@@ -126,11 +130,11 @@ const styles = StyleSheet.create({
   },
   section: { gap: 5 },
   sectionHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: colors.amberLabel },
-  sectionBody: { fontFamily: fonts.barlowRegular, fontSize: 15, lineHeight: 22, color: colors.textSecondary },
+  sectionBody: { fontFamily: fonts.barlowMedium, fontSize: 15.5, lineHeight: 23, color: colors.textSecondary },
   comingSoon: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 13.5, color: colors.textMuted },
   bulletRow: { flexDirection: 'row', gap: 9, alignItems: 'flex-start' },
   bullet: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: colors.amber, lineHeight: 22 },
-  bulletText: { flex: 1, fontFamily: fonts.barlowRegular, fontSize: 15, lineHeight: 22, color: colors.textSecondary },
+  bulletText: { flex: 1, fontFamily: fonts.barlowMedium, fontSize: 15.5, lineHeight: 23, color: colors.textSecondary },
 
   beginBtn: {
     marginTop: 14,

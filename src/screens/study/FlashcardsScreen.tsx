@@ -13,8 +13,9 @@
  *    emitted, so server progress, the gate, and the LED can never regress.
  *  - Controls pinned to the bottom; card flexes to fill.
  */
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactElement, type ReactNode } from 'react';
 import { ActivityIndicator, Alert, Image, Modal, PanResponder, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import Svg, { Circle, Ellipse, Path } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -38,14 +39,16 @@ import {
 } from '../../features/study/api';
 import {
   FLAGGED_TOPIC_ID,
-  getFlagged,
+  getTermList,
   setInTermList,
-  toggleFlagged,
-  unflagMany,
-  useFlagged,
+  toggleBookmark,
+  removeBookmarks,
+  useBookmarks,
   useTermList,
 } from '../../features/flags/flaggedStore';
-import { TermSelectIcons } from '../../features/flags/TermSelectIcons';
+import { BookmarkIcon, TermSelectIcons } from '../../features/flags/TermSelectIcons';
+import { LowLightDim } from '../../features/settings/LowLightLayer';
+import { consumeDevPreview } from '../../features/dev/devPreview';
 import { devBypass } from '../../config/devMode';
 import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
 import { StudySession } from '../../features/study/sync';
@@ -100,11 +103,11 @@ type TermListSelKey =
   | 'advanced'
   | 'unseen'
   | 'known'
-  | 'flagged'
+  | 'bookmark'
   | 'starred';
 
 const hiddenKey = (achievementId: string) => `ape:fcHidden:${achievementId}`;
-// The old per-topic hard/flag list (`ape:fcHard:<id>`) is retired — flags now
+// The old per-topic bookmarked/flag list (`ape:fcHard:<id>`) is retired — flags now
 // live on the ONE shared list in features/flags/flaggedStore (Booth 2026-07-18).
 
 
@@ -160,6 +163,8 @@ function FilterChip({
   onPress,
   onLongPress,
   activeTint = 'amber',
+  disabled = false,
+  icon,
 }: {
   label: string;
   active: boolean;
@@ -168,23 +173,67 @@ function FilterChip({
   onLongPress?: () => void;
   /** Active color family — KNOWN goes green, FLAGGED orange (Booth 2026-07-08). */
   activeTint?: ChipTint;
+  /** Locked out (e.g. while the reveal SOLO is engaged — user request 2026-07-18). */
+  disabled?: boolean;
+  /** Render an icon instead of the text label (color passed per active state). */
+  icon?: (color: string) => ReactNode;
 }) {
   const t = CHIP_TINTS[activeTint];
+  const fg = active ? t.fg : '#999999';
   return (
     <Pressable
       onPress={onPress}
       onLongPress={onLongPress}
       delayLongPress={350}
+      disabled={disabled}
       accessibilityRole="button"
-      accessibilityState={{ selected: active }}
+      accessibilityLabel={label}
+      accessibilityState={{ selected: active, disabled }}
+      style={disabled ? { opacity: 0.4 } : undefined}
     >
       <LinearGradient
         colors={active ? t.bg : ['#222222', '#161616']}
         style={[chipStyles.chip, { borderColor: active ? t.border : '#3a3a3a' }]}
       >
-        <Text style={[chipStyles.text, { color: active ? t.fg : '#999999' }]}>{label}</Text>
+        {icon ? icon(fg) : <Text style={[chipStyles.text, { color: fg }]}>{label}</Text>}
       </LinearGradient>
     </Pressable>
+  );
+}
+
+/** Reveal "eye" glyph (the show-password eye) for the SOLO study-view button. */
+function EyeIcon({ color }: { color: string }) {
+  return (
+    <Svg width={22} height={16} viewBox="0 0 22 16">
+      <Ellipse cx={11} cy={8} rx={9.5} ry={6} fill="none" stroke={color} strokeWidth={1.6} />
+      <Circle cx={11} cy={8} r={3} fill={color} />
+    </Svg>
+  );
+}
+
+/** Shuffle glyph — two crossing arrows (replaces the SHUFFLE text). */
+function ShuffleIcon({ color }: { color: string }) {
+  return (
+    <Svg width={22} height={16} viewBox="0 0 21 16">
+      <Path
+        d="M2 4 H6 L15 12 H19"
+        stroke={color}
+        strokeWidth={1.7}
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Path d="M16 9.5 L19 12 L16 14.5" stroke={color} strokeWidth={1.7} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <Path
+        d="M2 12 H6 L15 4 H19"
+        stroke={color}
+        strokeWidth={1.7}
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Path d="M16 1.5 L19 4 L16 6.5" stroke={color} strokeWidth={1.7} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+    </Svg>
   );
 }
 
@@ -204,7 +253,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   // Flag list (Booth 2026-07-18): the ONE shared flagged set (glossary star ↔
   // flashcards flag ↔ Flagged dashboard topic) via features/flags/flaggedStore.
   // Replaces the old per-topic `ape:fcHard:<id>` list.
-  const hard = useFlagged();
+  const bookmarked = useBookmarks();
   // ★ starred = the user's notifications list (Booth 2026-07-18) — its own
   // view chip + popup list alongside flagged.
   const starred = useTermList('starred');
@@ -218,7 +267,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   const [showKnown, setShowKnown] = useState(false);
   // Multi-select difficulty (Booth 2026-07-08): empty set = ALL.
   const [diffSel, setDiffSel] = useState<Set<Difficulty>>(new Set());
-  const [flaggedOnly, setFlaggedOnly] = useState(false);
+  const [bookmarkedOnly, setBookmarkedOnly] = useState(false);
   const [starredOnly, setStarredOnly] = useState(false);
   const [unseenOnly, setUnseenOnly] = useState(false); // cards never viewed / not known
   const [orderMode, setOrderMode] = useState<'az' | 'shuffle'>('az');
@@ -232,6 +281,10 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   // the user actually reviews terms in it (2 term-changes); open+close without
   // reviewing does NOT count.
   const [fullscreen, setFullscreen] = useState(false);
+  // Reveal SOLO (user request 2026-07-18): the red "eye" button opens an inline
+  // study view — term + primary definition shown together. Like a mixer solo:
+  // it overrides the reveal filters and locks the FILTERS button until cleared.
+  const [soloReveal, setSoloReveal] = useState(false);
   // Study Sheet review mode (user request 2026-07-18): a full-screen view that
   // shows the term AND the chosen definition sections together on one screen
   // (no tap-to-flip). Entered from the FILTERS popup.
@@ -243,6 +296,12 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   // list KEY is stored — rows are computed LIVE at render (2026-07-18 fix:
   // snapshot rows went stale the moment a select icon changed a list).
   const [termList, setTermList] = useState<{ title: string; key: TermListSelKey } | null>(null);
+  // Names for the GLOBAL lists (known/flagged/custom): those lists span every
+  // topic, so their members aren't all in THIS deck's `items`. When such a
+  // popup opens we fetch the missing term names by id so the full list shows
+  // (Booth 2026-07-18 fix — the popup used to intersect with the current deck,
+  // hiding terms tagged in other topics). id → term.
+  const [listMembers, setListMembers] = useState<Record<string, string>>({});
   // Tap a highlighted glossary term inside a definition → its own full-screen
   // definition; closing returns to the exact card position (Booth 2026-07-18).
   const [linkedTerm, setLinkedTerm] = useState<GlossaryItem | null>(null);
@@ -277,10 +336,10 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     let alive = true;
     (async () => {
       try {
-        // Flagged pseudo-topic (Booth 2026-07-18): items = the shared flagged
-        // list; no server method row exists, so method-state fetch is skipped.
+        // Custom List pseudo-topic (user request 2026-07-18): items = the ★
+        // starred list; no server method row exists, so method-state is skipped.
         const [fetched, methodState, storedHidden, storedSections, storedShowMedia] = await Promise.all([
-          flaggedMode ? fetchGlossaryItemsByIds([...getFlagged()]) : fetchTopicItems(achievementId),
+          flaggedMode ? fetchGlossaryItemsByIds([...getTermList('starred')]) : fetchTopicItems(achievementId),
           flaggedMode ? Promise.resolve(null) : fetchMethodState(achievementId, 'flashcards'),
           AsyncStorage.getItem(hiddenKey(achievementId)),
           AsyncStorage.getItem(SECTIONS_KEY),
@@ -356,9 +415,9 @@ export function FlashcardsScreen({ navigation, route }: Props) {
       // deck (known-hidden cards excluded). UNSEEN further narrows to cards
       // never viewed (the ones still needed to reach 100%).
       const inView =
-        showKnown || flaggedOnly || starredOnly
+        showKnown || bookmarkedOnly || starredOnly
           ? (showKnown && (hidden.has(it.id) || knownList.has(it.id))) ||
-            (flaggedOnly && hard.has(it.id)) ||
+            (bookmarkedOnly && bookmarked.has(it.id)) ||
             (starredOnly && starred.has(it.id))
           : !hidden.has(it.id);
       return (
@@ -368,7 +427,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
       );
     });
     return orderMode === 'shuffle' ? seededShuffle(filtered, shuffleNonce) : filtered; // items pre-sorted A–Z
-  }, [items, states, hidden, hard, starred, knownList, showKnown, diffSel, flaggedOnly, starredOnly, unseenOnly, orderMode, shuffleNonce]);
+  }, [items, states, hidden, bookmarked, starred, knownList, showKnown, diffSel, bookmarkedOnly, starredOnly, unseenOnly, orderMode, shuffleNonce]);
 
   const card = deck[Math.min(idx, Math.max(0, deck.length - 1))];
 
@@ -385,11 +444,74 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     setTermList({ title, key });
   }, []);
 
+  // Dev Visual Index: auto-open a popup for preview (TEMPORARY).
+  useEffect(() => {
+    if (consumeDevPreview('flashcards:filters')) setFiltersOpen(true);
+    else if (consumeDevPreview('flashcards:termlist')) openTermList('Bookmarks', 'bookmark');
+  }, [openTermList]);
+
+  // Term name lookup for the loaded deck.
+  const itemsById = useMemo(
+    () => new Map((items ?? []).map((it) => [it.id, it.term] as const)),
+    [items],
+  );
+
+  // The union of ids a GLOBAL-list popup should show. known = per-topic
+  // known-hidden cards ∪ the global ✓ list; flagged / custom are their own
+  // global sets. Deck-scoped filters return null (handled below).
+  const globalListIds = useMemo<Set<string> | null>(() => {
+    if (!termList) return null;
+    if (termList.key === 'known') return new Set<string>([...hidden, ...knownList]);
+    if (termList.key === 'bookmark') return new Set<string>(bookmarked);
+    if (termList.key === 'starred') return new Set<string>(starred);
+    return null;
+  }, [termList, hidden, knownList, bookmarked, starred]);
+
+  // When a global-list popup opens, fetch names for members that aren't in the
+  // current deck so the FULL cross-topic list renders.
+  useEffect(() => {
+    if (!globalListIds || globalListIds.size === 0) return;
+    const missing = [...globalListIds].filter((id) => !itemsById.has(id) && !listMembers[id]);
+    if (missing.length === 0) return;
+    let cancelled = false;
+    fetchGlossaryItemsByIds(missing)
+      .then((rows) => {
+        if (cancelled || rows.length === 0) return;
+        setListMembers((prev) => {
+          const next = { ...prev };
+          for (const r of rows) next[r.id] = r.term;
+          return next;
+        });
+      })
+      .catch(() => {
+        /* offline / fetch error → those rows just stay hidden */
+      });
+    return () => {
+      cancelled = true;
+    };
+    // Fetch keyed on which list is open; membership changes while open only add
+    // terms from THIS deck (names already local), so no refetch needed.
+  }, [globalListIds, itemsById]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // LIVE rows for the open popup — recomputed on every list change, so tagging
   // a term with the select icons shows up immediately (Booth 2026-07-18 fix).
   const termListRows = useMemo(() => {
-    if (!termList || !items) return [];
+    if (!termList) return [];
     const key = termList.key;
+
+    // GLOBAL lists (known / flagged / custom) span every topic — build rows
+    // from the full id-set, naming each via the deck or the fetched members.
+    if (globalListIds) {
+      const rows: { id: string; term: string }[] = [];
+      globalListIds.forEach((id) => {
+        const term = itemsById.get(id) ?? listMembers[id];
+        if (term) rows.push({ id, term });
+      });
+      return rows.sort((a, b) => a.term.localeCompare(b.term));
+    }
+
+    // Deck-scoped filters (difficulty / unseen) stay within the loaded deck.
+    if (!items) return [];
     const isUnseen = (id: string) => {
       const s = states[id];
       return !s || ((s.views ?? 0) === 0 && !s.known);
@@ -398,15 +520,10 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     if (key === 'beginner' || key === 'intermediate' || key === 'advanced')
       sel = items.filter((it) => it.difficulty === key);
     else if (key === 'unseen') sel = items.filter((it) => isUnseen(it.id));
-    // KNOWN = per-topic known-hidden cards ∪ globally ✓-marked terms.
-    else if (key === 'known')
-      sel = items.filter((it) => hidden.has(it.id) || knownList.has(it.id));
-    else if (key === 'flagged') sel = items.filter((it) => hard.has(it.id));
-    else if (key === 'starred') sel = items.filter((it) => starred.has(it.id));
     return [...sel]
       .map((it) => ({ id: it.id, term: it.term }))
       .sort((a, b) => a.term.localeCompare(b.term));
-  }, [termList, items, states, hidden, hard, starred, knownList]);
+  }, [termList, globalListIds, itemsById, listMembers, items, states]);
 
   // ---- In-definition glossary term links (Booth 2026-07-18) ----
   // Terms of THIS topic appearing inside a definition are highlighted and
@@ -490,12 +607,12 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     });
   }, []);
 
-  /** Toggle the current card on the SHARED flagged list (Booth 2026-07-18) —
-   *  same list as the Glossary star and the Flagged dashboard topic. */
-  const toggleHard = useCallback(() => {
+  /** Toggle the current card on the SHARED bookmark list (user request
+   *  2026-07-18) — same list as the Glossary bookmark. */
+  const toggleBookmarkTerm = useCallback(() => {
     if (!card) return;
     if (!dwellOk()) return; // 1.5s dwell before tagging (Booth 2026-07-16)
-    toggleFlagged(card.id);
+    toggleBookmark(card.id);
   }, [card]);
 
   // A full round trip = reveal this card's definition, THEN move to another
@@ -552,8 +669,62 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     }
   }, [card, level, reveal, enabledLevels]);
 
-  const stateRef = useRef({ reveal, goCard, level, linkedOpen: false, reviewMode: false });
-  stateRef.current = { reveal, goCard, level, linkedOpen: !!linkedTerm, reviewMode };
+  // CAROUSEL step through [term, ...definitions] with WRAP-AROUND (user request
+  // 2026-07-18): full-screen swipe ↑/↓ never gets stuck at the ends — after the
+  // last definition it loops back to the term and on around.
+  const stepLevel = useCallback(
+    (dir: 1 | -1) => {
+      if (!card) return;
+      const seq = [0, ...enabledLevels];
+      const cur = Math.max(0, seq.indexOf(level));
+      const next = seq[(cur + dir + seq.length) % seq.length];
+      setLevel(next);
+      if (next === 0) {
+        session.current?.touch();
+        return;
+      }
+      // Landing on a definition counts as a reveal (view credit).
+      revealedCurrent.current = true;
+      if (!revealedThisVisit.has(card.id)) {
+        session.current?.addEvent({ item: card.id, kind: 'view' });
+        setRevealedThisVisit((s) => new Set(s).add(card.id));
+        setStates((prev) => ({
+          ...prev,
+          [card.id]: { ...prev[card.id], views: (prev[card.id]?.views ?? 0) + 1 },
+        }));
+      } else {
+        session.current?.touch();
+      }
+    },
+    [card, level, enabledLevels, revealedThisVisit],
+  );
+
+  // Full screen shows the STUDY SHEET when EITHER the sheet was opened directly
+  // (reviewMode) OR the red "open study view" solo is engaged (user request
+  // 2026-07-18) — both view types lock to the open-study mode.
+  // Tap a term in a list popup → open its full definition right there (user
+  // request 2026-07-18). Uses the loaded deck when possible, else fetches it.
+  const openTermFromList = useCallback(
+    async (id: string) => {
+      setTermList(null);
+      const local = (items ?? []).find((it) => it.id === id);
+      if (local) {
+        setLinkedTerm(local);
+        return;
+      }
+      try {
+        const [it] = await fetchGlossaryItemsByIds([id]);
+        if (it) setLinkedTerm(it);
+      } catch {
+        /* offline / fetch error → no-op */
+      }
+    },
+    [items],
+  );
+
+  const studyMode = reviewMode || soloReveal;
+  const stateRef = useRef({ reveal, goCard, stepLevel, level, linkedOpen: false, reviewMode: false });
+  stateRef.current = { reveal, goCard, stepLevel, level, linkedOpen: !!linkedTerm, reviewMode: studyMode };
 
   const pan = useRef(
     PanResponder.create({
@@ -590,17 +761,18 @@ export function FlashcardsScreen({ navigation, route }: Props) {
         if (stateRef.current.linkedOpen) return false;
         const horizontal = Math.abs(g.dx) > 10 && Math.abs(g.dx) > Math.abs(g.dy);
         // In Study Sheet mode the vertical axis belongs to the sheet's own
-        // ScrollView (term + all sections) — never claim it, or the sheet can't
-        // scroll. Only horizontal swipes (change card) are claimed there.
+        // ScrollView. Otherwise vertical swipes CAROUSEL through the definitions
+        // at ANY level (user request 2026-07-18), so claim them regardless of
+        // the current level.
         const vertical =
-          !stateRef.current.reviewMode && Math.abs(g.dy) > 12 && stateRef.current.level === 0;
+          !stateRef.current.reviewMode && Math.abs(g.dy) > 12 && Math.abs(g.dy) >= Math.abs(g.dx);
         return horizontal || vertical;
       },
       onPanResponderRelease: (_e, g) => {
-        const { reveal, goCard, level, reviewMode } = stateRef.current;
-        if (!reviewMode && Math.abs(g.dy) > Math.abs(g.dx) && level === 0) {
-          if (g.dy <= -24) reveal('first');
-          else if (g.dy >= 24) reveal('last');
+        const { stepLevel, goCard, reviewMode } = stateRef.current;
+        if (!reviewMode && Math.abs(g.dy) > Math.abs(g.dx)) {
+          if (g.dy <= -24) stepLevel(1); // ↑ next definition (wraps)
+          else if (g.dy >= 24) stepLevel(-1); // ↓ previous definition (wraps)
         } else if (g.dx <= -30 || (g.dx < -12 && g.vx <= -0.3)) goCard(1);
         else if (g.dx >= 30 || (g.dx > 12 && g.vx >= 0.3)) goCard(-1);
       },
@@ -654,7 +826,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
    *  (other topics / the glossary) are untouched. Earned progress is untouched
    *  — known:false is never emitted. */
   const resetDeck = useCallback(() => {
-    const deckFlagIds = (items ?? []).map((it) => it.id).filter((id) => hard.has(id));
+    const deckFlagIds = (items ?? []).map((it) => it.id).filter((id) => bookmarked.has(id));
     if (hidden.size === 0 && deckFlagIds.length === 0) return;
     Alert.alert(
       'Reset deck?',
@@ -668,12 +840,12 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             const empty = new Set<string>();
             setHidden(empty);
             persistHidden(empty);
-            unflagMany(deckFlagIds);
+            removeBookmarks(deckFlagIds);
           },
         },
       ],
     );
-  }, [hidden, hard, items, persistHidden]);
+  }, [hidden, bookmarked, items, persistHidden]);
 
   // ---- Full-screen guide + shake-to-known (Booth 2026-07-11) ----
   useEffect(() => {
@@ -690,7 +862,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     // DEV BYPASS (Booth 2026-07-18): guide shows every time, counter untouched.
     const alwaysIntro = devBypass('alwaysShowIntros');
     // The guide's "tap to flip" copy doesn't apply to the Study Sheet — skip it there.
-    if (!reviewMode && fsReviewed.current === 2 && (alwaysIntro || fsGuideCount.current < 2)) {
+    if (!studyMode && fsReviewed.current === 2 && (alwaysIntro || fsGuideCount.current < 2)) {
       setShowFsGuide(true);
       if (!alwaysIntro) {
         fsGuideCount.current += 1;
@@ -754,19 +926,35 @@ export function FlashcardsScreen({ navigation, route }: Props) {
           />
           <FilterChip label="A–Z" active={orderMode === 'az'} onPress={() => { setOrderMode('az'); resetToStart(); }} />
           <FilterChip
-            label="SHUFFLE"
+            label="Shuffle"
             active={orderMode === 'shuffle'}
+            icon={(c) => <ShuffleIcon color={c} />}
             onPress={() => {
               setOrderMode('shuffle');
               setShuffleNonce((n) => n + 1); // re-press = fresh shuffle
               resetToStart();
             }}
           />
-          <FilterChip label="RESET DECK" active={false} onPress={resetDeck} />
+          <FilterChip label="RESET" active={false} onPress={resetDeck} />
+          {/* Reveal SOLO (user request 2026-07-18): red eye button — shows the
+              term + primary definition together (open study view). While ON it
+              overrides the reveal filters, so the FILTERS chip is locked out
+              until this is cleared, like a mixer solo. */}
+          <Pressable
+            style={[styles.soloBtn, soloReveal && styles.soloBtnOn]}
+            onPress={() => setSoloReveal((v) => !v)}
+            accessibilityRole="button"
+            accessibilityState={{ selected: soloReveal }}
+            accessibilityLabel={soloReveal ? 'Close study view' : 'Open study view (show definition)'}
+          >
+            {/* Lit red only when active; neutral grey when off (user request 2026-07-18). */}
+            <EyeIcon color={soloReveal ? '#ff6a5e' : '#8a8c90'} />
+          </Pressable>
           <FilterChip
             label="FILTERS"
             active={sections.size < ALL_LEVELS.length || !showMedia}
             activeTint="blue"
+            disabled={soloReveal}
             onPress={() => setFiltersOpen(true)}
           />
           {/* Full-screen mode — icon-only, fits the row (Booth 2026-07-11). */}
@@ -811,14 +999,15 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             onPress={() => { setShowKnown((v) => !v); resetToStart(); }}
             onLongPress={() => openTermList('Known terms', 'known')}
           />
-          {/* Icon-only ⚑ chip (Booth 2026-07-18: "FLAGGED" text made the ★
-              chip wrap to a lower line — icons keep the row on one line). */}
+          {/* Icon-only BOOKMARK chip (user request 2026-07-18 — replaces the ⚑
+              flag). Filters the deck to bookmarked terms; hold shows the list. */}
           <FilterChip
-            label="⚑"
-            active={flaggedOnly}
+            label="Bookmarks"
+            icon={(c) => <BookmarkIcon color={c} filled={bookmarkedOnly} />}
+            active={bookmarkedOnly}
             activeTint="orange"
-            onPress={() => { setFlaggedOnly((v) => !v); resetToStart(); }}
-            onLongPress={() => openTermList('Flagged terms', 'flagged')}
+            onPress={() => { setBookmarkedOnly((v) => !v); resetToStart(); }}
+            onLongPress={() => openTermList('Bookmarks', 'bookmark')}
           />
           {/* ★ = the user's CUSTOM LIST (Booth 2026-07-18 naming). */}
           <FilterChip
@@ -835,32 +1024,48 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             // 850ms hold to open full screen (user request 2026-07-17: +0.5s
             // over the previous 350ms) so a normal read-hold doesn't trigger it.
             <Pressable
-              onPress={onTap}
+              onPress={soloReveal ? undefined : onTap}
               onLongPress={() => setFullscreen(true)}
               delayLongPress={850}
               style={{ flex: 1 }}
             >
-              <View style={styles.card}>
+              <View style={[styles.card, soloReveal && styles.cardSolo]}>
                 <View style={[styles.pilotDot, { left: 7 }]} />
-                {/* Glossary-style flag star on the card (Booth 2026-07-18) —
-                    same shared list as the Glossary and the Flagged topic. */}
+                {/* Bookmark toggle on the card (user request 2026-07-18) —
+                    same shared list as the Glossary bookmark. */}
                 <Pressable
                   style={styles.cardFlag}
-                  onPress={toggleHard}
+                  onPress={toggleBookmarkTerm}
                   hitSlop={10}
                   accessibilityRole="button"
-                  accessibilityLabel={hard.has(card.id) ? 'Remove flag' : 'Flag term'}
+                  accessibilityLabel={bookmarked.has(card.id) ? 'Remove bookmark' : 'Bookmark term'}
                 >
-                  <Text style={[styles.cardFlagStar, hard.has(card.id) && styles.cardFlagStarOn]}>
-                    {hard.has(card.id) ? '★' : '☆'}
-                  </Text>
+                  <BookmarkIcon
+                    color={bookmarked.has(card.id) ? colors.amber : colors.textMuted}
+                    filled={bookmarked.has(card.id)}
+                    size={20}
+                  />
                 </Pressable>
                 {isHazardTerm(card.term) ? (
                   <View style={{ marginBottom: 10 }}>
                     <CautionBadge compact />
                   </View>
                 ) : null}
-                {level === 0 ? (
+                {soloReveal ? (
+                  // Open study view: term + primary DEFINITION together.
+                  <>
+                    <Text style={styles.levelTerm}>{card.term}</Text>
+                    <Text style={styles.levelEyebrow}>{LEVEL_LABELS[0]}</Text>
+                    <ScrollView
+                      style={{ flex: 1 }}
+                      contentContainerStyle={{ paddingBottom: 4 }}
+                      showsVerticalScrollIndicator
+                      nestedScrollEnabled
+                    >
+                      <Text style={styles.levelBody}>{renderLinked(levelText(card, 1), card.id)}</Text>
+                    </ScrollView>
+                  </>
+                ) : level === 0 ? (
                   <>
                     {/* Term image (when the term has one) with the title below
                         it — one group, centered both ways (Booth 2026-07-16). */}
@@ -938,9 +1143,9 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             </View>
             <View style={{ flex: 1 }}>
               <GlassButton
-                label={card && hard.has(card.id) ? 'UNFLAG TERM' : 'FLAG TERM'}
+                label={card && bookmarked.has(card.id) ? 'REMOVE BOOKMARK' : 'BOOKMARK TERM'}
                 tint="orange"
-                onPress={toggleHard}
+                onPress={toggleBookmarkTerm}
                 disabled={!card}
               />
             </View>
@@ -991,8 +1196,8 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                 full-screen view showing the term AND the chosen sections above,
                 together, for reading them side by side (no tap-to-flip). */}
             <View style={styles.optDivider} />
-            <Pressable style={styles.sheetBtn} onPress={openStudySheet} accessibilityRole="button" accessibilityLabel="Open Study Sheet">
-              <Text style={styles.sheetBtnText}>OPEN STUDY SHEET</Text>
+            <Pressable style={styles.sheetBtn} onPress={openStudySheet} accessibilityRole="button" accessibilityLabel="Open Study View">
+              <Text style={styles.sheetBtnText}>OPEN STUDY VIEW</Text>
               <Text style={styles.sheetBtnSub}>See the term and your chosen sections together, full screen</Text>
             </Pressable>
 
@@ -1026,11 +1231,11 @@ export function FlashcardsScreen({ navigation, route }: Props) {
           </Pressable>
           {/* In Study Sheet mode tapping must NOT flip (term + sections are all
               shown at once); swipe still changes card. */}
-          <Pressable onPress={reviewMode ? undefined : onTap} style={styles.fsBody}>
+          <Pressable onPress={studyMode ? undefined : onTap} style={styles.fsBody}>
             {card ? (
-              reviewMode ? (
+              studyMode ? (
                 // STUDY SHEET: term + every chosen section together, scrollable.
-                <ScrollView contentContainerStyle={styles.fsSheetScroll} showsVerticalScrollIndicator={false}>
+                <ScrollView style={styles.fsScrollView} contentContainerStyle={styles.fsSheetScroll} showsVerticalScrollIndicator>
                   {isHazardTerm(card.term) ? (
                     <View style={{ marginBottom: 12, alignSelf: 'stretch' }}>
                       <CautionBadge />
@@ -1063,13 +1268,24 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                   <Text style={styles.fsTerm}>{card.term}</Text>
                 </View>
               ) : (
-                <ScrollView contentContainerStyle={styles.fsScroll} showsVerticalScrollIndicator={false}>
+                <ScrollView style={styles.fsScrollView} contentContainerStyle={styles.fsScroll} showsVerticalScrollIndicator={false}>
                   {isHazardTerm(card.term) ? (
                     <View style={{ marginBottom: 16, alignSelf: 'stretch' }}>
                       <CautionBadge />
                     </View>
                   ) : null}
                   <Text style={styles.fsTermSmall}>{card.term}</Text>
+                  {/* Term image in the full-screen reveal too (user request
+                      2026-07-18) — it only rendered in the study sheet before. */}
+                  {showMedia && mediaByItem[card.id] && !badImages.has(card.id) ? (
+                    <Image
+                      source={{ uri: mediaByItem[card.id] }}
+                      style={styles.fsSheetImage}
+                      resizeMode="contain"
+                      accessibilityLabel={`${card.term} image`}
+                      onError={() => setBadImages((prev) => new Set(prev).add(card.id))}
+                    />
+                  ) : null}
                   <Text style={styles.fsDef}>{renderLinked(levelText(card, level), card.id)}</Text>
                 </ScrollView>
               )
@@ -1088,7 +1304,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             />
           ) : null}
 
-          {showFsGuide && !reviewMode ? (
+          {showFsGuide && !studyMode ? (
             <View style={styles.fsGuideBackdrop}>
               <View style={styles.fsGuideCard}>
                 <Text style={styles.fsGuideTitle}>FULL SCREEN</Text>
@@ -1103,6 +1319,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             </View>
           ) : null}
         </View>
+        <LowLightDim />
       </Modal>
 
       {/* Term list — long-press a filter chip to see everything in that set. */}
@@ -1125,9 +1342,18 @@ export function FlashcardsScreen({ navigation, route }: Props) {
               {termListRows.length > 0 ? (
                 termListRows.map((r) => (
                   <View key={r.id} style={styles.tlRow}>
-                    <Text style={[styles.tlItem, { flex: 1 }]} numberOfLines={1}>
-                      {r.term}
-                    </Text>
+                    {/* Tap the term → open its definition (user request
+                        2026-07-18). */}
+                    <Pressable
+                      style={{ flex: 1 }}
+                      onPress={() => openTermFromList(r.id)}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Open ${r.term}`}
+                    >
+                      <Text style={[styles.tlItem, styles.tlItemLink]} numberOfLines={1}>
+                        {r.term} ›
+                      </Text>
+                    </Pressable>
                     {/* Select icons (Booth 2026-07-18): tag this term into the
                         user's flagged/heart/notify/known lists. */}
                     <TermSelectIcons id={r.id} />
@@ -1142,6 +1368,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             </Pressable>
           </View>
         </View>
+        <LowLightDim />
       </Modal>
 
       {/* Linked-term viewer for the normal (non-fullscreen) card view. */}
@@ -1211,6 +1438,9 @@ const styles = StyleSheet.create({
   fsClose: { position: 'absolute', right: 16, zIndex: 2, padding: 8 },
   fsCloseText: { fontFamily: fonts.oswaldSemiBold, fontSize: 24, color: '#c8c8c8' },
   fsBody: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 28 },
+  // A ScrollView needs a BOUNDED height to scroll — stretch it to fill fsBody
+  // (fix 2026-07-18: long study-view content ran off-screen with no scroll).
+  fsScrollView: { flex: 1, alignSelf: 'stretch', width: '100%' },
   fsScroll: { flexGrow: 1, justifyContent: 'center', paddingVertical: 48, alignItems: 'center' },
   // Study Sheet (review mode): term + every chosen section, top-aligned scroll.
   fsSheetScroll: { paddingVertical: 44, paddingBottom: 72, alignItems: 'center', gap: 18 },
@@ -1227,6 +1457,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#141414',
   },
   fsBtnIcon: { fontSize: 18, color: '#7fbfff' },
+  // Reveal SOLO eye button (user request 2026-07-18) — neutral when OFF, lit
+  // red only when engaged, like an audio solo lighting up.
+  soloBtn: {
+    width: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#3a3a3a',
+    backgroundColor: '#161616',
+  },
+  soloBtnOn: { borderColor: '#ff6a5e', backgroundColor: '#2a1210' },
+  // The card wears a red frame while the reveal solo is engaged.
+  cardSolo: { borderColor: 'rgba(255,106,94,.75)' },
   // First-run guide overlay.
   fsGuideBackdrop: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.72)', alignItems: 'center', justifyContent: 'center', padding: 28 },
   fsGuideCard: { backgroundColor: '#16171a', borderRadius: 14, borderWidth: 1, borderColor: '#2c2d31', padding: 22, gap: 8, width: '100%', maxWidth: 340 },
@@ -1240,6 +1484,8 @@ const styles = StyleSheet.create({
   tlCard: { width: '100%', maxWidth: 400, maxHeight: '78%', backgroundColor: '#161719', borderRadius: 14, borderWidth: 1, borderColor: '#2c2d31', padding: 18 },
   tlTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.4, color: colors.amber, marginBottom: 10 },
   tlItem: { fontFamily: fonts.barlowRegular, fontSize: 15, lineHeight: 26, color: colors.textSecondary },
+  // Tappable term in a list popup (user request 2026-07-18).
+  tlItemLink: { color: '#7fbfff' },
   // Term-list row: name + the ⚑ ♥ ★ ✓ ✗ select icons (Booth 2026-07-18).
   tlRow: {
     flexDirection: 'row',
@@ -1254,7 +1500,7 @@ const styles = StyleSheet.create({
   tlCloseText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.4, color: colors.textSubAlt },
   fsTerm: { fontFamily: fonts.oswaldMedium, fontSize: 36, letterSpacing: 0.5, color: colors.textPrimary, textAlign: 'center' },
   fsTermSmall: { fontFamily: fonts.oswaldMedium, fontSize: 25, color: colors.amber, textAlign: 'center', marginBottom: 16 },
-  fsDef: { fontFamily: fonts.barlowRegular, fontSize: 22, lineHeight: 34, color: colors.textSecondary, textAlign: 'center' },
+  fsDef: { fontFamily: fonts.barlowMedium, fontSize: 22, lineHeight: 34, color: colors.textSecondary, textAlign: 'center' },
   center: { flex: 1, backgroundColor: colors.screenBg, alignItems: 'center', justifyContent: 'center', gap: 16, padding: 24 },
   errorText: { fontFamily: fonts.barlowRegular, fontSize: 14, color: colors.textSub, textAlign: 'center' },
   body: { flex: 1, padding: 16, gap: 12 },

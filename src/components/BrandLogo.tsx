@@ -1,8 +1,8 @@
 /**
  * BrandLogo — app icon tile (design-reference BrandLogo.dc.html).
  * brand-logo.png is 1254×1254; rendered contained at `size`.
- * Note: this export is opaque (black corners) — fine on the near-black
- * surfaces it sits on; request a transparent RGBA version for light surfaces.
+ * The area OUTSIDE the gold rounded frame is transparent (user request
+ * 2026-07-18); everything inside the frame is unchanged. Safe on any surface.
  */
 import { Image, StyleSheet } from 'react-native';
 

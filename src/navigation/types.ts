@@ -63,7 +63,8 @@ export type RootStackParamList = {
   Main: NavigatorScreenParams<MainTabParamList> | undefined;
   // Root-level (bottom nav hidden — S7 is modal per the locked spec):
   Results: ResultsParams;
-  TrophyAnim: { topicName: string; achievementId: string; badgeEarned: boolean };
+  // TrophyAnim (animated reveal) removed — no award animation is used
+  // (user request 2026-07-18); quiz wins route straight to Trophy.
   Trophy: {
     topicName: string;
     achievementId: string;
@@ -76,9 +77,10 @@ export type RootStackParamList = {
    *  Reached from the Profile screen's Institutional Mode row. */
   Institutional: undefined;
   About: undefined; // Credits/About/Contact — Dashboard logo tap (Booth 2026-07-08)
-  /** Awards pages (Certificates / Diplomas / Hall of Fame) — Course Selection
-   *  hero links (Booth 2026-07-15). Bottom nav hidden. */
-  Awards: { category: import('../screens/awards/awardsData').AwardCategory };
+  /** Awards + Curriculum pager (Curriculum · Specialization · Program), three
+   *  side-by-side pages. `category` is the landing page (user request
+   *  2026-07-18). Bottom nav hidden. */
+  Awards: { category: 'curriculum' | import('../screens/awards/awardsData').AwardCategory };
   /** Curriculum & Awards overview — academic goals + programs/awards (user
    *  request 2026-07-17). Modal, reached from Course Selection. */
   Curriculum: undefined;

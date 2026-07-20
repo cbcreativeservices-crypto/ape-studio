@@ -12,7 +12,6 @@ import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
 import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Confetti } from '../../components/Confetti';
 import { StudioButton } from '../../components/StudioButton';
 import { TrophyImage } from '../../components/TrophyImage';
 import { supabase } from '../../lib/supabase';
@@ -70,7 +69,7 @@ export function TrophyScreen({ navigation, route }: Props) {
         <Rect x="0" y="0" width="100%" height="100%" fill="url(#ground)" />
       </Svg>
 
-      <Confetti />
+      {/* Confetti removed — no award animation is used (user request 2026-07-18). */}
 
       <TrophyImage
         iconUrl={iconUrl}

@@ -14,6 +14,7 @@
  */
 export type IntroKey =
   | 'appWelcome' // app welcome after load-in (Home / Course Select)
+  | 'commitment' // "Our Commitment to You" — shown right after appWelcome
   | 'firstUserWelcome' // first-user welcome tutorial (first entry into the app)
   | 'dashboard' // method cards screen
   | 'flashcards'
@@ -36,6 +37,17 @@ export const SCREEN_INTROS: Record<IntroKey, { title: string; body: string; plac
       'Whether you’re a student, musician, engineer, technician, educator, volunteer, or simply curious about audio, we hope this becomes a resource you’ll return to often.\n\n' +
       'Welcome to Pro Audio Training Academy.\n\n' +
       'Let’s get started.',
+  },
+  commitment: {
+    // Final "Our Commitment to You" copy (user-provided 2026-07-18) — shown as
+    // the 2nd popup right after the app welcome.
+    placeholder: false,
+    title: 'Our Commitment to You',
+    body:
+      'We built this academy to be a trusted place to learn.\n\n' +
+      'Our glossary, lessons, and quizzes are created for education—not advertising. Companies cannot pay to influence our definitions, recommendations, or learning content.\n\n' +
+      'You’ll never have to deal with intrusive ads or annoying pop-ups interrupting your learning. Our focus is simple: provide clear, unbiased, and technically accurate audio education that puts students first.\n\n' +
+      'Thank you for learning with us.',
   },
   firstUserWelcome: {
     title: 'First-Time Walkthrough',

@@ -5,33 +5,98 @@
  * request 2026-07-18). Content is data-only (awardsData.ts). Bottom nav hidden;
  * back chevron exits.
  */
-import { useRef, useState } from 'react';
-import { Dimensions, FlatList, Pressable, ScrollView, StyleSheet, Text, View, type ViewToken } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Dimensions, FlatList, Modal, Pressable, ScrollView, StyleSheet, Text, View, type ViewToken } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../theme/tokens';
-import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
-import { awardPage, AWARD_ORDER, type AwardPage, type AwardTier } from './awardsData';
+import { BrandLogo } from '../../components/BrandLogo';
+import { ReturnButton } from '../../components/ReturnButton';
+import { LowLightDim } from '../../features/settings/LowLightLayer';
+import { consumeDevPreview } from '../../features/dev/devPreview';
+import { CurriculumView } from '../curriculum/CurriculumScreen';
+import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { MATRIX_SUBJECTS } from '../../data/courseTopicMatrix';
+import {
+  awardPage,
+  AWARD_ORDER,
+  COREQ_TOPIC_GS,
+  PROGRAM_PATHS,
+  SPECIALIZED_CERTIFICATES,
+  type AwardPage,
+  type AwardTier,
+} from './awardsData';
 import type { RootStackParamList } from '../../navigation/types';
+
+const SPEC_CERT_KEY = 'ape:specCert'; // chosen Specialized Certificate name (Level 1)
+const PROGRAM_PATH_KEY = 'ape:programPath'; // chosen program path name (Level 2)
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Awards'>;
 
 const { width: SCREEN_W } = Dimensions.get('window');
 
-function TierBlock({ tier, accent }: { tier: AwardTier; accent: string }) {
+// Glossary blue — matches the Glossary card on Course Selection (user request
+// 2026-07-18); used for the Specialized Certificate builder + its top button.
+const GLOSSARY_BLUE = '#5bb0ff';
+// Academy amber (the specialization gold) — reused for the Program title +
+// tier frame (user request 2026-07-18).
+const AMBER = '#ffc64d';
+// Academy purple — the Program accent.
+const PURPLE = '#c4a2ff';
+
+// Enrollment CTA copy shown at the bottom of the award pages (user-provided
+// 2026-07-18).
+const ENROLL_COPY =
+  'Enroll now by activating academy mode. Certificate award costs are included with active enrollment. ' +
+  'Earned awards are permanent records on your transcript. Active membership is not required to maintain ' +
+  'your records visible to employers.';
+
+/** The three side-by-side pages, left → right (user request 2026-07-18). */
+const PAGE_ORDER = ['curriculum', 'specialization', 'program'] as const;
+type PageKey = (typeof PAGE_ORDER)[number];
+
+/** Header title + tab tint per page. */
+function pageLabel(key: PageKey): string {
+  return key === 'curriculum' ? 'CURRICULUM' : awardPage(key).label.toUpperCase();
+}
+function pageHeadline(key: PageKey): string {
+  return key === 'curriculum' ? 'CURRICULUM' : awardPage(key).headline;
+}
+function pageTint(key: PageKey): string {
+  return key === 'specialization' ? GLOSSARY_BLUE : key === 'program' ? PURPLE : AMBER;
+}
+
+function TierBlock({
+  tier,
+  accent,
+  builderTint,
+  onBuild,
+  buildSummary,
+}: {
+  tier: AwardTier;
+  /** Accent for the container border + inner elements (group heads, checks). */
+  accent: string;
+  /** Color for the builder button ONLY (kept distinct so the program's
+   *  "choose a path" button stays purple while its frame/text are amber). */
+  builderTint: string;
+  onBuild: (kind: 'specializations' | 'programs') => void;
+  /** Short "you've chosen …" summary for this tier's builder, if any. */
+  buildSummary?: string;
+}) {
   const [policyOpen, setPolicyOpen] = useState(false);
   return (
     <View style={[styles.tier, { borderColor: accent }]}>
-      {tier.level ? <Text style={[styles.tierLevel, { color: accent }]}>{tier.level.toUpperCase()}</Text> : null}
       <Text style={styles.tierTitle}>{tier.title}</Text>
 
-      {/* Pre-reqs and requirements side by side (Booth 2026-07-16). */}
-      {(tier.prerequisite?.length || tier.requirements?.length) ? (
+      {/* CO-requisites and requirements side by side (user request 2026-07-18:
+          these are co-reqs, taken alongside — not pre-reqs). */}
+      {(tier.corequisite?.length || tier.requirements?.length) ? (
         <View style={styles.twoCol}>
-          {tier.prerequisite && tier.prerequisite.length > 0 ? (
+          {tier.corequisite && tier.corequisite.length > 0 ? (
             <View style={[styles.group, styles.col]}>
-              <Text style={[styles.groupHead, { color: accent }]}>PRE-REQUISITES</Text>
-              {tier.prerequisite.map((r) => (
+              <Text style={[styles.groupHead, { color: accent }]}>CO-REQUISITES</Text>
+              {tier.corequisite.map((r) => (
                 <View key={r} style={styles.row}>
                   <Text style={[styles.check, { color: accent }]}>✓</Text>
                   <Text style={styles.rowText}>{r}</Text>
@@ -51,6 +116,31 @@ function TierBlock({ tier, accent }: { tier: AwardTier; accent: string }) {
             </View>
           ) : null}
         </View>
+      ) : null}
+
+      {/* Interactive builder (user request 2026-07-18): choose 3 topics
+          (Level 1) or a program path (Level 2). */}
+      {tier.builder ? (
+        // The builder button keeps its own tint (spec = glossary blue, program
+        // = purple) independent of the amber frame/text (user request 2026-07-18).
+        (() => {
+          const buildTint = builderTint;
+          return (
+            <Pressable
+              style={[styles.buildBtn, { borderColor: buildTint }]}
+              onPress={() => onBuild(tier.builder!)}
+              accessibilityRole="button"
+              accessibilityLabel={
+                tier.builder === 'specializations' ? 'Choose a specialized certificate' : 'Choose a program path'
+              }
+            >
+              <Text style={[styles.buildBtnText, { color: buildTint }]}>
+                {tier.builder === 'specializations' ? 'CHOOSE A SPECIALIZED CERTIFICATE' : 'CHOOSE A PROGRAM PATH'}
+              </Text>
+              <Text style={styles.buildBtnSummary}>{buildSummary ?? 'Tap to choose ›'}</Text>
+            </Pressable>
+          );
+        })()
       ) : null}
 
       {tier.programs && tier.programs.length > 0 ? (
@@ -107,15 +197,53 @@ function TierBlock({ tier, accent }: { tier: AwardTier; accent: string }) {
 }
 
 /** One full-width award page (its own vertical scroll). */
-function AwardPageView({ page }: { page: AwardPage }) {
+function AwardPageView({
+  page,
+  onBuild,
+  onEnroll,
+  summaryForTier,
+}: {
+  page: AwardPage;
+  onBuild: (kind: 'specializations' | 'programs') => void;
+  onEnroll: () => void;
+  summaryForTier: (tier: AwardTier) => string | undefined;
+}) {
   return (
     <View style={{ width: SCREEN_W }}>
-      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+        {page.introTitle ? <Text style={styles.introTitle}>{page.introTitle}</Text> : null}
         <Text style={styles.intro}>{page.intro}</Text>
 
         {page.tiers.map((tier) => (
-          <TierBlock key={tier.title} tier={tier} accent={page.accent} />
+          <TierBlock
+            key={tier.title}
+            tier={tier}
+            // Program frame + inner text are amber; only its "choose a path"
+            // button stays purple. Specialization keeps its gold, blue button
+            // (user request 2026-07-18).
+            accent={page.key === 'program' ? AMBER : page.accent}
+            builderTint={page.key === 'specialization' ? GLOSSARY_BLUE : page.accent}
+            onBuild={onBuild}
+            buildSummary={summaryForTier(tier)}
+          />
         ))}
+
+        {/* Enrollment CTA at the bottom (user request 2026-07-18). */}
+        <Pressable
+          style={styles.enrollBox}
+          onPress={onEnroll}
+          accessibilityRole="button"
+          accessibilityLabel="Enroll — activate academy mode"
+        >
+          <Text style={styles.enrollBody}>{ENROLL_COPY}</Text>
+          {/* Program-only cost requirement (user request 2026-07-18). */}
+          {page.key === 'program' ? (
+            <Text style={styles.enrollNote}>
+              Program Certificate enrollment requires a minimum of 3 months of paid enrollment.
+            </Text>
+          ) : null}
+          <Text style={styles.enrollCta}>ACTIVATE ACADEMY MODE ›</Text>
+        </Pressable>
       </ScrollView>
     </View>
   );
@@ -123,55 +251,122 @@ function AwardPageView({ page }: { page: AwardPage }) {
 
 export function AwardsScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
-  const startIdx = Math.max(0, AWARD_ORDER.indexOf(route.params.category));
+  const startIdx = Math.max(0, PAGE_ORDER.indexOf(route.params.category as PageKey));
   const [idx, setIdx] = useState(startIdx);
-  const listRef = useRef<FlatList<(typeof AWARD_ORDER)[number]>>(null);
+  const listRef = useRef<FlatList<PageKey>>(null);
+
+  // Account signal — anonymous = no account (selections won't be saved).
+  const { entitlement } = useEntitlement();
+  const hasAccount = entitlement !== 'anonymous';
+
+  // Builder selections (user request 2026-07-18): a Specialized Certificate
+  // (Level 1) + an Academy Program Certificate (Level 2) — each chosen from its
+  // catalog. Persisted only when there's an account.
+  const [specCert, setSpecCert] = useState<string | null>(null);
+  const [programPath, setProgramPath] = useState<string | null>(null);
+  const [picker, setPicker] = useState<'specializations' | 'programs' | null>(null);
+  // Accordion — which award is expanded (collapsed by default; tap a name to
+  // reveal its topics). One open at a time per picker (user request 2026-07-18).
+  const [expandedCert, setExpandedCert] = useState<string | null>(null);
+  const [expandedProg, setExpandedProg] = useState<string | null>(null);
+
+  useEffect(() => {
+    AsyncStorage.getItem(SPEC_CERT_KEY).then((v) => {
+      if (v) setSpecCert(v);
+    });
+    AsyncStorage.getItem(PROGRAM_PATH_KEY).then((v) => {
+      if (v) setProgramPath(v);
+    });
+    // Dev Visual Index: auto-open a picker for preview (TEMPORARY).
+    if (consumeDevPreview('awards:specPicker')) setPicker('specializations');
+    else if (consumeDevPreview('awards:programPicker')) setPicker('programs');
+  }, []);
+
+  // Tapping an award name toggles its topics open/closed AND records it as the
+  // current selection.
+  const toggleCert = (name: string) => {
+    setExpandedCert((prev) => (prev === name ? null : name));
+    setSpecCert(name);
+    if (hasAccount) void AsyncStorage.setItem(SPEC_CERT_KEY, name);
+  };
+  const toggleProg = (name: string) => {
+    setExpandedProg((prev) => (prev === name ? null : name));
+    setProgramPath(name);
+    if (hasAccount) void AsyncStorage.setItem(PROGRAM_PATH_KEY, name);
+  };
+
+  // Topic name lookup for the Level-1 summary.
+  const topicNameByGs = useRef(
+    new Map(MATRIX_SUBJECTS.flatMap((s) => s.topics.map((t) => [t.gs, t.name] as const))),
+  ).current;
+  const nameForGs = (gs: number) => topicNameByGs.get(gs) ?? `Topic gs${gs}`;
+
+  const summaryForTier = (tier: AwardTier): string | undefined => {
+    if (tier.builder === 'specializations') return specCert ? `Certificate: ${specCert}` : undefined;
+    if (tier.builder === 'programs') return programPath ? `Path: ${programPath}` : undefined;
+    return undefined;
+  };
 
   const onViewable = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
     const i = viewableItems[0]?.index;
     if (i != null) setIdx(i);
   }).current;
 
-  const current = awardPage(AWARD_ORDER[idx]);
+  const currentKey = PAGE_ORDER[idx];
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      <View style={styles.header}>
-        {/* Clear labeled return button at the top (user request 2026-07-18). */}
-        <Pressable
-          style={styles.backBtn}
-          onPress={() => navigation.goBack()}
-          hitSlop={10}
-          accessibilityRole="button"
-          accessibilityLabel="Back"
-        >
-          <Text style={styles.backBtnText}>‹ BACK</Text>
-        </Pressable>
-        <View style={{ flexShrink: 1 }}>
-          <Text style={[styles.title, { color: current.accent }]}>{current.headline}</Text>
-          <Text style={styles.subtitle}>Pro Audio Training Academy · swipe ‹ ›</Text>
-        </View>
+      {/* Company logo header (user request 2026-07-18). */}
+      <View style={styles.brandRow}>
+        <BrandLogo size={34} />
+        <Text style={styles.brandWordmark}>
+          PRO AUDIO <Text style={styles.brandAccent}>TRAINING ACADEMY</Text>
+        </Text>
       </View>
+      {/* The whole title area (below the logo, above the page buttons) is a
+          return action (user request 2026-07-18); the RETURN button stays. */}
+      <Pressable
+        style={styles.header}
+        onPress={() => navigation.goBack()}
+        accessibilityRole="button"
+        accessibilityLabel="Return"
+      >
+        <View style={{ flex: 1 }}>
+          {/* Titles use amber (user request 2026-07-18); the program's accent
+              stays purple only for the "choose a path" button below. */}
+          <Text style={[styles.title, { color: AMBER }]}>{pageHeadline(currentKey)}</Text>
+        </View>
+        <ReturnButton onPress={() => navigation.goBack()} />
+      </Pressable>
 
-      {/* Page dots — each in its category's accent when active. */}
-      <View style={styles.dots}>
-        {AWARD_ORDER.map((c, i) => {
-          const accent = awardPage(c).accent;
+      {/* Category buttons (user request 2026-07-18): CURRICULUM · SPECIALIZATION
+          · PROGRAM — tap to switch between the three side-by-side pages. */}
+      <View style={styles.tabRow}>
+        {PAGE_ORDER.map((c, i) => {
+          const active = i === idx;
+          const tint = pageTint(c);
           return (
-            <View
+            <Pressable
               key={c}
-              style={[
-                styles.dot,
-                i === idx && { backgroundColor: accent, width: 20 },
-              ]}
-            />
+              onPress={() => {
+                setIdx(i);
+                listRef.current?.scrollToIndex({ index: i, animated: true });
+              }}
+              style={[styles.tabBtn, active && { borderColor: tint, backgroundColor: '#1a1a1a' }]}
+              accessibilityRole="button"
+              accessibilityState={{ selected: active }}
+              accessibilityLabel={pageHeadline(c)}
+            >
+              <Text style={[styles.tabBtnText, active && { color: tint }]}>{pageLabel(c)}</Text>
+            </Pressable>
           );
         })}
       </View>
 
       <FlatList
         ref={listRef}
-        data={AWARD_ORDER}
+        data={PAGE_ORDER as readonly PageKey[]}
+        style={{ flex: 1 }}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
@@ -180,35 +375,234 @@ export function AwardsScreen({ navigation, route }: Props) {
         getItemLayout={(_d, i) => ({ length: SCREEN_W, offset: SCREEN_W * i, index: i })}
         onViewableItemsChanged={onViewable}
         viewabilityConfig={{ itemVisiblePercentThreshold: 60 }}
-        renderItem={({ item }) => <AwardPageView page={awardPage(item)} />}
+        renderItem={({ item }) =>
+          item === 'curriculum' ? (
+            <View style={{ width: SCREEN_W }}>
+              <CurriculumView showBrand={false} />
+            </View>
+          ) : (
+            <AwardPageView
+              page={awardPage(item)}
+              onBuild={setPicker}
+              onEnroll={() => navigation.navigate('Paywall')}
+              summaryForTier={summaryForTier}
+            />
+          )
+        }
       />
 
-      {/* Intro placeholder (Booth 2026-07-18) — always shown in dev bypass. */}
-      <ScreenIntroOverlay introKey="awards" />
+      {/* LEVEL 1 — choose one of the 67 Specialized Certificates (user request
+          2026-07-18): each = the 3 required core courses + 3 specialization
+          topics. */}
+      <Modal visible={picker === 'specializations'} animationType="slide" transparent statusBarTranslucent onRequestClose={() => setPicker(null)}>
+        <View style={[styles.pickerRoot, { paddingTop: insets.top }]}>
+          <View style={styles.brandRow}>
+            <BrandLogo size={30} />
+            <Text style={styles.brandWordmark}>
+              PRO AUDIO <Text style={styles.brandAccent}>TRAINING ACADEMY</Text>
+            </Text>
+          </View>
+          {/* The whole header is the close/return action (user request
+              2026-07-18); the ✕ stays as an affordance. */}
+          <Pressable
+            style={styles.pickerHead}
+            onPress={() => setPicker(null)}
+            accessibilityRole="button"
+            accessibilityLabel="Close and return"
+          >
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.pickerTitle, { color: AMBER }]}>CHOOSE A SPECIALIZED CERTIFICATE</Text>
+              <Text style={styles.pickerSub}>
+                Each Specialized Certificate is the 3 required core courses plus 3 specialization topics.
+                Choose one.
+              </Text>
+            </View>
+            <Text style={styles.pickerClose}>✕</Text>
+          </Pressable>
+          <ScrollView contentContainerStyle={[styles.pickerScroll, { paddingBottom: insets.bottom + 20 }]}>
+            {/* Required core — stated ONCE for all certificates (user request
+                2026-07-18) instead of repeated on every award. */}
+            <View style={styles.coreBanner}>
+              <Text style={styles.coreBannerHead}>REQUIRED CORE · EVERY CERTIFICATE</Text>
+              <Text style={styles.coreBannerText}>{COREQ_TOPIC_GS.map((gs) => nameForGs(gs)).join('  ·  ')}</Text>
+            </View>
+
+            {SPECIALIZED_CERTIFICATES.map((c) => {
+              const open = expandedCert === c.name;
+              return (
+                <View key={c.name} style={[styles.pathCard, open && styles.pathCardGoldOn]}>
+                  <Pressable
+                    style={styles.pathHead}
+                    onPress={() => toggleCert(c.name)}
+                    accessibilityRole="button"
+                    accessibilityState={{ expanded: open }}
+                    accessibilityLabel={c.name}
+                  >
+                    <Text style={[styles.cardChevron, open && { color: '#ffc64d' }]}>{open ? '▾' : '▸'}</Text>
+                    <Text style={[styles.pathName, { color: GLOSSARY_BLUE }]}>{c.name}</Text>
+                  </Pressable>
+
+                  {open ? (
+                    <>
+                      <Text style={styles.specGroupHead}>SPECIALIZATION TOPICS</Text>
+                      {c.specializationTopics.map((gs) => (
+                        <View key={gs} style={styles.pathCourseRow}>
+                          <Text style={styles.specBullet}>•</Text>
+                          <Text style={styles.pathCourseText}>{nameForGs(gs)}</Text>
+                        </View>
+                      ))}
+                    </>
+                  ) : null}
+                </View>
+              );
+            })}
+          </ScrollView>
+          <Pressable style={styles.pickerDone} onPress={() => setPicker(null)}>
+            <Text style={styles.pickerDoneText}>DONE</Text>
+          </Pressable>
+        </View>
+        <LowLightDim />
+      </Modal>
+
+      {/* LEVEL 2 — choose an established Program Path (TBD course sets). */}
+      <Modal visible={picker === 'programs'} animationType="slide" transparent statusBarTranslucent onRequestClose={() => setPicker(null)}>
+        <View style={[styles.pickerRoot, { paddingTop: insets.top }]}>
+          <View style={styles.brandRow}>
+            <BrandLogo size={30} />
+            <Text style={styles.brandWordmark}>
+              PRO AUDIO <Text style={styles.brandAccent}>TRAINING ACADEMY</Text>
+            </Text>
+          </View>
+          {/* The whole header is the close/return action (user request
+              2026-07-18); the ✕ stays as an affordance. */}
+          <Pressable
+            style={styles.pickerHead}
+            onPress={() => setPicker(null)}
+            accessibilityRole="button"
+            accessibilityLabel="Close and return"
+          >
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.pickerTitle, { color: AMBER }]}>CHOOSE A PROGRAM PATH</Text>
+              <Text style={styles.pickerSub}>
+                Each Academy Program Certificate combines the 3 required core courses with a set of related
+                topics. Choose one.
+              </Text>
+            </View>
+            <Text style={styles.pickerClose}>✕</Text>
+          </Pressable>
+          <ScrollView contentContainerStyle={[styles.pickerScroll, { paddingBottom: insets.bottom + 20 }]}>
+            {/* Required core — stated ONCE for all programs (user request
+                2026-07-18) instead of repeated on every award. */}
+            <View style={styles.coreBanner}>
+              <Text style={styles.coreBannerHead}>REQUIRED CORE · EVERY PROGRAM</Text>
+              <Text style={styles.coreBannerText}>{COREQ_TOPIC_GS.map((gs) => nameForGs(gs)).join('  ·  ')}</Text>
+            </View>
+
+            {PROGRAM_PATHS.map((p) => {
+              const open = expandedProg === p.name;
+              const total = COREQ_TOPIC_GS.length + p.requiredTopics.length;
+              return (
+                <View key={p.name} style={[styles.pathCard, open && styles.pathCardOn]}>
+                  <Pressable
+                    style={styles.pathHead}
+                    onPress={() => toggleProg(p.name)}
+                    accessibilityRole="button"
+                    accessibilityState={{ expanded: open }}
+                    accessibilityLabel={p.name}
+                  >
+                    <Text style={[styles.cardChevron, open && { color: '#c4a2ff' }]}>{open ? '▾' : '▸'}</Text>
+                    <View style={{ flex: 1 }}>
+                      <Text style={[styles.pathName, { color: PURPLE }]}>{p.name}</Text>
+                      <Text style={styles.pathMeta}>
+                        {total} required topics
+                        {p.electiveChooseOne?.length ? ' + 1 elective' : ''}
+                      </Text>
+                    </View>
+                  </Pressable>
+
+                  {open ? (
+                    <>
+                      <Text style={styles.pathGroupHead}>REQUIRED TOPICS</Text>
+                      {p.requiredTopics.map((gs) => (
+                        <View key={gs} style={styles.pathCourseRow}>
+                          <Text style={styles.pathBullet}>•</Text>
+                          <Text style={styles.pathCourseText}>{nameForGs(gs)}</Text>
+                        </View>
+                      ))}
+
+                      {p.electiveChooseOne?.length ? (
+                        <>
+                          <Text style={styles.pathGroupHead}>ELECTIVE — CHOOSE ONE</Text>
+                          {p.electiveChooseOne.map((gs) => (
+                            <View key={gs} style={styles.pathCourseRow}>
+                              <Text style={styles.pathBullet}>○</Text>
+                              <Text style={styles.pathCourseText}>{nameForGs(gs)}</Text>
+                            </View>
+                          ))}
+                        </>
+                      ) : null}
+                    </>
+                  ) : null}
+                </View>
+              );
+            })}
+          </ScrollView>
+          <Pressable style={styles.pickerDone} onPress={() => setPicker(null)}>
+            <Text style={styles.pickerDoneText}>DONE</Text>
+          </Pressable>
+        </View>
+        <LowLightDim />
+      </Modal>
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
+  // Company logo header (user request 2026-07-18).
+  brandRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 8 },
+  brandWordmark: { fontFamily: fonts.oswaldBold, fontSize: 14, letterSpacing: 0.6, color: colors.textPrimary },
+  brandAccent: { fontFamily: fonts.oswaldMedium, color: colors.amber },
   header: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 14, paddingBottom: 8 },
-  backBtn: {
-    borderWidth: 1,
-    borderColor: '#3a3a3a',
-    borderRadius: 8,
-    paddingVertical: 6,
-    paddingHorizontal: 11,
-    backgroundColor: '#161616',
-  },
-  backBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1, color: colors.textSecondary },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 22, letterSpacing: 2 },
-  subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
-  dots: { flexDirection: 'row', gap: 6, justifyContent: 'center', paddingBottom: 10 },
-  dot: { width: 7, height: 7, borderRadius: 4, backgroundColor: '#2e2e2e' },
+  // Category buttons (replaced the readout dots, user request 2026-07-18).
+  tabRow: { flexDirection: 'row', gap: 8, justifyContent: 'center', paddingHorizontal: 14, paddingBottom: 10 },
+  tabBtn: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#333',
+    borderRadius: 9,
+    paddingVertical: 8,
+    alignItems: 'center',
+    backgroundColor: '#131313',
+  },
+  tabBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textSub },
 
   scroll: { paddingHorizontal: 18, paddingTop: 6, paddingBottom: 44, gap: 16 },
 
-  intro: { fontFamily: fonts.barlowRegular, fontSize: 16.5, lineHeight: 25, color: colors.textSecondary },
+  introTitle: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 19,
+    letterSpacing: 0.4,
+    color: colors.textPrimary,
+    marginBottom: 4,
+  },
+  intro: { fontFamily: fonts.barlowMedium, fontSize: 16.5, lineHeight: 26, color: colors.textSecondary },
+
+  // Enrollment CTA at the bottom of each award page (user request 2026-07-18).
+  enrollBox: {
+    borderWidth: 1,
+    borderColor: 'rgba(55,224,95,.55)',
+    borderRadius: 12,
+    backgroundColor: '#101512',
+    padding: 16,
+    gap: 10,
+    marginTop: 4,
+  },
+  enrollBody: { fontFamily: fonts.barlowMedium, fontSize: 15, lineHeight: 23, color: colors.textSecondary },
+  enrollNote: { fontFamily: fonts.barlowSemiBold, fontSize: 14, lineHeight: 21, color: '#e0c060' },
+  enrollCta: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.2, color: '#37e05f' },
 
   tier: {
     borderRadius: 14,
@@ -217,7 +611,6 @@ const styles = StyleSheet.create({
     padding: 18,
     gap: 12,
   },
-  tierLevel: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 2 },
   tierTitle: { fontFamily: fonts.oswaldMedium, fontSize: 21, lineHeight: 26, color: colors.textPrimary },
 
   // Pre-reqs | Requirements side by side; each column wraps its own list.
@@ -228,12 +621,12 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', gap: 9, alignItems: 'flex-start' },
   check: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, lineHeight: 23, width: 15 },
   bulletDot: { fontFamily: fonts.barlowRegular, fontSize: 17, lineHeight: 23, width: 15 },
-  rowText: { flex: 1, fontFamily: fonts.barlowRegular, fontSize: 15.5, lineHeight: 23, color: colors.textSecondary },
+  rowText: { flex: 1, fontFamily: fonts.barlowMedium, fontSize: 15.5, lineHeight: 24, color: colors.textSecondary },
 
   note: {
-    fontFamily: fonts.barlowRegular,
-    fontSize: 14,
-    lineHeight: 21,
+    fontFamily: fonts.barlowMedium,
+    fontSize: 14.5,
+    lineHeight: 22,
     color: colors.textSecondary,
     fontStyle: 'italic',
     marginTop: 2,
@@ -244,5 +637,131 @@ const styles = StyleSheet.create({
   policyTitle: { flex: 1, fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.4 },
   policyChevron: { fontFamily: fonts.oswaldSemiBold, fontSize: 13 },
   policyBody: { gap: 9, marginTop: 10 },
-  policyPara: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 21, color: '#c4c4c4' },
+  policyPara: { fontFamily: fonts.barlowMedium, fontSize: 14.5, lineHeight: 22, color: '#c4c4c4' },
+
+  // Interactive builder button + pickers (user request 2026-07-18).
+  buildBtn: {
+    marginTop: 4,
+    borderWidth: 1.5,
+    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    backgroundColor: 'rgba(255,255,255,.03)',
+    gap: 3,
+  },
+  buildBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.8 },
+  buildBtnSummary: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSub },
+
+  pickerRoot: { flex: 1, backgroundColor: '#0d0d0f' },
+  pickerHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#232327',
+  },
+  pickerTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, letterSpacing: 1.2, color: colors.textPrimary },
+  pickerSub: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
+  pickerClose: { fontFamily: fonts.oswaldSemiBold, fontSize: 24, color: colors.textSubAlt },
+  pickerWarn: {
+    fontFamily: fonts.barlowRegular,
+    fontSize: 13,
+    color: '#ffb43a',
+    backgroundColor: '#241a05',
+    paddingVertical: 8,
+    paddingHorizontal: 18,
+  },
+  pickerScroll: { paddingHorizontal: 18, paddingTop: 10, gap: 6 },
+  pickerGroup: { marginTop: 10, gap: 2 },
+  pickerGroupHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.amberLabel, marginBottom: 4 },
+  pickerRow: { flexDirection: 'row', gap: 11, alignItems: 'center', paddingVertical: 7 },
+  checkbox: {
+    width: 22,
+    height: 22,
+    borderRadius: 5,
+    borderWidth: 1.5,
+    borderColor: '#4a4a4a',
+    backgroundColor: '#0e0e0e',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkboxOn: { borderColor: 'rgba(255,198,77,.9)', backgroundColor: 'rgba(255,198,77,.18)' },
+  checkboxDim: { opacity: 0.4 },
+  checkMark: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: '#ffc64d' },
+  pickerRowText: { flex: 1, fontFamily: fonts.barlowRegular, fontSize: 15, color: colors.textSecondary },
+  pickerRowDim: { color: colors.textMuted },
+  pickerDone: {
+    margin: 14,
+    borderRadius: 10,
+    backgroundColor: '#1d1607',
+    borderWidth: 1,
+    borderColor: 'rgba(255,180,0,.55)',
+    paddingVertical: 13,
+    alignItems: 'center',
+  },
+  pickerDoneText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.6, color: colors.amber },
+
+  // Program-path cards (Level 2).
+  pathCard: {
+    borderWidth: 1,
+    borderColor: '#2c2c2c',
+    borderRadius: 10,
+    backgroundColor: '#161616',
+    padding: 14,
+    gap: 6,
+    marginTop: 8,
+  },
+  pathCardOn: { borderColor: 'rgba(196,162,255,.75)', backgroundColor: '#161225' },
+  // Required-core banner shown once atop each picker (user request 2026-07-18).
+  coreBanner: {
+    borderWidth: 1,
+    borderColor: '#3aa657', // green (user request 2026-07-18)
+    borderRadius: 10,
+    backgroundColor: '#101010',
+    padding: 12,
+    gap: 3,
+    marginBottom: 4,
+  },
+  coreBannerHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.6, color: colors.textSub },
+  coreBannerText: { fontFamily: fonts.barlowMedium, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
+  cardChevron: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: colors.textSub, width: 14 },
+  pathCardGoldOn: { borderColor: 'rgba(255,198,77,.75)', backgroundColor: '#221c0d' },
+  radioGoldOn: { borderColor: '#ffc64d' },
+  radioGoldDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#ffc64d' },
+  specGroupHead: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 11,
+    letterSpacing: 1.6,
+    color: '#ffc64d',
+    marginTop: 8,
+    marginBottom: 2,
+  },
+  specBullet: { fontFamily: fonts.barlowRegular, fontSize: 16, lineHeight: 21, color: '#ffc64d', width: 12 },
+  pathHead: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  radio: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#4a4a4a',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  radioOn: { borderColor: '#c4a2ff' },
+  radioDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#c4a2ff' },
+  pathName: { flex: 1, fontFamily: fonts.oswaldMedium, fontSize: 17, color: colors.textPrimary },
+  pathMeta: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, paddingLeft: 2 },
+  pathGroupHead: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 11,
+    letterSpacing: 1.6,
+    color: '#c4a2ff',
+    marginTop: 8,
+    marginBottom: 2,
+  },
+  pathCourseRow: { flexDirection: 'row', gap: 9, alignItems: 'flex-start', paddingLeft: 2 },
+  pathBullet: { fontFamily: fonts.barlowRegular, fontSize: 16, lineHeight: 21, color: '#c4a2ff', width: 12 },
+  pathCourseText: { flex: 1, fontFamily: fonts.barlowMedium, fontSize: 15, lineHeight: 22, color: colors.textSecondary },
 });

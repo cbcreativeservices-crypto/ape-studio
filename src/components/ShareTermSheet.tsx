@@ -11,6 +11,7 @@ import { GlassButton } from './GlassButton';
 import { StudioButton } from './StudioButton';
 import { ShareIcon } from './ShareIcon';
 import { colors, fonts } from '../theme/tokens';
+import { LowLightDim } from '../features/settings/LowLightLayer';
 
 export type ShareTermPayload = { term: string; definition: string };
 
@@ -70,6 +71,7 @@ export function ShareTermSheet({
           </View>
         ) : null}
       </View>
+      <LowLightDim />
     </Modal>
   );
 }

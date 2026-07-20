@@ -288,21 +288,35 @@ function CourseCardView({
   const lockedAccent = isTopicCard ? 'rgba(255,180,0,.6)' : 'rgba(150,90,220,.6)';
   const lockedEyebrow = isTopicCard ? '#ffc64d' : '#c4a2ff';
 
+  // Certificate cards match the Awards colours (user request 2026-07-18):
+  // Professional Certificate (multi-topic) = PURPLE; Specialization Certificate
+  // (single-topic / coming-soon) = BLUE — border + eyebrow, locked or not.
+  const isProfCert = !!pub && pub.topicCount > 1;
+  const isSpecCert = (!!pub && pub.topicCount === 1) || !!coming;
+
   const accent = isGlossary
     ? 'rgba(91,176,255,.65)'
     : // Measurement tools now share the free topics' GREEN (Booth 2026-07-11 #5).
       free || isTools
       ? 'rgba(55,224,95,.6)'
-      : locked
-        ? lockedAccent
-        : 'rgba(255,180,0,.6)';
+      : isProfCert
+        ? 'rgba(196,162,255,.65)'
+        : isSpecCert
+          ? 'rgba(91,176,255,.65)'
+          : locked
+            ? lockedAccent
+            : 'rgba(255,180,0,.6)';
   const eyebrowColor = isGlossary
     ? '#7fd4ff'
     : free || isTools
       ? '#5bff85'
-      : locked
-        ? lockedEyebrow
-        : '#ffc64d';
+      : isProfCert
+        ? '#c4a2ff'
+        : isSpecCert
+          ? '#5bb0ff'
+          : locked
+            ? lockedEyebrow
+            : '#ffc64d';
   // Cards the student can mark into their own deck (academy mode).
   const markable = !!course || !!pub || !!free;
   const eyebrow = isTools
@@ -310,21 +324,16 @@ function CourseCardView({
     : isGlossary
       ? 'FREE INCLUDED'
       : free
-        ? // In academy mode the "FREE TOPIC" label is dropped — everything is
-          // included; that space becomes the "my courses" mark (user request
-          // 2026-07-18).
-          academy
-          ? ''
-          : 'FREE TOPIC'
+        ? 'FREE TOPIC' // keep the free-topic subtitle in every mode (2026-07-18 fix)
         : pub
           ? // Category labels — SINGULAR per card (user request 2026-07-18):
-            // multi-topic = 'Professional Certificate Program'; single-topic =
-            // 'Academy Specialization Certificate'.
+            // multi-topic = 'Professional Certificate'; single-topic =
+            // 'Specialization Certificate'.
             pub.topicCount > 1
-            ? 'Professional Certificate Program'
-            : 'Academy Specialization Certificate'
+            ? 'Professional Certificate'
+            : 'Specialization Certificate'
           : coming
-            ? 'Academy Specialization Certificate'
+            ? 'Specialization Certificate'
             : course!.isPrereq
               ? 'SAFETY'
               : course!.code;
@@ -351,21 +360,19 @@ function CourseCardView({
           grayed-out — no color cast, purple stays on the frame only. Sits above
           the image + its 15% dim, below the text/button (Booth 2026-07-09c). */}
       {locked && <View style={styles.lockTint} />}
-      {/* Academy "my courses" mark (user request 2026-07-18) — tap to add/remove
-          this card from the personal deck; the deck opens on the first marked. */}
+      {/* Academy "my courses" mark (user request 2026-07-18) — icon-only button
+          in the TOP-RIGHT corner (no text, so it never covers the title). Tap
+          to add/remove; selecting jumps the deck to that card's landing spot. */}
       {academy && markable ? (
         <Pressable
           style={[styles.markBtn, marked && styles.markBtnOn]}
           onPress={onToggleMark}
-          hitSlop={8}
+          hitSlop={10}
           accessibilityRole="button"
           accessibilityState={{ selected: marked }}
           accessibilityLabel={marked ? 'Remove from my courses' : 'Add to my courses'}
         >
           <Text style={[styles.markStar, marked && styles.markStarOn]}>{marked ? '★' : '☆'}</Text>
-          <Text style={[styles.markLabel, marked && styles.markLabelOn]}>
-            {marked ? 'MY COURSE' : 'ADD'}
-          </Text>
         </Pressable>
       ) : null}
       <View>
@@ -462,7 +469,9 @@ function CourseCardView({
           <View style={[styles.cardAboveRule, { backgroundColor: eyebrowColor }]} />
         </View>
       ) : null}
-      {cardBody}
+      {/* Glossary card wears a subtle blue outer glow (user request 2026-07-18)
+          — on a wrapper because the card itself clips its own shadow. */}
+      {isGlossary ? <View style={styles.glossaryGlow}>{cardBody}</View> : cardBody}
     </View>
   );
 }
@@ -483,20 +492,32 @@ export function CourseSelectionScreen() {
   // collapse behind the "+ XX other" card), and the carousel opens on the first
   // marked card. `caps.allTopics` is the academy signal.
   const academy = caps.allTopics;
+  // Insertion order matters: the MOST-RECENTLY marked card becomes the landing
+  // card (Set preserves insertion order; we read it newest-first below).
   const [marks, setMarks] = useState<Set<string>>(new Set());
+  const marksRef = useRef(marks);
+  marksRef.current = marks;
+  // When a card is newly marked, jump the carousel to it (its landing spot).
+  const [pendingScrollId, setPendingScrollId] = useState<string | null>(null);
   useEffect(() => {
     AsyncStorage.getItem('ape:myCourseMarks').then((v) => {
       if (v) setMarks(new Set(JSON.parse(v) as string[]));
     });
   }, []);
   const toggleMark = useCallback((id: string) => {
+    const adding = !marksRef.current.has(id);
     setMarks((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (adding) {
+        next.delete(id); // re-add so it lands at the END (newest) of the set
+        next.add(id);
+      } else {
+        next.delete(id);
+      }
       void AsyncStorage.setItem('ape:myCourseMarks', JSON.stringify([...next]));
       return next;
     });
+    if (adding) setPendingScrollId(id); // move the view to it instantly
   }, []);
 
   const load = useCallback(async () => {
@@ -634,7 +655,12 @@ export function CourseSelectionScreen() {
   // from load() is shown as-is (user request 2026-07-18).
   const displayDeck = useMemo<Card[] | null>(() => {
     if (!cards || !academy) return cards;
-    const marked = cards.filter((c) => isMarkable(c) && marks.has(c.id));
+    const byId = new Map(cards.map((c) => [c.id, c] as const));
+    // Newest-marked FIRST so the just-selected card sits at the landing spot.
+    const marked = [...marks]
+      .reverse()
+      .map((id) => byId.get(id))
+      .filter((c): c is Card => !!c && isMarkable(c));
     if (marked.length === 0) return cards;
     const fixed = cards.filter((c) => c.kind === 'tools' || c.kind === 'glossary');
     const shown = marked.reduce((n, c) => n + cardTopicCount(c), 0);
@@ -645,6 +671,17 @@ export function CourseSelectionScreen() {
       ...(other > 0 ? [{ kind: 'more' as const, id: 'more' as const, count: other }] : []),
     ];
   }, [cards, academy, marks]);
+
+  // Selecting a card jumps the view to it instantly (user request 2026-07-18).
+  useEffect(() => {
+    if (!pendingScrollId || !displayDeck) return;
+    const i = displayDeck.findIndex((c) => c.id === pendingScrollId);
+    if (i >= 0) {
+      setActiveIdx(i);
+      listRef.current?.scrollToIndex({ index: i, animated: true });
+    }
+    setPendingScrollId(null);
+  }, [pendingScrollId, displayDeck]);
 
   // Entering HOME fronts the GLOSSARY card by default (Booth 2026-07-11) —
   // BUT when the academy student has marked courses, open on their FIRST marked
@@ -695,7 +732,9 @@ export function CourseSelectionScreen() {
   }, [navigation]);
 
   const openMore = useCallback(() => {
-    (navigation as any).navigate('Curriculum');
+    // Curriculum is the first page of the three-up Awards pager (user request
+    // 2026-07-18): Curriculum · Specialization · Program.
+    (navigation as any).navigate('Awards', { category: 'curriculum' });
   }, [navigation]);
 
   // CM6: open a public course → the commercial dashboard (Study tab), which
@@ -774,7 +813,7 @@ export function CourseSelectionScreen() {
         <View style={styles.awardsRow}>
           <Pressable
             style={styles.awardBtn}
-            onPress={() => (navigation as any).navigate('Curriculum')}
+            onPress={() => (navigation as any).navigate('Awards', { category: 'curriculum' })}
             accessibilityRole="button"
             accessibilityLabel="Curriculum and academic goals"
           >
@@ -860,9 +899,10 @@ export function CourseSelectionScreen() {
         }}
       />
 
-      {/* Intro placeholders (Booth 2026-07-18): app welcome after load-in, then
-          the first-user welcome tutorial. Always shown in dev bypass. */}
-      <ScreenIntroSequence first="appWelcome" second="firstUserWelcome" />
+      {/* App welcome after load-in. The 2nd (first-user) welcome was removed
+          (user request 2026-07-18) — only one welcome shows. */}
+      {/* Welcome, then "Our Commitment to You" (user request 2026-07-18). */}
+      <ScreenIntroSequence first="appWelcome" second="commitment" />
     </View>
   );
 }
@@ -945,6 +985,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   cardImg: { borderRadius: 16 },
+  // Subtle warm-blue outer glow around the Glossary card's blue frame (user
+  // request 2026-07-18) — small radius, low opacity so it only whispers.
+  glossaryGlow: {
+    borderRadius: 16,
+    shadowColor: '#6bb8ff',
+    shadowOpacity: 0.45,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 0 },
+    elevation: 6,
+  },
   cardNoImg: { backgroundColor: '#141414' }, // fallback when a course has no art
   // "+ XX other" tally card (user request 2026-07-18).
   moreCard: {
@@ -958,32 +1008,31 @@ const styles = StyleSheet.create({
   moreLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 2, color: colors.textSecondary },
   moreSub: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.textSub },
   moreCta: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: '#5bb0ff' },
-  // Academy "my courses" mark control (user request 2026-07-18).
+  // Academy "my courses" mark control — icon-only, top-right (user request
+  // 2026-07-18).
   markBtn: {
     position: 'absolute',
     top: 10,
-    left: 10,
+    right: 10,
     zIndex: 3,
-    flexDirection: 'row',
+    // Star 37% smaller (user request 2026-07-18); the button shrinks with it.
+    width: 25,
+    height: 25,
     alignItems: 'center',
-    gap: 5,
-    paddingVertical: 5,
-    paddingHorizontal: 9,
-    borderRadius: 8,
+    justifyContent: 'center',
+    borderRadius: 13,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,.28)',
-    backgroundColor: 'rgba(8,8,10,.7)',
+    borderColor: 'rgba(255,255,255,.3)',
+    backgroundColor: 'rgba(8,8,10,.72)',
   },
-  markBtnOn: { borderColor: 'rgba(255,180,0,.75)', backgroundColor: 'rgba(40,28,4,.82)' },
-  markStar: { fontSize: 15, color: '#d0d0d0' },
+  markBtnOn: { borderColor: 'rgba(255,180,0,.85)', backgroundColor: 'rgba(40,28,4,.85)' },
+  markStar: { fontSize: 12, color: '#d8d8d8' },
   markStarOn: {
     color: colors.amber,
-    textShadowColor: 'rgba(255,180,0,.5)',
-    textShadowRadius: 6,
+    textShadowColor: 'rgba(255,180,0,.55)',
+    textShadowRadius: 5,
     textShadowOffset: { width: 0, height: 0 },
   },
-  markLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1, color: '#d0d0d0' },
-  markLabelOn: { color: colors.amber },
   lockTint: {
     position: 'absolute',
     top: 0,

@@ -7,6 +7,7 @@
 import { Dimensions, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { TrophyImage } from './TrophyImage';
 import { fonts } from '../theme/tokens';
+import { LowLightDim } from '../features/settings/LowLightLayer';
 
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 // Trophy zoom art reduced 23% (Booth 2026-07-11).
@@ -44,6 +45,7 @@ export function TrophyModal({
         {name ? <Text style={styles.name}>{name.toUpperCase()}</Text> : null}
         <Text style={styles.hint}>TAP TO CLOSE</Text>
       </Pressable>
+      <LowLightDim />
     </Modal>
   );
 }

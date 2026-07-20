@@ -11,7 +11,8 @@
  * Search by term · empty: "No results for [filter]" · bottom nav visible.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { FlatList, Image, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type StyleProp, type TextStyle } from 'react-native';
+import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -21,10 +22,11 @@ import { MethodIcon } from '../../components/MethodIcon';
 import { CoachMark } from '../../components/CoachMark';
 import { ShareIcon } from '../../components/ShareIcon';
 import { ShareTermSheet, type ShareTermPayload } from '../../components/ShareTermSheet';
-import { HoldHintPressable } from '../../features/flags/TermSelectIcons';
+import { LowLightDim } from '../../features/settings/LowLightLayer';
+import { BookmarkIcon, HoldHintPressable } from '../../features/flags/TermSelectIcons';
 import { SpeakButton, stopAllSpeech } from '../../components/SpeakButton';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
-import { toggleFlagged, useFlagged } from '../../features/flags/flaggedStore';
+import { toggleBookmark, toggleTermList, useBookmarks, useTermList } from '../../features/flags/flaggedStore';
 import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
 import { COPY } from '../../lib/copy';
 import { useCoachMark } from '../../lib/coachMark';
@@ -32,8 +34,46 @@ import { sendFeedback } from '../../lib/feedback';
 import { isHazardTerm } from '../../lib/hazard';
 import { CautionBadge } from '../../components/CautionBadge';
 import { supabase } from '../../lib/supabase';
+import { SUPABASE_URL } from '../../lib/env';
 import { colors, fonts } from '../../theme/tokens';
 import type { StudyStackParamList } from '../../navigation/types';
+
+/** Small framed-image glyph — marks a term that has a media element. */
+function MediaGlyph({ color = '#7fbfff', size = 17 }: { color?: string; size?: number }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 20 20">
+      <Rect x={2.5} y={3.5} width={15} height={13} rx={2} fill="none" stroke={color} strokeWidth={1.6} />
+      <Circle cx={7} cy={8} r={1.6} fill={color} />
+      <Path d="M4 15 L8.5 10.5 L11.5 13.5 L14 11 L17 14" fill="none" stroke={color} strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" />
+    </Svg>
+  );
+}
+
+/** Load the first image per term across the whole glossary_media table (paged).
+ *  Sparse today (art not fully uploaded), so this is cheap; empty → no icons. */
+async function loadAllGlossaryMedia(): Promise<Record<string, string>> {
+  const out: Record<string, string> = {};
+  try {
+    const PAGE = 1000;
+    for (let from = 0; ; from += PAGE) {
+      const { data, error } = await supabase
+        .from('glossary_media')
+        .select('glossary_id, media_type, url, sort_order')
+        .order('glossary_id')
+        .order('sort_order')
+        .range(from, from + PAGE - 1);
+      if (error || !data || data.length === 0) break;
+      for (const m of data as { glossary_id: string; media_type: string | null; url: string | null }[]) {
+        if (!m.url || (m.media_type && m.media_type !== 'image')) continue;
+        if (!out[m.glossary_id]) out[m.glossary_id] = `${SUPABASE_URL}/storage/v1/object/public/${m.url}`;
+      }
+      if (data.length < PAGE) break;
+    }
+  } catch {
+    /* non-fatal — terms simply render without a media icon */
+  }
+  return out;
+}
 
 type Props = NativeStackScreenProps<StudyStackParamList, 'Glossary'>;
 
@@ -145,7 +185,7 @@ function LinkedText({
   onLink,
 }: {
   text: string;
-  style: object | object[];
+  style: StyleProp<TextStyle>;
   selfId: string;
   index: TermIndex | null;
   onLink: (ids: string[]) => void;
@@ -363,14 +403,35 @@ function TermDetails({
   );
 }
 
-function Chip({ label, active, onPress }: { label: string; active: boolean; onPress: () => void }) {
+function Chip({
+  label,
+  active,
+  onPress,
+  onLongPress,
+  accent = '#ffc64d',
+}: {
+  label: string;
+  active: boolean;
+  onPress: () => void;
+  onLongPress?: () => void;
+  /** Active tint for this chip (default academy amber). */
+  accent?: string;
+}) {
+  const activeBg: [string, string] =
+    accent === '#ffc64d' ? ['#2a2008', '#1a1405'] : ['#232323', '#161616'];
   return (
-    <Pressable onPress={onPress} accessibilityRole="button" accessibilityState={{ selected: active }}>
+    <Pressable
+      onPress={onPress}
+      onLongPress={onLongPress}
+      delayLongPress={350}
+      accessibilityRole="button"
+      accessibilityState={{ selected: active }}
+    >
       <LinearGradient
-        colors={active ? ['#2a2008', '#1a1405'] : ['#222222', '#161616']}
-        style={[styles.chip, { borderColor: active ? 'rgba(255,180,0,.65)' : '#3a3a3a' }]}
+        colors={active ? activeBg : ['#222222', '#161616']}
+        style={[styles.chip, { borderColor: active ? accent : '#3a3a3a' }]}
       >
-        <Text style={[styles.chipText, { color: active ? '#ffc64d' : '#999999' }]}>{label.toUpperCase()}</Text>
+        <Text style={[styles.chipText, { color: active ? accent : '#999999' }]}>{label.toUpperCase()}</Text>
       </LinearGradient>
     </Pressable>
   );
@@ -395,19 +456,31 @@ export function GlossaryScreen({ route, navigation }: Props) {
   // filter in public UI (§1 naming rule). Server owns entitlement; we render.
   const { commercialMode, caps } = useEntitlement();
   const listRef = useRef<FlatList<Entry>>(null);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  // Multiple simultaneous expansions in list view (user request 2026-07-18);
+  // `focusedId` = the most-recently opened term (drives scroll + view-toggle).
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const [focusedId, setFocusedId] = useState<string | null>(null);
   const [details, setDetails] = useState<Record<string, EntryDetail>>({});
+  // Term media (glossary_media): id → first image URL. Drives the media icon
+  // next to a term and the in-definition image (user request 2026-07-18).
+  const [mediaById, setMediaById] = useState<Record<string, string>>({});
+  const [mediaPopup, setMediaPopup] = useState<string | null>(null); // URL shown in the tap-to-close viewer
+  useEffect(() => {
+    loadAllGlossaryMedia().then(setMediaById);
+  }, []);
   // Flagged terms (Booth 2026-07-18): ONE list shared with Flashcards and the
   // custom "Flagged" dashboard topic — lives in features/flags/flaggedStore
   // (same ape:glossaryFavs key, so previously starred terms carry over).
-  const favs = useFlagged();
+  const bookmarks = useBookmarks();
+  // ★ Custom list (starred) — its own per-term toggle (user request 2026-07-18).
+  const starred = useTermList('starred');
   // Self-retiring hint: "click term to expand" — hides after 2 expands, for
   // the first 5 glossary opens app-wide (lib/coachMark.ts).
   const coach = useCoachMark('ape:coach:glossary', 2);
   const [recent, setRecent] = useState<string[]>([]);
 
   const toggleFav = useCallback((id: string) => {
-    toggleFlagged(id);
+    toggleBookmark(id);
   }, []);
 
   // Share a term + its definition — now opens the PREVIEW pop-up first (user
@@ -454,19 +527,28 @@ export function GlossaryScreen({ route, navigation }: Props) {
     [details],
   );
 
+  const expandedIdsRef = useRef(expandedIds);
+  expandedIdsRef.current = expandedIds;
   const toggleExpand = useCallback(
     (id: string) => {
-      if (expandedId === id) {
-        setExpandedId(null);
-        return;
+      const isOpen = expandedIdsRef.current.has(id);
+      setExpandedIds((prev) => {
+        const next = new Set(prev);
+        if (isOpen) next.delete(id); // collapse this one; others stay open
+        else next.add(id);
+        return next;
+      });
+      if (!isOpen) {
+        setFocusedId(id);
+        recordRecent(id); // opening a term counts as "viewed"
+        coach.registerAction(); // each expand advances the "expand ×2" hint
+        void fetchDetails(id);
+      } else if (focusedId === id) {
+        setFocusedId(null);
       }
-      setExpandedId(id);
-      recordRecent(id); // opening a term counts as "viewed"
-      coach.registerAction(); // each expand advances the "expand ×2" hint
-      void fetchDetails(id);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [expandedId, recordRecent, fetchDetails],
+    [focusedId, recordRecent, fetchDetails],
   );
 
   // ---- FEATURE 1 (Booth kickoff 2026-07-10): in-definition cross-links ----
@@ -608,7 +690,26 @@ export function GlossaryScreen({ route, navigation }: Props) {
 
   const selCourse = courses.find((c) => c.id === selCourseId) ?? null;
   const selTopic = topics.find((t) => t.id === selTopicId) ?? null;
-  const topicsAZ = useMemo(() => [...topics].sort((a, b) => a.name.localeCompare(b.name)), [topics]);
+  // DATA ISSUE (confirmed 2026-07-18): the `achievements` table has DUPLICATE
+  // rows — 28 topic names appear twice in the SAME course (2 different ids), and
+  // several hold terms under BOTH ids. The backend is frozen, so we can't merge
+  // them; instead the picker shows each name ONCE and selecting it filters by
+  // the UNION of every id with that name, so no terms are hidden.
+  const topicIdsByName = useMemo(() => {
+    const m = new Map<string, string[]>();
+    for (const t of topics) m.set(t.name, [...(m.get(t.name) ?? []), t.id]);
+    return m;
+  }, [topics]);
+  const topicsAZ = useMemo(() => {
+    const withTerms = new Set(entries.map((e) => e.achievement_id));
+    const byName = new Map<string, TopicRef>();
+    for (const t of [...topics].sort((a, b) => a.name.localeCompare(b.name))) {
+      const existing = byName.get(t.name);
+      // Keep one representative per name, preferring an id that has terms.
+      if (!existing || (!withTerms.has(existing.id) && withTerms.has(t.id))) byName.set(t.name, t);
+    }
+    return [...byName.values()].sort((a, b) => a.name.localeCompare(b.name));
+  }, [topics, entries]);
   // Free (non-academy) commercial users see the topic filter list VEILED: the
   // names are enciphered and the rows don't select — they see the curtain, not
   // the contents (Booth 2026-07-11). Academy + institutional users use it normally.
@@ -633,8 +734,13 @@ export function GlossaryScreen({ route, navigation }: Props) {
   const visible = useMemo(() => {
     let list = entries;
     if (filter === 'course' && selCourseId) list = list.filter((e) => e.course_id === selCourseId);
-    if (filter === 'topic' && selTopicId) list = list.filter((e) => e.achievement_id === selTopicId);
-    if (filter === 'favorites') list = list.filter((e) => favs.has(e.id));
+    if (filter === 'topic' && selTopicId) {
+      // Union of all ids sharing the selected topic's name (dedup — see above).
+      const name = topics.find((t) => t.id === selTopicId)?.name;
+      const ids = new Set(name ? topicIdsByName.get(name) ?? [selTopicId] : [selTopicId]);
+      list = list.filter((e) => e.achievement_id != null && ids.has(e.achievement_id));
+    }
+    if (filter === 'favorites') list = list.filter((e) => bookmarks.has(e.id));
     if (filter === 'recent') {
       const order = new Map(recent.map((id, i) => [id, i]));
       list = list
@@ -644,7 +750,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
     const q = search.trim().toLowerCase();
     if (q) list = list.filter((e) => e.term.toLowerCase().includes(q));
     return list;
-  }, [entries, filter, search, selCourseId, selTopicId, favs, recent]);
+  }, [entries, filter, search, selCourseId, selTopicId, bookmarks, recent, topics, topicIdsByName]);
 
   // Booth ruling: the STUDY nav button must NEVER land on the Glossary. The
   // tab-level navigate can't reliably move a stack that's already focused
@@ -727,14 +833,15 @@ export function GlossaryScreen({ route, navigation }: Props) {
               const top = popupTrail.length ? popupTrail[popupTrail.length - 1].id : null;
               if (top) {
                 setPopupTrail([]);
-                setExpandedId(top);
+                setExpandedIds((prev) => new Set(prev).add(top));
+                setFocusedId(top);
                 void fetchDetails(top);
                 scrollTermToTop(top);
-              } else if (expandedId) {
-                scrollTermToTop(expandedId);
+              } else if (focusedId) {
+                scrollTermToTop(focusedId);
               }
-            } else if (expandedId && popupTrail.length === 0) {
-              openPopupRoot(expandedId); // inline term follows into card view
+            } else if (focusedId && popupTrail.length === 0) {
+              openPopupRoot(focusedId); // inline term follows into card view
             }
           }}
           hitSlop={8}
@@ -760,7 +867,11 @@ export function GlossaryScreen({ route, navigation }: Props) {
               : 'Advanced mode: the official definition shown first and read aloud. Switch to beginner.'
           }
         >
-          <Text style={styles.headerToggleText}>{ttsBeg ? 'BEG' : 'ADV'}</Text>
+          {/* ADV = purple (matches the definition colour), BEG = blue (matches
+              plain English) — user request 2026-07-18. */}
+          <Text style={[styles.headerToggleText, { color: ttsBeg ? '#5bb0ff' : '#c4a2ff' }]}>
+            {ttsBeg ? 'BEG' : 'ADV'}
+          </Text>
         </Pressable>
         <View style={{ flex: 1 }} />
         <Text style={styles.count}>{loading ? '…' : `${visible.length} / ${entries.length}`}</Text>
@@ -829,16 +940,26 @@ export function GlossaryScreen({ route, navigation }: Props) {
           }}
         />
         <Chip
-          label={`★${favs.size > 0 ? ` ${favs.size}` : ''}`}
+          label={`★${bookmarks.size > 0 ? ` ${bookmarks.size}` : ''}`}
           active={filter === 'favorites'}
           onPress={() => {
+            setFilter('favorites');
+            setTopicPickerOpen(false);
+          }}
+          // Hold also opens the list (parity with the Flashcards held chips).
+          onLongPress={() => {
             setFilter('favorites');
             setTopicPickerOpen(false);
           }}
         />
         <Chip
           label="Recent"
+          accent="#37e05f"
           active={filter === 'recent'}
+          onLongPress={() => {
+            setFilter('recent');
+            setTopicPickerOpen(false);
+          }}
           onPress={() => {
             setFilter('recent');
             setTopicPickerOpen(false);
@@ -901,12 +1022,13 @@ export function GlossaryScreen({ route, navigation }: Props) {
           ListEmptyComponent={
             loading ? null : <Text style={styles.empty}>No results for {search.trim() || filterLabel}</Text>
           }
-          extraData={[expandedId, details, cardView, ttsBeg, termIndex]}
+          extraData={[expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById]}
           renderItem={({ item }) => {
             // List view expands INLINE; card view stays compact and opens the
             // popup overlay instead (below).
-            const expanded = !cardView && expandedId === item.id;
+            const expanded = !cardView && expandedIds.has(item.id);
             const d = details[item.id];
+            const mediaUrl = mediaById[item.id];
             return (
               <Pressable
                 style={cardView ? styles.cardItem : [styles.entry, expanded && styles.entryExpanded]}
@@ -915,7 +1037,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
                     openPopupRoot(item.id); // card tap = popup trail root
                     return;
                   }
-                  const willExpand = expandedId !== item.id;
+                  const willExpand = !expandedIds.has(item.id);
                   toggleExpand(item.id);
                   // List mode: justify the just-opened term to the top, right
                   // below the filters, moving earlier terms out of the way
@@ -939,6 +1061,18 @@ export function GlossaryScreen({ route, navigation }: Props) {
                     </Text>
                     {/* Danger flag sits right next to the term (Booth 2026-07-15). */}
                     {isHazardTerm(item.term) ? <CautionBadge iconOnly /> : null}
+                    {/* Media icon (user request 2026-07-18) — a term with art
+                        shows a framed-image glyph; tap → media popup. */}
+                    {mediaUrl ? (
+                      <Pressable
+                        onPress={() => setMediaPopup(mediaUrl)}
+                        hitSlop={10}
+                        accessibilityRole="button"
+                        accessibilityLabel={`View ${item.term} image`}
+                      >
+                        <MediaGlyph />
+                      </Pressable>
+                    ) : null}
                   </View>
                   <View style={styles.entryActions}>
                     <SpeakButton text={speakTextFor(item, ttsBeg)} size={19} />
@@ -953,33 +1087,57 @@ export function GlossaryScreen({ route, navigation }: Props) {
                       <ShareIcon size={18} color={colors.textMuted} />
                     </Pressable>
                     {/* Hold-to-confirm (user request 2026-07-17): holding the
-                        star shows what it does before you commit. */}
+                        bookmark shows what it does before you commit. */}
                     <HoldHintPressable
                       onPress={() => toggleFav(item.id)}
-                      hint={favs.has(item.id) ? '★ Removes from Flagged' : '★ Adds to Flagged'}
-                      selected={favs.has(item.id)}
-                      accessibilityLabel={favs.has(item.id) ? 'Remove flag' : 'Flag term'}
+                      hint={bookmarks.has(item.id) ? 'Removes from Bookmarks' : 'Adds to Bookmarks'}
+                      selected={bookmarks.has(item.id)}
+                      accessibilityLabel={bookmarks.has(item.id) ? 'Remove bookmark' : 'Bookmark term'}
                     >
-                      <Text style={[styles.favStar, favs.has(item.id) && styles.favStarOn]}>
-                        {favs.has(item.id) ? '★' : '☆'}
+                      <BookmarkIcon
+                        color={bookmarks.has(item.id) ? colors.amber : colors.textMuted}
+                        filled={bookmarks.has(item.id)}
+                        size={19}
+                      />
+                    </HoldHintPressable>
+                    {/* ★ Custom list toggle (user request 2026-07-18) — was
+                        missing from the glossary row. */}
+                    <HoldHintPressable
+                      onPress={() => toggleTermList('starred', item.id)}
+                      hint={starred.has(item.id) ? 'Removes from Custom list' : 'Adds to Custom list'}
+                      selected={starred.has(item.id)}
+                      accessibilityLabel={starred.has(item.id) ? 'Remove from custom list' : 'Add to custom list'}
+                    >
+                      <Text style={[styles.customStar, starred.has(item.id) && styles.customStarOn]}>
+                        {starred.has(item.id) ? '★' : '☆'}
                       </Text>
                     </HoldHintPressable>
-                    {!cardView && <Text style={styles.entryChevron}>{expanded ? '▾' : '▸'}</Text>}
+                    {/* Clearer, smaller expand/collapse glyph (user request
+                        2026-07-18) — the tiny ▸ arrowhead read as ambiguous. */}
+                    {!cardView && <Text style={styles.entryExpand}>{expanded ? '−' : '+'}</Text>}
                   </View>
                 </View>
+                {/* When expanded, the term's media image sits right after the
+                    term for identification (user request 2026-07-18). */}
+                {expanded && mediaUrl ? (
+                  <Image source={{ uri: mediaUrl }} style={styles.inlineMedia} resizeMode="contain" />
+                ) : null}
                 {expanded ? (
                   // Feature 1: cross-links live in the EXPANDED definition
                   // (collapsed rows stay plain — the row tap owns them).
                   // BEG order (Booth 2026-07-11): plain-English on top.
                   <LinkedText
                     text={ttsBeg ? item.plain_english || item.definition : item.definition}
-                    style={styles.definition}
+                    style={[styles.definition, ttsBeg && styles.definitionBeg]}
                     selfId={item.id}
                     index={termIndex}
                     onLink={onLinkPress}
                   />
                 ) : (
-                  <Text style={styles.definition} numberOfLines={cardView ? 2 : undefined}>
+                  <Text
+                    style={[styles.definition, ttsBeg && styles.definitionBeg]}
+                    numberOfLines={cardView ? 2 : undefined}
+                  >
                     {ttsBeg ? item.plain_english || item.definition : item.definition}
                   </Text>
                 )}
@@ -1072,8 +1230,22 @@ export function GlossaryScreen({ route, navigation }: Props) {
                         </Pressable>
                         {/* Danger flag next to the term (Booth 2026-07-15). */}
                         {isHazardTerm(item.term) ? <CautionBadge iconOnly /> : null}
+                        {mediaById[item.id] ? (
+                          <Pressable
+                            onPress={() => setMediaPopup(mediaById[item.id])}
+                            hitSlop={10}
+                            accessibilityRole="button"
+                            accessibilityLabel={`View ${item.term} image`}
+                          >
+                            <MediaGlyph />
+                          </Pressable>
+                        ) : null}
                         <SpeakButton text={speakTextFor(item, ttsBeg)} size={24} />
                       </View>
+                      {/* Media image right after the term (user request 2026-07-18). */}
+                      {mediaById[item.id] ? (
+                        <Image source={{ uri: mediaById[item.id] }} style={styles.inlineMedia} resizeMode="contain" />
+                      ) : null}
                       {/* Tap anywhere on the definition/details → go BACK one hop;
                           tapping a term LINK navigates forward instead
                           (onLinkPress sets suppressBack, popupBack skips). */}
@@ -1187,6 +1359,15 @@ export function GlossaryScreen({ route, navigation }: Props) {
       {/* Share preview pop-up (user request 2026-07-17). */}
       <ShareTermSheet payload={sharePayload} onClose={() => setSharePayload(null)} />
 
+      {/* Media viewer (user request 2026-07-18) — tap anywhere to close. */}
+      <Modal visible={!!mediaPopup} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setMediaPopup(null)}>
+        <Pressable style={styles.mediaBackdrop} onPress={() => setMediaPopup(null)} accessibilityRole="button" accessibilityLabel="Close image">
+          {mediaPopup ? <Image source={{ uri: mediaPopup }} style={styles.mediaFull} resizeMode="contain" /> : null}
+          <Text style={styles.mediaHint}>TAP TO CLOSE</Text>
+        </Pressable>
+        <LowLightDim />
+      </Modal>
+
       {/* Glossary intro placeholder (Booth 2026-07-18). */}
       <ScreenIntroOverlay introKey="glossary" />
     </View>
@@ -1296,7 +1477,25 @@ const styles = StyleSheet.create({
     paddingLeft: 2,
   },
   entry: { paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#1a1a1a' },
-  entryExpanded: { backgroundColor: '#141210', marginHorizontal: -8, paddingHorizontal: 8, borderRadius: 8 },
+  // Expanded rows get a BORDER around the whole term+definition (like the card
+  // popup), persisting on scroll; several can be open at once (user request
+  // 2026-07-18).
+  entryExpanded: {
+    backgroundColor: '#141210',
+    marginHorizontal: -8,
+    paddingHorizontal: 8,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255,180,0,.45)',
+    borderBottomColor: 'rgba(255,180,0,.45)',
+    marginVertical: 4,
+  },
+  // In-definition media image, shown right after the term.
+  inlineMedia: { width: '100%', height: 190, borderRadius: 10, marginTop: 8, marginBottom: 4, backgroundColor: '#0d0d0d' },
+  // Full-screen media viewer.
+  mediaBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,.92)', alignItems: 'center', justifyContent: 'center', padding: 16, gap: 16 },
+  mediaFull: { width: '100%', height: '78%' },
+  mediaHint: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 2, color: colors.textSub },
   // Card view
   viewToggleRow: { flexDirection: 'row', justifyContent: 'flex-end' },
   viewToggle: {
@@ -1360,9 +1559,10 @@ const styles = StyleSheet.create({
   // the halfway point between link blue #7fbfff and body text #e6e6e6 so
   // dense text still reads smoothly (Booth 2026-07-10).
   termLink: {
-    color: '#b3d2f2',
+    // One shade darker blue (user request 2026-07-18).
+    color: '#9fbede',
     textDecorationLine: 'underline',
-    textDecorationColor: 'rgba(179,210,242,0.35)',
+    textDecorationColor: 'rgba(159,190,222,0.35)',
   },
   // Disambiguation chooser sheet.
   chooserBackdrop: {
@@ -1417,9 +1617,9 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 0 },
   },
   cardPopupDef: {
-    fontFamily: fonts.barlowRegular,
+    fontFamily: fonts.barlowMedium,
     fontSize: 17,
-    lineHeight: 25,
+    lineHeight: 26,
     color: colors.textSecondary,
     marginTop: 8,
   },
@@ -1435,6 +1635,23 @@ const styles = StyleSheet.create({
   entryTermWrap: { flexDirection: 'row', alignItems: 'center', gap: 8, flexShrink: 1 },
   entryActions: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   entryChevron: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: colors.textSubAlt },
+  // Custom-list star (starred) — amber when on, muted otherwise.
+  customStar: { fontSize: 19, color: colors.textMuted },
+  customStarOn: {
+    color: colors.amber,
+    textShadowColor: 'rgba(255,180,0,.5)',
+    textShadowRadius: 7,
+    textShadowOffset: { width: 0, height: 0 },
+  },
+  // Expand/collapse +/− — deliberately a touch smaller than the action icons.
+  entryExpand: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 15,
+    lineHeight: 18,
+    color: colors.textSubAlt,
+    width: 14,
+    textAlign: 'center',
+  },
   favStar: { fontSize: 18, color: colors.textMuted },
   favStarOn: {
     color: colors.amber,
@@ -1454,11 +1671,14 @@ const styles = StyleSheet.create({
   },
   // Same text style as the detail sections — the primary definition must not
   // read dimmer than the rest (Booth 2026-07-10).
-  definition: { fontFamily: fonts.barlowRegular, fontSize: 16, lineHeight: 24, color: colors.textSecondary, marginTop: 4 },
+  // Regular (technical) definition = PURPLE; plain English = BLUE (user request
+  // 2026-07-18).
+  definition: { fontFamily: fonts.barlowMedium, fontSize: 16, lineHeight: 25, color: '#c4a2ff', marginTop: 4 },
+  definitionBeg: { color: '#5bb0ff' },
   detailBlock: { marginTop: 10, gap: 12 },
   detailSection: { gap: 4 },
   detailEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: colors.amberLabel },
-  detailBody: { fontFamily: fonts.barlowRegular, fontSize: 16, lineHeight: 24, color: colors.textSecondary },
+  detailBody: { fontFamily: fonts.barlowMedium, fontSize: 16, lineHeight: 25, color: colors.textSecondary },
   // "Suggest a correction" affordance at the foot of each detail reveal.
   suggestRow: {
     flexDirection: 'row',

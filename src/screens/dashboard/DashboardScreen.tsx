@@ -57,13 +57,15 @@ import { fetchGlossaryItemsByIds, fetchTopicItems, studyDisplayPct } from '../..
 import {
   FLAGGED_TOPIC_ID,
   FLAGGED_TOPIC_NAME,
-  useFlagged,
+  useTermList,
 } from '../../features/flags/flaggedStore';
 import { TermSelectIcons } from '../../features/flags/TermSelectIcons';
+import { LowLightDim } from '../../features/settings/LowLightLayer';
+import { consumeDevPreview } from '../../features/dev/devPreview';
 import { devBypass } from '../../config/devMode';
 import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
 import { LearningIntroSheet } from '../../features/intro/LearningIntroSheet';
-import { getCourseIntro, getTopicIntro } from '../../features/intro/learningIntros';
+import { getCourseIntro, getTopicIntro, isIntroEmpty } from '../../features/intro/learningIntros';
 import { replayQuizSubmissions } from '../../features/quiz/api';
 import { onStudyProgress } from '../../features/study/sync';
 import { loadAllLocalMethodStates, mergeItemStates } from '../../features/study/localProgress';
@@ -120,10 +122,30 @@ function toTitle(s: string): string {
  * ADA: decorative layered text, so the wrapper carries the label and the copies
  * are hidden from the screen reader (Booth 2026-07-15).
  */
-function EngravedTitle({ text, off = false }: { text: string; off?: boolean }) {
+function EngravedTitle({
+  text,
+  off = false,
+  dark = false,
+  fillColor,
+}: {
+  text: string;
+  off?: boolean;
+  /** Flashcards charcoal panel — use the darker debossed floor. */
+  dark?: boolean;
+  fillColor?: string;
+}) {
   const display = toTitle(text);
+  // DEBOSSED (user request 2026-07-18): the letter floor sits BELOW the surface —
+  // its top-left edge in shadow, its bottom-right lip catching light. `fillColor`
+  // overrides the floor color (the quiz uses BLACK on its cream face).
+  const fillStyle = fillColor
+    ? [styles.engLayer, styles.engFillBase, { color: fillColor }]
+    : dark
+      ? [styles.engLayer, off ? styles.engFillOffDark : styles.engFillDark]
+      : [styles.engLayer, off ? styles.engFillOff : styles.engFill];
   return (
     <View style={styles.engWrap} accessible accessibilityRole="text" accessibilityLabel={text}>
+      {/* top-left edge in shadow (deboss) */}
       <Text
         style={[styles.engLayer, styles.engDark]}
         numberOfLines={1}
@@ -133,6 +155,7 @@ function EngravedTitle({ text, off = false }: { text: string; off?: boolean }) {
       >
         {display}
       </Text>
+      {/* bottom-right lip catching light (deboss) */}
       <Text
         style={[styles.engLayer, styles.engLight]}
         numberOfLines={1}
@@ -142,19 +165,8 @@ function EngravedTitle({ text, off = false }: { text: string; off?: boolean }) {
       >
         {display}
       </Text>
-      {/* Uneven-depth grain: a warm dark copy a hair off-register roughens the
-          cut edges like real tooling (ref photo, Booth 2026-07-15). */}
       <Text
-        style={[styles.engLayer, styles.engGrain]}
-        numberOfLines={1}
-        adjustsFontSizeToFit
-        minimumFontScale={0.7}
-        importantForAccessibility="no-hide-descendants"
-      >
-        {display}
-      </Text>
-      <Text
-        style={[styles.engLayer, off ? styles.engFillOff : styles.engFill]}
+        style={fillStyle}
         numberOfLines={1}
         adjustsFontSizeToFit
         minimumFontScale={0.7}
@@ -205,10 +217,12 @@ export function DashboardScreen() {
   // Rows carry ids so each row's select icons (⚑ ♥ ★ ✓ ✗) can tag the term.
   const [termsOpen, setTermsOpen] = useState(false);
   const [termList, setTermList] = useState<{ id: string; term: string }[] | null>(null);
-  // The same sheet also serves the user's custom Flagged topic card.
+  // The same sheet also serves the user's Custom List card.
   const [termsSource, setTermsSource] = useState<'topic' | 'flagged'>('topic');
-  // The user's own flagged list (shared with Glossary + Flashcards stars).
-  const flagged = useFlagged();
+  // The user's ★ CUSTOM LIST (starred) — built via the ★ icon in the Glossary /
+  // Flashcards term popups (user request 2026-07-18: the card is the star list,
+  // not the ⚑ flagged list).
+  const starred = useTermList('starred');
 
   // Learning intros (user request 2026-07-18): a COURSE intro before beginning
   // a course and a TOPIC intro before beginning each topic. Auto-shown once
@@ -397,27 +411,37 @@ export function DashboardScreen() {
     setTermsOpen(true);
     setTermList(null);
     try {
-      const items = await fetchGlossaryItemsByIds([...flagged]);
+      const items = await fetchGlossaryItemsByIds([...starred]);
       setTermList(items.map((i) => ({ id: i.id, term: i.term }))); // API pre-sorts by term
     } catch {
       setTermList([]);
     }
-  }, [flagged]);
+  }, [starred]);
+
+  // Dev Visual Index: auto-open the Custom List terms popup for preview (TEMPORARY).
+  useEffect(() => {
+    if (consumeDevPreview('dashboard:terms')) void openFlaggedTerms();
+  }, [openFlaggedTerms]);
 
   // Auto-open the not-yet-seen intro (user request 2026-07-18): the COURSE
   // intro first, then the CURRENT TOPIC's — so there is always an intro before
   // beginning. Each is shown once (persisted); re-openable from the card.
   useEffect(() => {
     if (!data || intro) return;
+    // Only AUTO-open an intro that actually has authored content — otherwise an
+    // empty placeholder modal would cover the dashboard and block all input
+    // (bug fix 2026-07-18). The ⓘ buttons still open them on demand.
     const courseKey = `course:${data.currentCourse.id}`;
-    if (!introSeen.has(courseKey)) {
+    if (!introSeen.has(courseKey) && !isIntroEmpty(getCourseIntro(data.currentCourse.name))) {
       setIntro({ kind: 'course', key: courseKey, name: data.currentCourse.name });
       return;
     }
     const t = topics[topicIdx];
     if (t) {
       const topicKey = `topic:${t.id}`;
-      if (!introSeen.has(topicKey)) setIntro({ kind: 'topic', key: topicKey, name: t.name });
+      if (!introSeen.has(topicKey) && !isIntroEmpty(getTopicIntro(t.name))) {
+        setIntro({ kind: 'topic', key: topicKey, name: t.name });
+      }
     }
   }, [data, topics, topicIdx, introSeen, intro]);
 
@@ -433,14 +457,6 @@ export function DashboardScreen() {
       return null;
     });
   }, []);
-
-  const openCourseIntro = useCallback(() => {
-    if (data) setIntro({ kind: 'course', key: `course:${data.currentCourse.id}`, name: data.currentCourse.name });
-  }, [data]);
-  const openTopicIntro = useCallback(() => {
-    const t = topics[topicIdx];
-    if (t) setIntro({ kind: 'topic', key: `topic:${t.id}`, name: t.name });
-  }, [topics, topicIdx]);
 
   if (loading && !data) {
     return (
@@ -610,26 +626,8 @@ export function DashboardScreen() {
           <View style={{ marginTop: 8 }}>
             <LedMeter filled={segmentsForPct(overallPct)} segWidth={8} />
           </View>
-          {/* Intro affordances (user request 2026-07-18) — re-open the topic /
-              course intro any time; they also auto-show once before beginning. */}
-          <View style={styles.introRow}>
-            <Pressable
-              style={styles.introBtn}
-              onPress={openTopicIntro}
-              accessibilityRole="button"
-              accessibilityLabel="Topic intro"
-            >
-              <Text style={styles.introBtnText}>ⓘ TOPIC INTRO</Text>
-            </Pressable>
-            <Pressable
-              style={styles.introBtn}
-              onPress={openCourseIntro}
-              accessibilityRole="button"
-              accessibilityLabel="Course intro"
-            >
-              <Text style={styles.introBtnText}>ⓘ COURSE INTRO</Text>
-            </Pressable>
-          </View>
+          {/* Topic/course intro buttons removed (user request 2026-07-18) — the
+              intros still auto-show once before beginning (when content exists). */}
           {provisional && (
             <Text style={styles.provisionalNote}>
               Provisional access — score 24+ on the previous topic to earn its trophy and continue
@@ -665,7 +663,9 @@ export function DashboardScreen() {
             // Unavailable methods are NOT recessed or dimmed — every slot reads
             // as one mounted 500-series surface (Booth 2026-07-10 #9).
             <View key={m.key}>
-              <ElevatedFrame depressed={complete} contentStyle={styles.methodInner}>
+              {/* Only the Flashcards panel wears the darker charcoal coat (user
+                  request 2026-07-18); every other method keeps the default gray. */}
+              <ElevatedFrame depressed={complete} dark={m.key === 'flashcards'} contentStyle={styles.methodInner}>
                 {/* Layout (Booth 2026-07-09e): a flex LEFT column (title row +
                     a PARTIAL-width LED meter) with a SQUARE action button on the
                     right. The LED no longer spans the full container width. */}
@@ -696,7 +696,7 @@ export function DashboardScreen() {
                         box on the right, whose right edge aligns with the LED
                         meter below it. */}
                     <View style={styles.methodTopRow}>
-                      <EngravedTitle text={m.label} off={!isApplicable} />
+                      <EngravedTitle text={m.label} off={!isApplicable} dark={m.key === 'flashcards'} />
                       <View style={[styles.cutoutMount, styles.pctBox]}>
                         <Text
                           style={[
@@ -765,7 +765,7 @@ export function DashboardScreen() {
             proud, which read as the quiz being recessed below its neighbours.
             No static amber accent — the animated quizPulseBorder is the only
             amber cue, so the scenarios→quiz seam matches every method frame. */}
-        <ElevatedFrame depressed={false} contentStyle={styles.methodInner}>
+        <ElevatedFrame depressed={false} chrome contentStyle={styles.methodInner}>
           {quizState === 'locked' && (
             <Animated.View pointerEvents="none" style={[styles.quizPulseBorder, { opacity: pulseOpacity }]} />
           )}
@@ -812,7 +812,7 @@ export function DashboardScreen() {
                     {/* Engraved title + square status LED box, same as the
                         method panels (Booth 2026-07-11). */}
                     <View style={styles.methodTopRow}>
-                      <EngravedTitle text="TOPIC QUIZ" />
+                      <EngravedTitle text="TOPIC QUIZ" fillColor="#0d0d0d" />
                       <View style={[styles.cutoutMount, styles.pctBox]}>
                         <Text style={[styles.pctDigits, { color: qColor }]} numberOfLines={1}>
                           {qShort}
@@ -873,26 +873,29 @@ export function DashboardScreen() {
             (documented limitation until a backend topic exists). */}
         <View style={styles.flagCard}>
           <Text style={styles.flagStar}>★</Text>
+          {/* HOLD (not tap) opens the list — the title is deduped to one line
+              and the hint says so clearly (user request 2026-07-18). */}
           <Pressable
             style={{ flex: 1 }}
-            onPress={openFlaggedTerms}
+            onLongPress={openFlaggedTerms}
+            delayLongPress={350}
             accessibilityRole="button"
-            accessibilityLabel="List all flagged terms"
+            accessibilityLabel="My custom list"
+            accessibilityHint="Hold to see the full list of terms"
           >
             <Text style={styles.topicEyebrow}>MY CUSTOM LIST</Text>
-            <Text style={styles.topicName}>{FLAGGED_TOPIC_NAME}</Text>
             <Text style={styles.topicMeta}>
-              {flagged.size === 0
+              {starred.size === 0
                 ? 'STAR TERMS IN THE GLOSSARY OR ON FLASHCARDS TO BUILD THIS LIST'
-                : `${flagged.size} TERM${flagged.size === 1 ? '' : 'S'}  ·  TAP FOR LIST`}
+                : `${starred.size} TERM${starred.size === 1 ? '' : 'S'}  ·  HOLD FOR LIST`}
             </Text>
           </Pressable>
           <SwitchButton
             label="Study"
-            variant={flagged.size === 0 ? 'outline' : 'primary'}
+            variant={starred.size === 0 ? 'outline' : 'primary'}
             width={96}
             height={58}
-            disabled={flagged.size === 0}
+            disabled={starred.size === 0}
             onPress={() =>
               navigation.navigate('Flashcards', {
                 achievementId: FLAGGED_TOPIC_ID,
@@ -900,6 +903,11 @@ export function DashboardScreen() {
               })
             }
           />
+          {/* Trailing screw aligns the Study button's right edge with the method
+              rows above (which end in a screw + 3px margin). */}
+          <View style={{ marginLeft: 3 }}>
+            <PanelScrew angle={90} />
+          </View>
         </View>
       </ScrollView>
 
@@ -997,6 +1005,7 @@ export function DashboardScreen() {
             </View>
           </View>
         </View>
+        <LowLightDim />
       </Modal>
 
       {/* Method-cards intro placeholder (Booth 2026-07-18). */}
@@ -1165,18 +1174,6 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 0 },
   },
   pctLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.6, color: colors.textSubAlt },
-  // Intro buttons on the topic card (user request 2026-07-18).
-  introRow: { flexDirection: 'row', gap: 8, marginTop: 12 },
-  introBtn: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: 8,
-    borderRadius: 7,
-    borderWidth: 1,
-    borderColor: 'rgba(255,180,0,.35)',
-    backgroundColor: '#1a1409',
-  },
-  introBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, color: colors.amberLabel },
   provisionalNote: {
     fontFamily: fonts.barlowCondensedMedium,
     fontSize: 13,
@@ -1239,38 +1236,52 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     top: 0,
-    fontFamily: fonts.script,
-    fontSize: 21,
+    // Chakra Petch — squared retro-technical control-panel face (user request
+    // 2026-07-18); tracked out for a labeled-gear look.
+    fontFamily: fonts.panelSemiBold,
+    fontSize: 18,
     lineHeight: 30,
-    // Widened +1.0 (two 0.5 tracking units) per Booth 2026-07-15.
-    letterSpacing: 1,
+    letterSpacing: 1.5,
   },
-  // Deeper 3D engraving (Booth 2026-07-15): a top-LEFT light source — the cut's
-  // top-left edge falls in shadow (dark copy offset up-left), the bottom-right
-  // wall catches light (bright copy offset down-right). Larger offsets + more
-  // contrast read as physically incised, not a flat shadow.
-  engDark: { color: 'rgba(0,0,0,0.98)', transform: [{ translateX: -0.9 }, { translateY: -1.4 }] },
-  engLight: { color: 'rgba(255,255,255,0.45)', transform: [{ translateX: 1.1 }, { translateY: 1.7 }] },
-  // Warm dark under-copy a hair off-register — uneven tooling depth (ref photo).
-  engGrain: {
-    color: 'rgba(38,28,16,0.55)',
-    transform: [{ translateX: 0.5 }, { translateY: 0.4 }],
+  // DEBOSSED (user request 2026-07-18): top-LEFT light source. The cut's
+  // top-left edge falls in shadow (dark copy up-left); the bottom-right lip
+  // catches light (bright copy down-right). The letter FLOOR sits darker than
+  // the (lightened) panel so it reads as pressed IN, not raised.
+  engDark: { color: 'rgba(0,0,0,0.95)', transform: [{ translateX: -0.9 }, { translateY: -1.3 }] },
+  engLight: { color: 'rgba(255,255,255,0.6)', transform: [{ translateX: 1.0 }, { translateY: 1.5 }] },
+  // Base floor style shared by all fills (color set per variant).
+  engFillBase: {
+    textShadowColor: 'rgba(255,255,255,0.5)',
+    textShadowOffset: { width: 0.7, height: 1.2 },
+    textShadowRadius: 1.6,
   },
-  // Letter floor: bare warm metal, brightened for contrast against the gray
-  // coat (Booth 2026-07-15 rev 2) — still bronzed, never paint-white. The
-  // heavier dark shadow deepens the cut so the engraving reads at a glance.
+  // Active method floor on the DEFAULT gray panel — a couple shades under it.
   engFill: {
-    color: '#d8cfba',
-    textShadowColor: 'rgba(0,0,0,0.95)',
-    textShadowOffset: { width: 0.8, height: 1.4 },
-    textShadowRadius: 2.4,
+    color: '#2f3133',
+    textShadowColor: 'rgba(255,255,255,0.5)',
+    textShadowOffset: { width: 0.7, height: 1.2 },
+    textShadowRadius: 1.6,
   },
-  // Inactive method — dimmer, shallower cut.
+  // Inactive method — shallower, lower-contrast cut.
   engFillOff: {
-    color: '#8a867c',
-    textShadowColor: 'rgba(0,0,0,0.7)',
-    textShadowOffset: { width: 0.8, height: 1.4 },
-    textShadowRadius: 2.4,
+    color: '#3f4143',
+    textShadowColor: 'rgba(255,255,255,0.3)',
+    textShadowOffset: { width: 0.7, height: 1.2 },
+    textShadowRadius: 1.4,
+  },
+  // Flashcards-only DARK-panel floors — sit under the charcoal coat so the cut
+  // still reads pressed in (user request 2026-07-18).
+  engFillDark: {
+    color: '#0b0c0e',
+    textShadowColor: 'rgba(255,255,255,0.5)',
+    textShadowOffset: { width: 0.7, height: 1.2 },
+    textShadowRadius: 1.6,
+  },
+  engFillOffDark: {
+    color: '#121315',
+    textShadowColor: 'rgba(255,255,255,0.3)',
+    textShadowOffset: { width: 0.7, height: 1.2 },
+    textShadowRadius: 1.4,
   },
   // Small SQUARE recessed LED box holding just the % (or quiz status).
   pctBox: {

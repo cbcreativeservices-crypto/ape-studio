@@ -79,10 +79,13 @@ export const fonts = {
   // cursive.
   cinzelSemiBold: 'Cinzel_600SemiBold',
   cinzelBold: 'Cinzel_700Bold',
-  // Yellowtail — bold retro badge script for the engraved method legends
-  // (Booth 2026-07-15): the closest FREE (OFL) face to Magneto's chrome-emblem
-  // look (Magneto itself is commercial and cannot be bundled).
+  // Yellowtail — bold retro badge script (legacy engraved legend look).
   script: 'Yellowtail_400Regular',
+  // Chakra Petch — squared retro-technical / control-panel face used for the
+  // debossed method-card legends (user request 2026-07-18). SemiBold cuts a
+  // crisp deboss on the panels.
+  panelSemiBold: 'ChakraPetch_600SemiBold',
+  panelBold: 'ChakraPetch_700Bold',
 } as const;
 
 /** Map passed to useFonts(). */
@@ -100,6 +103,8 @@ export const fontAssets = {
   Cinzel_600SemiBold: require('@expo-google-fonts/cinzel/600SemiBold/Cinzel_600SemiBold.ttf'),
   Cinzel_700Bold: require('@expo-google-fonts/cinzel/700Bold/Cinzel_700Bold.ttf'),
   Yellowtail_400Regular: require('@expo-google-fonts/yellowtail/400Regular/Yellowtail_400Regular.ttf'),
+  ChakraPetch_600SemiBold: require('@expo-google-fonts/chakra-petch/600SemiBold/ChakraPetch_600SemiBold.ttf'),
+  ChakraPetch_700Bold: require('@expo-google-fonts/chakra-petch/700Bold/ChakraPetch_700Bold.ttf'),
 };
 
 /**

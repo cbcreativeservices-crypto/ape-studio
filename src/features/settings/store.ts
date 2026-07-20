@@ -28,11 +28,18 @@ export type LocalSettings = {
   colorBlind: ColorBlindMode;
   reduceAnimations: boolean;
   haptics: boolean;
-  // Daily Term push — one glossary term delivered per day (Booth 2026-07-11 #3).
-  // Device-local intent flag; notification_preferences (server) is frozen, so
-  // this lives in AsyncStorage. Actual scheduling wires with expo-notifications
-  // (not yet installed) — ROUTE TO GOVERNANCE for the delivery job.
-  dailyTerms: boolean;
+  // COMMERCIAL notification set (user request 2026-07-18). Device-local intent
+  // flags — notification_preferences (server) is FROZEN and has no columns for
+  // these, so they live in AsyncStorage. Actual scheduling wires with
+  // expo-notifications (not yet installed) — ROUTE TO GOVERNANCE for the jobs.
+  notifyDailyStudy: boolean; // 1 — daily study reminders
+  notifyContinue: boolean; // 2 — "continue where you left off" after N idle days
+  continueDays: number; // 2's threshold — days of no use before it triggers
+  notifyNewTerms: boolean; // 3 — new term additions
+  dailyTerms: boolean; // 4 — daily audio terms
+  notifyDailyDefinition: boolean; // 5 — daily audio definitions (guess the term)
+  notifyWeeklySummary: boolean; // 6 — weekly learning summaries
+  notifyCertProgress: boolean; // 7 — weekly certificate progress updates
 };
 
 export const DEFAULT_LOCAL_SETTINGS: LocalSettings = {
@@ -42,8 +49,31 @@ export const DEFAULT_LOCAL_SETTINGS: LocalSettings = {
   colorBlind: 'off',
   reduceAnimations: false,
   haptics: true,
+  notifyDailyStudy: false,
+  notifyContinue: false,
+  continueDays: 3,
+  notifyNewTerms: false,
   dailyTerms: false,
+  notifyDailyDefinition: false,
+  notifyWeeklySummary: false,
+  notifyCertProgress: false,
 };
+
+/** The 7 commercial notification toggles (device-local), in display order.
+ *  `continueDays` (the threshold for #2) is edited by its own stepper. */
+export const COMMERCIAL_NOTIFY_ROWS: {
+  key: 'notifyDailyStudy' | 'notifyContinue' | 'notifyNewTerms' | 'dailyTerms' | 'notifyDailyDefinition' | 'notifyWeeklySummary' | 'notifyCertProgress';
+  label: string;
+  hint: string;
+}[] = [
+  { key: 'notifyDailyStudy', label: 'Daily study reminders', hint: 'A nudge to study each day.' },
+  { key: 'notifyContinue', label: 'Continue where you left off', hint: 'Remind me after a stretch of no use.' },
+  { key: 'notifyNewTerms', label: 'New term additions', hint: 'When new terms are added to the glossary.' },
+  { key: 'dailyTerms', label: 'Daily audio terms', hint: 'One audio term delivered each day.' },
+  { key: 'notifyDailyDefinition', label: 'Daily audio definitions', hint: 'A definition to guess the term from.' },
+  { key: 'notifyWeeklySummary', label: 'Weekly learning summaries', hint: 'A recap of your week.' },
+  { key: 'notifyCertProgress', label: 'Weekly certificate progress', hint: 'What you finished, what is next, and how far you have to go.' },
+];
 
 const KEY = 'ape:settings';
 
@@ -81,13 +111,12 @@ export type NotificationPrefs = {
   notify_method_complete: boolean;
 };
 
+// Server-backed transport toggles ONLY. The event toggles (Trophy/Badge/Quiz/
+// Method) are removed from the UI — not valid in the commercial version (user
+// request 2026-07-18); their frozen columns simply go unused.
 export const NOTIFICATION_ROWS: { key: keyof NotificationPrefs; label: string }[] = [
-  { key: 'push_enabled', label: 'Push' },
+  { key: 'push_enabled', label: 'Push notifications' },
   { key: 'email_enabled', label: 'Email' },
-  { key: 'notify_trophy', label: 'Trophy Earned' },
-  { key: 'notify_badge', label: 'Badge Earned' },
-  { key: 'notify_quiz_unlock', label: 'Quiz Unlocked' },
-  { key: 'notify_method_complete', label: 'Method Complete' },
 ];
 
 export async function fetchNotificationPrefs(): Promise<NotificationPrefs | null> {

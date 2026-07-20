@@ -126,10 +126,13 @@ export function QuizScreen({ navigation, route }: Props) {
         // unhandled-action redbox (Booth 2026-07-09p).
         if (navigation.canGoBack()) navigation.popToTop();
         if (result.outcome === 'full_pass' && !payload.is_practice) {
-          (navigation as any).navigate('TrophyAnim', {
+          // Straight to the Trophy result — the animated reveal (TrophyAnim) is
+          // removed; no award animation is used (user request 2026-07-18).
+          (navigation as any).navigate('Trophy', {
             topicName,
             achievementId,
             badgeEarned: result.badge_earned,
+            entrySource: 'quiz_win',
           });
         } else {
           (navigation as any).navigate('Results', {

@@ -22,11 +22,25 @@ const RAW = matrix as {
   subjects: MatrixSubject[];
 };
 
+/** Strip a "(… card)" authoring annotation (e.g. "(commercial card)") from a
+ *  display name — an internal tag never meant for users (user request
+ *  2026-07-18). */
+export function cleanTopicName(name: string): string {
+  return name.replace(/\s*\([^)]*\bcard\b[^)]*\)/gi, '').trim();
+}
+
 /** Subjects in matrix order, each with its topics in topic order. */
 export const MATRIX_SUBJECTS: MatrixSubject[] = RAW.subjects
   .slice()
   .sort((a, b) => a.order - b.order)
-  .map((s) => ({ ...s, topics: s.topics.slice().sort((a, b) => a.order - b.order) }));
+  .map((s) => ({
+    ...s,
+    name: cleanTopicName(s.name),
+    topics: s.topics
+      .slice()
+      .sort((a, b) => a.order - b.order)
+      .map((t) => ({ ...t, name: cleanTopicName(t.name) })),
+  }));
 
 export const MATRIX_VERSION = RAW.version;
 export const MATRIX_SUBJECT_COUNT = MATRIX_SUBJECTS.length;
