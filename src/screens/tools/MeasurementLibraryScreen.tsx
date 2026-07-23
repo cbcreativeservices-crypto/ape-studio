@@ -1,0 +1,420 @@
+/**
+ * MeasurementLibraryScreen — the shared Saved Measurement Library (Phase 2,
+ * spec of record docs/APE_AUDIO_TOOLS_SPEC_2026_07_23.md §7) + A/B Compare
+ * (§8). Device-local records; every row expands to the FULL measurement
+ * context (spec §5: always disclose measurement context) — tool, time, input
+ * device, calibration, sample rate, settings, warnings, quality state.
+ *
+ * Compare: pick any two records → side-by-side values plus the
+ * compare-compatibility report's plain-language warnings. Only a tool-type
+ * mismatch hard-blocks; differing conditions WARN (spec §8).
+ *
+ * FlatList + memoized rows (repo convention; the store caps at 200 records).
+ * Row a11y: the press target wraps only the row header, so the expanded
+ * context text and the DELETE control stay reachable to screen readers
+ * (review 2026-07-23).
+ *
+ * Free to use (like the tools themselves) — Learn/Demo tutorials are the
+ * Academy unlock, measurement usage is not (ruling 2026-07-23).
+ */
+import { memo, useCallback, useMemo, useState } from 'react';
+import { Alert, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { compareCompatibility } from '../../features/tools/measure/compare';
+import { deleteMeasurement, useMeasurements } from '../../features/tools/measure/measurementStore';
+import { QUALITY_COLOR, QUALITY_LABEL } from '../../features/tools/measure/quality';
+import { WARNING_INFO, type SavedMeasurement } from '../../features/tools/measure/types';
+import { colors, fonts } from '../../theme/tokens';
+import { toolByKey } from './toolsData';
+import type { RootStackParamList } from '../../navigation/types';
+
+type Props = NativeStackScreenProps<RootStackParamList, 'ToolLibrary'>;
+
+const fmtHz = (hz: number) => (hz < 10 ? hz.toFixed(2) : hz.toFixed(1));
+const fmtWhen = (iso: string) => {
+  const d = new Date(iso);
+  return `${d.toLocaleDateString()} ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+};
+
+function QualityChip({ m }: { m: SavedMeasurement }) {
+  const c = QUALITY_COLOR[m.quality_state];
+  return (
+    <View style={[styles.qChip, { borderColor: c + 'aa' }]}>
+      <Text style={[styles.qChipText, { color: c }]}>{QUALITY_LABEL[m.quality_state]}</Text>
+    </View>
+  );
+}
+
+/** Payload summary lines for the expanded row + compare columns. */
+function payloadLines(m: SavedMeasurement): { label: string; value: string }[] {
+  const p = m.data_payload;
+  if (p.kind === 'tap_log') {
+    return [
+      { label: 'FREQUENCY', value: `${fmtHz(p.freq)} Hz` },
+      { label: 'PERIOD', value: `${Math.round(p.periodMs)} ms` },
+      { label: 'BPM', value: `${Math.round(p.bpm)}` },
+      { label: 'STABILITY', value: p.stabilityLabel ? `${p.stabilityLabel} (${p.stabilityPct}%)` : '—' },
+      { label: 'MIN / MAX', value: p.minFreq != null && p.maxFreq != null ? `${fmtHz(p.minFreq)} – ${fmtHz(p.maxFreq)} Hz` : '—' },
+      { label: 'INTERVALS', value: `${p.intervals}` },
+    ];
+  }
+  // Engine-tool payloads land with the native engine — planned types only today.
+  return [{ label: 'DATA', value: p.kind.replace(/_/g, ' ') }];
+}
+
+function ContextBlock({ m }: { m: SavedMeasurement }) {
+  const settings = Object.entries(m.measurement_settings);
+  return (
+    <View style={styles.ctx}>
+      {payloadLines(m).map((l) => (
+        <View key={l.label} style={styles.ctxRow}>
+          <Text style={styles.ctxKey}>{l.label}</Text>
+          <Text style={styles.ctxVal}>{l.value}</Text>
+        </View>
+      ))}
+      <View style={styles.ctxDivider} />
+      {/* Full context disclosure (spec §5/§7). */}
+      <View style={styles.ctxRow}>
+        <Text style={styles.ctxKey}>TAKEN</Text>
+        <Text style={styles.ctxVal}>{fmtWhen(m.created_at)}</Text>
+      </View>
+      <View style={styles.ctxRow}>
+        <Text style={styles.ctxKey}>INPUT</Text>
+        <Text style={styles.ctxVal}>{m.input_device}</Text>
+      </View>
+      <View style={styles.ctxRow}>
+        <Text style={styles.ctxKey}>CALIBRATION</Text>
+        <Text style={styles.ctxVal}>{m.calibration_status.replace(/_/g, ' ')}</Text>
+      </View>
+      <View style={styles.ctxRow}>
+        <Text style={styles.ctxKey}>SAMPLE RATE</Text>
+        <Text style={styles.ctxVal}>{m.sample_rate != null ? `${m.sample_rate} Hz` : 'n/a'}</Text>
+      </View>
+      {settings.map(([k, v]) => (
+        <View key={k} style={styles.ctxRow}>
+          <Text style={styles.ctxKey}>{k.replace(/_/g, ' ').toUpperCase()}</Text>
+          <Text style={styles.ctxVal}>{String(v ?? '—')}</Text>
+        </View>
+      ))}
+      {m.warning_flags.length > 0 && (
+        <>
+          <View style={styles.ctxDivider} />
+          {m.warning_flags.map((f) => {
+            const w = WARNING_INFO[f];
+            return (
+              <Text key={f} style={styles.ctxWarn}>
+                ⚠ {w ? `${w.message} ${w.hint}` : f}
+              </Text>
+            );
+          })}
+        </>
+      )}
+      {m.notes ? <Text style={styles.ctxNotes}>{m.notes}</Text> : null}
+    </View>
+  );
+}
+
+/** One library row — memoized; the press target is ONLY the header strip so
+ *  the expanded context + DELETE stay reachable to screen readers. */
+const Row = memo(function Row({
+  m,
+  showTool,
+  isOpen,
+  isPicked,
+  compareMode,
+  onPress,
+  onDelete,
+}: {
+  m: SavedMeasurement;
+  showTool: boolean;
+  isOpen: boolean;
+  isPicked: boolean;
+  compareMode: boolean;
+  onPress: (m: SavedMeasurement) => void;
+  onDelete: (m: SavedMeasurement) => void;
+}) {
+  return (
+    <View style={[styles.row, isPicked && styles.rowPicked]}>
+      <Pressable
+        style={styles.rowTop}
+        onPress={() => onPress(m)}
+        accessibilityRole="button"
+        accessibilityState={compareMode ? { selected: isPicked } : { expanded: isOpen }}
+        accessibilityLabel={m.title}
+      >
+        {compareMode && (
+          <View style={[styles.pickBox, isPicked && styles.pickBoxOn]}>
+            {isPicked ? <Text style={styles.pickMark}>✓</Text> : null}
+          </View>
+        )}
+        <View style={{ flex: 1 }}>
+          <Text style={styles.rowTitle} numberOfLines={1}>
+            {m.title}
+          </Text>
+          <Text style={styles.rowMeta}>
+            {showTool ? `${toolByKey(m.tool_type).name} · ` : ''}
+            {fmtWhen(m.created_at)}
+          </Text>
+        </View>
+        <QualityChip m={m} />
+      </Pressable>
+      {isOpen && !compareMode && (
+        <>
+          <ContextBlock m={m} />
+          <Pressable
+            style={styles.deleteBtn}
+            onPress={() => onDelete(m)}
+            accessibilityRole="button"
+            accessibilityLabel={`Delete ${m.title}`}
+          >
+            <Text style={styles.deleteBtnText}>DELETE</Text>
+          </Pressable>
+        </>
+      )}
+    </View>
+  );
+});
+
+export function MeasurementLibraryScreen({ navigation, route }: Props) {
+  const insets = useSafeAreaInsets();
+  const toolKey = route.params?.toolKey;
+  const all = useMeasurements(toolKey);
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [compareMode, setCompareMode] = useState(false);
+  const [picked, setPicked] = useState<string[]>([]);
+
+  const pickedMs = useMemo(
+    () => picked.map((id) => all.find((m) => m.id === id)).filter(Boolean) as SavedMeasurement[],
+    [picked, all],
+  );
+  const report = pickedMs.length === 2 ? compareCompatibility(pickedMs[0], pickedMs[1]) : null;
+
+  const onRowPress = useCallback(
+    (m: SavedMeasurement) => {
+      if (compareMode) {
+        setPicked((prev) =>
+          prev.includes(m.id) ? prev.filter((x) => x !== m.id) : prev.length >= 2 ? [prev[1], m.id] : [...prev, m.id],
+        );
+      } else {
+        setOpenId((prev) => (prev === m.id ? null : m.id));
+      }
+    },
+    [compareMode],
+  );
+
+  const onRowDelete = useCallback((m: SavedMeasurement) => {
+    Alert.alert('Delete measurement', `Delete “${m.title}”? This cannot be undone.`, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete', style: 'destructive', onPress: () => deleteMeasurement(m.id) },
+    ]);
+  }, []);
+
+  return (
+    <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+      <View style={styles.header}>
+        <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
+          <Text style={styles.back}>‹</Text>
+        </Pressable>
+        <View style={{ flexShrink: 1 }}>
+          <Text style={styles.title}>SAVED MEASUREMENTS</Text>
+          <Text style={styles.subtitle}>{toolKey ? toolByKey(toolKey).name : 'All tools'}</Text>
+        </View>
+        <View style={{ flex: 1 }} />
+        {all.length >= 2 && (
+          <Pressable
+            style={[styles.compareBtn, compareMode && styles.compareBtnOn]}
+            onPress={() => {
+              setCompareMode((c) => !c);
+              setPicked([]);
+            }}
+            accessibilityRole="button"
+            accessibilityState={{ selected: compareMode }}
+            accessibilityLabel="Compare measurements"
+          >
+            <Text style={[styles.compareBtnText, compareMode && styles.compareBtnTextOn]}>
+              {compareMode ? 'COMPARING' : 'COMPARE'}
+            </Text>
+          </Pressable>
+        )}
+      </View>
+
+      <FlatList
+        data={all}
+        keyExtractor={(m) => m.id}
+        contentContainerStyle={styles.scroll}
+        renderItem={({ item }) => (
+          <Row
+            m={item}
+            showTool={!toolKey}
+            isOpen={openId === item.id}
+            isPicked={picked.includes(item.id)}
+            compareMode={compareMode}
+            onPress={onRowPress}
+            onDelete={onRowDelete}
+          />
+        )}
+        ListHeaderComponent={
+          <>
+            {compareMode && (
+              <Text style={styles.compareHint}>
+                {pickedMs.length < 2
+                  ? `Select two measurements to compare (${pickedMs.length}/2).`
+                  : 'Comparing the two selected measurements.'}
+              </Text>
+            )}
+
+            {/* A/B compare panel (spec §8). */}
+            {report && pickedMs.length === 2 && (
+              <View style={styles.comparePanel}>
+                <Text style={styles.comparePanelHead}>A / B COMPARE</Text>
+                {!report.comparable ? (
+                  <Text style={styles.compareBlocked}>{report.issues[0]?.message}</Text>
+                ) : (
+                  <>
+                    <View style={styles.compareCols}>
+                      {pickedMs.map((m, i) => (
+                        <View key={m.id} style={styles.compareCol}>
+                          <Text style={styles.compareColTag}>{i === 0 ? 'A' : 'B'}</Text>
+                          <Text style={styles.compareColTitle} numberOfLines={2}>
+                            {m.title}
+                          </Text>
+                          <QualityChip m={m} />
+                          {payloadLines(m).map((l) => (
+                            <View key={l.label} style={{ gap: 1 }}>
+                              <Text style={styles.ctxKey}>{l.label}</Text>
+                              <Text style={styles.compareVal}>{l.value}</Text>
+                            </View>
+                          ))}
+                        </View>
+                      ))}
+                    </View>
+                    {report.issues.length > 0 ? (
+                      <View style={{ gap: 6 }}>
+                        {report.issues.map((iss, i) => (
+                          <Text key={`${iss.level}-${i}`} style={styles.compareWarn}>
+                            ⚠ {iss.message}
+                          </Text>
+                        ))}
+                      </View>
+                    ) : (
+                      <Text style={styles.compareOk}>Settings and conditions match — a fair comparison.</Text>
+                    )}
+                  </>
+                )}
+              </View>
+            )}
+          </>
+        }
+        ListEmptyComponent={
+          <View style={styles.emptyCard}>
+            <Text style={styles.emptyTitle}>NO SAVED MEASUREMENTS YET</Text>
+            <Text style={styles.emptyBody}>
+              Measurements you save from the tools appear here with their full context — settings,
+              input, calibration status, and quality. The Frequency Counter's Tap mode can save
+              sessions now; the other tools save once the measurement engine ships.
+            </Text>
+          </View>
+        }
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: colors.screenBg },
+  header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 10 },
+  back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
+  title: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1.4, color: colors.textPrimary },
+  subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
+  scroll: { padding: 16, paddingBottom: 28, gap: 10 },
+
+  compareBtn: {
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#3a3a3a',
+    backgroundColor: '#161616',
+    paddingVertical: 7,
+    paddingHorizontal: 12,
+  },
+  compareBtnOn: { borderColor: 'rgba(77,208,225,.7)', backgroundColor: '#0b1a1d' },
+  compareBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textSecondary },
+  compareBtnTextOn: { color: '#4dd0e1' },
+  compareHint: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.textSub, marginBottom: 10 },
+
+  comparePanel: {
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(77,208,225,.5)',
+    backgroundColor: '#0d1517',
+    padding: 14,
+    gap: 12,
+    marginBottom: 10,
+  },
+  comparePanelHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.8, color: '#4dd0e1' },
+  compareBlocked: { fontFamily: fonts.barlowSemiBold, fontSize: 13.5, lineHeight: 19, color: '#ff8d7a' },
+  compareCols: { flexDirection: 'row', gap: 12 },
+  compareCol: { flex: 1, gap: 7 },
+  compareColTag: { fontFamily: fonts.oswaldBold, fontSize: 16, color: '#4dd0e1' },
+  compareColTitle: { fontFamily: fonts.oswaldMedium, fontSize: 13.5, color: colors.textPrimary },
+  compareVal: { fontFamily: fonts.mono, fontSize: 13.5, color: colors.textPrimary },
+  compareWarn: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18.5, color: colors.amber },
+  compareOk: { fontFamily: fonts.barlowRegular, fontSize: 13, color: '#5bff85' },
+
+  emptyCard: {
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#131316',
+    padding: 14,
+    gap: 6,
+  },
+  emptyTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: colors.amberLabel },
+  emptyBody: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19.5, color: colors.textSecondary },
+
+  row: {
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#131316',
+    padding: 12,
+    gap: 10,
+  },
+  rowPicked: { borderColor: 'rgba(77,208,225,.7)' },
+  rowTop: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  rowTitle: { fontFamily: fonts.oswaldMedium, fontSize: 14.5, color: colors.textPrimary },
+  rowMeta: { fontFamily: fonts.barlowRegular, fontSize: 12, color: colors.textSub, marginTop: 1 },
+  qChip: { borderRadius: 5, borderWidth: 1, paddingVertical: 2.5, paddingHorizontal: 7, alignSelf: 'flex-start' },
+  qChipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.2 },
+
+  pickBox: {
+    width: 20,
+    height: 20,
+    borderRadius: 5,
+    borderWidth: 1.5,
+    borderColor: '#3a3a3a',
+    backgroundColor: '#101013',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pickBoxOn: { borderColor: 'rgba(77,208,225,.8)', backgroundColor: '#0b1a1d' },
+  pickMark: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: '#4dd0e1' },
+
+  ctx: { gap: 5 },
+  ctxRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 12 },
+  ctxKey: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.2, color: colors.textSub },
+  ctxVal: { fontFamily: fonts.mono, fontSize: 12.5, color: colors.textSecondary, flexShrink: 1, textAlign: 'right' },
+  ctxDivider: { height: 1, backgroundColor: '#26262c', marginVertical: 4 },
+  ctxWarn: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: colors.amber },
+  ctxNotes: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 12.5, color: colors.textMuted, marginTop: 4 },
+
+  deleteBtn: {
+    alignSelf: 'flex-end',
+    borderRadius: 7,
+    borderWidth: 1,
+    borderColor: 'rgba(255,141,122,.5)',
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+  },
+  deleteBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: '#ff8d7a' },
+});

@@ -48,10 +48,12 @@ import { TrophyModal } from '../../components/TrophyModal';
 import { colors, fonts, spacing } from '../../theme/tokens';
 import {
   fetchDashboard,
+  fetchEnrollmentDashboard,
   getLastTopicIndex,
   setLastTopicIndex,
   type DashboardData,
 } from '../../features/dashboard/api';
+import { isFreeEnrollGs, useEnrollment } from '../../features/enrollment/enrollmentStore';
 import { gateReadout, pctColor } from '../../features/dashboard/gates';
 import { fetchGlossaryItemsByIds, fetchTopicItems, studyDisplayPct } from '../../features/study/api';
 import {
@@ -209,6 +211,28 @@ export function DashboardScreen() {
   // from the seed) through this same screen; institutional path unchanged.
   const { commercialMode, caps } = useEntitlement();
 
+  // Enrollment-driven Dashboard (user request 2026-07-22): a COURSE ⇄ MY
+  // ENROLLMENT toggle. In enrollment mode the top swiper iterates the user's
+  // enrolled topics (active + inactive; inactive dimmed) and the full study
+  // machinery loads per topic. Available to ANY user with enrolled topics.
+  const enrolled = useEnrollment();
+  // The dashboard is now driven by the user's ENROLLMENT (they manage it via the
+  // "My Enrollments" screen); the COURSE ⇄ ENROLLMENT toggle was removed (user
+  // request 2026-07-23). Falls back to the course/commercial fetch only when no
+  // topics are loaded (see load() guard).
+  const [viewMode, setViewMode] = useState<'course' | 'enrollment'>('enrollment');
+  const viewModeRef = useRef(viewMode);
+  viewModeRef.current = viewMode;
+  // The study swipe shows ACTIVE enrolled topics the user can ACCESS. Free/
+  // non-paid users only get the free topics regardless of what they've added
+  // (user request 2026-07-22); paid members get all their active topics.
+  const enrolledGsRef = useRef<number[]>([]);
+  enrolledGsRef.current = enrolled
+    .filter((e) => e.active && (caps.allTopics || isFreeEnrollGs(e.gs)))
+    .map((e) => e.gs);
+  const inactiveGs = useRef(new Set<number>());
+  inactiveGs.current = new Set(enrolled.filter((e) => !e.active).map((e) => e.gs));
+
   const pulse = useRef(new Animated.Value(0)).current;
   const scrollRef = useRef<ScrollView>(null);
   // Tap the topic trophy → full-size popup (Booth 2026-07-11).
@@ -257,9 +281,12 @@ export function DashboardScreen() {
           `Score ${result.score}/25 — ${result.outcome.replace(/_/g, ' ')}. (Full results screen builds in M6.)`,
         );
       }
-      const d = commercialMode
-        ? await fetchCommercialDashboard((await getLastPublicCourse()) ?? 1, caps)
-        : await fetchDashboard();
+      const d =
+        viewModeRef.current === 'enrollment' && enrolledGsRef.current.length > 0
+          ? await fetchEnrollmentDashboard(enrolledGsRef.current)
+          : commercialMode
+            ? await fetchCommercialDashboard((await getLastPublicCourse()) ?? 1, caps)
+            : await fetchDashboard();
 
       // Merge the device-local progress mirror OVER the server rows for DISPLAY
       // (LED + START→CONTINUE), so the dashboard reacts to work the user just
@@ -328,6 +355,28 @@ export function DashboardScreen() {
   // 2026-07-15). The Dashboard stays mounted under the pushed study screen, so
   // this fires while the flush completes and again on return.
   useEffect(() => onStudyProgress(() => void load()), [load]);
+
+  // Toggle Course ⇄ My Enrollment (user request 2026-07-22) — reload at once.
+  const switchMode = useCallback(
+    (next: 'course' | 'enrollment') => {
+      if (viewModeRef.current === next) return;
+      setViewMode(next);
+      viewModeRef.current = next;
+      void load();
+    },
+    [load],
+  );
+
+  // Keep the enrollment view in sync as the list is edited: reload on any change
+  // while viewing it, and fall back to the course view if it empties.
+  const enrolledKey = enrolled.map((e) => `${e.gs}${e.active ? '' : '!'}`).join(',');
+  useEffect(() => {
+    if (viewModeRef.current !== 'enrollment') return;
+    // Reload as the enrollment list is edited; an empty list simply falls back to
+    // the course/commercial fetch inside load() (user request 2026-07-23).
+    void load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enrolledKey]);
 
   // Quiz-block glow pulse (quizPulse 2.4s ease-in-out infinite).
   useEffect(() => {
@@ -482,6 +531,11 @@ export function DashboardScreen() {
             />
           </View>
         )}
+        {viewMode === 'enrollment' && (
+          <View style={{ width: 220 }}>
+            <StudioButton label="View course instead" variant="secondary" small onPress={() => switchMode('course')} />
+          </View>
+        )}
         <View style={{ width: 180 }}>
           <StudioButton label="Retry" variant="secondary" small onPress={load} />
         </View>
@@ -492,6 +546,12 @@ export function DashboardScreen() {
   const prevStatus =
     topicIdx > 0 ? (data.progressByTopic.get(topics[topicIdx - 1].id)?.status ?? 'locked') : null;
   const provisional = prevStatus === 'passed_incomplete';
+
+  // Enrollment view: this topic is INACTIVE (set aside) — shown but dimmed.
+  const topicInactive =
+    viewMode === 'enrollment' &&
+    topic.global_sequence != null &&
+    inactiveGs.current.has(topic.global_sequence);
 
   const applicable = new Set(topic.applicable_methods ?? []);
   const rowsForTopic = data.methodRows.filter((r) => r.achievement_id === topic.id);
@@ -556,30 +616,30 @@ export function DashboardScreen() {
         <AppHeader
           onLogoPress={() => (navigation as any).navigate('About')}
           right={
-            // Scribble-strip glass key (Booth 2026-07-09u) — same aesthetic as
-            // the Fill-in-Blank Prev/Next caps, in the glossary blue.
-            <View style={{ width: 104 }}>
-              <GlassButton
-                label="GLOSSARY"
-                tint="blue"
-                height={40}
-                onPress={() =>
-                  navigation.navigate('Glossary', {
-                    courseId: data.currentCourse.id,
-                    courseCode: data.currentCourse.code,
-                    achievementId: topic.id,
-                    topicName: topic.name,
-                  })
-                }
-              />
-            </View>
+            // "My Enrollments" → the enrollment screen. Styled to MATCH the home
+            // screen's green Enrollments nav button (dark box + green border/text)
+            // rather than the lighter glass look (user request 2026-07-23).
+            <Pressable
+              style={styles.myEnrollBtn}
+              onPress={() => (navigation as any).navigate('Awards', { category: 'enrollment' })}
+              accessibilityRole="button"
+              accessibilityLabel="My enrollments"
+            >
+              <Text style={styles.myEnrollBtnText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+                MY ENROLLMENTS
+              </Text>
+            </Pressable>
           }
         />
+
+        {/* The COURSE ⇄ MY ENROLLMENT toggle was removed (user request
+            2026-07-23) — the dashboard follows the enrollment list, adjusted via
+            the "My Enrollments" button above. */}
 
         {/* Topic title block (swipeable — free roam across all topics) */}
         <View
           {...pan.panHandlers}
-          style={[styles.topicCard, provisional && styles.topicCardProvisional]}
+          style={[styles.topicCard, provisional && styles.topicCardProvisional, topicInactive && styles.topicCardInactive]}
         >
           {/* Texture removed + darkened 2 more shades (Booth 2026-07-11) — the
               Current Topic display is now a plain dark panel. */}
@@ -609,8 +669,10 @@ export function DashboardScreen() {
             accessibilityRole="button"
             accessibilityLabel={`List all terms in ${topic.name}`}
           >
-            <Text style={styles.topicEyebrow}>CURRENT TOPIC</Text>
-            <Text style={[styles.topicName, styles.topicNameInset]}>{topic.name}</Text>
+            <Text style={styles.topicEyebrow}>{topicInactive ? 'CURRENT TOPIC · INACTIVE' : 'CURRENT TOPIC'}</Text>
+            <Text style={[styles.topicName, styles.topicNameInset, topicInactive && styles.topicNameDim]}>
+              {topic.name}
+            </Text>
             <Text style={[styles.topicMeta, styles.topicNameInset]}>
               {`TOPIC ${topicIdx + 1} OF ${topics.length} · ${data.currentCourse.name.toUpperCase()}`}
               {swipeHint ? `  ·  ${swipeHint}` : ''}
@@ -663,9 +725,9 @@ export function DashboardScreen() {
             // Unavailable methods are NOT recessed or dimmed — every slot reads
             // as one mounted 500-series surface (Booth 2026-07-10 #9).
             <View key={m.key}>
-              {/* Only the Flashcards panel wears the darker charcoal coat (user
-                  request 2026-07-18); every other method keeps the default gray. */}
-              <ElevatedFrame depressed={complete} dark={m.key === 'flashcards'} contentStyle={styles.methodInner}>
+              {/* All method panels share the SAME gray coat again (user request
+                  2026-07-23) — the Flashcards charcoal special-case was reverted. */}
+              <ElevatedFrame depressed={complete} contentStyle={styles.methodInner}>
                 {/* Layout (Booth 2026-07-09e): a flex LEFT column (title row +
                     a PARTIAL-width LED meter) with a SQUARE action button on the
                     right. The LED no longer spans the full container width. */}
@@ -696,7 +758,7 @@ export function DashboardScreen() {
                         box on the right, whose right edge aligns with the LED
                         meter below it. */}
                     <View style={styles.methodTopRow}>
-                      <EngravedTitle text={m.label} off={!isApplicable} dark={m.key === 'flashcards'} />
+                      <EngravedTitle text={m.label} off={!isApplicable} />
                       <View style={[styles.cutoutMount, styles.pctBox]}>
                         <Text
                           style={[
@@ -1125,6 +1187,39 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255,138,30,.65)',
     backgroundColor: '#1d1206',
   },
+  // Enrollment view: inactive topic panel reads set-aside (user request 2026-07-22).
+  topicCardInactive: { borderTopColor: '#3a3a3a', backgroundColor: '#151515', opacity: 0.82 },
+  topicNameDim: { opacity: 0.55 },
+  // COURSE ⇄ MY ENROLLMENT toggle (user request 2026-07-22).
+  modeRow: { flexDirection: 'row', gap: 8, marginBottom: 8 },
+  modeBtn: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#333',
+    borderRadius: 8,
+    paddingVertical: 8,
+    alignItems: 'center',
+    backgroundColor: '#131313',
+  },
+  modeBtnOn: { borderColor: colors.amber, backgroundColor: 'rgba(255,198,77,.1)' },
+  modeBtnOnGreen: { borderColor: 'rgba(55,224,95,.7)', backgroundColor: 'rgba(55,224,95,.1)' },
+  modeBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textSub },
+  // MY ENROLLMENTS header button — matches the home screen's green Enrollments
+  // nav button (user request 2026-07-23).
+  myEnrollBtn: {
+    width: 120,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(55,224,95,.7)',
+    backgroundColor: 'rgba(55,224,95,.1)',
+  },
+  myEnrollBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 0.3, color: '#37e05f' },
+  modeBtnTextOn: { color: colors.amber },
+  modeBtnTextOnGreen: { color: '#37e05f' },
   pilotDot: {
     position: 'absolute',
     top: 7,

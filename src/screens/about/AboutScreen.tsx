@@ -1,7 +1,7 @@
 /**
- * About / Credits / Contact (Booth 2026-07-08) — reached by tapping the app
- * logo in the Dashboard header (only there). Root-stack modal, ✕ to close.
- * ⚠️ All copy below is PLACEHOLDER pending Booth's official text.
+ * About / Credits / Contact — reached by tapping the app logo in the Dashboard
+ * header (only there). Root-stack modal, ✕ to close. Final copy (user-provided
+ * 2026-07-18): ABOUT · OUR PROMISE · CREDITS · CONTACT.
  */
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Constants from 'expo-constants';
@@ -38,25 +38,53 @@ export function AboutScreen({ navigation }: Props) {
         <View style={styles.section}>
           <Text style={styles.sectionEyebrow}>ABOUT</Text>
           <Text style={styles.body}>
-            A mastery-based study companion for the audio engineering program at Miramar College.
-            Study every term through flashcards, fill-in-the-blank, and matching — then prove it
-            in the topic quiz to earn trophies, badges, and certifications.
+            Pro Audio Training Academy is a comprehensive learning platform designed to help students,
+            musicians, technicians, and audio professionals build real-world knowledge of professional audio.
+            {'\n\n'}
+            Learn through flashcards, fill-in-the-blank exercises, matching activities, ear training,
+            scenario-based learning, and quizzes while tracking your progress toward achievements, certificates,
+            and professional credentials.
+            {'\n\n'}
+            Built around mastery—not memorization—the Academy emphasizes practical understanding, long-term
+            retention, and skills that translate to real-world audio environments.
+          </Text>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionEyebrow}>OUR PROMISE</Text>
+          <Text style={styles.body}>
+            Education always comes first.
+            {'\n\n'}
+            Our content is created and professionally reviewed with a commitment to technical accuracy,
+            practical application, and continuous improvement. We do not sell definitions, accept sponsored
+            educational content, or allow advertising to influence what is taught.
+            {'\n\n'}
+            Our goal is to provide an independent, trusted learning resource for the global audio community.
           </Text>
         </View>
 
         <View style={styles.section}>
           <Text style={styles.sectionEyebrow}>CREDITS</Text>
           <Text style={styles.body}>
-            Created by Prof. Channing Booth{'\n'}
-            Miramar College · Pro Audio & Music Technology
+            Developed by Pro Audio Training Academy under the direction of a college professor with over
+            27 years of experience teaching audio engineering, music production, live sound, recording, and
+            audio systems.
+            {'\n\n'}
+            Every definition, lesson, quiz, and learning activity is carefully reviewed to help ensure
+            accuracy, consistency, and educational quality.
           </Text>
         </View>
 
         <View style={styles.section}>
           <Text style={styles.sectionEyebrow}>CONTACT</Text>
           <Text style={styles.body}>
-            Questions about the app, your account, or a registration code?{'\n'}
-            Contact your instructor or visit the Pro Audio department office.
+            Questions, feedback, or suggestions?
+            {'\n\n'}
+            We’d love to hear from you.
+            {'\n\n'}
+            Visit ProAudioTrainingAcademy.com or contact us through the in-app Support section.
+            {'\n\n'}
+            Thank you for helping us continue to improve Pro Audio Training Academy.
           </Text>
         </View>
       </ScrollView>

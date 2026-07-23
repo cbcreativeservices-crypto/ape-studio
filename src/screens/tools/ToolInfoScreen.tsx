@@ -9,6 +9,8 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { GlassButton } from '../../components/GlassButton';
+import { ApeDsp } from '../../../modules/ape-dsp';
 import { colors, fonts } from '../../theme/tokens';
 import { ENGINE_NOTE, MIC_LIMITS, toolByKey } from './toolsData';
 import type { RootStackParamList } from '../../navigation/types';
@@ -45,10 +47,65 @@ export function ToolInfoScreen({ navigation, route }: Props) {
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll}>
-        {/* Honest status — the engine is a native build, not shipped yet. */}
-        <View style={styles.statusCard}>
-          <Text style={styles.statusTitle}>MEASUREMENT ENGINE — IN DEVELOPMENT</Text>
-          <Text style={styles.statusBody}>{ENGINE_NOTE}</Text>
+        {/* Honest status — shown only while THIS BUILD lacks the engine
+            (engine build 2026-07-23: version 2 carries it). */}
+        {ApeDsp.engineVersion() < 2 && (
+          <View style={styles.statusCard}>
+            <Text style={styles.statusTitle}>MEASUREMENT ENGINE — IN DEVELOPMENT</Text>
+            <Text style={styles.statusBody}>{ENGINE_NOTE}</Text>
+          </View>
+        )}
+
+        {/* Engine build (2026-07-23): OPEN TOOL for tools with a live screen.
+            The live screen gates itself honestly (EngineGate) when the native
+            engine isn't in this build — never a fake meter. */}
+        {(tool.key === 'spl' ||
+          tool.key === 'rta' ||
+          tool.key === 'waveform' ||
+          tool.key === 'spectrogram' ||
+          tool.key === 'signalgen') && (
+          <GlassButton
+            label="OPEN TOOL"
+            tint={tool.tint}
+            height={52}
+            fontSize={15}
+            onPress={() =>
+              navigation.navigate(
+                tool.key === 'spl'
+                  ? 'SplMeter'
+                  : tool.key === 'rta'
+                    ? 'Rta'
+                    : tool.key === 'waveform'
+                      ? 'WaveformLive'
+                      : tool.key === 'spectrogram'
+                        ? 'SpectrogramLive'
+                        : 'SignalGen',
+              )
+            }
+          />
+        )}
+
+        {/* Phase-1 training layer (spec 2026-07-23): guided LEARN + visual DEMO.
+            Buttons always open; the destination screens gate the content. */}
+        <View style={styles.trainRow}>
+          <View style={{ flex: 1 }}>
+            <GlassButton
+              label="LEARN"
+              tint={tool.tint}
+              height={46}
+              fontSize={14}
+              onPress={() => navigation.navigate('ToolLearn', { toolKey: tool.key })}
+            />
+          </View>
+          <View style={{ flex: 1 }}>
+            <GlassButton
+              label="DEMO"
+              tint={tool.tint}
+              height={46}
+              fontSize={14}
+              onPress={() => navigation.navigate('ToolDemo', { toolKey: tool.key })}
+            />
+          </View>
         </View>
 
         <Text style={styles.purpose}>{tool.purpose}</Text>
@@ -73,6 +130,8 @@ const styles = StyleSheet.create({
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1.4, color: colors.textPrimary },
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
   scroll: { padding: 16, paddingBottom: 28, gap: 12 },
+
+  trainRow: { flexDirection: 'row', gap: 12 },
 
   statusCard: {
     borderRadius: 10,

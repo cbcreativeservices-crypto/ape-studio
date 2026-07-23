@@ -39,11 +39,15 @@ import { colors, fonts } from '../../theme/tokens';
 import { setLastCourse } from '../../features/dashboard/api';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { UpgradeSheet } from '../../features/commercial/UpgradeSheet';
-import { ScreenIntroSequence } from '../../features/intro/ScreenIntroOverlay';
+import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
 import { setLastPublicCourse } from '../../features/commercial/commercialDashboard';
 import { getPublicCatalog, freeTopicsFrom, courseHasFreeTopic } from '../../data/publicCourses';
-import { MATRIX_TOPIC_COUNT } from '../../data/courseTopicMatrix';
-import { AWARD_ORDER } from '../awards/awardsData';
+import { MATRIX_SUBJECTS } from '../../data/courseTopicMatrix';
+import { PROGRAM_PATHS, SPECIALIZED_CERTIFICATES } from '../awards/awardsData';
+import { useHomeBundles, useHomeGs } from '../../features/home/homeCardsStore';
+import { setBundleLoaded, useBundles } from '../../features/enrollment/enrolledBundlesStore';
+import { isFreeEnrollGs, setActiveMany } from '../../features/enrollment/enrollmentStore';
+import { BookIcon } from '../../components/BookIcon';
 
 type Card =
   | { kind: 'tools'; id: 'tools' }
@@ -54,9 +58,15 @@ type Card =
   | { kind: 'public'; id: string; order: number; name: string; topicCount: number; hasFreeTopic: boolean }
   /** Placeholder standalone topic — catalog stub, content pending (Booth 2026-07-11). */
   | { kind: 'comingTopic'; id: string; name: string }
-  /** Far-right tally card — how many more curriculum topics exist beyond what
-   *  the deck shows (user request 2026-07-18). Tapping opens the Curriculum. */
+  /** Far-right tally card — how many Specialization Certificates a student can
+   *  earn (user request 2026-07-22). Tapping opens the Certificates screen. */
   | { kind: 'more'; id: 'more'; count: number }
+  /** A user-placed HOME topic card (paid Home customizer, user request
+   *  2026-07-22) — a curriculum topic by gs, opened to study. */
+  | { kind: 'homeTopic'; id: string; gs: number; name: string; subject: string }
+  /** A user-placed HOME cert/program BUNDLE card (user request 2026-07-22) —
+   *  one card for the whole cert/program; opening it loads its topics + study. */
+  | { kind: 'homeBundle'; id: string; bundleKey: string; bundleKind: 'cert' | 'program' | 'subject'; name: string; topics: number[] }
   | {
       kind: 'course';
       id: string;
@@ -68,6 +78,14 @@ type Card =
       isPrereq: boolean;
       completed: boolean;
     };
+
+/** gs → { name, subject } for user-placed Home topic cards (user request
+ *  2026-07-22). */
+const HOME_TOPIC_INDEX: Map<number, { name: string; subject: string }> = (() => {
+  const m = new Map<number, { name: string; subject: string }>();
+  for (const s of MATRIX_SUBJECTS) for (const t of s.topics) m.set(t.gs, { name: t.name, subject: s.name });
+  return m;
+})();
 
 const { width: SCREEN_W } = Dimensions.get('window');
 // Cards shrunk 7% (Booth 2026-07-15) to give the carousel vertical room — the
@@ -155,9 +173,55 @@ const CARD_IMAGE: Record<string, string> = {
 /** Cards a student can mark into their personal deck (user request 2026-07-18). */
 const MARKABLE_KINDS: Card['kind'][] = ['course', 'public', 'freeTopic'];
 const isMarkable = (c: Card): boolean => MARKABLE_KINDS.includes(c.kind);
-/** Topics a card represents (for the "+ XX other" tally). */
-const cardTopicCount = (c: Card): number =>
-  c.kind === 'course' ? c.achievement_count || 0 : c.kind === 'public' ? c.topicCount : 1;
+/** Far-right tally card count (user request 2026-07-22): the number of
+ *  Specialization Certificates a student can earn — the card links to the
+ *  Certificates screen. */
+const OTHER_CERTS_COUNT = SPECIALIZED_CERTIFICATES.length;
+
+// Course-select card TITLE overrides (user request 2026-07-22). Keyed by the
+// title as it renders today (commercial catalog name / course name). NOTE: the
+// 'DAW Skills' → 'DAW Fundamentals & Session Management' entry overrides the
+// earlier "gs36 card is always DAW Skills" ruling — but ONLY the marketing card
+// label; the underlying gs36 topic name (curriculum/glossary/dashboard) is
+// unchanged.
+const CARD_TITLE_RENAMES: Record<string, string> = {
+  'DAW Skills': 'DAW Fundamentals & Session Management',
+  'Sound Reinforcement Systems': 'Live Sound Production',
+  'Audio System Design and Maintenance': 'Audio Electronics, Service & Repair',
+  'Recording Arts': 'Studio Recording',
+};
+// The "Career and Business" card is retitled to "+ N other programs", where N =
+// Academy Program Certificates NOT represented by a card in the current deck
+// (user request 2026-07-22).
+const OTHER_PROGRAMS_CARD_TITLE = 'Career and Business';
+const normProgram = (s: string) => s.toLowerCase().replace(/&/g, 'and').replace(/\s+/g, ' ').trim();
+const PROGRAM_NAME_SET = new Set(PROGRAM_PATHS.map((p) => normProgram(p.name)));
+
+/** The card's title BEFORE the 2026-07-22 overrides (null for the tally card). */
+function rawCardTitle(item: Card): string | null {
+  switch (item.kind) {
+    case 'tools':
+      return 'Measurement and Analysis Tools';
+    case 'glossary':
+      return 'Professional Audio Glossary';
+    case 'freeTopic':
+    case 'public':
+    case 'comingTopic':
+    case 'course':
+      return item.name;
+    default:
+      return null; // 'more'
+  }
+}
+
+/** Display title after the 2026-07-22 renames (Career card → "+ N programs"). */
+function displayCardTitle(item: Card, otherProgramsCount: number): string {
+  const raw = rawCardTitle(item) ?? '';
+  if ((item.kind === 'public' || item.kind === 'course') && raw === OTHER_PROGRAMS_CARD_TITLE) {
+    return `+ ${otherProgramsCount} other programs`;
+  }
+  return CARD_TITLE_RENAMES[raw] ?? raw;
+}
 
 function dotColorFor(card: Card): string {
   switch (card.kind) {
@@ -171,6 +235,10 @@ function dotColorFor(card: Card): string {
       return card.topicCount > 1 ? colors.purple : colors.amber; // course vs single topic
     case 'course':
       return colors.purple; // full course
+    case 'homeTopic':
+      return colors.purple; // user-placed Home topic
+    case 'homeBundle':
+      return card.bundleKind === 'cert' ? colors.blue : card.bundleKind === 'subject' ? colors.amber : colors.purple; // Home bundle
     case 'more':
       return colors.textSubAlt; // the tally card
     default:
@@ -209,9 +277,13 @@ function CourseCardView({
   onOpenPublic,
   onLockedPress,
   onOpenMore,
+  onOpenPrograms,
+  onOpenTopic,
+  onOpenBundle,
   academy,
   marked,
   onToggleMark,
+  otherProgramsCount,
 }: {
   item: Card;
   onOpenCourse: (c: Extract<Card, { kind: 'course' }>) => void;
@@ -223,10 +295,20 @@ function CourseCardView({
   onLockedPress: () => void;
   /** The "+ XX other" tally card → open the full Curriculum. */
   onOpenMore: () => void;
+  /** The "+ N other programs" card → open the Programs page (user request
+   *  2026-07-22). */
+  onOpenPrograms: () => void;
+  /** A user-placed Home topic card → open study for that topic gs (2026-07-22). */
+  onOpenTopic: (gs: number) => void;
+  /** A user-placed Home bundle card → load its topics + study (2026-07-22). */
+  onOpenBundle: (key: string, topics: number[]) => void;
   /** Academy mode: show the "my courses" mark control (user request 2026-07-18). */
   academy: boolean;
   marked: boolean;
   onToggleMark: () => void;
+  /** Count for the "Career and Business" → "+ N other programs" retitle
+   *  (user request 2026-07-22). */
+  otherProgramsCount: number;
 }) {
   // CM3: the card RENDERS entitlement capabilities (server-owned once live) —
   // it never decides them. Flag OFF ⇒ everything unlocked-looking as today.
@@ -238,20 +320,101 @@ function CourseCardView({
     return (
       <View style={styles.cardOuter}>
         <View style={styles.cardAbove}>
-          <Text style={[styles.cardAboveText, { color: colors.textSubAlt }]}>FULL CURRICULUM</Text>
-          <View style={[styles.cardAboveRule, { backgroundColor: colors.textSubAlt }]} />
+          <Text style={[styles.cardAboveText, { color: '#5bb0ff' }]}>SPECIALIZATION CERTIFICATES</Text>
+          <View style={[styles.cardAboveRule, { backgroundColor: '#5bb0ff' }]} />
         </View>
         <Pressable
           style={[styles.card, styles.moreCard]}
           onPress={onOpenMore}
           accessibilityRole="button"
-          accessibilityLabel={`Plus ${item.count} other topics — open curriculum`}
+          accessibilityLabel={`Plus ${item.count} other certificates — view certificates`}
         >
           <Text style={styles.moreCount}>+{item.count}</Text>
-          <Text style={styles.moreLabel}>OTHER TOPICS</Text>
-          <Text style={styles.moreSub}>in the full curriculum</Text>
+          <Text style={styles.moreLabel}>OTHER CERTIFICATES</Text>
+          <Text style={styles.moreSub}>specialization certificates to earn</Text>
           <View style={{ height: 14 }} />
-          <Text style={styles.moreCta}>VIEW CURRICULUM ›</Text>
+          <Text style={styles.moreCta}>VIEW CERTIFICATES ›</Text>
+        </Pressable>
+      </View>
+    );
+  }
+
+  // "+ N other programs" card (the retitled Career and Business card, user
+  // request 2026-07-22): no image — a simple filled tally card styled like the
+  // far-right FULL CURRICULUM card. Tapping opens the Programs page.
+  if ((item.kind === 'public' || item.kind === 'course') && rawCardTitle(item) === OTHER_PROGRAMS_CARD_TITLE) {
+    return (
+      <View style={styles.cardOuter}>
+        <View style={styles.cardAbove}>
+          <Text style={[styles.cardAboveText, { color: colors.textSubAlt }]}>CERTIFICATE PROGRAMS</Text>
+          <View style={[styles.cardAboveRule, { backgroundColor: colors.textSubAlt }]} />
+        </View>
+        <Pressable
+          style={[styles.card, styles.moreCard]}
+          onPress={onOpenPrograms}
+          accessibilityRole="button"
+          accessibilityLabel={`Plus ${otherProgramsCount} other programs — view programs`}
+        >
+          <Text style={styles.moreCount}>+{otherProgramsCount}</Text>
+          <Text style={styles.moreLabel}>OTHER PROGRAMS</Text>
+          <Text style={styles.moreSub}>professional certificate programs</Text>
+          <View style={{ height: 14 }} />
+          <Text style={styles.moreCta}>VIEW PROGRAMS ›</Text>
+        </Pressable>
+      </View>
+    );
+  }
+
+  // User-placed HOME topic card (paid Home customizer, user request 2026-07-22)
+  // — a simple filled card with the book icon; tap opens study for that topic.
+  if (item.kind === 'homeTopic') {
+    return (
+      <View style={styles.cardOuter}>
+        <View style={styles.cardAbove}>
+          <Text style={[styles.cardAboveText, { color: '#c4a2ff' }]}>MY TOPIC</Text>
+          <View style={[styles.cardAboveRule, { backgroundColor: '#c4a2ff' }]} />
+        </View>
+        <Pressable
+          style={[styles.card, styles.homeTopicCard]}
+          onPress={() => onOpenTopic(item.gs)}
+          accessibilityRole="button"
+          accessibilityLabel={`Study ${item.name}`}
+        >
+          <BookIcon color="#c4a2ff" filled size={54} />
+          <Text style={styles.homeTopicName}>{item.name}</Text>
+          {item.subject ? <Text style={styles.homeTopicSubject}>{item.subject}</Text> : null}
+          <View style={{ height: 12 }} />
+          <Text style={styles.homeTopicCta}>STUDY ›</Text>
+        </Pressable>
+      </View>
+    );
+  }
+
+  // User-placed HOME cert/program BUNDLE card (user request 2026-07-22) — one
+  // card for the whole cert/program; tapping loads its topics + opens study.
+  if (item.kind === 'homeBundle') {
+    const cert = item.bundleKind === 'cert';
+    const subject = item.bundleKind === 'subject';
+    const tint = cert ? '#5bb0ff' : subject ? '#ffc64d' : '#c4a2ff';
+    const label = cert ? 'CERTIFICATE' : subject ? 'SUBJECT' : 'PROGRAM';
+    const bg = cert ? '#0e1a26' : subject ? '#1c1708' : '#161225';
+    return (
+      <View style={styles.cardOuter}>
+        <View style={styles.cardAbove}>
+          <Text style={[styles.cardAboveText, { color: tint }]}>{label}</Text>
+          <View style={[styles.cardAboveRule, { backgroundColor: tint }]} />
+        </View>
+        <Pressable
+          style={[styles.card, styles.homeTopicCard, { borderColor: tint, backgroundColor: bg }]}
+          onPress={() => onOpenBundle(item.bundleKey, item.topics)}
+          accessibilityRole="button"
+          accessibilityLabel={`Open ${item.name}`}
+        >
+          <BookIcon color={tint} filled size={54} />
+          <Text style={styles.homeTopicName}>{item.name}</Text>
+          <Text style={styles.homeTopicSubject}>{item.topics.length} topics</Text>
+          <View style={{ height: 12 }} />
+          <Text style={[styles.homeTopicCta, { color: tint }]}>LOAD & STUDY ›</Text>
         </Pressable>
       </View>
     );
@@ -337,17 +500,8 @@ function CourseCardView({
             : course!.isPrereq
               ? 'SAFETY'
               : course!.code;
-  const title = isTools
-    ? 'Measurement and Analysis Tools'
-    : isGlossary
-      ? 'Professional Audio Glossary'
-      : free
-        ? free.name
-        : pub
-          ? pub.name
-          : coming
-            ? coming.name
-            : course!.name;
+  // Title with the 2026-07-22 card renames applied (Career → "+ N programs").
+  const title = displayCardTitle(item, otherProgramsCount);
   const inner = (
     <>
       {/* Legibility gradient — light top, dark bottom (for the status/button). */}
@@ -486,6 +640,10 @@ export function CourseSelectionScreen() {
   // CM2 — commercial mode + entitlement (mock provider; server truth later).
   const { commercialMode, entitlement, caps, setCommercialMode, setEntitlement } = useEntitlement();
   const [upgradeOpen, setUpgradeOpen] = useState(false);
+  // A LAPSED (cancelled) member keeps their Home cards as they set them up (the
+  // store persists), but can no longer open them — a "Membership Expired" warning
+  // fires instead (user request 2026-07-23).
+  const lapsed = entitlement === 'lapsed';
 
   // Academy "my courses" marks (user request 2026-07-18). In academy mode the
   // student marks the cards/topics they want; those become their deck (the rest
@@ -549,11 +707,9 @@ export function CourseSelectionScreen() {
         name,
       }));
       const topicCards = [...singlePub, ...comingCards].sort((a, b) => a.name.localeCompare(b.name));
-      // "+ XX other" tally (user request 2026-07-18): curriculum topics beyond
-      // what the deck's launched courses surface. Universe = the locked Course/
-      // Topic Matrix (203 topics); shown = unique gs across the public catalog.
-      const shownGs = new Set(catalog.flatMap((c) => c.topics.map((t) => t.gs)));
-      const otherCount = Math.max(0, MATRIX_TOPIC_COUNT - shownGs.size);
+      // Far-right tally card = Specialization Certificates to earn (user request
+      // 2026-07-22), linking to the Certificates screen.
+      const otherCount = OTHER_CERTS_COUNT;
       setCards([
         { kind: 'tools', id: 'tools' },
         { kind: 'glossary', id: 'glossary' },
@@ -619,13 +775,9 @@ export function CourseSelectionScreen() {
         completed: c.achievement_count > 0 && (completeByCourse.get(c.id) ?? 0) >= c.achievement_count,
       }));
 
-      // "+ XX other" tally (user request 2026-07-18): matrix topics beyond the
-      // topics these courses surface (achievement counts), guarded > 0.
-      const shownCount = courseCards.reduce(
-        (n, c) => n + (c.kind === 'course' ? c.achievement_count || 0 : 0),
-        0,
-      );
-      const otherCount = Math.max(0, MATRIX_TOPIC_COUNT - shownCount);
+      // Far-right tally card = Specialization Certificates to earn (user request
+      // 2026-07-22), linking to the Certificates screen.
+      const otherCount = OTHER_CERTS_COUNT;
       // Tools card sits LEFT of the Glossary card (Booth 2026-07-09v); the
       // Glossary remains the standard landing card (index 1 default below).
       setCards([
@@ -653,8 +805,43 @@ export function CourseSelectionScreen() {
   // their marked cards become the deck (tools + glossary stay; everything else
   // collapses behind a recomputed "+ XX other" card). Otherwise the full deck
   // from load() is shown as-is (user request 2026-07-18).
+  // Paid Home customizer (user request 2026-07-22): when the user has placed
+  // topics and/or cert/program bundles, the Home deck becomes Tools + Glossary
+  // (locked) + those topic cards + bundle cards.
+  const homeGs = useHomeGs();
+  const homeBundleKeys = useHomeBundles();
+  const bundles = useBundles();
   const displayDeck = useMemo<Card[] | null>(() => {
-    if (!cards || !academy) return cards;
+    if (!cards) return cards;
+    // A LAPSED member still SEES their saved Home cards (opening them is blocked
+    // at tap-time). Free/anonymous never have Home cards → fall through to the
+    // default deck (user request 2026-07-23).
+    if ((academy || lapsed) && (homeGs.length > 0 || homeBundleKeys.length > 0)) {
+      const fixed = cards.filter((c) => c.kind === 'tools' || c.kind === 'glossary');
+      const topicCards: Card[] = homeGs.map((gs) => ({
+        kind: 'homeTopic',
+        id: `home-${gs}`,
+        gs,
+        name: HOME_TOPIC_INDEX.get(gs)?.name ?? `Topic gs${gs}`,
+        subject: HOME_TOPIC_INDEX.get(gs)?.subject ?? '',
+      }));
+      const byKey = new Map(bundles.map((b) => [b.key, b] as const));
+      const bundleCards: Card[] = homeBundleKeys
+        .map((key) => byKey.get(key))
+        .filter((b): b is NonNullable<typeof b> => !!b)
+        .map((b) => ({
+          kind: 'homeBundle',
+          id: `homeb-${b.key}`,
+          bundleKey: b.key,
+          bundleKind: b.kind,
+          name: b.name,
+          topics: b.topics,
+        }));
+      return [...fixed, ...bundleCards, ...topicCards];
+    }
+    // The "my marked courses" deck is academy-only (free/anonymous/lapsed without
+    // Home cards see the default deck).
+    if (!academy) return cards;
     const byId = new Map(cards.map((c) => [c.id, c] as const));
     // Newest-marked FIRST so the just-selected card sits at the landing spot.
     const marked = [...marks]
@@ -663,14 +850,28 @@ export function CourseSelectionScreen() {
       .filter((c): c is Card => !!c && isMarkable(c));
     if (marked.length === 0) return cards;
     const fixed = cards.filter((c) => c.kind === 'tools' || c.kind === 'glossary');
-    const shown = marked.reduce((n, c) => n + cardTopicCount(c), 0);
-    const other = Math.max(0, MATRIX_TOPIC_COUNT - shown);
+    const other = OTHER_CERTS_COUNT;
     return [
       ...fixed,
       ...marked,
       ...(other > 0 ? [{ kind: 'more' as const, id: 'more' as const, count: other }] : []),
     ];
-  }, [cards, academy, marks]);
+  }, [cards, academy, lapsed, marks, homeGs, homeBundleKeys, bundles]);
+
+  // "+ N other programs" count for the retitled Career and Business card (user
+  // request 2026-07-22): Academy Program Certificates not represented by a
+  // program-named card currently in the deck.
+  const otherProgramsCount = useMemo(() => {
+    const deck = displayDeck ?? [];
+    let shown = 0;
+    for (const c of deck) {
+      const raw = rawCardTitle(c);
+      if (!raw || raw === OTHER_PROGRAMS_CARD_TITLE) continue;
+      const disp = CARD_TITLE_RENAMES[raw] ?? raw;
+      if (PROGRAM_NAME_SET.has(normProgram(disp))) shown++;
+    }
+    return Math.max(0, PROGRAM_PATHS.length - shown);
+  }, [displayDeck]);
 
   // Selecting a card jumps the view to it instantly (user request 2026-07-18).
   useEffect(() => {
@@ -732,10 +933,53 @@ export function CourseSelectionScreen() {
   }, [navigation]);
 
   const openMore = useCallback(() => {
-    // Curriculum is the first page of the three-up Awards pager (user request
-    // 2026-07-18): Curriculum · Specialization · Program.
-    (navigation as any).navigate('Awards', { category: 'curriculum' });
+    // The far-right tally card links to the Certificates screen (user request
+    // 2026-07-22).
+    (navigation as any).navigate('Awards', { category: 'specialization' });
   }, [navigation]);
+
+  // "+ N other programs" card → the Program page of the Awards pager (user
+  // request 2026-07-22).
+  const openPrograms = useCallback(() => {
+    (navigation as any).navigate('Awards', { category: 'program' });
+  }, [navigation]);
+
+  // A lapsed member's saved Home cards stay put but can't be opened (user request
+  // 2026-07-23).
+  const membershipExpired = useCallback(() => {
+    Alert.alert(
+      'Membership Expired',
+      'Your membership has expired. Renew to open your saved Home cards and continue studying.',
+      [
+        { text: 'Not now', style: 'cancel' },
+        { text: 'Renew', onPress: () => (navigation as any).navigate('Paywall') },
+      ],
+    );
+  }, [navigation]);
+
+  // A user-placed Home topic card → the study area (best-effort; per-topic
+  // deep-link is a follow-up). user request 2026-07-22.
+  const openTopic = useCallback(
+    (gs: number) => {
+      // Expired members KEEP the free content — Pro Audio Safety + DAW (and Tools/
+      // Glossary elsewhere); everything else is locked (user ruling 2026-07-23).
+      if (lapsed && !isFreeEnrollGs(gs)) return membershipExpired();
+      (navigation as any).navigate('Study', { screen: 'Dashboard' });
+    },
+    [navigation, lapsed, membershipExpired],
+  );
+
+  // Opening a Home bundle card LOADS its topics onto the Dashboard, then goes to
+  // study (user request 2026-07-22).
+  const openBundle = useCallback(
+    (key: string, topics: number[]) => {
+      if (lapsed) return membershipExpired();
+      setActiveMany(topics, true);
+      setBundleLoaded(key, true);
+      (navigation as any).navigate('Study', { screen: 'Dashboard' });
+    },
+    [navigation, lapsed, membershipExpired],
+  );
 
   // CM6: open a public course → the commercial dashboard (Study tab), which
   // reads the persisted order and renders the seq-ordered topics.
@@ -810,22 +1054,65 @@ export function CourseSelectionScreen() {
           + programs) and AWARDS (the awards pages, swipeable between all
           categories). */}
       <View style={styles.awards}>
+        {/* Top nav buttons (user request 2026-07-22): Explore · Certificates ·
+            Programs · Pro Registry · Enrollments — each opens the shared swipe
+            pager on its page. */}
         <View style={styles.awardsRow}>
           <Pressable
             style={styles.awardBtn}
             onPress={() => (navigation as any).navigate('Awards', { category: 'curriculum' })}
             accessibilityRole="button"
-            accessibilityLabel="Curriculum and academic goals"
+            accessibilityLabel="Explore the Academy"
           >
-            <Text style={styles.awardBtnText}>CURRICULUM</Text>
+            <Text style={styles.awardBtnText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
+              Explore
+            </Text>
           </Pressable>
           <Pressable
             style={styles.awardBtn}
-            onPress={() => (navigation as any).navigate('Awards', { category: AWARD_ORDER[0] })}
+            onPress={() => (navigation as any).navigate('Awards', { category: 'specialization' })}
             accessibilityRole="button"
-            accessibilityLabel="Awards"
+            accessibilityLabel="Specialization certificates"
           >
-            <Text style={styles.awardBtnText}>AWARDS</Text>
+            <Text style={styles.awardBtnText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
+              Certificates
+            </Text>
+          </Pressable>
+          <Pressable
+            style={styles.awardBtn}
+            onPress={() => (navigation as any).navigate('Awards', { category: 'program' })}
+            accessibilityRole="button"
+            accessibilityLabel="Certificate programs"
+          >
+            <Text style={styles.awardBtnText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
+              Programs
+            </Text>
+          </Pressable>
+          <Pressable
+            style={styles.awardBtn}
+            onPress={() => (navigation as any).navigate('Awards', { category: 'directory' })}
+            accessibilityRole="button"
+            accessibilityLabel="Pro Registry — get discovered"
+          >
+            <Text style={styles.awardBtnText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
+              Pro Registry
+            </Text>
+          </Pressable>
+          {/* Enrollments — GREEN when the user has paid (academy) standing. */}
+          <Pressable
+            style={[styles.awardBtn, entitlement === 'academy' && styles.enrollBtnOn]}
+            onPress={() => (navigation as any).navigate('Awards', { category: 'enrollment' })}
+            accessibilityRole="button"
+            accessibilityLabel="Enrollments"
+          >
+            <Text
+              style={[styles.awardBtnText, entitlement === 'academy' && styles.enrollBtnTextOn]}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.6}
+            >
+              Enrollments
+            </Text>
           </Pressable>
         </View>
       </View>
@@ -838,7 +1125,7 @@ export function CourseSelectionScreen() {
         horizontal
         showsHorizontalScrollIndicator={false}
         keyExtractor={(c) => c.id}
-        extraData={marks}
+        extraData={[marks, otherProgramsCount]}
         snapToInterval={CARD_W + CARD_GAP}
         decelerationRate="fast"
         contentContainerStyle={{ paddingHorizontal: SIDE_PAD, gap: CARD_GAP, alignItems: 'center' }}
@@ -854,9 +1141,13 @@ export function CourseSelectionScreen() {
             onOpenPublic={openPublicCourse}
             onLockedPress={() => setUpgradeOpen(true)}
             onOpenMore={openMore}
+            onOpenPrograms={openPrograms}
+            onOpenTopic={openTopic}
+            onOpenBundle={openBundle}
             academy={academy}
             marked={marks.has(item.id)}
             onToggleMark={() => toggleMark(item.id)}
+            otherProgramsCount={otherProgramsCount}
           />
         )}
       />
@@ -899,10 +1190,10 @@ export function CourseSelectionScreen() {
         }}
       />
 
-      {/* App welcome after load-in. The 2nd (first-user) welcome was removed
-          (user request 2026-07-18) — only one welcome shows. */}
-      {/* Welcome, then "Our Commitment to You" (user request 2026-07-18). */}
-      <ScreenIntroSequence first="appWelcome" second="commitment" />
+      {/* The app WELCOME now greets first-run users BEFORE the login screen
+          (user request 2026-07-23, AppWelcomeOverlay on AuthScreen). Home keeps
+          only the "Our Commitment to You" popup. */}
+      <ScreenIntroOverlay introKey="commitment" delayMs={8000} />
     </View>
   );
 }
@@ -923,18 +1214,22 @@ const styles = StyleSheet.create({
   hero: { alignItems: 'center', gap: 8, marginTop: 6, paddingHorizontal: 24 },
   // Curriculum + Awards links row above the carousel (user request 2026-07-17).
   awards: { marginTop: 8, paddingHorizontal: 20, gap: 6, alignItems: 'center' },
-  awardsRow: { flexDirection: 'row', gap: 8, alignSelf: 'stretch' },
+  // 5 buttons now (user request 2026-07-22) — tighter gap/padding to fit.
+  awardsRow: { flexDirection: 'row', gap: 5, alignSelf: 'stretch' },
   awardBtn: {
     flex: 1,
     alignItems: 'center',
     paddingVertical: 9,
-    paddingHorizontal: 4,
+    paddingHorizontal: 3,
     borderRadius: 8,
     backgroundColor: '#161616',
     borderWidth: 1,
     borderColor: '#2c2c2c',
   },
-  awardBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.5, color: colors.textSecondary },
+  awardBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 0.3, color: colors.textSecondary },
+  // Enrollment button green when the user is paid (academy); gray otherwise.
+  enrollBtnOn: { borderColor: 'rgba(55,224,95,.7)', backgroundColor: 'rgba(55,224,95,.1)' },
+  enrollBtnTextOn: { color: '#37e05f' },
   heroWordmark: {
     fontFamily: fonts.oswaldBold,
     fontSize: 24,
@@ -1008,6 +1303,26 @@ const styles = StyleSheet.create({
   moreLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 2, color: colors.textSecondary },
   moreSub: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.textSub },
   moreCta: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: '#5bb0ff' },
+  // User-placed Home topic card (paid Home customizer, user request 2026-07-22).
+  homeTopicCard: {
+    backgroundColor: '#161225',
+    borderColor: 'rgba(196,162,255,.5)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  homeTopicName: {
+    fontFamily: fonts.oswaldMedium,
+    fontSize: 22,
+    lineHeight: 26,
+    letterSpacing: 0.3,
+    color: '#ffffff',
+    textAlign: 'center',
+    paddingHorizontal: 8,
+    marginTop: 6,
+  },
+  homeTopicSubject: { fontFamily: fonts.barlowRegular, fontSize: 13, color: '#b7a7e0', textAlign: 'center' },
+  homeTopicCta: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.2, color: '#c4a2ff' },
   // Academy "my courses" mark control — icon-only, top-right (user request
   // 2026-07-18).
   markBtn: {

@@ -40,6 +40,13 @@ export type LocalSettings = {
   notifyDailyDefinition: boolean; // 5 — daily audio definitions (guess the term)
   notifyWeeklySummary: boolean; // 6 — weekly learning summaries
   notifyCertProgress: boolean; // 7 — weekly certificate progress updates
+  // Per-notification schedule (device-local; scheduling wires later). Keyed by
+  // the toggle key. `notifyFreq` now holds the DAY (for weekly/new-terms), and
+  // `notifyTime` the specific delivery time as "HH:MM" 24h (user request
+  // 2026-07-23 — replaces the Morning/Midday/Evening presets). `notifyContinue`
+  // uses `continueDays` instead.
+  notifyFreq: Record<string, string>;
+  notifyTime: Record<string, string>;
 };
 
 export const DEFAULT_LOCAL_SETTINGS: LocalSettings = {
@@ -57,7 +64,45 @@ export const DEFAULT_LOCAL_SETTINGS: LocalSettings = {
   notifyDailyDefinition: false,
   notifyWeeklySummary: false,
   notifyCertProgress: false,
+  // Day-of-week for the day+time notifications (weekly + new terms).
+  notifyFreq: {
+    notifyNewTerms: 'Monday',
+    notifyWeeklySummary: 'Monday',
+    notifyCertProgress: 'Monday',
+  },
+  // Specific delivery time per notification, "HH:MM" 24h.
+  notifyTime: {
+    notifyDailyStudy: '08:00',
+    dailyTerms: '08:00',
+    notifyDailyDefinition: '08:00',
+    notifyNewTerms: '09:00',
+    notifyWeeklySummary: '09:00',
+    notifyCertProgress: '09:00',
+  },
 };
+
+/** Days of the week (full name stored; short label shown). */
+export const NOTIFY_DAYS = [
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+  'Sunday',
+] as const;
+export function shortDay(d: string): string {
+  return d.slice(0, 3);
+}
+/** "HH:MM" 24h → "h:mm AM/PM" for display. */
+export function formatClock(hhmm: string): string {
+  const [h, m] = (hhmm || '08:00').split(':').map((n) => parseInt(n, 10));
+  const hh = Number.isFinite(h) ? h : 8;
+  const mm = Number.isFinite(m) ? m : 0;
+  const period = hh >= 12 ? 'PM' : 'AM';
+  const h12 = ((hh + 11) % 12) + 1;
+  return `${h12}:${String(mm).padStart(2, '0')} ${period}`;
+}
 
 /** The 7 commercial notification toggles (device-local), in display order.
  *  `continueDays` (the threshold for #2) is edited by its own stepper. */
@@ -74,6 +119,24 @@ export const COMMERCIAL_NOTIFY_ROWS: {
   { key: 'notifyWeeklySummary', label: 'Weekly learning summaries', hint: 'A recap of your week.' },
   { key: 'notifyCertProgress', label: 'Weekly certificate progress', hint: 'What you finished, what is next, and how far you have to go.' },
 ];
+
+export type CommercialNotifyKey = (typeof COMMERCIAL_NOTIFY_ROWS)[number]['key'];
+
+/** Schedule editor shown when a notification is ON (user request 2026-07-23):
+ *   - 'idleDays' → the days-of-no-use stepper (notifyContinue only).
+ *   - 'time'     → pick a specific time of day (stored in notifyTime).
+ *   - 'dayTime'  → pick a day of week (notifyFreq) AND a time (notifyTime).
+ *  Editing opens a popup from a button on the row's right (one line). */
+export type NotifyFreqMode = 'idleDays' | 'time' | 'dayTime';
+export const NOTIFY_FREQ: Record<CommercialNotifyKey, { mode: NotifyFreqMode; label: string }> = {
+  notifyDailyStudy: { mode: 'time', label: 'When each day' },
+  notifyContinue: { mode: 'idleDays', label: 'Remind me after this many days of no use' },
+  notifyNewTerms: { mode: 'dayTime', label: 'When delivered' },
+  dailyTerms: { mode: 'time', label: 'When each day' },
+  notifyDailyDefinition: { mode: 'time', label: 'When each day' },
+  notifyWeeklySummary: { mode: 'dayTime', label: 'When each week' },
+  notifyCertProgress: { mode: 'dayTime', label: 'When each week' },
+};
 
 const KEY = 'ape:settings';
 

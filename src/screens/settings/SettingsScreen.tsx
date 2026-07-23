@@ -16,6 +16,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Toggle } from '../../components/Toggle';
 import { resetCoachMarks } from '../../lib/coachMark';
+import { resetScreenIntros } from '../../features/intro/screenIntros';
 import { sendFeedback } from '../../lib/feedback';
 import { supabase } from '../../lib/supabase';
 import { colors, fonts } from '../../theme/tokens';
@@ -25,13 +26,18 @@ import {
   DEFAULT_LOCAL_SETTINGS,
   FONT_SIZES,
   fetchNotificationPrefs,
+  formatClock,
   loadLocalSettings,
   NOTIFICATION_ROWS,
+  NOTIFY_FREQ,
   saveLocalSettings,
+  shortDay,
   updateNotificationPref,
+  type CommercialNotifyKey,
   type LocalSettings,
   type NotificationPrefs,
 } from '../../features/settings/store';
+import { NotifyScheduleModal } from '../../features/settings/NotifyScheduleModal';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
@@ -59,6 +65,25 @@ export function SettingsScreen({ navigation }: Props) {
       return next;
     });
   }, []);
+
+  // Per-notification day (dayTime modes) — device-local.
+  const setFreq = useCallback((key: string, value: string) => {
+    setLocal((prev) => {
+      const next = { ...prev, notifyFreq: { ...prev.notifyFreq, [key]: value } };
+      void saveLocalSettings(next);
+      return next;
+    });
+  }, []);
+  // Per-notification delivery time ("HH:MM") — device-local (user request 2026-07-23).
+  const setTime = useCallback((key: string, value: string) => {
+    setLocal((prev) => {
+      const next = { ...prev, notifyTime: { ...prev.notifyTime, [key]: value } };
+      void saveLocalSettings(next);
+      return next;
+    });
+  }, []);
+  // Which notification's schedule popup is open (user request 2026-07-23).
+  const [picker, setPicker] = useState<CommercialNotifyKey | null>(null);
 
   const confirmLogout = useCallback(() => {
     Alert.alert('Log out?', 'You can sign in as a different user afterward.', [
@@ -109,45 +134,41 @@ export function SettingsScreen({ navigation }: Props) {
               />
             </View>
           ))}
-          {/* The 7 commercial notifications (user request 2026-07-18). */}
-          {COMMERCIAL_NOTIFY_ROWS.map((row, i) => (
-            <View key={row.key}>
-              <View style={[styles.row, i < COMMERCIAL_NOTIFY_ROWS.length - 1 && styles.rowBorder]}>
-                <View style={{ flex: 1, paddingRight: 12 }}>
+          {/* The 7 commercial notifications (user request 2026-07-18). Turning
+              one ON reveals its frequency editor; the toggle is the "turn off",
+              the editor is the "edit". */}
+          {/* Each notification is ONE line: label · (schedule button when ON) ·
+              toggle. The schedule button opens a popup that picks a specific time
+              (and day, for weekly / new terms) — user request 2026-07-23. */}
+          {COMMERCIAL_NOTIFY_ROWS.map((row, i) => {
+            const on = local[row.key];
+            const freq = NOTIFY_FREQ[row.key];
+            const summary =
+              freq.mode === 'idleDays'
+                ? `${local.continueDays} ${local.continueDays === 1 ? 'day' : 'days'}`
+                : freq.mode === 'dayTime'
+                  ? `${shortDay(local.notifyFreq[row.key] ?? 'Monday')} · ${formatClock(local.notifyTime[row.key] ?? '09:00')}`
+                  : formatClock(local.notifyTime[row.key] ?? '08:00');
+            return (
+              <View key={row.key} style={[styles.row, i < COMMERCIAL_NOTIFY_ROWS.length - 1 && styles.rowBorder]}>
+                <View style={{ flex: 1, paddingRight: 10 }}>
                   <Text style={styles.rowLabel}>{row.label}</Text>
-                  <Text style={styles.rowHint}>{row.hint}</Text>
+                  {!on ? <Text style={styles.rowHint}>{row.hint}</Text> : null}
                 </View>
-                <Toggle on={local[row.key]} onChange={(v) => setLocalKey(row.key, v)} />
+                {on ? (
+                  <Pressable
+                    style={styles.schedBtn}
+                    onPress={() => setPicker(row.key)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Edit ${row.label} schedule, currently ${summary}`}
+                  >
+                    <Text style={styles.schedText}>{summary}</Text>
+                  </Pressable>
+                ) : null}
+                <Toggle on={on} onChange={(v) => setLocalKey(row.key, v)} />
               </View>
-              {/* #2 threshold — days of no use before the reminder fires. */}
-              {row.key === 'notifyContinue' && local.notifyContinue ? (
-                <View style={[styles.row, styles.rowBorder, { paddingLeft: 12 }]}>
-                  <Text style={styles.rowHint}>Remind me after this many days of no use</Text>
-                  <View style={styles.stepper}>
-                    <Pressable
-                      style={styles.stepBtn}
-                      onPress={() => setLocalKey('continueDays', Math.max(1, local.continueDays - 1))}
-                      accessibilityRole="button"
-                      accessibilityLabel="Fewer days"
-                    >
-                      <Text style={styles.stepGlyph}>−</Text>
-                    </Pressable>
-                    <Text style={styles.stepValue}>
-                      {local.continueDays} {local.continueDays === 1 ? 'day' : 'days'}
-                    </Text>
-                    <Pressable
-                      style={styles.stepBtn}
-                      onPress={() => setLocalKey('continueDays', Math.min(30, local.continueDays + 1))}
-                      accessibilityRole="button"
-                      accessibilityLabel="More days"
-                    >
-                      <Text style={styles.stepGlyph}>+</Text>
-                    </Pressable>
-                  </View>
-                </View>
-              ) : null}
-            </View>
-          ))}
+            );
+          })}
         </View>
 
         {/* DISPLAY */}
@@ -262,23 +283,40 @@ export function SettingsScreen({ navigation }: Props) {
         </View>
 
         {/* DEV — only in development builds; not shipped to students. */}
-        {__DEV__ && (
-          <View>
-            <Text style={styles.sectionEyebrow}>DEV</Text>
-            <Pressable
-              style={styles.row}
-              onPress={() =>
-                resetCoachMarks().then(() =>
-                  Alert.alert('Hints reset', 'Onboarding hints will show again on next open.'),
-                )
-              }
-            >
-              <Text style={styles.rowLabel}>Reset onboarding hints</Text>
-              <Text style={[styles.mono, { color: colors.amber }]}>RESET</Text>
-            </Pressable>
-          </View>
-        )}
+        <View>
+          <Text style={styles.sectionEyebrow}>ONBOARDING</Text>
+          <Pressable
+            style={styles.row}
+            onPress={() =>
+              Promise.all([resetCoachMarks(), resetScreenIntros()]).then(() =>
+                Alert.alert(
+                  'Hints reset',
+                  'Onboarding hints and the welcome greeting will show again on next open.',
+                ),
+              )
+            }
+          >
+            <Text style={styles.rowLabel}>Reset onboarding hints</Text>
+            <Text style={[styles.mono, { color: colors.amber }]}>RESET</Text>
+          </Pressable>
+        </View>
       </ScrollView>
+
+      {/* Notification schedule popup (user request 2026-07-23). */}
+      {picker ? (
+        <NotifyScheduleModal
+          visible
+          title={COMMERCIAL_NOTIFY_ROWS.find((r) => r.key === picker)?.label ?? 'Schedule'}
+          mode={NOTIFY_FREQ[picker].mode}
+          time={local.notifyTime[picker] ?? '08:00'}
+          day={local.notifyFreq[picker] ?? 'Monday'}
+          days={local.continueDays}
+          onSetTime={(hhmm) => setTime(picker, hhmm)}
+          onSetDay={(d) => setFreq(picker, d)}
+          onSetDays={(n) => setLocalKey('continueDays', n)}
+          onClose={() => setPicker(null)}
+        />
+      ) : null}
     </View>
   );
 }
@@ -344,6 +382,16 @@ const styles = StyleSheet.create({
   cbChipActive: { backgroundColor: '#1d1607', borderColor: 'rgba(255,180,0,.65)' },
   cbChipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.9, color: '#999999' },
   cbChipTextActive: { color: colors.amber },
+
+  // One-line schedule button on the right of a notification row (user request
+  // 2026-07-23) — opens the time/day popup.
+  schedBtn: { borderWidth: 1, borderColor: 'rgba(255,198,77,.55)', backgroundColor: 'rgba(255,198,77,.1)', borderRadius: 7, paddingVertical: 6, paddingHorizontal: 10, marginRight: 10 },
+  schedText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.4, color: colors.amber },
+
+  // Per-notification frequency editor (user request 2026-07-18).
+  freqBlock: { paddingLeft: 12, paddingBottom: 12, paddingTop: 2, gap: 8 },
+  freqLabel: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textMuted },
+  freqChipWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
 
   // "Days of no use" stepper (user request 2026-07-18).
   stepper: { flexDirection: 'row', alignItems: 'center', gap: 10 },

@@ -1,19 +1,16 @@
 /**
- * S1 — Login / Registration (AUTH_FLOW v1.1 wireframes authoritative; visuals
- * from design-reference 10-s1-register / 11-s1-sign-in).
+ * S1 — single entry screen (user request 2026-07-22). One screen, three actions:
+ *   • GUEST MODE (Free) — enter the app with no account (device-local, nothing
+ *     saved).
+ *   • CREATE ACCOUNT — email + password (+ optional organization/promo access
+ *     code) → an individual account.
+ *   • LOGIN — email + password for a returning user, with "Stay logged in" so
+ *     the session is remembered and this screen is bypassed next time.
  *
- * States: Sign-In · Register "Step 1 of 2 — Verify" (AP&E ID + code) ·
- * Register "Step 2 of 2 — Create Account" (email + password + confirm).
- *
- * ⚠️ Flow note (flagged D-2, needs Booth ruling): the deployed backend has NO
- * pre-session verify RPC and anon cannot read `users`, so Step-1 [VERIFY] is
- * LOCAL validation only; the real ID/code check happens inside CREATE ACCOUNT
- * (signUp → register_student). RPC failures route back to Step 1 with the
- * locked error copy. Consequence: the wireframe's "Welcome, [Nickname]!"
- * cannot show a real nickname pre-registration — we render "Welcome!".
- *
- * Routing (seed brief §2): register success → Course Selection (Home tab) ·
- * sign-in success → Dashboard (Study tab).
+ * The organization access code is optional and, alongside a promo code, is added
+ * to the credentials above at CREATE ACCOUNT time. Backend is frozen, so the
+ * server wiring for the code + real session persistence lands later; the mock
+ * entitlement setter is __DEV__-guarded (release builds defer to the server).
  */
 import { useState } from 'react';
 import {
@@ -26,68 +23,53 @@ import {
   Text,
   View,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { BrandLogo } from '../../components/BrandLogo';
 import { StudioButton } from '../../components/StudioButton';
 import { TextField } from '../../components/TextField';
 import { colors, fonts, spacing } from '../../theme/tokens';
-import {
-  EMAIL_RE,
-  REGISTER_ERROR_COPY,
-  ensureSession,
-  passwordIssue,
-  registerStudent,
-  resetPassword,
-  signIn,
-} from '../../features/auth/api';
+import { EMAIL_RE, passwordIssue, resetPassword, signIn } from '../../features/auth/api';
 import { COPY } from '../../lib/copy';
 import { registerCommercialUser } from '../../features/commercial/commercialAuth';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { AppWelcomeOverlay } from '../../features/intro/AppWelcomeOverlay';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Auth'>;
-// CM5: 'commercial' = open email+password signup (no class code required).
-type Mode = 'signIn' | 'register1' | 'register2' | 'commercial';
+
+const STAY_KEY = 'ape:stayLoggedIn';
 
 export function AuthScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
-  // CM5: in commercialMode the default register path is the open (email+
-  // password) signup; the class-code path stays reachable via a link.
-  const { commercialMode, setEntitlement } = useEntitlement();
-  const [mode, setMode] = useState<Mode>(commercialMode ? 'commercial' : 'register1');
+  const { setEntitlement } = useEntitlement();
 
-  // Register fields
-  const [apeId, setApeId] = useState('');
-  const [regCode, setRegCode] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirm, setConfirm] = useState('');
+  // Optional organization invitation / promo / access code (user request
+  // 2026-07-22).
+  const [accessCode, setAccessCode] = useState('');
+  const [stayLoggedIn, setStayLoggedIn] = useState(true);
 
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const switchMode = (m: Mode) => {
-    setError(null);
-    setInfo(null);
-    setMode(m);
+  const persistStay = () => AsyncStorage.setItem(STAY_KEY, stayLoggedIn ? '1' : '0');
+
+  const toHome = () => navigation.reset({ index: 0, routes: [{ name: 'Main', params: { screen: 'Home' } }] });
+
+  /* GUEST MODE — free, no account, nothing saved. */
+  const enterGuest = () => {
+    setEntitlement('anonymous');
+    toHome();
   };
 
-  /* Step 1 [VERIFY] — local validation only (see header note). */
-  const onVerify = () => {
-    const id = apeId.trim().toUpperCase();
-    if (!id || !regCode.trim()) {
-      setError('Enter your AP&E Student ID and registration code.');
-      return;
-    }
-    setApeId(id);
-    switchMode('register2');
-  };
-
-  /* Step 2 [CREATE ACCOUNT] — signUp → register_student. */
+  /* CREATE ACCOUNT — email + password (+ optional access/promo code). */
   const onCreateAccount = async () => {
     setError(null);
+    setInfo(null);
     if (!EMAIL_RE.test(email.trim())) {
       setError('Enter a valid email address.');
       return;
@@ -97,69 +79,29 @@ export function AuthScreen({ navigation }: Props) {
       setError(pwIssue);
       return;
     }
-    if (password !== confirm) {
-      setError('Passwords do not match.');
-      return;
-    }
-
     setBusy(true);
     try {
-      const sessionErr = await ensureSession(email.trim(), password);
-      if (sessionErr) {
-        setError(sessionErr);
-        return;
-      }
-      const result = await registerStudent(apeId.trim(), regCode.trim());
-      if (result.success) {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'Main', params: { screen: 'Home' } }],
-        });
-        return;
-      }
-      // ID/code rejected → back to Step 1 with the locked copy. The auth
-      // session is kept so a corrected retry skips signUp (resumable flow).
-      setMode(result.error_code === 'internal_error' ? 'register2' : 'register1');
-      setError(REGISTER_ERROR_COPY[result.error_code] ?? REGISTER_ERROR_COPY.internal_error);
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  /* CM5 [CREATE ACCOUNT] commercial — open email+password (RPC stubbed). */
-  const onCreateCommercial = async () => {
-    setError(null);
-    if (!EMAIL_RE.test(email.trim())) {
-      setError('Enter a valid email address.');
-      return;
-    }
-    const pwIssue = passwordIssue(password);
-    if (pwIssue) {
-      setError(pwIssue);
-      return;
-    }
-    if (password !== confirm) {
-      setError('Passwords do not match.');
-      return;
-    }
-    setBusy(true);
-    try {
+      // NOTE: the access/org/promo code is captured here and will be applied to
+      // the new account once the server accepts it (backend frozen). The open
+      // commercial signup handles the email + password today.
       const result = await registerCommercialUser(email.trim(), password);
       if (!result.success) {
         setError(result.error);
         return;
       }
-      // Mock entitlement → 'free' post-signup (server truth once wired; setter
-      // is __DEV__-guarded so release builds no-op and defer to the server).
+      await persistStay();
+      // Mock entitlement → 'free' post-signup (server truth once wired).
       setEntitlement('free');
-      navigation.reset({ index: 0, routes: [{ name: 'Main', params: { screen: 'Home' } }] });
+      toHome();
     } finally {
       setBusy(false);
     }
   };
 
-  const onSignIn = async () => {
+  /* LOGIN — returning user; "Stay logged in" remembers the session. */
+  const onLogin = async () => {
     setError(null);
+    setInfo(null);
     if (!EMAIL_RE.test(email.trim()) || !password) {
       setError('Enter your email and password.');
       return;
@@ -171,6 +113,7 @@ export function AuthScreen({ navigation }: Props) {
         setError(err);
         return;
       }
+      await persistStay();
       navigation.reset({ index: 0, routes: [{ name: 'Main' }] }); // Study tab = Dashboard
     } finally {
       setBusy(false);
@@ -194,15 +137,8 @@ export function AuthScreen({ navigation }: Props) {
     }
   };
 
-  const isRegister = mode !== 'signIn';
-  const isTwoStep = mode === 'register1' || mode === 'register2'; // class-code flow
-  const step = mode === 'register1' ? 1 : 2;
-
   return (
-    <KeyboardAvoidingView
-      style={styles.root}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
+    <KeyboardAvoidingView style={styles.root} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView
         contentContainerStyle={[
           styles.scroll,
@@ -210,198 +146,117 @@ export function AuthScreen({ navigation }: Props) {
         ]}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Header — logo 104 + wordmark (design-reference) */}
+        {/* Header — logo + wordmark */}
         <View style={styles.header}>
           <BrandLogo size={104} />
           <Text style={styles.wordmark}>
             Pro Audio <Text style={styles.wordmarkAccent}>Training Academy</Text>
           </Text>
-          {mode === 'signIn' && <Text style={styles.glossaryEyebrow}>PROFESSIONAL AUDIO GLOSSARY</Text>}
         </View>
 
-        {/* Step indicator — class-code (two-step) flow only. */}
-        {isTwoStep && (
-          <View>
-            <Text style={styles.stepLabel}>
-              {step === 1 ? 'STEP 1 OF 2 — VERIFY' : 'STEP 2 OF 2 — CREATE ACCOUNT'}
-            </Text>
-            <View style={styles.stepBars}>
-              <View style={[styles.stepBar, styles.stepBarLit]} />
-              <View style={[styles.stepBar, step === 2 && styles.stepBarLit]} />
-            </View>
-          </View>
-        )}
-
-        {mode === 'commercial' && <Text style={styles.welcome}>Create your account</Text>}
         {/* Beta pricing note on signup (Booth 2026-07-18). */}
-        {mode === 'commercial' && <Text style={styles.betaNote}>{COPY.betaPricingNote}</Text>}
-        {mode === 'register2' && <Text style={styles.welcome}>Welcome!</Text>}
+        <Text style={styles.betaNote}>{COPY.betaPricingNote}</Text>
 
-        {/* Fields */}
-        {mode === 'register1' && (
-          <>
-            <TextField
-              label="AP&E Student ID"
-              value={apeId}
-              onChangeText={setApeId}
-              placeholder="APE-2026-0148"
-              mono
-              autoCapitalize="characters"
-            />
-            <TextField
-              label="Registration Code"
-              value={regCode}
-              onChangeText={setRegCode}
-              placeholder="Enter the code from your professor"
-              autoCapitalize="characters"
-            />
-          </>
-        )}
+        {/* Credentials */}
+        <TextField
+          label="Email"
+          value={email}
+          onChangeText={setEmail}
+          placeholder="you@email.com"
+          keyboardType="email-address"
+        />
+        <TextField label="Password" value={password} onChangeText={setPassword} password />
 
-        {(mode === 'register2' || mode === 'commercial') && (
-          <>
-            <TextField
-              label="Email"
-              value={email}
-              onChangeText={setEmail}
-              placeholder={mode === 'commercial' ? 'you@email.com' : 'you@student.miramar.edu'}
-              keyboardType="email-address"
-            />
-            <TextField label="Password" value={password} onChangeText={setPassword} password />
-            <TextField label="Confirm Password" value={confirm} onChangeText={setConfirm} password />
-          </>
-        )}
+        {/* Optional organization / promo access code + its explanation. */}
+        <TextField
+          label="Access or promo code (optional)"
+          value={accessCode}
+          onChangeText={setAccessCode}
+          placeholder="Enter a code, if you have one"
+          autoCapitalize="characters"
+        />
+        <Text style={styles.codeHint}>
+          Join with an access code — enter the invitation or access code provided by your employer, school, church,
+          training organization, or other sponsoring institution.
+        </Text>
 
-        {mode === 'signIn' && (
-          <>
-            <TextField
-              label="Email"
-              value={email}
-              onChangeText={setEmail}
-              placeholder="you@student.miramar.edu"
-              keyboardType="email-address"
-            />
-            <TextField label="Password" value={password} onChangeText={setPassword} password />
-          </>
-        )}
+        {/* Stay logged in (login convenience). */}
+        <Pressable
+          style={styles.stayRow}
+          onPress={() => setStayLoggedIn((v) => !v)}
+          accessibilityRole="checkbox"
+          accessibilityState={{ checked: stayLoggedIn }}
+          accessibilityLabel="Stay logged in"
+        >
+          <View style={[styles.stayBox, stayLoggedIn && styles.stayBoxOn]}>
+            {stayLoggedIn ? <Text style={styles.stayCheck}>✓</Text> : null}
+          </View>
+          <Text style={styles.stayLabel}>Stay logged in on this device</Text>
+        </Pressable>
 
         {/* Error / info */}
         {error && <Text style={styles.error}>{error}</Text>}
         {info && <Text style={styles.info}>{info}</Text>}
 
-        {/* Primary action */}
+        {/* Actions */}
         {busy ? (
           <View style={styles.busyWrap}>
             <ActivityIndicator color={colors.amber} />
           </View>
         ) : (
-          <StudioButton
-            label={
-              mode === 'register1'
-                ? 'Verify'
-                : mode === 'register2' || mode === 'commercial'
-                  ? 'Create Account'
-                  : 'Sign In'
-            }
-            variant="primary"
-            onPress={
-              mode === 'register1'
-                ? onVerify
-                : mode === 'commercial'
-                  ? onCreateCommercial
-                  : mode === 'register2'
-                    ? onCreateAccount
-                    : onSignIn
-            }
-          />
+          <View style={styles.btnStack}>
+            <StudioButton label="Create Account" variant="primary" onPress={onCreateAccount} />
+            <StudioButton label="Login" variant="secondary" onPress={onLogin} />
+            <StudioButton label="Guest Mode (Free)" variant="secondary" onPress={enterGuest} />
+          </View>
         )}
 
-        {/* Footer links (locked copy) */}
-        {mode === 'signIn' ? (
-          <>
-            <Text style={styles.footerText}>
-              Forgot password?{' '}
-              <Text style={styles.footerLink} onPress={busy ? undefined : onResetPassword}>
-                Reset via email
-              </Text>
-            </Text>
-            <Text style={styles.footerText}>
-              New user?{' '}
-              <Text
-                style={styles.footerLink}
-                onPress={() => switchMode(commercialMode ? 'commercial' : 'register1')}
-              >
-                Register
-              </Text>
-            </Text>
-          </>
-        ) : (
-          <Text style={styles.footerText}>
-            Already have an account?{' '}
-            <Text style={styles.footerLink} onPress={() => switchMode('signIn')}>
-              Sign In
-            </Text>
+        {/* Footer — password reset */}
+        <Text style={styles.footerText}>
+          Forgot password?{' '}
+          <Text style={styles.footerLink} onPress={busy ? undefined : onResetPassword}>
+            Reset via email
           </Text>
-        )}
-
-        {/* CM5: commercial signup keeps the class-code path one tap away. */}
-        {mode === 'commercial' && (
-          <Pressable onPress={() => switchMode('register1')} hitSlop={8}>
-            <Text style={styles.classCodeLink}>I have a class code</Text>
-          </Pressable>
-        )}
-
-        {mode === 'register2' && (
-          <Pressable onPress={() => switchMode('register1')} hitSlop={8}>
-            <Text style={styles.backLink}>‹ Back to Step 1</Text>
-          </Pressable>
-        )}
-
-        {/* CM5: from the class-code flow, offer the open path back. */}
-        {mode === 'register1' && commercialMode && (
-          <Pressable onPress={() => switchMode('commercial')} hitSlop={8}>
-            <Text style={styles.classCodeLink}>No class code? Create a personal account</Text>
-          </Pressable>
-        )}
+        </Text>
+        <Text style={styles.guestNote}>Guest Mode is free — but your progress isn’t saved without an account.</Text>
       </ScrollView>
+
+      {/* First-run greeting, shown OVER the login screen (user request 2026-07-23). */}
+      <AppWelcomeOverlay />
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
-  scroll: { paddingHorizontal: 20, gap: 18 },
+  scroll: { paddingHorizontal: 20, gap: 16 },
   header: { alignItems: 'center', gap: spacing.sm, marginTop: 6 },
   wordmark: { fontFamily: fonts.oswaldBold, fontSize: 21, color: colors.textPrimary, paddingVertical: 5 },
   wordmarkAccent: { fontFamily: fonts.oswaldMedium, color: colors.amber },
-  glossaryEyebrow: {
-    fontFamily: fonts.oswaldSemiBold,
-    fontSize: 9,
-    letterSpacing: 2.1,
-    color: '#7a7a7a',
-  },
-  stepLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.7, color: '#cccccc' },
-  stepBars: { flexDirection: 'row', gap: 6, marginTop: spacing.sm },
-  stepBar: { flex: 1, height: 4, borderRadius: 2, backgroundColor: '#2a2a2a' },
-  stepBarLit: {
-    backgroundColor: colors.amberDeep,
-    shadowColor: 'rgba(255,180,0,.5)',
-    shadowOpacity: 1,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 0 },
-  },
-  welcome: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, color: colors.textPrimary },
   // Beta pricing note (Booth 2026-07-18).
   betaNote: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.amberLabel },
+  // Access-code explanation (user request 2026-07-22).
+  codeHint: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: colors.textSub, marginTop: -8 },
+  // Stay-logged-in checkbox row.
+  stayRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  stayBox: {
+    width: 22,
+    height: 22,
+    borderRadius: 5,
+    borderWidth: 1.5,
+    borderColor: '#3a3a3a',
+    backgroundColor: '#141414',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stayBoxOn: { borderColor: 'rgba(55,224,95,.7)', backgroundColor: 'rgba(55,224,95,.12)' },
+  stayCheck: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: '#37e05f' },
+  stayLabel: { fontFamily: fonts.barlowMedium, fontSize: 14, color: colors.textSecondary },
   error: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 19, color: colors.red },
   info: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 19, color: colors.green },
   busyWrap: { height: 48, alignItems: 'center', justifyContent: 'center' },
-  footerText: {
-    textAlign: 'center',
-    fontFamily: fonts.barlowRegular,
-    fontSize: 13,
-    color: '#888888',
-  },
+  btnStack: { gap: 12 },
+  footerText: { textAlign: 'center', fontFamily: fonts.barlowRegular, fontSize: 13, color: '#888888' },
   footerLink: {
     fontFamily: fonts.barlowSemiBold,
     color: colors.amber,
@@ -409,17 +264,5 @@ const styles = StyleSheet.create({
     textShadowRadius: 6,
     textShadowOffset: { width: 0, height: 0 },
   },
-  backLink: {
-    textAlign: 'center',
-    fontFamily: fonts.barlowRegular,
-    fontSize: 13,
-    color: colors.textMuted,
-  },
-  classCodeLink: {
-    textAlign: 'center',
-    fontFamily: fonts.barlowSemiBold,
-    fontSize: 13,
-    color: '#5bb0ff',
-    textDecorationLine: 'underline',
-  },
+  guestNote: { textAlign: 'center', fontFamily: fonts.barlowRegular, fontSize: 12, color: colors.textMuted },
 });

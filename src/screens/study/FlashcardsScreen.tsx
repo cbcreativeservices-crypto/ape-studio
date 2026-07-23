@@ -50,7 +50,8 @@ import { BookmarkIcon, TermSelectIcons } from '../../features/flags/TermSelectIc
 import { LowLightDim } from '../../features/settings/LowLightLayer';
 import { consumeDevPreview } from '../../features/dev/devPreview';
 import { devBypass } from '../../config/devMode';
-import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
+import { IntroSheet, ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
+import { INTRO_STORAGE_PREFIX } from '../../features/intro/screenIntros';
 import { StudySession } from '../../features/study/sync';
 import { saveLocalMethodStates } from '../../features/study/localProgress';
 import { StudyHeader } from './StudyHeader';
@@ -450,6 +451,74 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     else if (consumeDevPreview('flashcards:termlist')) openTermList('Bookmarks', 'bookmark');
   }, [openTermList]);
 
+  // ---- Flashcard tutorials T2 (Customize) + T3 (Power Features), user request
+  // 2026-07-18. T1 (Flashcards) is the on-entry ScreenIntroOverlay below. Each
+  // shows once (persisted), or every time under the dev "alwaysShowIntros" flag.
+  const [tutorial, setTutorial] = useState<
+    null | { key: 'flashcardsCustomize' | 'flashcardsPower'; onDone?: () => void }
+  >(null);
+  const t2Done = useRef(false);
+  const t3Done = useRef(false);
+  const swipeCount = useRef(0);
+  // Offer the "Customize Your Deck" tutorial at most ONCE per screen visit — the
+  // swipe trigger was re-firing it every swipe past 5 (and every time under the
+  // dev always-show-intros bypass), so it kept popping back up (user report
+  // 2026-07-23).
+  const t2Offered = useRef(false);
+
+  useEffect(() => {
+    void AsyncStorage.multiGet([
+      INTRO_STORAGE_PREFIX + 'flashcardsCustomize',
+      INTRO_STORAGE_PREFIX + 'flashcardsPower',
+    ]).then((pairs) => {
+      for (const [k, v] of pairs) {
+        if (v == null) continue;
+        if (k.endsWith('flashcardsPower')) t3Done.current = true;
+        else t2Done.current = true;
+      }
+    });
+  }, []);
+
+  const showTutorial = useCallback(
+    (key: 'flashcardsCustomize' | 'flashcardsPower', onDone?: () => void) => {
+      setTutorial((cur) => (cur ? cur : { key, onDone }));
+      if (key === 'flashcardsPower') t3Done.current = true;
+      else t2Done.current = true;
+      if (!devBypass('alwaysShowIntros')) void AsyncStorage.setItem(INTRO_STORAGE_PREFIX + key, '1');
+    },
+    [],
+  );
+  const showTutorialRef = useRef(showTutorial);
+  showTutorialRef.current = showTutorial;
+
+  const dismissTutorial = useCallback(() => {
+    setTutorial((cur) => {
+      cur?.onDone?.();
+      return null;
+    });
+  }, []);
+
+  // T3 opened via a category long-press: show the tutorial first, then continue
+  // to the list the user was reaching for. Otherwise open the list directly.
+  const handleChipLongPress = useCallback(
+    (title: string, key: TermListSelKey) => {
+      if (devBypass('alwaysShowIntros') || !t3Done.current) {
+        showTutorial('flashcardsPower', () => openTermList(title, key));
+      } else {
+        openTermList(title, key);
+      }
+    },
+    [showTutorial, openTermList],
+  );
+
+  // T3 timed fallback (~45s) if long-press hasn't been discovered.
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (devBypass('alwaysShowIntros') || !t3Done.current) showTutorialRef.current('flashcardsPower');
+    }, 45000);
+    return () => clearTimeout(t);
+  }, []);
+
   // Term name lookup for the loaded deck.
   const itemsById = useMemo(
     () => new Map((items ?? []).map((it) => [it.id, it.term] as const)),
@@ -615,6 +684,14 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     toggleBookmark(card.id);
   }, [card]);
 
+  /** Toggle the current card on the ★ CUSTOM LIST (starred) — so each term can
+   *  be assigned to either list from the card (user request 2026-07-23). */
+  const toggleStarTerm = useCallback(() => {
+    if (!card) return;
+    if (!dwellOk()) return;
+    setInTermList('starred', card.id, !starred.has(card.id));
+  }, [card, starred]);
+
   // A full round trip = reveal this card's definition, THEN move to another
   // card (term→definition→next term). Counted in goCard, not on reveal alone.
   const revealedCurrent = useRef(false);
@@ -650,6 +727,16 @@ export function FlashcardsScreen({ navigation, route }: Props) {
       setIdx((i) => (i + dir + deck.length) % deck.length);
       setLevel(0);
       setRevealedThisVisit(new Set());
+      // T2 trigger: after ~5 swipes, offer the "Customize Your Deck" tutorial.
+      swipeCount.current += 1;
+      if (
+        swipeCount.current >= 5 &&
+        !t2Offered.current &&
+        (devBypass('alwaysShowIntros') || !t2Done.current)
+      ) {
+        t2Offered.current = true;
+        showTutorialRef.current('flashcardsCustomize');
+      }
     },
     [deck.length, coach],
   );
@@ -922,7 +1009,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             label="ALL"
             active={diffSel.size === 0}
             onPress={() => { setDiffSel(new Set()); resetToStart(); }}
-            onLongPress={() => openTermList('All terms', 'all')}
+            onLongPress={() => handleChipLongPress('All terms', 'all')}
           />
           <FilterChip label="A–Z" active={orderMode === 'az'} onPress={() => { setOrderMode('az'); resetToStart(); }} />
           <FilterChip
@@ -982,7 +1069,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                 });
                 resetToStart();
               }}
-              onLongPress={() => openTermList(d === 'beginner' ? 'Beginner' : d === 'intermediate' ? 'Intermediate' : 'Advanced', d)}
+              onLongPress={() => handleChipLongPress(d === 'beginner' ? 'Beginner' : d === 'intermediate' ? 'Intermediate' : 'Advanced', d)}
             />
           ))}
           <FilterChip
@@ -990,14 +1077,14 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             active={unseenOnly}
             activeTint="blue"
             onPress={() => { setUnseenOnly((v) => !v); resetToStart(); }}
-            onLongPress={() => openTermList('Unseen terms', 'unseen')}
+            onLongPress={() => handleChipLongPress('Unseen terms', 'unseen')}
           />
           <FilterChip
             label="KNOWN"
             active={showKnown}
             activeTint="green"
             onPress={() => { setShowKnown((v) => !v); resetToStart(); }}
-            onLongPress={() => openTermList('Known terms', 'known')}
+            onLongPress={() => handleChipLongPress('Known terms', 'known')}
           />
           {/* Icon-only BOOKMARK chip (user request 2026-07-18 — replaces the ⚑
               flag). Filters the deck to bookmarked terms; hold shows the list. */}
@@ -1007,7 +1094,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             active={bookmarkedOnly}
             activeTint="orange"
             onPress={() => { setBookmarkedOnly((v) => !v); resetToStart(); }}
-            onLongPress={() => openTermList('Bookmarks', 'bookmark')}
+            onLongPress={() => handleChipLongPress('Bookmarks', 'bookmark')}
           />
           {/* ★ = the user's CUSTOM LIST (Booth 2026-07-18 naming). */}
           <FilterChip
@@ -1015,7 +1102,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             active={starredOnly}
             activeTint="amber"
             onPress={() => { setStarredOnly((v) => !v); resetToStart(); }}
-            onLongPress={() => openTermList('Custom list', 'starred')}
+            onLongPress={() => handleChipLongPress('Custom list', 'starred')}
           />
         </View>
 
@@ -1045,6 +1132,19 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                     filled={bookmarked.has(card.id)}
                     size={20}
                   />
+                </Pressable>
+                {/* ★ custom-list toggle next to the bookmark, so a term can go on
+                    either list (user request 2026-07-23). */}
+                <Pressable
+                  style={styles.cardStar}
+                  onPress={toggleStarTerm}
+                  hitSlop={10}
+                  accessibilityRole="button"
+                  accessibilityLabel={starred.has(card.id) ? 'Remove from custom list' : 'Add to custom list'}
+                >
+                  <Text style={[styles.cardStarText, starred.has(card.id) && styles.cardStarOn]}>
+                    {starred.has(card.id) ? '★' : '☆'}
+                  </Text>
                 </Pressable>
                 {isHazardTerm(card.term) ? (
                   <View style={{ marginBottom: 10 }}>
@@ -1380,7 +1480,9 @@ export function FlashcardsScreen({ navigation, route }: Props) {
         />
       ) : null}
 
+      {/* T1 on entry; T2/T3 fire on the triggers above. */}
       <ScreenIntroOverlay introKey="flashcards" />
+      {tutorial ? <IntroSheet introKey={tutorial.key} onDismiss={dismissTutorial} /> : null}
     </View>
   );
 }
@@ -1522,6 +1624,10 @@ const styles = StyleSheet.create({
   },
   // Card flag star (Booth 2026-07-18) — mirrors the Glossary's star.
   cardFlag: { position: 'absolute', top: 8, right: 10, zIndex: 2 },
+  // ★ custom-list toggle, sitting just left of the bookmark (user request 2026-07-23).
+  cardStar: { position: 'absolute', top: 6, right: 40, zIndex: 2 },
+  cardStarText: { fontSize: 21, lineHeight: 23, color: colors.textMuted },
+  cardStarOn: { color: colors.amber },
   cardFlagStar: { fontSize: 20, color: colors.textMuted },
   cardFlagStarOn: {
     color: colors.amber,

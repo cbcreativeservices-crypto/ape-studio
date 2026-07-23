@@ -94,14 +94,23 @@ export function segmentsForPct(pct: number): number {
 const styles = StyleSheet.create({
   // Default now matches the Dashboard study-method meter (Booth 2026-07-11):
   // full-width stretched housing + taller 10px raised blocks, app-wide.
+  // Wrapped in a small BLACK PLASTIC BEVEL (user request 2026-07-22): a raised
+  // molded frame — top/left edges catch light, bottom/right fall into shadow.
   housing: {
     width: '100%',
     alignSelf: 'stretch',
-    padding: 4,
-    backgroundColor: '#0a0a0a',
-    borderWidth: 1,
-    borderColor: '#000000',
-    borderRadius: 3,
+    paddingVertical: 4,
+    paddingHorizontal: 5,
+    backgroundColor: '#080808',
+    borderTopWidth: 1.5,
+    borderLeftWidth: 1.5,
+    borderBottomWidth: 2.5,
+    borderRightWidth: 2.5,
+    borderTopColor: '#3a3a3a',
+    borderLeftColor: '#2b2b2b',
+    borderBottomColor: '#000000',
+    borderRightColor: '#000000',
+    borderRadius: 5,
     flexDirection: 'row',
     gap: 2,
   },

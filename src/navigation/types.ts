@@ -77,20 +77,41 @@ export type RootStackParamList = {
    *  Reached from the Profile screen's Institutional Mode row. */
   Institutional: undefined;
   About: undefined; // Credits/About/Contact — Dashboard logo tap (Booth 2026-07-08)
-  /** Awards + Curriculum pager (Curriculum · Specialization · Program), three
-   *  side-by-side pages. `category` is the landing page (user request
-   *  2026-07-18). Bottom nav hidden. */
-  Awards: { category: 'curriculum' | import('../screens/awards/awardsData').AwardCategory };
-  /** Curriculum & Awards overview — academic goals + programs/awards (user
-   *  request 2026-07-17). Modal, reached from Course Selection. */
-  Curriculum: undefined;
+  /** Awards + Curriculum pager (Curriculum · Specialization · Program ·
+   *  Directory · Enrollment), five side-by-side pages. `category` is the landing
+   *  page (user request 2026-07-18; Directory + Enrollment added 2026-07-22).
+   *  Bottom nav hidden. */
+  Awards: { category: 'curriculum' | 'directory' | 'enrollment' | import('../screens/awards/awardsData').AwardCategory };
+  /** Directory — "Get Discovered" professional-profile info (user request
+   *  2026-07-22). Modal, reached from Course Selection (right of Awards). */
+  Directory: undefined;
   // Measurement & Analysis tools module (Booth 2026-07-09; MVP = hub + info
   // screens — the native DSP engine is Spike 0, a separate ruling/build).
   ToolsHub: undefined;
   ToolInfo: { toolKey: import('../screens/tools/toolsData').ToolKey };
-  /** Frequency / Hz Counter tool — its own modes + results screen (user
-   *  request 2026-07-18). Tap mode is live; Sound/Light need the engine. */
+  /** Frequency Counter & Tuner tool — its own modes + results screen (user
+   *  request 2026-07-18; tuner merged in 2026-07-23). Tap mode is live;
+   *  Sound/Light/Tuner need the engine. */
   FrequencyCounter: undefined;
+  /** Tool Learn mode — per-tool guided tutorial (Phase 1, spec of record
+   *  2026-07-23). Academy-gated (tools stay free to open; tutorials are the
+   *  academy unlock per the ratified marketing copy). */
+  ToolLearn: { toolKey: import('../screens/tools/toolsData').ToolKey };
+  /** Tool Demo mode — labeled visual training demos ("Training Demo — Not a
+   *  Live Measurement"), no audio until an output path ships (ruling 2026-07-23). */
+  ToolDemo: { toolKey: import('../screens/tools/toolsData').ToolKey };
+  /** Professional-measurement concept module (Smaart concepts, spec §15). */
+  ConceptModule: { conceptKey: import('../features/tools/learn/types').ConceptKey };
+  /** Saved Measurement Library (Phase 2, spec §7) + A/B compare (§8).
+   *  Device-local records; optional per-tool filter. Free to use. */
+  ToolLibrary: { toolKey?: import('../screens/tools/toolsData').ToolKey } | undefined;
+  /** LIVE measurement screens (engine build 2026-07-23) — each gates itself
+   *  honestly via EngineGate when the engine isn't in the build. */
+  SplMeter: undefined;
+  Rta: undefined;
+  WaveformLive: undefined;
+  SignalGen: undefined;
+  SpectrogramLive: undefined;
   /** Spike-0 dev-only debug screen (ape-dsp proof) — __DEV__ entry on ToolsHub. */
   DspDebug: undefined;
 };

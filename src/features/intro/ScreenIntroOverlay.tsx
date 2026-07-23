@@ -45,11 +45,41 @@ export function useScreenIntro(key: IntroKey) {
   return { visible, dismiss };
 }
 
-export function IntroSheet({ introKey, onDismiss }: { introKey: IntroKey; onDismiss: () => void }) {
+export function IntroSheet({
+  introKey,
+  onDismiss,
+  delayMs = 0,
+}: {
+  introKey: IntroKey;
+  onDismiss: () => void;
+  /** Minimum time (ms) the sheet stays before it can be tapped away. The
+   *  "tap to continue" affordance appears only after it elapses. */
+  delayMs?: number;
+}) {
   const copy = SCREEN_INTROS[introKey];
+  const [ready, setReady] = useState(delayMs <= 0);
+  useEffect(() => {
+    if (delayMs <= 0) return;
+    setReady(false);
+    const t = setTimeout(() => setReady(true), delayMs);
+    return () => clearTimeout(t);
+  }, [delayMs]);
+
   return (
-    <Modal transparent animationType="fade" visible statusBarTranslucent onRequestClose={onDismiss}>
-      <Pressable style={styles.backdrop} onPress={onDismiss} accessibilityRole="button" accessibilityLabel="Dismiss intro">
+    <Modal
+      transparent
+      animationType="fade"
+      visible
+      statusBarTranslucent
+      onRequestClose={ready ? onDismiss : undefined}
+    >
+      <Pressable
+        style={styles.backdrop}
+        onPress={ready ? onDismiss : undefined}
+        disabled={!ready}
+        accessibilityRole="button"
+        accessibilityLabel="Dismiss intro"
+      >
         <View style={styles.card}>
           {copy.placeholder !== false ? (
             <Text style={styles.tag}>INTRO / TUTORIAL — PLACEHOLDER</Text>
@@ -57,7 +87,15 @@ export function IntroSheet({ introKey, onDismiss }: { introKey: IntroKey; onDism
           <Text style={styles.title}>{copy.title}</Text>
           <View style={styles.rule} />
           <Text style={styles.body}>{copy.body}</Text>
-          <Text style={styles.dismissHint}>TAP ANYWHERE TO CONTINUE</Text>
+          {/* Until the timer elapses, show NOTHING and swallow taps. After it
+              elapses, show the (green) dismiss affordance. */}
+          {!ready ? null : !copy.button || /^tap /i.test(copy.button) ? (
+            <Text style={styles.dismissHint}>{(copy.button ?? 'Tap anywhere to continue').toUpperCase()}</Text>
+          ) : (
+            <View style={styles.introBtn}>
+              <Text style={styles.introBtnText}>{copy.button}</Text>
+            </View>
+          )}
         </View>
       </Pressable>
       <LowLightDim />
@@ -65,10 +103,10 @@ export function IntroSheet({ introKey, onDismiss }: { introKey: IntroKey; onDism
   );
 }
 
-export function ScreenIntroOverlay({ introKey }: { introKey: IntroKey }) {
+export function ScreenIntroOverlay({ introKey, delayMs = 0 }: { introKey: IntroKey; delayMs?: number }) {
   const { visible, dismiss } = useScreenIntro(introKey);
   if (!visible) return null;
-  return <IntroSheet introKey={introKey} onDismiss={dismiss} />;
+  return <IntroSheet introKey={introKey} onDismiss={dismiss} delayMs={delayMs} />;
 }
 
 /**
@@ -108,8 +146,19 @@ const styles = StyleSheet.create({
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 11,
     letterSpacing: 1.8,
-    color: colors.textSub,
+    color: '#37e05f',
     marginTop: 6,
     textAlign: 'center',
   },
+  introBtn: {
+    alignSelf: 'center',
+    marginTop: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 26,
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: 'rgba(255,180,0,.7)',
+    backgroundColor: '#241d08',
+  },
+  introBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1, color: colors.amber },
 });

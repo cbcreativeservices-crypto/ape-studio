@@ -55,7 +55,7 @@ const INLINE_POPUPS: ScreenEntry[] = [
     label: 'Curriculum · Subject topics popup',
     go: (n) => {
       requestDevPreview('curriculum:zoom');
-      n.navigate('Curriculum');
+      n.navigate('Awards', { category: 'curriculum' });
     },
   },
   {
@@ -119,7 +119,8 @@ const SCREENS: { section: string; items: ScreenEntry[] }[] = [
       { label: 'Curriculum (pager · page 1)', go: (n) => n.navigate('Awards', { category: 'curriculum' }) },
       { label: 'Specialization (pager · page 2)', go: (n) => n.navigate('Awards', { category: 'specialization' }) },
       { label: 'Program (pager · page 3)', go: (n) => n.navigate('Awards', { category: 'program' }) },
-      { label: 'Curriculum (standalone route)', go: (n) => n.navigate('Curriculum') },
+      { label: 'Directory (pager · page 4)', go: (n) => n.navigate('Awards', { category: 'directory' }) },
+      { label: 'Enrollment (pager · page 5)', go: (n) => n.navigate('Awards', { category: 'enrollment' }) },
     ],
   },
   {
@@ -150,7 +151,11 @@ const SCREENS: { section: string; items: ScreenEntry[] }[] = [
     section: 'TOOLS',
     items: [
       { label: 'Tools Hub', go: (n) => n.navigate('ToolsHub') },
-      { label: 'Frequency Counter', go: (n) => n.navigate('FrequencyCounter') },
+      { label: 'Frequency Counter & Tuner', go: (n) => n.navigate('FrequencyCounter') },
+      { label: 'Tool Learn (SPL)', go: (n) => n.navigate('ToolLearn', { toolKey: 'spl' }) },
+      { label: 'Tool Demo (RTA)', go: (n) => n.navigate('ToolDemo', { toolKey: 'rta' }) },
+      { label: 'Concept: Measurement Integrity', go: (n) => n.navigate('ConceptModule', { conceptKey: 'measurement-integrity' }) },
+      { label: 'Saved Measurements', go: (n) => n.navigate('ToolLibrary', undefined) },
       { label: 'DSP Debug (dev)', go: (n) => n.navigate('DspDebug') },
     ],
   },

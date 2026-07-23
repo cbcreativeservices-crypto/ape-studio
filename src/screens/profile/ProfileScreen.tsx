@@ -186,26 +186,15 @@ export function ProfileScreen() {
 
   const cell = 96 / 7; // stub grid geometry inside the 112px QR box (8px padding)
 
-  // Institutional Mode (user request 2026-07-17): future academic /
-  // institutional / site-license unlock — PARKED until after the commercial
-  // launch. The switch stays DISABLED for now; tapping the row opens the
-  // parked-modules container screen. Shown on both Profile variants.
-  const institutionalPanel = (
-    <View style={styles.panel}>
-      <View style={styles.instRow}>
-        <Pressable
-          style={{ flex: 1 }}
-          onPress={() => (navigation as any).navigate('Institutional')}
-          accessibilityRole="button"
-          accessibilityLabel="Institutional Mode — parked features"
-        >
-          <Text style={styles.instTitle}>INSTITUTIONAL MODE</Text>
-          <Text style={styles.instHint}>Academic / site-license version · parked until after launch ›</Text>
-        </Pressable>
-        <Toggle on={false} onChange={() => {}} disabled />
-      </View>
-    </View>
-  );
+  // Institutional Mode is no longer a user-facing switch (user request
+  // 2026-07-23) — it will be triggered automatically when a user signs in with an
+  // institution access code, customised per client. The panel was removed.
+
+  // Registry participation gate (user request 2026-07-23): the "show in registry"
+  // toggle can only be turned on once the required identity fields are filled.
+  const emailValid = /\S+@\S+\.\S+/.test(pub.email.trim());
+  const profileComplete = pub.name.trim().length > 0 && pub.registryName.trim().length > 0 && emailValid;
+  const registryActive = pub.showInRegistry && profileComplete;
 
   if (commercialMode) {
     const academy = caps.allTopics; // academy = full access
@@ -430,6 +419,18 @@ export function ProfileScreen() {
               autoCapitalize="words"
               returnKeyType="done"
             />
+            {/* Name shown on the public Pro Registry profile (user request
+                2026-07-22). */}
+            <Text style={[styles.fieldLabel, { marginTop: 12 }]}>Name used in registry</Text>
+            <TextInput
+              style={styles.input}
+              value={pub.registryName}
+              onChangeText={(t) => setPubKey('registryName', t)}
+              placeholder="How your name appears in the Registry"
+              placeholderTextColor={colors.textMuted}
+              autoCapitalize="words"
+              returnKeyType="done"
+            />
             <Text style={[styles.fieldLabel, { marginTop: 12 }]}>Email</Text>
             <TextInput
               style={styles.input}
@@ -453,7 +454,35 @@ export function ProfileScreen() {
             </View>
           </View>
 
-          {institutionalPanel}
+          {/* PRO REGISTRY participation (user request 2026-07-23) — opt-in, only
+              enable-able once name + registry name + email are filled; must be ON
+              to be listed. */}
+          <View style={styles.panel}>
+            <Text style={styles.panelEyebrow}>PRO REGISTRY</Text>
+            <View style={styles.consentRow}>
+              <View style={{ flex: 1, paddingRight: 12 }}>
+                <Text style={styles.fieldLabel}>Show me in the Pro Registry</Text>
+                <Text style={styles.fieldHint}>
+                  {profileComplete
+                    ? 'This must be ON for you to appear in the public directory.'
+                    : 'Complete your name, registry name, and email to enable this.'}
+                </Text>
+              </View>
+              <Toggle
+                on={pub.showInRegistry}
+                onChange={(v) => setPubKey('showInRegistry', v)}
+                disabled={!profileComplete}
+              />
+            </View>
+            {/* Active readout — grayed until ON, green when participating. */}
+            <View style={[styles.registryReadout, registryActive ? styles.registryReadoutOn : styles.registryReadoutOff]}>
+              <Text style={[styles.registryReadoutText, { color: registryActive ? '#37e05f' : colors.textMuted }]}>
+                {registryActive
+                  ? '● REGISTRY ACTIVE — you are shown in the directory'
+                  : '○ REGISTRY INACTIVE — not shown in the directory'}
+              </Text>
+            </View>
+          </View>
 
           {/* Upgrade CTA for non-academy (free / lapsed) → Paywall. */}
           {!academy && (
@@ -549,8 +578,6 @@ export function ProfileScreen() {
             <AlbumDisc level={profile?.tierName ?? 'Black'} size={60} />
           </View>
         </View>
-
-        {institutionalPanel}
       </View>
     </View>
   );
@@ -596,6 +623,12 @@ const styles = StyleSheet.create({
   interestChipText: { fontFamily: fonts.barlowRegular, fontSize: 13, color: '#9a9a9a' },
   interestChipTextOn: { color: '#5bff85' },
   consentRow: { flexDirection: 'row', alignItems: 'center', marginTop: 14 },
+  // Registry participation readout — gray when off, green when active (user
+  // request 2026-07-23).
+  registryReadout: { marginTop: 12, borderWidth: 1, borderRadius: 8, paddingVertical: 8, paddingHorizontal: 12, alignItems: 'center' },
+  registryReadoutOff: { borderColor: '#2f2f2f', backgroundColor: '#141414' },
+  registryReadoutOn: { borderColor: 'rgba(55,224,95,.55)', backgroundColor: 'rgba(55,224,95,.1)' },
+  registryReadoutText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.8 },
 
   // --- Redesigned commercial Profile (user request 2026-07-18) ---
   identityCard: {

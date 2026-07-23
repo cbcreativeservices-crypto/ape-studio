@@ -36,6 +36,9 @@ export const DIFFICULTY_LEVELS = ['Beginner', 'Intermediate', 'Advanced'] as con
 
 export type PublicProfile = {
   name: string;
+  /** The name the user wants shown on their public Registry profile (user
+   *  request 2026-07-22). Falls back to `name` when blank. */
+  registryName: string;
   email: string;
   interests: string[];
   /** One interest promoted as the user's PRIMARY focus (user request 2026-07-18). */
@@ -47,10 +50,15 @@ export type PublicProfile = {
   difficulty: string;
   /** Consent to be listed for employers/networking contact. Default OFF. */
   contactConsent: boolean;
+  /** User opt-in to appear in the public Pro Registry directory (user request
+   *  2026-07-23). Can only be turned ON once name + registryName + email are
+   *  filled; must be ON for the user to be shown. Default OFF. */
+  showInRegistry: boolean;
 };
 
 export const EMPTY_PUBLIC_PROFILE: PublicProfile = {
   name: '',
+  registryName: '',
   email: '',
   interests: [],
   primaryInterest: '',
@@ -58,6 +66,7 @@ export const EMPTY_PUBLIC_PROFILE: PublicProfile = {
   learningGoal: '',
   difficulty: '',
   contactConsent: false,
+  showInRegistry: false,
 };
 
 const KEY = 'ape:publicProfile';

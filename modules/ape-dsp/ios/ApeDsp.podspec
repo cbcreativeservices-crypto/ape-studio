@@ -6,6 +6,9 @@ Pod::Spec.new do |s|
   s.author         = 'Pro Audio Training Academy'
   s.homepage       = 'https://github.com/cbcreativeservices/ape-studio'
   s.platforms      = { :ios => '15.1' }
+  # Pin the Swift language mode (review 2026-07-23): the module is Swift-5
+  # clean but not Swift-6 strict-concurrency clean; don't inherit a future flip.
+  s.swift_version  = '5.9'
   s.source         = { git: '' }
   s.static_framework = true
 

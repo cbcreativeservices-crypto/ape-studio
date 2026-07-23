@@ -24,8 +24,7 @@ export type ToolKey =
   | 'spectrogram'
   | 'rt60'
   | 'signalgen'
-  | 'tuner'
-  | 'hzcounter';
+  | 'hzcounter'; // 'tuner' merged INTO 'hzcounter' — "Frequency Counter & Tuner" (spec of record 2026-07-23: ~90% shared engine)
 
 export type ToolDef = {
   key: ToolKey;
@@ -160,54 +159,35 @@ export const TOOLS: ToolDef[] = [
       'Your system’s response (pair it with the RTA or SPL meter for that)',
     ],
   },
-  {
-    key: 'tuner',
-    num: 7,
-    name: 'Tuner',
-    subtitle: 'Pitch / Instrument Tuner',
-    tint: 'steel',
-    planned: true, // PLACEHOLDER (Booth 2026-07-18) — engine + full spec to come.
-    purpose:
-      'Detects the pitch of a sustained note and shows how far it sits from the nearest note in the chosen reference — for tuning instruments and training the ear. Like every tool here, it should go deep: pitch vs frequency, cents, A4 reference standards, temperament, and beat frequency are all glossary terms this tool can demonstrate directly.',
-    measures: [
-      'Fundamental frequency of a sustained, mostly-monophonic note (Hz)',
-      'Deviation from the nearest equal-temperament note in cents, against a selectable A4 reference (e.g. 440/442 Hz)',
-      'Note name and octave of the detected pitch',
-    ],
-    notMeasures: [
-      'Chords or dense polyphonic material (single dominant pitch only)',
-      'Intonation quality across a whole performance',
-      'Loudness or level — pitch only',
-      'Timbre — two instruments on the same note read identically',
-    ],
-  },
 ];
 
-// Frequency Counter (user request 2026-07-18). Unlike the other tools it has a
-// mode that needs NO native engine — the TAP mode measures the rate of a
-// tapped event purely from timing, so it ships live now; the Sound (mic) and
-// Light-Pulse (camera) modes still need the measurement engine. Its own screen
-// (FrequencyCounterScreen) renders the modes + results, so this catalog entry
-// exists mainly for the hub tile and the shared honesty copy.
+// Frequency Counter & Tuner — MERGED tool (spec of record 2026-07-23: counter
+// and tuner share ~90% of one frequency-estimation engine, so they ship as one
+// dashboard tool with modes). The TAP mode needs NO native engine (pure event
+// timing) and is live now; Sound (mic), Light-Pulse (camera), and Tuner modes
+// still need the measurement engine. Its own screen (FrequencyCounterScreen)
+// renders the modes + results, so this catalog entry exists mainly for the hub
+// tile and the shared honesty copy.
 TOOLS.push({
   key: 'hzcounter',
-  num: 8,
-  name: 'Frequency Counter',
-  subtitle: 'Hz Counter',
+  num: 7,
+  name: 'Frequency Counter & Tuner',
+  subtitle: 'Hz Counter · Pitch Tuner',
   tint: 'teal',
   purpose:
-    'Estimates how often something repeats — a steady sound, a flickering light, or an event you tap along with — and shows it as frequency (Hz), period, and tempo (BPM). One tool, three views of the same idea: frequency, period, and beats per minute.',
+    'Estimates how often something repeats — a steady sound, a flickering light, or an event you tap along with — and shows it as frequency (Hz), period, and tempo (BPM). In Tuner mode the same engine interprets that frequency musically: note name, octave, and cents against a selectable A4 reference. Frequency is the measurement; pitch is the musical interpretation.',
   measures: [
     'Frequency in hertz (Hz) of a steady, repeating sound, light, or tapped event',
     'Cycles or events per second, and the period in milliseconds',
     'Beats per minute (BPM) when the rate is musical',
     'Measurement stability, with the minimum and maximum readings',
+    'Tuner mode: note name + octave of a sustained, mostly-monophonic note, and its deviation in cents from a selectable A4 reference (e.g. 440/442 Hz)',
   ],
   notMeasures: [
     'Calibrated, laboratory-grade frequency — readings are estimates',
     'Several simultaneous frequencies at once (it tracks one dominant rate)',
-    'Musical pitch and note name (that is the Tuner)',
-    'Loudness, level, or spectral content',
+    'Chords or dense polyphonic material (single dominant pitch only)',
+    'Loudness, level, spectral content, or timbre — two instruments on the same note read identically',
   ],
 });
 

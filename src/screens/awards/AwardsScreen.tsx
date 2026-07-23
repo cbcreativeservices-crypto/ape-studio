@@ -5,17 +5,22 @@
  * request 2026-07-18). Content is data-only (awardsData.ts). Bottom nav hidden;
  * back chevron exits.
  */
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions, FlatList, Modal, Pressable, ScrollView, StyleSheet, Text, View, type ViewToken } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../theme/tokens';
 import { BrandLogo } from '../../components/BrandLogo';
-import { ReturnButton } from '../../components/ReturnButton';
+import { NavIcon } from '../../components/nav/NavIcon';
+import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
 import { LowLightDim } from '../../features/settings/LowLightLayer';
 import { consumeDevPreview } from '../../features/dev/devPreview';
 import { CurriculumView } from '../curriculum/CurriculumScreen';
+import { DirectoryView } from '../directory/DirectoryScreen';
+import { EnrollmentView } from '../enrollment/EnrollmentScreen';
+import { addTopics, setActiveMany } from '../../features/enrollment/enrollmentStore';
+import { addBundle, type BundleKind } from '../../features/enrollment/enrolledBundlesStore';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { MATRIX_SUBJECTS } from '../../data/courseTopicMatrix';
 import {
@@ -44,27 +49,48 @@ const GLOSSARY_BLUE = '#5bb0ff';
 const AMBER = '#ffc64d';
 // Academy purple — the Program accent.
 const PURPLE = '#c4a2ff';
+// Directory green — matches the "get discovered" optional/verified theme.
+const DIRECTORY_GREEN = '#37e05f';
 
-// Enrollment CTA copy shown at the bottom of the award pages (user-provided
-// 2026-07-18).
-const ENROLL_COPY =
-  'Enroll now by activating academy mode. Certificate award costs are included with active enrollment. ' +
-  'Earned awards are permanent records on your transcript. Active membership is not required to maintain ' +
-  'your records visible to employers.';
-
-/** The three side-by-side pages, left → right (user request 2026-07-18). */
-const PAGE_ORDER = ['curriculum', 'specialization', 'program'] as const;
+/** The five side-by-side pages, left → right (Directory + Enrollment added
+ *  2026-07-22). */
+const PAGE_ORDER = ['curriculum', 'specialization', 'program', 'directory', 'enrollment'] as const;
 type PageKey = (typeof PAGE_ORDER)[number];
 
-/** Header title + tab tint per page. */
+// Tab / nav-button labels (user request 2026-07-22) — also used by the Course
+// Select top buttons.
+const PAGE_TAB: Record<PageKey, string> = {
+  curriculum: 'Explore',
+  specialization: 'Certificates',
+  program: 'Programs',
+  directory: 'Pro Registry',
+  enrollment: 'Enrollments',
+};
+// Big header title per page (user request 2026-07-22).
+const PAGE_TITLE: Record<PageKey, string> = {
+  curriculum: 'Explore the Academy',
+  specialization: 'Specialize. Learn. Get Certified.',
+  program: 'Complete Certificate Programs',
+  directory: 'Get Discovered',
+  enrollment: 'Manage My Learning',
+};
+
 function pageLabel(key: PageKey): string {
-  return key === 'curriculum' ? 'CURRICULUM' : awardPage(key).label.toUpperCase();
+  return PAGE_TAB[key];
 }
 function pageHeadline(key: PageKey): string {
-  return key === 'curriculum' ? 'CURRICULUM' : awardPage(key).headline;
+  return PAGE_TITLE[key];
 }
 function pageTint(key: PageKey): string {
-  return key === 'specialization' ? GLOSSARY_BLUE : key === 'program' ? PURPLE : AMBER;
+  return key === 'specialization'
+    ? GLOSSARY_BLUE
+    : key === 'program'
+      ? PURPLE
+      : key === 'directory'
+        ? DIRECTORY_GREEN
+        : key === 'enrollment'
+          ? DIRECTORY_GREEN
+          : AMBER;
 }
 
 function TierBlock({
@@ -89,8 +115,35 @@ function TierBlock({
     <View style={[styles.tier, { borderColor: accent }]}>
       <Text style={styles.tierTitle}>{tier.title}</Text>
 
+      {/* Interactive builder moved to right after the title (user request
+          2026-07-22) — the "choose a certificate / program path" container now
+          precedes the co-reqs + requirements. */}
+      {tier.builder ? (
+        // The builder button keeps its own tint (spec = glossary blue, program
+        // = purple) independent of the amber frame/text (user request 2026-07-18).
+        (() => {
+          const buildTint = builderTint;
+          return (
+            <Pressable
+              style={[styles.buildBtn, { borderColor: buildTint }]}
+              onPress={() => onBuild(tier.builder!)}
+              accessibilityRole="button"
+              accessibilityLabel={
+                tier.builder === 'specializations' ? 'Choose a specialized certificate' : 'Choose a program path'
+              }
+            >
+              <Text style={[styles.buildBtnText, { color: buildTint }]}>
+                {tier.builder === 'specializations' ? 'CHOOSE A SPECIALIZED CERTIFICATE' : 'CHOOSE A PROGRAM PATH'}
+              </Text>
+              <Text style={styles.buildBtnSummary}>{buildSummary ?? 'Tap to choose ›'}</Text>
+            </Pressable>
+          );
+        })()
+      ) : null}
+
       {/* CO-requisites and requirements side by side (user request 2026-07-18:
-          these are co-reqs, taken alongside — not pre-reqs). */}
+          these are co-reqs, taken alongside — not pre-reqs). Now BELOW the
+          builder (user request 2026-07-22). */}
       {(tier.corequisite?.length || tier.requirements?.length) ? (
         <View style={styles.twoCol}>
           {tier.corequisite && tier.corequisite.length > 0 ? (
@@ -116,31 +169,6 @@ function TierBlock({
             </View>
           ) : null}
         </View>
-      ) : null}
-
-      {/* Interactive builder (user request 2026-07-18): choose 3 topics
-          (Level 1) or a program path (Level 2). */}
-      {tier.builder ? (
-        // The builder button keeps its own tint (spec = glossary blue, program
-        // = purple) independent of the amber frame/text (user request 2026-07-18).
-        (() => {
-          const buildTint = builderTint;
-          return (
-            <Pressable
-              style={[styles.buildBtn, { borderColor: buildTint }]}
-              onPress={() => onBuild(tier.builder!)}
-              accessibilityRole="button"
-              accessibilityLabel={
-                tier.builder === 'specializations' ? 'Choose a specialized certificate' : 'Choose a program path'
-              }
-            >
-              <Text style={[styles.buildBtnText, { color: buildTint }]}>
-                {tier.builder === 'specializations' ? 'CHOOSE A SPECIALIZED CERTIFICATE' : 'CHOOSE A PROGRAM PATH'}
-              </Text>
-              <Text style={styles.buildBtnSummary}>{buildSummary ?? 'Tap to choose ›'}</Text>
-            </Pressable>
-          );
-        })()
       ) : null}
 
       {tier.programs && tier.programs.length > 0 ? (
@@ -200,12 +228,10 @@ function TierBlock({
 function AwardPageView({
   page,
   onBuild,
-  onEnroll,
   summaryForTier,
 }: {
   page: AwardPage;
   onBuild: (kind: 'specializations' | 'programs') => void;
-  onEnroll: () => void;
   summaryForTier: (tier: AwardTier) => string | undefined;
 }) {
   return (
@@ -227,23 +253,10 @@ function AwardPageView({
             buildSummary={summaryForTier(tier)}
           />
         ))}
-
-        {/* Enrollment CTA at the bottom (user request 2026-07-18). */}
-        <Pressable
-          style={styles.enrollBox}
-          onPress={onEnroll}
-          accessibilityRole="button"
-          accessibilityLabel="Enroll — activate academy mode"
-        >
-          <Text style={styles.enrollBody}>{ENROLL_COPY}</Text>
-          {/* Program-only cost requirement (user request 2026-07-18). */}
-          {page.key === 'program' ? (
-            <Text style={styles.enrollNote}>
-              Program Certificate enrollment requires a minimum of 3 months of paid enrollment.
-            </Text>
-          ) : null}
-          <Text style={styles.enrollCta}>ACTIVATE ACADEMY MODE ›</Text>
-        </Pressable>
+        {/* Small, upfront grant requirement (user request 2026-07-22). */}
+        <Text style={styles.grantNote}>
+          A minimum of 1 complete month of paid membership is required before a certificate can be granted.
+        </Text>
       </ScrollView>
     </View>
   );
@@ -270,6 +283,18 @@ export function AwardsScreen({ navigation, route }: Props) {
   const [expandedCert, setExpandedCert] = useState<string | null>(null);
   const [expandedProg, setExpandedProg] = useState<string | null>(null);
 
+  // Both award catalogs listed A–Z by name (user request 2026-07-22). Sorted
+  // copies so the source arrays (and any other consumer) keep their order;
+  // every certificate/program is included — nothing is filtered.
+  const specCertsAZ = useMemo(
+    () => [...SPECIALIZED_CERTIFICATES].sort((a, b) => a.name.localeCompare(b.name)),
+    [],
+  );
+  const programPathsAZ = useMemo(
+    () => [...PROGRAM_PATHS].sort((a, b) => a.name.localeCompare(b.name)),
+    [],
+  );
+
   useEffect(() => {
     AsyncStorage.getItem(SPEC_CERT_KEY).then((v) => {
       if (v) setSpecCert(v);
@@ -284,6 +309,8 @@ export function AwardsScreen({ navigation, route }: Props) {
 
   // Tapping an award name toggles its topics open/closed AND records it as the
   // current selection.
+  // Click open / click close (user request 2026-07-22 — reverses the earlier
+  // "stay open" rule); tapping another switches. Programs already toggle.
   const toggleCert = (name: string) => {
     setExpandedCert((prev) => (prev === name ? null : name));
     setSpecCert(name);
@@ -307,6 +334,34 @@ export function AwardsScreen({ navigation, route }: Props) {
     return undefined;
   };
 
+  // ENROLL (user request 2026-07-22): add the award's topics to the enrollment
+  // list, close the picker, and jump to the Enrollment page for EVERYONE. A free
+  // user with NO account (anonymous) also gets an "account needed to save" prompt.
+  const [payPrompt, setPayPrompt] = useState<{ label: string } | null>(null);
+  const enrollTopics = useCallback(
+    (gsList: number[], label: string, kind?: BundleKind) => {
+      // Selecting a certificate/program = the "ADD ALL" action in the Enrollment
+      // browser (user request 2026-07-22): record the bundle container AND enroll
+      // its topics (added, not loaded onto the Dashboard until LOAD).
+      if (kind) {
+        addBundle(kind, label, gsList);
+        addTopics(gsList);
+        setActiveMany(gsList, false);
+        // The required cores join the list on the first cert/program (user
+        // request 2026-07-22).
+        addTopics([...COREQ_TOPIC_GS]);
+      } else {
+        addTopics(gsList);
+      }
+      setPicker(null); // close the cert/program picker modal
+      const ei = PAGE_ORDER.indexOf('enrollment');
+      setIdx(ei);
+      requestAnimationFrame(() => listRef.current?.scrollToIndex({ index: ei, animated: true }));
+      if (entitlement === 'anonymous') setPayPrompt({ label });
+    },
+    [entitlement],
+  );
+
   const onViewable = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
     const i = viewableItems[0]?.index;
     if (i != null) setIdx(i);
@@ -316,15 +371,29 @@ export function AwardsScreen({ navigation, route }: Props) {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      {/* Company logo header (user request 2026-07-18). */}
+      {/* Company logo header. The RETURN button now lives up here, pinned to the
+          utmost top-right corner across all 4 pages (user request 2026-07-22). */}
       <View style={styles.brandRow}>
         <BrandLogo size={34} />
-        <Text style={styles.brandWordmark}>
+        <Text style={styles.brandWordmark} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>
           PRO AUDIO <Text style={styles.brandAccent}>TRAINING ACADEMY</Text>
         </Text>
+        <View style={{ flex: 1 }} />
+        {/* Return control = the exact bottom-nav HOME icon + label, so it reads
+            clearly as HOME / Course Select (user request 2026-07-23). Nudged in
+            from the far edge with a little padding. */}
+        <Pressable
+          onPress={() => navigation.goBack()}
+          hitSlop={10}
+          accessibilityRole="button"
+          accessibilityLabel="Home"
+          style={styles.homeBtn}
+        >
+          <NavIcon icon="Home" lit />
+        </Pressable>
       </View>
-      {/* The whole title area (below the logo, above the page buttons) is a
-          return action (user request 2026-07-18); the RETURN button stays. */}
+      {/* The whole title area (below the logo, above the page buttons) is still a
+          return action (user request 2026-07-18). */}
       <Pressable
         style={styles.header}
         onPress={() => navigation.goBack()}
@@ -332,11 +401,12 @@ export function AwardsScreen({ navigation, route }: Props) {
         accessibilityLabel="Return"
       >
         <View style={{ flex: 1 }}>
-          {/* Titles use amber (user request 2026-07-18); the program's accent
-              stays purple only for the "choose a path" button below. */}
-          <Text style={[styles.title, { color: AMBER }]}>{pageHeadline(currentKey)}</Text>
+          {/* Amber titles; now full sentence headlines (user request 2026-07-22)
+              so they wrap / shrink to fit. */}
+          <Text style={[styles.title, { color: AMBER }]} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.7}>
+            {pageHeadline(currentKey)}
+          </Text>
         </View>
-        <ReturnButton onPress={() => navigation.goBack()} />
       </Pressable>
 
       {/* Category buttons (user request 2026-07-18): CURRICULUM · SPECIALIZATION
@@ -357,7 +427,17 @@ export function AwardsScreen({ navigation, route }: Props) {
               accessibilityState={{ selected: active }}
               accessibilityLabel={pageHeadline(c)}
             >
-              <Text style={[styles.tabBtnText, active && { color: tint }]}>{pageLabel(c)}</Text>
+              {/* 5 tabs now (Directory + Enrollment added 2026-07-22) —
+                  shrink-to-fit keeps the longest label (SPECIALIZATION) on one
+                  line even in the narrower slots. */}
+              <Text
+                style={[styles.tabBtnText, active && { color: tint }]}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.55}
+              >
+                {pageLabel(c)}
+              </Text>
             </Pressable>
           );
         })}
@@ -378,20 +458,32 @@ export function AwardsScreen({ navigation, route }: Props) {
         renderItem={({ item }) =>
           item === 'curriculum' ? (
             <View style={{ width: SCREEN_W }}>
-              <CurriculumView showBrand={false} />
+              <CurriculumView
+                showBrand={false}
+                onOpenCategory={(key) => {
+                  const i = PAGE_ORDER.indexOf(key);
+                  if (i >= 0) {
+                    setIdx(i);
+                    listRef.current?.scrollToIndex({ index: i, animated: true });
+                  }
+                }}
+              />
+            </View>
+          ) : item === 'directory' ? (
+            <View style={{ width: SCREEN_W }}>
+              <DirectoryView showBrand={false} />
+            </View>
+          ) : item === 'enrollment' ? (
+            <View style={{ width: SCREEN_W }}>
+              <EnrollmentView showBrand={false} />
             </View>
           ) : (
-            <AwardPageView
-              page={awardPage(item)}
-              onBuild={setPicker}
-              onEnroll={() => navigation.navigate('Paywall')}
-              summaryForTier={summaryForTier}
-            />
+            <AwardPageView page={awardPage(item)} onBuild={setPicker} summaryForTier={summaryForTier} />
           )
         }
       />
 
-      {/* LEVEL 1 — choose one of the 67 Specialized Certificates (user request
+      {/* LEVEL 1 — choose one of the 68 Specialized Certificates (user request
           2026-07-18): each = the 3 required core courses + 3 specialization
           topics. */}
       <Modal visible={picker === 'specializations'} animationType="slide" transparent statusBarTranslucent onRequestClose={() => setPicker(null)}>
@@ -427,7 +519,7 @@ export function AwardsScreen({ navigation, route }: Props) {
               <Text style={styles.coreBannerText}>{COREQ_TOPIC_GS.map((gs) => nameForGs(gs)).join('  ·  ')}</Text>
             </View>
 
-            {SPECIALIZED_CERTIFICATES.map((c) => {
+            {specCertsAZ.map((c) => {
               const open = expandedCert === c.name;
               return (
                 <View key={c.name} style={[styles.pathCard, open && styles.pathCardGoldOn]}>
@@ -444,13 +536,26 @@ export function AwardsScreen({ navigation, route }: Props) {
 
                   {open ? (
                     <>
-                      <Text style={styles.specGroupHead}>SPECIALIZATION TOPICS</Text>
-                      {c.specializationTopics.map((gs) => (
-                        <View key={gs} style={styles.pathCourseRow}>
-                          <Text style={styles.specBullet}>•</Text>
-                          <Text style={styles.pathCourseText}>{nameForGs(gs)}</Text>
-                        </View>
-                      ))}
+                      {/* Tap anywhere in the expanded body (except ENROLL) to
+                          collapse it back (user request 2026-07-22). */}
+                      <Pressable onPress={() => toggleCert(c.name)} accessibilityRole="button" accessibilityLabel={`Collapse ${c.name}`}>
+                        <Text style={styles.specGroupHead}>SPECIALIZATION TOPICS</Text>
+                        {c.specializationTopics.map((gs) => (
+                          <View key={gs} style={styles.pathCourseRow}>
+                            <Text style={styles.specBullet}>•</Text>
+                            <Text style={styles.pathCourseText}>{nameForGs(gs)}</Text>
+                          </View>
+                        ))}
+                      </Pressable>
+                      {/* Enroll — adds this certificate's topics to the list. */}
+                      <Pressable
+                        style={styles.enrollBtn}
+                        onPress={() => enrollTopics(c.specializationTopics, c.name, 'cert')}
+                        accessibilityRole="button"
+                        accessibilityLabel={`Enroll in ${c.name}`}
+                      >
+                        <Text style={styles.enrollBtnText}>ENROLL IN THIS CERTIFICATE ›</Text>
+                      </Pressable>
                     </>
                   ) : null}
                 </View>
@@ -498,7 +603,7 @@ export function AwardsScreen({ navigation, route }: Props) {
               <Text style={styles.coreBannerText}>{COREQ_TOPIC_GS.map((gs) => nameForGs(gs)).join('  ·  ')}</Text>
             </View>
 
-            {PROGRAM_PATHS.map((p) => {
+            {programPathsAZ.map((p) => {
               const open = expandedProg === p.name;
               const total = COREQ_TOPIC_GS.length + p.requiredTopics.length;
               return (
@@ -522,25 +627,38 @@ export function AwardsScreen({ navigation, route }: Props) {
 
                   {open ? (
                     <>
-                      <Text style={styles.pathGroupHead}>REQUIRED TOPICS</Text>
-                      {p.requiredTopics.map((gs) => (
-                        <View key={gs} style={styles.pathCourseRow}>
-                          <Text style={styles.pathBullet}>•</Text>
-                          <Text style={styles.pathCourseText}>{nameForGs(gs)}</Text>
-                        </View>
-                      ))}
+                      {/* Tap the expanded body (except ENROLL) to collapse it
+                          back (user request 2026-07-22). */}
+                      <Pressable onPress={() => toggleProg(p.name)} accessibilityRole="button" accessibilityLabel={`Collapse ${p.name}`}>
+                        <Text style={styles.pathGroupHead}>REQUIRED TOPICS</Text>
+                        {p.requiredTopics.map((gs) => (
+                          <View key={gs} style={styles.pathCourseRow}>
+                            <Text style={styles.pathBullet}>•</Text>
+                            <Text style={styles.pathCourseText}>{nameForGs(gs)}</Text>
+                          </View>
+                        ))}
 
-                      {p.electiveChooseOne?.length ? (
-                        <>
-                          <Text style={styles.pathGroupHead}>ELECTIVE — CHOOSE ONE</Text>
-                          {p.electiveChooseOne.map((gs) => (
-                            <View key={gs} style={styles.pathCourseRow}>
-                              <Text style={styles.pathBullet}>○</Text>
-                              <Text style={styles.pathCourseText}>{nameForGs(gs)}</Text>
-                            </View>
-                          ))}
-                        </>
-                      ) : null}
+                        {p.electiveChooseOne?.length ? (
+                          <>
+                            <Text style={styles.pathGroupHead}>ELECTIVE — CHOOSE ONE</Text>
+                            {p.electiveChooseOne.map((gs) => (
+                              <View key={gs} style={styles.pathCourseRow}>
+                                <Text style={styles.pathBullet}>○</Text>
+                                <Text style={styles.pathCourseText}>{nameForGs(gs)}</Text>
+                              </View>
+                            ))}
+                          </>
+                        ) : null}
+                      </Pressable>
+                      {/* Enroll — adds this program's required topics to the list. */}
+                      <Pressable
+                        style={styles.enrollBtn}
+                        onPress={() => enrollTopics(p.requiredTopics, p.name, 'program')}
+                        accessibilityRole="button"
+                        accessibilityLabel={`Enroll in ${p.name}`}
+                      >
+                        <Text style={styles.enrollBtnText}>ENROLL IN THIS PROGRAM ›</Text>
+                      </Pressable>
                     </>
                   ) : null}
                 </View>
@@ -554,6 +672,14 @@ export function AwardsScreen({ navigation, route }: Props) {
         <LowLightDim />
       </Modal>
 
+      {/* Anonymous ENROLL → brief "won't be saved" notice (user request
+          2026-07-22). Dismiss-only; no account/plans link. */}
+      <PrePaywallPrompt
+        visible={!!payPrompt}
+        onClose={() => setPayPrompt(null)}
+        title="Heads up"
+        lines={['Your choices won’t be saved without an account.']}
+      />
     </View>
   );
 }
@@ -561,25 +687,29 @@ export function AwardsScreen({ navigation, route }: Props) {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
   // Company logo header (user request 2026-07-18).
-  brandRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 8 },
-  brandWordmark: { fontFamily: fonts.oswaldBold, fontSize: 14, letterSpacing: 0.6, color: colors.textPrimary },
+  brandRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingLeft: 14, paddingRight: 6, paddingBottom: 8 },
+  homeBtn: { padding: 4, marginRight: 8 },
+  brandWordmark: { flexShrink: 1, fontFamily: fonts.oswaldBold, fontSize: 14, letterSpacing: 0.6, color: colors.textPrimary },
   brandAccent: { fontFamily: fonts.oswaldMedium, color: colors.amber },
   header: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 14, paddingBottom: 8 },
-  title: { fontFamily: fonts.oswaldSemiBold, fontSize: 22, letterSpacing: 2 },
+  title: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, letterSpacing: 0.4, lineHeight: 24 },
   // Category buttons (replaced the readout dots, user request 2026-07-18).
-  tabRow: { flexDirection: 'row', gap: 8, justifyContent: 'center', paddingHorizontal: 14, paddingBottom: 10 },
+  tabRow: { flexDirection: 'row', gap: 6, justifyContent: 'center', paddingHorizontal: 12, paddingBottom: 10 },
   tabBtn: {
     flex: 1,
     borderWidth: 1,
     borderColor: '#333',
     borderRadius: 9,
     paddingVertical: 8,
+    paddingHorizontal: 4,
     alignItems: 'center',
     backgroundColor: '#131313',
   },
-  tabBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textSub },
+  tabBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.8, color: colors.textSub, textAlign: 'center' },
 
-  scroll: { paddingHorizontal: 18, paddingTop: 6, paddingBottom: 44, gap: 16 },
+  // paddingTop bumped so the first title clears the pager tab row (user request
+  // 2026-07-22) — applies to the Certificate + Program pages (they use this scroll).
+  scroll: { paddingHorizontal: 18, paddingTop: 18, paddingBottom: 44, gap: 16 },
 
   introTitle: {
     fontFamily: fonts.oswaldSemiBold,
@@ -589,20 +719,8 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   intro: { fontFamily: fonts.barlowMedium, fontSize: 16.5, lineHeight: 26, color: colors.textSecondary },
-
-  // Enrollment CTA at the bottom of each award page (user request 2026-07-18).
-  enrollBox: {
-    borderWidth: 1,
-    borderColor: 'rgba(55,224,95,.55)',
-    borderRadius: 12,
-    backgroundColor: '#101512',
-    padding: 16,
-    gap: 10,
-    marginTop: 4,
-  },
-  enrollBody: { fontFamily: fonts.barlowMedium, fontSize: 15, lineHeight: 23, color: colors.textSecondary },
-  enrollNote: { fontFamily: fonts.barlowSemiBold, fontSize: 14, lineHeight: 21, color: '#e0c060' },
-  enrollCta: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.2, color: '#37e05f' },
+  // Small, upfront certificate-grant requirement (user request 2026-07-22).
+  grantNote: { fontFamily: fonts.barlowMedium, fontStyle: 'italic', fontSize: 12.5, lineHeight: 18, color: colors.textSub, marginTop: 2 },
 
   tier: {
     borderRadius: 14,
@@ -764,4 +882,15 @@ const styles = StyleSheet.create({
   pathCourseRow: { flexDirection: 'row', gap: 9, alignItems: 'flex-start', paddingLeft: 2 },
   pathBullet: { fontFamily: fonts.barlowRegular, fontSize: 16, lineHeight: 21, color: '#c4a2ff', width: 12 },
   pathCourseText: { flex: 1, fontFamily: fonts.barlowMedium, fontSize: 15, lineHeight: 22, color: colors.textSecondary },
+  // Enroll button inside an expanded cert/program (user request 2026-07-22).
+  enrollBtn: {
+    marginTop: 12,
+    borderWidth: 1.5,
+    borderColor: 'rgba(55,224,95,.7)',
+    backgroundColor: 'rgba(55,224,95,.1)',
+    borderRadius: 9,
+    paddingVertical: 11,
+    alignItems: 'center',
+  },
+  enrollBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1, color: '#37e05f' },
 });

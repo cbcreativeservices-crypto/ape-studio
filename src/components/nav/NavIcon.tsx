@@ -5,7 +5,7 @@
  */
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
-import { colors, fonts, albumTiers, type AlbumTierName } from '../../theme/tokens';
+import { colors, fonts, type AlbumTierName } from '../../theme/tokens';
 
 export type NavIconName = 'Home' | 'Study' | 'Achievements' | 'Profile';
 
@@ -19,22 +19,16 @@ const NAV_LABEL: Record<NavIconName, string> = {
 
 type Def = { color: string; glowRgba: string; font: number; spacing: number };
 
-const albumAccent: Record<AlbumTierName, string> = {
-  Black: '#bdbdbd',
-  Silver: '#d8d8d8',
-  Gold: '#ffc233',
-  Platinum: '#c77dff',
-  Diamond: '#7fb8ff',
-};
-
 function defFor(icon: NavIconName, album: AlbumTierName): Def {
   switch (icon) {
     case 'Home':
-      return { color: colors.orange, glowRgba: 'rgba(255,138,30,.7)', font: 10, spacing: 1 };
+      // App amber (was orange) — user request 2026-07-23.
+      return { color: colors.amber, glowRgba: 'rgba(255,198,77,.7)', font: 10, spacing: 1 };
     case 'Study':
       return { color: colors.blue, glowRgba: 'rgba(47,155,255,.7)', font: 10, spacing: 1 };
     case 'Achievements':
-      return { color: albumAccent[album], glowRgba: 'rgba(255,194,51,.7)', font: 9.5, spacing: 0.9 };
+      // PROGRESS = a silver record (user request 2026-07-22).
+      return { color: '#d6d6d6', glowRgba: 'rgba(230,230,230,.6)', font: 9.5, spacing: 0.9 };
     case 'Profile':
       return { color: colors.green, glowRgba: 'rgba(55,224,95,.7)', font: 10, spacing: 1 };
   }
@@ -66,7 +60,7 @@ export function NavIcon({
           <Svg width={18} height={18} viewBox="0 0 24 24">
             <Path
               d="M12 3 L21 10.5 L21 21 L14.5 21 L14.5 14.5 L9.5 14.5 L9.5 21 L3 21 L3 10.5 Z"
-              fill={colors.orange}
+              fill={colors.amber}
             />
           </Svg>
         </View>
@@ -79,7 +73,7 @@ export function NavIcon({
         </View>
       )}
 
-      {icon === 'Achievements' && <AlbumDiscMini album={album} />}
+      {icon === 'Achievements' && <SilverRecordMini glow={glow} />}
 
       {icon === 'Profile' && (
         <View style={styles.person}>
@@ -97,12 +91,14 @@ export function NavIcon({
   );
 }
 
-function AlbumDiscMini({ album }: { album: AlbumTierName }) {
-  const tier = albumTiers.find((t) => t.name === album) ?? albumTiers[0];
+/** PROGRESS tab = a silver record (user request 2026-07-22) — silver vinyl body,
+ *  a darker groove ring, a gray label center, and a reflection shine. */
+function SilverRecordMini({ glow }: { glow: object | null }) {
   return (
-    <View style={[styles.disc, { backgroundColor: tier.color }]}>
-      <View style={styles.discGroove} />
-      <View style={styles.discCenter} />
+    <View style={[styles.disc, styles.silverRecord, glow]}>
+      <View style={[styles.discGroove, { borderColor: 'rgba(0,0,0,.42)' }]} />
+      <View style={[styles.discCenter, { backgroundColor: '#6a6a6a' }]} />
+      <View pointerEvents="none" style={styles.discShine} />
     </View>
   );
 }
@@ -131,6 +127,18 @@ const styles = StyleSheet.create({
   shoulders: { width: 12, height: 5, borderTopLeftRadius: 6, borderTopRightRadius: 6, backgroundColor: colors.green, marginTop: 1 },
 
   disc: { width: 16, height: 16, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
+  silverRecord: { backgroundColor: '#cfcfcf', borderWidth: 0.5, borderColor: '#8f8f8f', overflow: 'hidden' },
+  // Reflection highlight — a small bright diagonal streak on the disc.
+  discShine: {
+    position: 'absolute',
+    top: 2,
+    left: 2.5,
+    width: 6,
+    height: 2,
+    borderRadius: 1,
+    backgroundColor: 'rgba(255,255,255,0.85)',
+    transform: [{ rotate: '-35deg' }],
+  },
   discGroove: { position: 'absolute', top: 2.5, left: 2.5, width: 11, height: 11, borderRadius: 5.5, borderWidth: 0.5, borderColor: 'rgba(0,0,0,.35)' },
   discCenter: { width: 5, height: 5, borderRadius: 2.5, backgroundColor: colors.steelBorder },
 });

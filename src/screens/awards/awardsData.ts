@@ -43,7 +43,7 @@ export type AwardTier = {
   /** Long-form policy section rendered at the bottom of the tier. */
   policy?: AwardPolicy;
   /** Interactive builder shown in this tier (user request 2026-07-18):
-   *  'specializations' = pick 1 of the 67 Specialized Certificates;
+   *  'specializations' = pick 1 of the 68 Specialized Certificates;
    *  'programs' = pick 1 of the 15 Academy Program Certificates. */
   builder?: 'specializations' | 'programs';
 };
@@ -71,14 +71,15 @@ const SPECIALIZATION: AwardPage = {
   label: 'Specialization',
   headline: 'SPECIALIZATION CERTIFICATE',
   introTitle: 'Build Your Academy Credentials',
+  // The three required cores are BULLETED (user request 2026-07-22), and the
+  // old 3rd paragraph was dropped.
   intro:
-    'Every Academy graduate begins with three essential required courses: Professional Audio Safety, ' +
-    'Grounding & Electrical, and Workplace Skills.\n' +
-    'After completing these core requirements, choose the subjects that match your interests and career ' +
-    'goals. Complete the required topics within each certificate pathway and pass its final assessment ' +
-    'to earn that credential.\n' +
-    'Your completed core courses apply toward every future certificate, allowing you to build multiple ' +
-    'specialized and Academy Program credentials across professional audio.',
+    'Begin by completing the three required core courses (required only once):\n' +
+    '      •  Professional Audio Safety\n' +
+    '      •  Grounding & Electrical\n' +
+    '      •  Workplace Skills\n\n' +
+    'Then choose a specialization, complete its three required topics, and pass the final assessment to earn ' +
+    'your certificate.',
   accent: '#ffc64d', // gold — single-topic award
   tiers: [
     {
@@ -86,7 +87,7 @@ const SPECIALIZATION: AwardPage = {
       title: 'Academy Specialization Certificate',
       corequisite: ['Pro Audio Safety', 'Grounding & Electrical', 'Workplace Skills'],
       requirements: ['Complete the 3 specialization topics'],
-      // Catalog of the 67 predefined Specialized Certificates (choose one).
+      // Catalog of the 68 predefined Specialized Certificates (choose one).
       builder: 'specializations',
     },
   ],
@@ -97,10 +98,10 @@ const PROGRAM: AwardPage = {
   key: 'program',
   label: 'Program',
   headline: 'PROFESSIONAL CERTIFICATE',
-  introTitle: 'Earn an Academy Program Certificate',
+  introTitle: 'Master a Professional Audio Specialty',
   intro:
-    'Academy Program Certificates recognize completion of a comprehensive learning pathway. Each program ' +
-    'combines multiple related subjects to develop broad knowledge and practical skills within a ' +
+    'Academy Program Professional Certificates recognize completion of a comprehensive learning pathway.\n\n' +
+    'Each program combines multiple related subjects to develop broad knowledge and practical skills within a ' +
     'professional audio discipline.',
   accent: '#c4a2ff', // academy purple — multi-topic award
   tiers: [
@@ -113,8 +114,8 @@ const PROGRAM: AwardPage = {
       builder: 'programs',
       note:
         'Academy graduates represent the Pro Audio Training Academy professionally in the field, worldwide. ' +
-        'The program is rigorous by design — its graduates emerge among the most knowledgeable audio ' +
-        'professionals in the world.',
+        "The Academy's programs are rigorous by design — their graduates emerge among the most knowledgeable " +
+        'audio professionals in the world.',
     },
   ],
 };
@@ -248,34 +249,43 @@ export const PROGRAM_PATHS: ProgramPath[] = [
 ];
 
 /**
- * Specialized Certificates — the 67 three-topic certificates (CCODE handoff
- * 2026-07-18, curriculum v2). Each = the 3 shared core pre-reqs
- * (COREQ_TOPIC_GS: gs100 / gs120 / gs1590, surfaced separately) + exactly 3
- * specialization topics that define the certificate. Topics are referenced by
- * gs and resolved to names against the v2 matrix at render.
+ * Specialized Certificates — the 68 three-topic certificates (CCODE handoff
+ * 2026-07-18, curriculum v2; Architectural Audio added 2026-07-22). Each = the
+ * 3 shared core pre-reqs (COREQ_TOPIC_GS: gs100 / gs120 / gs1590, surfaced
+ * separately) + exactly 3 specialization topics that define the certificate.
+ * Topics are referenced by gs and resolved to names against the v2 matrix at
+ * render.
+ *
+ * NAMING (user request 2026-07-22): a leading "Audio " is dropped from the
+ * certificate name (e.g. "Audio Consoles" → "Consoles") — the picker sorts and
+ * displays these A–Z. Names where "Audio" is NOT the first word are unchanged
+ * (DJ Audio, Worship Audio, Architectural Audio, Vehicle Audio, AI Audio …).
  */
 export type SpecializedCertificate = { name: string; specializationTopics: number[] };
 
 export const SPECIALIZED_CERTIFICATES: SpecializedCertificate[] = [
   { name: 'Microphones, Amplifiers & Loudspeakers', specializationTopics: [190, 240, 270] },
   { name: 'Cables & Connectivity', specializationTopics: [150, 160, 170] },
-  { name: 'Audio Consoles', specializationTopics: [290, 300, 310] },
-  { name: 'Audio Recording Systems', specializationTopics: [330, 340, 360] },
-  { name: 'Audio Infrastructure', specializationTopics: [370, 400, 410] },
-  { name: 'Audio Networking', specializationTopics: [420, 430, 440] },
-  { name: 'Audio Power Systems', specializationTopics: [130, 140, 400] },
+  { name: 'Consoles', specializationTopics: [290, 300, 310] },
+  { name: 'Recording Systems', specializationTopics: [330, 340, 360] },
+  { name: 'Infrastructure', specializationTopics: [370, 400, 410] },
+  { name: 'Networking', specializationTopics: [420, 430, 440] },
+  { name: 'Power Systems', specializationTopics: [130, 140, 400] },
   { name: 'Signal Processing', specializationTopics: [460, 470, 480] },
   { name: 'Acoustics & Measurement', specializationTopics: [500, 540, 550] },
   { name: 'Room Treatment', specializationTopics: [510, 520, 530] },
-  { name: 'Audio Troubleshooting', specializationTopics: [580, 600, 610] },
+  { name: 'Troubleshooting', specializationTopics: [580, 600, 610] },
   { name: 'Live Sound Systems', specializationTopics: [620, 630, 650] },
   { name: 'Wireless Audio Systems', specializationTopics: [660, 220, 230] },
   { name: 'DJ Audio', specializationTopics: [670, 680, 690] },
   { name: 'Stagecraft & Venue Operations', specializationTopics: [710, 720, 740] },
   { name: 'Entertainment Rigging Fundamentals', specializationTopics: [640, 750, 760] },
   { name: 'Theatrical Audio', specializationTopics: [780, 790, 770] },
-  { name: 'Worship Sound', specializationTopics: [800, 630, 1460] },
+  { name: 'Worship Audio', specializationTopics: [800, 630, 1980] },
   { name: 'Commercial Audio Systems', specializationTopics: [810, 830, 840] },
+  // Architectural Audio (user request 2026-07-22): Audio System Design (gs810) +
+  // Architectural Audio (gs860) + System Optimization (gs570).
+  { name: 'Architectural Audio', specializationTopics: [810, 860, 570] },
   { name: 'Corporate AV Audio', specializationTopics: [820, 810, 850] },
   { name: 'Residential & Consumer Audio', specializationTopics: [940, 950, 840] },
   { name: 'Vehicle Audio', specializationTopics: [960, 170, 270] },
@@ -288,7 +298,7 @@ export const SPECIALIZED_CERTIFICATES: SpecializedCertificate[] = [
   { name: 'Music Mixing', specializationTopics: [1080, 1130, 1140] },
   { name: 'Instrument Mixing', specializationTopics: [1090, 1100, 1120] },
   { name: 'Vocal Mixing & Production', specializationTopics: [1070, 1110, 1490] },
-  { name: 'Audio Mastering', specializationTopics: [1160, 1170, 1180] },
+  { name: 'Mastering', specializationTopics: [1160, 1170, 1180] },
   { name: 'Broadcast & Streaming Audio', specializationTopics: [1200, 1210, 1220] },
   { name: 'Podcast Production', specializationTopics: [1190, 1110, 1210] },
   { name: 'Production Sound', specializationTopics: [1232, 340, 410] },
@@ -303,18 +313,18 @@ export const SPECIALIZED_CERTIFICATES: SpecializedCertificate[] = [
   { name: 'Psychoacoustics & Listening', specializationTopics: [1440, 1450, 1470] },
   { name: 'Critical Listening', specializationTopics: [1500, 1510, 1530] },
   { name: 'Instrument Sound Identification', specializationTopics: [1550, 1560, 1570] },
-  { name: 'Audio Career Development', specializationTopics: [1600, 1610, 1640] },
+  { name: 'Career Development', specializationTopics: [1600, 1610, 1640] },
   { name: 'Music Business & Entrepreneurship', specializationTopics: [1620, 1630, 1580] },
   { name: 'Immersive Audio Production', specializationTopics: [1650, 1660, 1670] },
   { name: 'Immersive Music Production', specializationTopics: [1650, 1670, 1680] },
   { name: 'Dialogue & Localization', specializationTopics: [1700, 1710, 1720] },
   { name: 'Foley & Sound Effects', specializationTopics: [1730, 1732, 1232] },
   { name: 'Game & Themed-Entertainment Audio', specializationTopics: [1740, 1750, 1732] },
-  { name: 'Audio Electronics', specializationTopics: [880, 890, 900] },
-  { name: 'Audio Equipment Service', specializationTopics: [970, 980, 920] },
-  { name: 'Audio Manufacturing', specializationTopics: [910, 920, 930] },
-  { name: 'Audio Hardware Engineering', specializationTopics: [1810, 1820, 900] },
-  { name: 'Audio Software & DSP Development', specializationTopics: [1830, 1840, 1910] },
+  { name: 'Electronics', specializationTopics: [880, 890, 900] },
+  { name: 'Equipment Service', specializationTopics: [970, 980, 920] },
+  { name: 'Manufacturing', specializationTopics: [910, 920, 930] },
+  { name: 'Hardware Engineering', specializationTopics: [1810, 1820, 900] },
+  { name: 'Software & DSP Development', specializationTopics: [1830, 1840, 1910] },
   { name: 'AI Audio Foundations', specializationTopics: [1910, 1900, 1920] },
   { name: 'AI Music & Sound Creation', specializationTopics: [1850, 1890, 1920] },
   { name: 'AI Audio Production', specializationTopics: [1870, 1880, 1920] },

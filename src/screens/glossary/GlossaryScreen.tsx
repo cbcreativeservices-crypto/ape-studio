@@ -10,7 +10,7 @@
  *    entry preselects its course/topic.
  * Search by term · empty: "No results for [filter]" · bottom nav visible.
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { FlatList, Image, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type StyleProp, type TextStyle } from 'react-native';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -23,7 +23,7 @@ import { CoachMark } from '../../components/CoachMark';
 import { ShareIcon } from '../../components/ShareIcon';
 import { ShareTermSheet, type ShareTermPayload } from '../../components/ShareTermSheet';
 import { LowLightDim } from '../../features/settings/LowLightLayer';
-import { BookmarkIcon, HoldHintPressable } from '../../features/flags/TermSelectIcons';
+import { BookmarkIcon, HoldHintPressable, TermSelectIcons } from '../../features/flags/TermSelectIcons';
 import { SpeakButton, stopAllSpeech } from '../../components/SpeakButton';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { toggleBookmark, toggleTermList, useBookmarks, useTermList } from '../../features/flags/flaggedStore';
@@ -210,7 +210,7 @@ function LinkedText({
 }
 type CourseRef = { id: string; code: string; sequence: number };
 type TopicRef = { id: string; name: string; course_id: string; sequence_in_course: number };
-type Filter = 'all' | 'course' | 'topic' | 'favorites' | 'recent';
+type Filter = 'all' | 'course' | 'topic' | 'favorites' | 'custom' | 'recent';
 
 // Flagged-terms key now lives in features/flags/flaggedStore (FLAGGED_KEY) —
 // same 'ape:glossaryFavs' storage, shared app-wide (Booth 2026-07-18).
@@ -409,6 +409,7 @@ function Chip({
   onPress,
   onLongPress,
   accent = '#ffc64d',
+  icon,
 }: {
   label: string;
   active: boolean;
@@ -416,22 +417,27 @@ function Chip({
   onLongPress?: () => void;
   /** Active tint for this chip (default academy amber). */
   accent?: string;
+  /** Render an icon (receives the resolved foreground colour) instead of/around
+   *  the text label — used by the Bookmark filter chip (user request 2026-07-22). */
+  icon?: (color: string) => ReactNode;
 }) {
   const activeBg: [string, string] =
     accent === '#ffc64d' ? ['#2a2008', '#1a1405'] : ['#232323', '#161616'];
+  const fg = active ? accent : '#999999';
   return (
     <Pressable
       onPress={onPress}
       onLongPress={onLongPress}
       delayLongPress={350}
       accessibilityRole="button"
+      accessibilityLabel={label}
       accessibilityState={{ selected: active }}
     >
       <LinearGradient
         colors={active ? activeBg : ['#222222', '#161616']}
         style={[styles.chip, { borderColor: active ? accent : '#3a3a3a' }]}
       >
-        <Text style={[styles.chipText, { color: active ? accent : '#999999' }]}>{label.toUpperCase()}</Text>
+        {icon ? icon(fg) : <Text style={[styles.chipText, { color: fg }]}>{label.toUpperCase()}</Text>}
       </LinearGradient>
     </Pressable>
   );
@@ -478,6 +484,9 @@ export function GlossaryScreen({ route, navigation }: Props) {
   // the first 5 glossary opens app-wide (lib/coachMark.ts).
   const coach = useCoachMark('ape:coach:glossary', 2);
   const [recent, setRecent] = useState<string[]>([]);
+  // Held filter chip → internal list of just that set's terms, like Flashcards
+  // (user request 2026-07-22). kind picks which set the rows come from.
+  const [termListModal, setTermListModal] = useState<{ title: string; kind: 'bookmark' | 'starred' | 'recent' } | null>(null);
 
   const toggleFav = useCallback((id: string) => {
     toggleBookmark(id);
@@ -723,8 +732,10 @@ export function GlossaryScreen({ route, navigation }: Props) {
         : filter === 'topic'
           ? (selTopic?.name ?? 'Topic')
           : filter === 'favorites'
-            ? 'Favorites'
-            : 'Recent';
+            ? 'Bookmarks'
+            : filter === 'custom'
+              ? 'Custom'
+              : 'Recent';
 
   // Feature 1: the cross-link index — computed ONCE per corpus load.
   const termIndex = useMemo(() => (entries.length ? buildTermIndex(entries) : null), [entries]);
@@ -741,6 +752,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
       list = list.filter((e) => e.achievement_id != null && ids.has(e.achievement_id));
     }
     if (filter === 'favorites') list = list.filter((e) => bookmarks.has(e.id));
+    if (filter === 'custom') list = list.filter((e) => starred.has(e.id));
     if (filter === 'recent') {
       const order = new Map(recent.map((id, i) => [id, i]));
       list = list
@@ -750,7 +762,31 @@ export function GlossaryScreen({ route, navigation }: Props) {
     const q = search.trim().toLowerCase();
     if (q) list = list.filter((e) => e.term.toLowerCase().includes(q));
     return list;
-  }, [entries, filter, search, selCourseId, selTopicId, bookmarks, recent, topics, topicIdsByName]);
+  }, [entries, filter, search, selCourseId, selTopicId, bookmarks, starred, recent, topics, topicIdsByName]);
+
+  // Rows for the held-chip term list overlay (user request 2026-07-22): the
+  // members of one set (Bookmarks / Custom / Recent), independent of the main
+  // list's active filter/search. Recent keeps newest-first order; the others
+  // stay A–Z (entries are already term-sorted).
+  const termListRows = useMemo(() => {
+    if (!termListModal) return [] as Entry[];
+    if (termListModal.kind === 'bookmark') return entries.filter((e) => bookmarks.has(e.id));
+    if (termListModal.kind === 'starred') return entries.filter((e) => starred.has(e.id));
+    const order = new Map(recent.map((id, i) => [id, i]));
+    return entries
+      .filter((e) => order.has(e.id))
+      .sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
+  }, [termListModal, entries, bookmarks, starred, recent]);
+
+  // Tapping a term in the overlay opens it in the popup (the popup overlay
+  // renders in both list and card mode) and closes the overlay.
+  const openTermFromList = useCallback(
+    (id: string) => {
+      setTermListModal(null);
+      openPopupRoot(id);
+    },
+    [openPopupRoot],
+  );
 
   // Booth ruling: the STUDY nav button must NEVER land on the Glossary. The
   // tab-level navigate can't reliably move a stack that's already focused
@@ -867,14 +903,14 @@ export function GlossaryScreen({ route, navigation }: Props) {
               : 'Advanced mode: the official definition shown first and read aloud. Switch to beginner.'
           }
         >
-          {/* ADV = purple (matches the definition colour), BEG = blue (matches
-              plain English) — user request 2026-07-18. */}
-          <Text style={[styles.headerToggleText, { color: ttsBeg ? '#5bb0ff' : '#c4a2ff' }]}>
-            {ttsBeg ? 'BEG' : 'ADV'}
-          </Text>
+          {/* BEG/ADV label now uses the standard amber header colour — the
+              purple/blue tinting was removed (user request 2026-07-22). */}
+          <Text style={styles.headerToggleText}>{ttsBeg ? 'BEG' : 'ADV'}</Text>
         </Pressable>
         <View style={{ flex: 1 }} />
-        <Text style={styles.count}>{loading ? '…' : `${visible.length} / ${entries.length}`}</Text>
+        {/* Current # of terms, WHITE (user request 2026-07-22) — dropped the
+            gray "shown / total" readout. */}
+        <Text style={styles.count}>{loading ? '…' : `${visible.length}`}</Text>
       </View>
 
       <View style={styles.searchBox}>
@@ -913,24 +949,15 @@ export function GlossaryScreen({ route, navigation }: Props) {
       <View style={styles.chipRow}>
         <Chip
           label="All"
+          accent="#ffffff"
           active={filter === 'all'}
           onPress={() => {
             setFilter('all');
             setTopicPickerOpen(false);
           }}
         />
-        {/* CM4: no academic course codes in public UI — the Course filter is
-            institutional-only. Topic filter (named topics) remains. */}
-        {!commercialMode && (
-        <Chip
-          label={filter === 'course' && selCourse ? courseLabel(selCourse.code) : 'Course'}
-          active={filter === 'course'}
-          onPress={() => {
-            setFilter('course');
-            setTopicPickerOpen(false);
-          }}
-        />
-        )}
+        {/* The "Course" filter was removed (user request 2026-07-23) — the app is
+            commercial and has no academic course codes in the public glossary. */}
         <Chip
           label={filter === 'topic' && selTopic ? 'Topic ✓' : 'Topic'}
           active={filter === 'topic'}
@@ -939,27 +966,42 @@ export function GlossaryScreen({ route, navigation }: Props) {
             setTopicPickerOpen(true); // reopen the A–Z list to re-pick
           }}
         />
+        {/* Bookmark filter — the bookmark glyph up top (user request 2026-07-22).
+            Tap filters to bookmarked terms; HOLD opens the internal list. */}
         <Chip
-          label={`★${bookmarks.size > 0 ? ` ${bookmarks.size}` : ''}`}
+          label={`Bookmarks${bookmarks.size > 0 ? ` ${bookmarks.size}` : ''}`}
+          accent="#37e05f"
           active={filter === 'favorites'}
+          icon={(c) => (
+            // Glyph + text label so this chip matches the size of the Topic /
+            // Custom chips next to it (user request 2026-07-23).
+            <View style={styles.chipIconWrap}>
+              <BookmarkIcon color={c} filled={filter === 'favorites'} size={15} />
+              <Text style={[styles.chipText, { color: c }]}>{`BOOKMARKS${bookmarks.size > 0 ? ` ${bookmarks.size}` : ''}`}</Text>
+            </View>
+          )}
           onPress={() => {
             setFilter('favorites');
             setTopicPickerOpen(false);
           }}
-          // Hold also opens the list (parity with the Flashcards held chips).
-          onLongPress={() => {
-            setFilter('favorites');
+          onLongPress={() => setTermListModal({ title: 'Bookmarks', kind: 'bookmark' })}
+        />
+        {/* Custom list (★ starred) filter — new (user request 2026-07-22). */}
+        <Chip
+          label={`Custom${starred.size > 0 ? ` ${starred.size}` : ''}`}
+          accent="#c4a2ff"
+          active={filter === 'custom'}
+          onPress={() => {
+            setFilter('custom');
             setTopicPickerOpen(false);
           }}
+          onLongPress={() => setTermListModal({ title: 'Custom list', kind: 'starred' })}
         />
         <Chip
           label="Recent"
-          accent="#37e05f"
+          accent="#5bb0ff"
           active={filter === 'recent'}
-          onLongPress={() => {
-            setFilter('recent');
-            setTopicPickerOpen(false);
-          }}
+          onLongPress={() => setTermListModal({ title: 'Recent', kind: 'recent' })}
           onPress={() => {
             setFilter('recent');
             setTopicPickerOpen(false);
@@ -1094,10 +1136,13 @@ export function GlossaryScreen({ route, navigation }: Props) {
                       selected={bookmarks.has(item.id)}
                       accessibilityLabel={bookmarks.has(item.id) ? 'Remove bookmark' : 'Bookmark term'}
                     >
+                      {/* Bookmark glyph sized down further vs the other row
+                          icons (share 18 / speak 19 / star 19) — user request
+                          2026-07-22. */}
                       <BookmarkIcon
                         color={bookmarks.has(item.id) ? colors.amber : colors.textMuted}
                         filled={bookmarks.has(item.id)}
-                        size={19}
+                        size={15}
                       />
                     </HoldHintPressable>
                     {/* ★ Custom list toggle (user request 2026-07-18) — was
@@ -1112,9 +1157,8 @@ export function GlossaryScreen({ route, navigation }: Props) {
                         {starred.has(item.id) ? '★' : '☆'}
                       </Text>
                     </HoldHintPressable>
-                    {/* Clearer, smaller expand/collapse glyph (user request
-                        2026-07-18) — the tiny ▸ arrowhead read as ambiguous. */}
-                    {!cardView && <Text style={styles.entryExpand}>{expanded ? '−' : '+'}</Text>}
+                    {/* The +/- expand toggle was removed (user request
+                        2026-07-23) — tapping the term row already shows/hides it. */}
                   </View>
                 </View>
                 {/* When expanded, the term's media image sits right after the
@@ -1368,6 +1412,50 @@ export function GlossaryScreen({ route, navigation }: Props) {
         <LowLightDim />
       </Modal>
 
+      {/* Held-chip term list (user request 2026-07-22) — the members of one set
+          (Bookmarks / Custom / Recent). Tap a term to open it; the select icons
+          re-tag it into any list. Mirrors the Flashcards held-chip list. */}
+      <Modal visible={!!termListModal} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setTermListModal(null)}>
+        <View style={styles.tlBackdrop}>
+          <Pressable
+            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+            onPress={() => setTermListModal(null)}
+            accessibilityRole="button"
+            accessibilityLabel="Dismiss"
+          />
+          <View style={styles.tlCard}>
+            <Text style={styles.tlTitle}>
+              {(termListModal?.title ?? '').toUpperCase()} · {termListRows.length}
+            </Text>
+            <ScrollView style={{ flexGrow: 0 }} showsVerticalScrollIndicator {...NO_TOUCH_DELAY}>
+              {termListRows.length > 0 ? (
+                termListRows.map((r) => (
+                  <View key={r.id} style={styles.tlRow}>
+                    <Pressable
+                      style={{ flex: 1 }}
+                      onPress={() => openTermFromList(r.id)}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Open ${r.term}`}
+                    >
+                      <Text style={styles.tlItem} numberOfLines={1}>
+                        {r.term} ›
+                      </Text>
+                    </Pressable>
+                    <TermSelectIcons id={r.id} />
+                  </View>
+                ))
+              ) : (
+                <Text style={styles.tlEmpty}>No terms in this set.</Text>
+              )}
+            </ScrollView>
+            <Pressable style={styles.tlClose} onPress={() => setTermListModal(null)} accessibilityRole="button" accessibilityLabel="Close list">
+              <Text style={styles.tlCloseText}>CLOSE</Text>
+            </Pressable>
+          </View>
+        </View>
+        <LowLightDim />
+      </Modal>
+
       {/* Glossary intro placeholder (Booth 2026-07-18). */}
       <ScreenIntroOverlay introKey="glossary" />
     </View>
@@ -1392,7 +1480,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     color: colors.amber,
   },
-  count: { textAlign: 'right', fontFamily: fonts.mono, fontSize: 12, color: colors.textSubAlt },
+  count: { textAlign: 'right', fontFamily: fonts.mono, fontSize: 12, color: colors.textPrimary },
   searchBox: {
     height: 44,
     borderRadius: 6,
@@ -1670,11 +1758,11 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 0 },
   },
   // Same text style as the detail sections — the primary definition must not
-  // read dimmer than the rest (Booth 2026-07-10).
-  // Regular (technical) definition = PURPLE; plain English = BLUE (user request
-  // 2026-07-18).
-  definition: { fontFamily: fonts.barlowMedium, fontSize: 16, lineHeight: 25, color: '#c4a2ff', marginTop: 4 },
-  definitionBeg: { color: '#5bb0ff' },
+  // read dimmer than the rest (Booth 2026-07-10). The purple (technical) / blue
+  // (plain English) tinting was removed — both now use the standard body colour
+  // (user request 2026-07-22).
+  definition: { fontFamily: fonts.barlowMedium, fontSize: 16, lineHeight: 25, color: colors.textSecondary, marginTop: 4 },
+  definitionBeg: {},
   detailBlock: { marginTop: 10, gap: 12 },
   detailSection: { gap: 4 },
   detailEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: colors.amberLabel },
@@ -1760,4 +1848,31 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   detailLoading: { fontFamily: fonts.mono, fontSize: 12, color: colors.textMuted, marginTop: 10 },
+  // Bookmark filter chip: glyph + optional count, laid out in a row.
+  chipIconWrap: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  // Held-chip term list overlay (user request 2026-07-22) — mirrors Flashcards.
+  tlBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.72)', alignItems: 'center', justifyContent: 'center', padding: 24 },
+  tlCard: {
+    width: '100%',
+    maxWidth: 400,
+    maxHeight: '78%',
+    backgroundColor: '#161719',
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#2c2d31',
+    padding: 18,
+  },
+  tlTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.4, color: colors.amber, marginBottom: 10 },
+  tlRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#202022',
+    paddingVertical: 2,
+  },
+  tlItem: { flex: 1, fontFamily: fonts.barlowRegular, fontSize: 15, lineHeight: 26, color: '#7fbfff' },
+  tlEmpty: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 14, color: colors.textMuted },
+  tlClose: { marginTop: 12, alignItems: 'center', paddingVertical: 10, borderRadius: 8, borderWidth: 1, borderColor: '#3a3a3a' },
+  tlCloseText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.4, color: colors.textSubAlt },
 });

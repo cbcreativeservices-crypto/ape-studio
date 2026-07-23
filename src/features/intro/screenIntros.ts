@@ -17,15 +17,32 @@ export type IntroKey =
   | 'commitment' // "Our Commitment to You" — shown right after appWelcome
   | 'firstUserWelcome' // first-user welcome tutorial (first entry into the app)
   | 'dashboard' // method cards screen
-  | 'flashcards'
+  | 'flashcards' // T1 — on first Flashcards entry
+  | 'flashcardsCustomize' // T2 — after ~5 card views/swipes
+  | 'flashcardsPower' // T3 — first category long-press, or ~45s in
   | 'glossary'
   | 'awards';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 export const INTRO_STORAGE_PREFIX = 'ape:intro:';
 
+/** Clear every "seen" screen-intro flag so all intros (incl. the app Welcome)
+ *  show again — called by Settings → "Reset onboarding hints" (user request
+ *  2026-07-23). */
+export async function resetScreenIntros(): Promise<void> {
+  const keys = await AsyncStorage.getAllKeys();
+  const introKeys = keys.filter((k) => k.startsWith(INTRO_STORAGE_PREFIX));
+  if (introKeys.length) await AsyncStorage.multiRemove(introKeys);
+}
+
 /** `placeholder` (default true) tags an entry whose copy is not final — the
- *  overlay shows a PLACEHOLDER badge for those. Finalized copy sets it false. */
-export const SCREEN_INTROS: Record<IntroKey, { title: string; body: string; placeholder?: boolean }> = {
+ *  overlay shows a PLACEHOLDER badge for those. Finalized copy sets it false.
+ *  `button` overrides the dismiss affordance label. */
+export const SCREEN_INTROS: Record<
+  IntroKey,
+  { title: string; body: string; placeholder?: boolean; button?: string }
+> = {
   appWelcome: {
     // Final welcome copy (user-provided 2026-07-18).
     placeholder: false,
@@ -59,10 +76,40 @@ export const SCREEN_INTROS: Record<IntroKey, { title: string; body: string; plac
     body:
       'PLACEHOLDER — method cards intro. This will teach the study loop: pick a topic, work the methods (flashcards, fill-in, matching…), then take the topic quiz to bank it toward your certificate. Tap anywhere to continue.',
   },
+  // T1 — first Flashcards entry (final copy, user-provided 2026-07-18).
   flashcards: {
+    placeholder: false,
     title: 'Flashcards',
     body:
-      'PLACEHOLDER — flashcards intro. This will teach the card anatomy (term → reveal levels), swiping, marking KNOWN, and flagging terms to build your own study list. Tap anywhere to continue.',
+      'Learn one term at a time with an interactive deck designed to build long-term mastery.\n\n' +
+      '•  Swipe left or right to move through the deck.\n\n' +
+      '•  Tap a card to reveal additional learning levels, including definitions, explanations, examples, and related information.\n\n' +
+      '•  Show All displays both the term and definition together on the same card, while Full Screen provides a distraction-free study experience.',
+    button: 'Tap anywhere to continue',
+  },
+  // T2 — after ~5 card views/swipes (final copy, user-provided 2026-07-18).
+  flashcardsCustomize: {
+    placeholder: false,
+    title: 'Customize Your Deck',
+    body:
+      'Study exactly what you want.\n\n' +
+      'Use Filters to show or hide different definitions, learning status, bookmarks, favorites, or your own ' +
+      'custom categories. Build a flashcard deck that’s tailored to your learning goals.',
+    button: 'Got It',
+  },
+  // T3 — first category long-press, or ~45s in (final copy, user-provided
+  // 2026-07-18; "Flagged" → "Bookmarks" to match the app).
+  flashcardsPower: {
+    placeholder: false,
+    title: 'Power Features',
+    body:
+      'Unlock additional ways to organize and study.\n\n' +
+      'Press and hold any category button—such as Beginner, Intermediate, Advanced, Known, Bookmarks, or ' +
+      'Custom—to view everything inside that category. From there, you can review terms, edit custom lists, and ' +
+      'reassign terms between categories.\n\n' +
+      'Mark terms as Known as you master them, and use Bookmarks or Custom categories to create personalized ' +
+      'study collections.',
+    button: 'Start Studying',
   },
   glossary: {
     // Final glossary welcome copy (user-provided 2026-07-18).

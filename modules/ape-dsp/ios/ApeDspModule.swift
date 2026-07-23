@@ -15,6 +15,11 @@ public class ApeDspModule: Module {
   private var engine: AVAudioEngine?
   private var running = false
   private var interrupted = false
+  // Generator output (engine build 2026-07-23): its own AVAudioEngine so the
+  // tone/noise generator runs with OR without capture. Q4 caps live in the
+  // C++ core — this layer only renders.
+  private var outEngine: AVAudioEngine?
+  private var outNode: AVAudioSourceNode?
 
   // Info snapshot (refreshed on start + route change).
   private var sampleRate: Double = 0
@@ -69,6 +74,93 @@ public class ApeDspModule: Module {
       self.core.resetPeakHold()
     }
 
+    // ---- Engine build (2026-07-23): analysis config + per-tool frames ----
+    // All pull-based at ≤30 Hz (spike bridge rules). Scalars/small arrays ride
+    // the dictionary bridge; spectrum + waveform arrays ride Data (Uint8Array
+    // on the JS side — the typed-array path required at spectrogram sizes).
+
+    Function("setEngineConfig") { (config: [String: Any]) -> Void in
+      self.core.setEngineConfig(config)
+    }
+    Function("getMeterFrame") { () -> [String: Any] in
+      var f: [String: Any] = self.core.meterFrame()
+      f["processedInput"] = !self.measurementMode
+      f["bluetoothInput"] = self.bluetoothInput
+      f["interrupted"] = self.interrupted
+      return f
+    }
+    Function("getBandsFrame") { () -> [String: Any] in
+      return self.core.bandsFrame()
+    }
+    Function("getPitchFrame") { () -> [String: Any] in
+      return self.core.pitchFrame()
+    }
+    Function("getSpectrumMeta") { () -> [String: Any] in
+      return self.core.spectrumMeta()
+    }
+    Function("getSpectrumData") { () -> Data in
+      return self.core.spectrumData()
+    }
+    Function("getWaveformData") { () -> Data in
+      return self.core.waveformData()
+    }
+    Function("resetLeq") { () -> Void in
+      self.core.resetLeq()
+    }
+
+    // ---- RT60 guided capture (spec §13) ----
+    Function("rt60Arm") { () -> Void in
+      self.core.rt60Arm()
+    }
+    Function("rt60Cancel") { () -> Void in
+      self.core.rt60Cancel()
+    }
+    Function("getRt60Frame") { () -> [String: Any] in
+      return self.core.rt60Frame()
+    }
+
+    // ---- Generator (Tool 6). Q4 caps enforced in the C++ core. ----
+    AsyncFunction("genStart") { (promise: Promise) in
+      do {
+        try self.startGeneratorOutput()
+        self.core.genStart()
+        promise.resolve(self.core.genStatus())
+      } catch {
+        promise.reject("E_GEN_START", "Could not start audio output: \(error.localizedDescription)")
+      }
+    }
+    AsyncFunction("genStop") { () -> Void in
+      self.core.genStop()
+      // Let the 10 ms fade finish before tearing the graph down.
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+        if let e = self.outEngine, self.coreGenIdle() {
+          e.stop()
+          self.outEngine = nil
+          self.outNode = nil
+        }
+      }
+    }
+    Function("genSet") { (params: [String: Any]) -> Void in
+      if let m = params["mode"] as? Int { self.core.genSetMode(Int32(m)) }
+      if let f = params["frequency"] as? Double { self.core.genSetFrequency(f) }
+      if let l = params["levelDb"] as? Double { self.core.genSetLevelDb(l) }
+      if let bpm = params["clickBpm"] as? Double { self.core.genSetClickBpm(bpm) }
+      if let s = params["sweep"] as? [String: Any],
+         let s0 = s["startHz"] as? Double, let s1 = s["endHz"] as? Double,
+         let secs = s["seconds"] as? Double {
+        self.core.genSetSweepStart(s0, end: s1, seconds: secs, repeat: (s["repeat"] as? Bool) ?? true)
+      }
+    }
+    Function("genUnlockCap") { () -> Void in
+      self.core.genUnlockCap()
+    }
+    Function("genRelockCap") { () -> Void in
+      self.core.genRelockCap()
+    }
+    Function("genStatus") { () -> [String: Any] in
+      return self.core.genStatus()
+    }
+
     OnCreate {
       self.observeNotifications()
       self.startWatchdog()
@@ -78,9 +170,53 @@ public class ApeDspModule: Module {
       self.desiredRunning = false
       self.stopWatchdog()
       self.stopCapture(reason: "module-destroy")
+      self.core.genStop()
+      self.outEngine?.stop()
+      self.outEngine = nil
+      self.outNode = nil
       self.observers.forEach { NotificationCenter.default.removeObserver($0) }
       self.observers.removeAll()
     }
+  }
+
+  // MARK: - Generator output graph (engine build 2026-07-23)
+
+  private func coreGenIdle() -> Bool {
+    return ((core.genStatus()["running"] as? Bool) ?? false) == false
+  }
+
+  private func startGeneratorOutput() throws {
+    if let e = outEngine, e.isRunning { return }
+    let session = AVAudioSession.sharedInstance()
+    // Reuse the capture category when capture runs; otherwise configure a
+    // playback-capable session (still playAndRecord so a later capture start
+    // does not fight the category).
+    if !running {
+      try session.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker])
+      try session.setActive(true, options: [])
+    }
+    let sr = session.sampleRate > 0 ? session.sampleRate : 48_000
+    core.configureSampleRate(sr)
+    guard let format = AVAudioFormat(standardFormatWithSampleRate: sr, channels: 1) else {
+      throw NSError(domain: "ApeDsp", code: 1,
+                    userInfo: [NSLocalizedDescriptionKey: "no output format"])
+    }
+    let engine = AVAudioEngine()
+    let node = AVAudioSourceNode(format: format) { [weak self] _, _, frameCount, audioBufferList -> OSStatus in
+      guard let self else { return noErr }
+      let abl = UnsafeMutableAudioBufferListPointer(audioBufferList)
+      guard let mData = abl.first?.mData else { return noErr }
+      let ptr = mData.assumingMemoryBound(to: Float.self)
+      self.core.genRender(ptr, frames: frameCount)
+      return noErr
+    }
+    engine.attach(node)
+    engine.connect(node, to: engine.mainMixerNode, format: format)
+    engine.prepare()
+    try engine.start()
+    outEngine = engine
+    outNode = node
+    logEvent("generator output STARTED (\(Int(sr)) Hz)")
   }
 
   private var observers: [NSObjectProtocol] = []
@@ -111,6 +247,7 @@ public class ApeDspModule: Module {
 
   private func infoDict() -> [String: Any] {
     return [
+      "engineVersion": 2,  // v1 = Spike-0 (rms/peak only); v2 = engine build 2026-07-23
       "sampleRate": sampleRate,
       "ioBufferDuration": bufferDuration,
       "measurementMode": measurementMode,
@@ -137,6 +274,9 @@ public class ApeDspModule: Module {
     try session.setActive(true, options: [])
 
     refreshRouteInfo()
+    // Engine build: weighting/FFT/pitch must run at the ACTUAL session rate
+    // (read back, not requested — tech spec §2.1 / finding F3 discipline).
+    core.configureSampleRate(sampleRate)
 
     let engine = AVAudioEngine()
     let input = engine.inputNode

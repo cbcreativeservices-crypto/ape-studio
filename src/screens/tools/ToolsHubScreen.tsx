@@ -15,6 +15,7 @@ import { GlassButton } from '../../components/GlassButton';
 import { NavIcon, type NavIconName } from '../../components/nav/NavIcon';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { useAlbumTier } from '../../features/profile/api';
+import { CONCEPT_MODULES } from '../../features/tools/learn';
 import { colors, fonts } from '../../theme/tokens';
 import { TOOLS, type ToolKey } from './toolsData';
 import type { RootStackParamList } from '../../navigation/types';
@@ -33,7 +34,6 @@ const ICON_COLOR: Record<ToolKey, string> = {
   spectrogram: '#b78aff',
   rt60: '#5bff85',
   signalgen: '#ffd24d',
-  tuner: '#d7e0ea',
   hzcounter: '#4dd0e1',
 };
 
@@ -116,29 +116,20 @@ function ToolIcon({ tool }: { tool: ToolKey }) {
           })}
         </Svg>
       );
-    case 'tuner':
-      // center-detent scale + needle just off-center — tuning toward pitch
-      return (
-        <Svg width={40} height={30} viewBox="0 0 40 30">
-          {[6, 13, 20, 27, 34].map((x) => (
-            <Line key={x} x1={x} y1={4} x2={x} y2={x === 20 ? 12 : 9} stroke={c} strokeWidth={x === 20 ? 2.2 : 1.4} strokeLinecap="round" opacity={x === 20 ? 1 : 0.55} />
-          ))}
-          <Line x1={20} y1={26} x2={16.5} y2={7} stroke={c} strokeWidth={2.4} strokeLinecap="round" />
-          <Circle cx={20} cy={26} r={2.4} fill={c} />
-        </Svg>
-      );
     case 'hzcounter':
-      // square wave — a repeating rate
+      // square wave + tuner needle — one engine, counter + tuner (merged 2026-07-23)
       return (
         <Svg width={40} height={30} viewBox="0 0 40 30">
           <Path
-            d="M3 22 H9 V8 H17 V22 H25 V8 H33 V22 H37"
+            d="M3 24 H8 V12 H14 V24 H20 V12 H24"
             stroke={c}
-            strokeWidth={2.2}
+            strokeWidth={2}
             fill="none"
             strokeLinejoin="round"
             strokeLinecap="round"
           />
+          <Line x1={32} y1={26} x2={29} y2={8} stroke={c} strokeWidth={2.2} strokeLinecap="round" />
+          <Circle cx={32} cy={26} r={2.2} fill={c} />
         </Svg>
       );
   }
@@ -197,8 +188,10 @@ export function ToolsHubScreen({ navigation }: Props) {
             <Text style={styles.heroTitle}>Measurement{'\n'}& Analysis</Text>
             <View style={styles.heroRule} />
             <Text style={styles.heroCount}>
-              {TOOLS.filter((t) => !t.planned).length} tools available ·{' '}
-              {TOOLS.filter((t) => t.planned).length} in development
+              {TOOLS.filter((t) => !t.planned).length} tools available
+              {TOOLS.some((t) => t.planned)
+                ? ` · ${TOOLS.filter((t) => t.planned).length} in development`
+                : ''}
             </Text>
           </View>
 
@@ -247,6 +240,45 @@ export function ToolsHubScreen({ navigation }: Props) {
               </Pressable>
             ))}
           </View>
+
+          {/* Phase-2 (spec §7): the shared Saved Measurement Library. Free to
+              use, like the tools. */}
+          <Pressable
+            style={styles.libraryRow}
+            onPress={() => navigation.navigate('ToolLibrary', undefined)}
+            accessibilityRole="button"
+            accessibilityLabel="Saved measurements"
+          >
+            <Text style={styles.libraryRowText}>SAVED MEASUREMENTS</Text>
+            <Text style={styles.trainingChevron}>›</Text>
+          </Pressable>
+
+          {/* Phase-1 training layer (spec 2026-07-23 §15): the professional
+              measurement concept modules — Smaart-style concepts taught as
+              tutorials, not live tools. Section appears once content lands;
+              modules gate their content to Academy. */}
+          {CONCEPT_MODULES.length > 0 && (
+            <>
+              <Text style={styles.trainingHead}>MEASUREMENT TRAINING</Text>
+              <View style={styles.trainingList}>
+                {CONCEPT_MODULES.map((m) => (
+                  <Pressable
+                    key={m.key}
+                    style={styles.trainingRow}
+                    onPress={() => navigation.navigate('ConceptModule', { conceptKey: m.key })}
+                    accessibilityRole="button"
+                    accessibilityLabel={m.title}
+                  >
+                    <Text style={styles.trainingNum}>{String(m.num).padStart(2, '0')}</Text>
+                    <Text style={styles.trainingTitle} numberOfLines={1}>
+                      {m.title}
+                    </Text>
+                    <Text style={styles.trainingChevron}>›</Text>
+                  </Pressable>
+                ))}
+              </View>
+            </>
+          )}
         </ScrollView>
       </View>
 
@@ -364,6 +396,42 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
   },
   comingChipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1.4, color: '#d7e0ea' },
+  // Saved-measurement library row (Phase 2).
+  libraryRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(77,208,225,.45)',
+    backgroundColor: '#0d1517',
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+  },
+  libraryRowText: { flex: 1, fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.6, color: '#4dd0e1' },
+  // Measurement-training (concept modules) section below the tile grid.
+  trainingHead: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 12,
+    letterSpacing: 2,
+    color: colors.amberLabel,
+    marginTop: 6,
+  },
+  trainingList: { gap: 8 },
+  trainingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#131316',
+    paddingVertical: 11,
+    paddingHorizontal: 12,
+  },
+  trainingNum: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub },
+  trainingTitle: { flex: 1, fontFamily: fonts.oswaldMedium, fontSize: 14, color: colors.textPrimary },
+  trainingChevron: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, color: colors.textSub },
   // Permanent academy-upsell notice (below the nav) — BLUE theme (Booth 2026-07-11).
   banner: {
     backgroundColor: '#0b1420',
