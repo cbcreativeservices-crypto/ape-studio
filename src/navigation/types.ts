@@ -9,7 +9,7 @@ import type { NavigatorScreenParams } from '@react-navigation/native';
 export type StudyScreenParams = { achievementId: string; topicName: string };
 
 export type StudyStackParamList = {
-  Dashboard: undefined;
+  Dashboard: { focusGs?: number | string } | undefined;
   Flashcards: StudyScreenParams;
   FillInBlank: StudyScreenParams;
   Matching: StudyScreenParams;

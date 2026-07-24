@@ -11,9 +11,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export const HOME_MAX = 20;
 const KEY = 'ape:homeCards';
 const BKEY = 'ape:homeBundles';
+const DKEY = 'ape:homeDefaultGs';
 
 let list: number[] = []; // topic gs on Home
 let bundleList: string[] = []; // bundle keys on Home (cert:/program: keys)
+let defaultGs: number | null = null; // topic the Home carousel opens on (user 2026-07-24)
 let hydrated = false;
 let hydrating: Promise<void> | null = null;
 const listeners = new Set<() => void>();
@@ -26,6 +28,9 @@ function persist() {
 }
 function persistBundles() {
   void AsyncStorage.setItem(BKEY, JSON.stringify(bundleList));
+}
+function persistDefault() {
+  void AsyncStorage.setItem(DKEY, defaultGs == null ? '' : String(defaultGs));
 }
 
 /** Total Home cards (topics + bundles) — the 20-cap counts both. */
@@ -48,6 +53,9 @@ async function hydrate(): Promise<void> {
           const pb = JSON.parse(rawB);
           if (Array.isArray(pb)) bundleList = [...new Set(pb.filter((k) => typeof k === 'string'))];
         }
+        const rawD = await AsyncStorage.getItem(DKEY);
+        const dg = rawD ? parseInt(rawD, 10) : NaN;
+        defaultGs = Number.isFinite(dg) && list.includes(dg) ? dg : null;
       } catch {
         // start empty
       }
@@ -67,6 +75,10 @@ export function getHomeGs(): number[] {
  *  Save action. */
 export function setHomeGs(gs: number[]): void {
   list = [...new Set(gs)].slice(0, HOME_MAX);
+  if (defaultGs != null && !list.includes(defaultGs)) {
+    defaultGs = null;
+    persistDefault();
+  }
   persist();
   emit();
 }
@@ -81,6 +93,10 @@ export function isOnHome(gs: number): boolean {
 export function toggleHome(gs: number): 'added' | 'removed' | 'full' {
   if (list.includes(gs)) {
     list = list.filter((g) => g !== gs);
+    if (defaultGs === gs) {
+      defaultGs = null;
+      persistDefault();
+    }
     persist();
     emit();
     return 'removed';
@@ -109,6 +125,10 @@ export function ensureHome(gs: number): boolean {
 export function removeHome(gs: number): void {
   if (!list.includes(gs)) return;
   list = list.filter((g) => g !== gs);
+  if (defaultGs === gs) {
+    defaultGs = null;
+    persistDefault();
+  }
   persist();
   emit();
 }
@@ -161,6 +181,38 @@ export function useHomeGs(): number[] {
   const [snap, setSnap] = useState<number[]>(list);
   useEffect(() => {
     const l = () => setSnap(list);
+    listeners.add(l);
+    void hydrate().then(l);
+    return () => {
+      listeners.delete(l);
+    };
+  }, []);
+  return snap;
+}
+
+/* ---- Default landing card (user request 2026-07-24) ----
+ * The Home (Course Select) carousel opens on this topic's card. null = no
+ * explicit choice → the carousel opens on Glossary (its prior default). Always
+ * one of the Home topics, or null. */
+
+export function getDefaultHomeGs(): number | null {
+  void hydrate();
+  return defaultGs;
+}
+
+/** Set (or clear, with null) the default landing card. A gs that isn't a current
+ *  Home topic is ignored (stored as null). */
+export function setDefaultHomeGs(gs: number | null): void {
+  defaultGs = gs != null && list.includes(gs) ? gs : null;
+  persistDefault();
+  emit();
+}
+
+/** Live view of the default landing topic gs (null = none). */
+export function useDefaultHomeGs(): number | null {
+  const [snap, setSnap] = useState<number | null>(defaultGs);
+  useEffect(() => {
+    const l = () => setSnap(defaultGs);
     listeners.add(l);
     void hydrate().then(l);
     return () => {

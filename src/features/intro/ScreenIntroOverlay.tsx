@@ -12,12 +12,16 @@ import { useCallback, useEffect, useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { devBypass } from '../../config/devMode';
+import { usePopupsSuppressed } from '../dev/popupSuppressStore';
 import { colors, fonts } from '../../theme/tokens';
 import { LowLightDim } from '../settings/LowLightLayer';
 import { INTRO_STORAGE_PREFIX, SCREEN_INTROS, type IntroKey } from './screenIntros';
 
 export function useScreenIntro(key: IntroKey) {
   const [visible, setVisible] = useState(false);
+  // Dev master kill-switch: when suppression is on, NOTHING shows — this wins
+  // even over DEV_BYPASS.alwaysShowIntros below.
+  const suppressed = usePopupsSuppressed();
 
   useEffect(() => {
     let alive = true;
@@ -42,7 +46,7 @@ export function useScreenIntro(key: IntroKey) {
     }
   }, [key]);
 
-  return { visible, dismiss };
+  return { visible: visible && !suppressed, dismiss };
 }
 
 export function IntroSheet({

@@ -44,7 +44,7 @@ import { setLastPublicCourse } from '../../features/commercial/commercialDashboa
 import { getPublicCatalog, freeTopicsFrom, courseHasFreeTopic } from '../../data/publicCourses';
 import { MATRIX_SUBJECTS } from '../../data/courseTopicMatrix';
 import { PROGRAM_PATHS, SPECIALIZED_CERTIFICATES } from '../awards/awardsData';
-import { useHomeBundles, useHomeGs } from '../../features/home/homeCardsStore';
+import { useDefaultHomeGs, useHomeBundles, useHomeGs } from '../../features/home/homeCardsStore';
 import { setBundleLoaded, useBundles } from '../../features/enrollment/enrolledBundlesStore';
 import { isFreeEnrollGs, setActiveMany } from '../../features/enrollment/enrollmentStore';
 import { BookIcon } from '../../components/BookIcon';
@@ -170,9 +170,6 @@ const CARD_IMAGE: Record<string, string> = {
 /** Scroll-dot color by card TYPE (Booth 2026-07-15): free = green, course =
  *  purple, topic = amber — so the dot row reads as a color-coded map of the
  *  carousel. */
-/** Cards a student can mark into their personal deck (user request 2026-07-18). */
-const MARKABLE_KINDS: Card['kind'][] = ['course', 'public', 'freeTopic'];
-const isMarkable = (c: Card): boolean => MARKABLE_KINDS.includes(c.kind);
 /** Far-right tally card count (user request 2026-07-22): the number of
  *  Specialization Certificates a student can earn — the card links to the
  *  Certificates screen. */
@@ -281,8 +278,6 @@ function CourseCardView({
   onOpenTopic,
   onOpenBundle,
   academy,
-  marked,
-  onToggleMark,
   otherProgramsCount,
 }: {
   item: Card;
@@ -302,10 +297,8 @@ function CourseCardView({
   onOpenTopic: (gs: number) => void;
   /** A user-placed Home bundle card → load its topics + study (2026-07-22). */
   onOpenBundle: (key: string, topics: number[]) => void;
-  /** Academy mode: show the "my courses" mark control (user request 2026-07-18). */
+  /** Academy mode signal — drives the Home-Setup deck + locked-tap behavior. */
   academy: boolean;
-  marked: boolean;
-  onToggleMark: () => void;
   /** Count for the "Career and Business" → "+ N other programs" retitle
    *  (user request 2026-07-22). */
   otherProgramsCount: number;
@@ -481,7 +474,6 @@ function CourseCardView({
             ? lockedEyebrow
             : '#ffc64d';
   // Cards the student can mark into their own deck (academy mode).
-  const markable = !!course || !!pub || !!free;
   const eyebrow = isTools
     ? 'FREE INCLUDED'
     : isGlossary
@@ -514,21 +506,6 @@ function CourseCardView({
           grayed-out — no color cast, purple stays on the frame only. Sits above
           the image + its 15% dim, below the text/button (Booth 2026-07-09c). */}
       {locked && <View style={styles.lockTint} />}
-      {/* Academy "my courses" mark (user request 2026-07-18) — icon-only button
-          in the TOP-RIGHT corner (no text, so it never covers the title). Tap
-          to add/remove; selecting jumps the deck to that card's landing spot. */}
-      {academy && markable ? (
-        <Pressable
-          style={[styles.markBtn, marked && styles.markBtnOn]}
-          onPress={onToggleMark}
-          hitSlop={10}
-          accessibilityRole="button"
-          accessibilityState={{ selected: marked }}
-          accessibilityLabel={marked ? 'Remove from my courses' : 'Add to my courses'}
-        >
-          <Text style={[styles.markStar, marked && styles.markStarOn]}>{marked ? '★' : '☆'}</Text>
-        </Pressable>
-      ) : null}
       <View>
         <Text style={styles.cardTitle}>{title}</Text>
         {/* Tools tutorial line lives INSIDE the card, below the title (Booth
@@ -645,38 +622,10 @@ export function CourseSelectionScreen() {
   // fires instead (user request 2026-07-23).
   const lapsed = entitlement === 'lapsed';
 
-  // Academy "my courses" marks (user request 2026-07-18). In academy mode the
-  // student marks the cards/topics they want; those become their deck (the rest
-  // collapse behind the "+ XX other" card), and the carousel opens on the first
-  // marked card. `caps.allTopics` is the academy signal.
+  // Academy signal (`caps.allTopics`) — drives the Home-Setup deck below. The
+  // legacy per-card "my courses" star was removed (user request 2026-07-24);
+  // course selection + default position now live in the Home Setup screen.
   const academy = caps.allTopics;
-  // Insertion order matters: the MOST-RECENTLY marked card becomes the landing
-  // card (Set preserves insertion order; we read it newest-first below).
-  const [marks, setMarks] = useState<Set<string>>(new Set());
-  const marksRef = useRef(marks);
-  marksRef.current = marks;
-  // When a card is newly marked, jump the carousel to it (its landing spot).
-  const [pendingScrollId, setPendingScrollId] = useState<string | null>(null);
-  useEffect(() => {
-    AsyncStorage.getItem('ape:myCourseMarks').then((v) => {
-      if (v) setMarks(new Set(JSON.parse(v) as string[]));
-    });
-  }, []);
-  const toggleMark = useCallback((id: string) => {
-    const adding = !marksRef.current.has(id);
-    setMarks((prev) => {
-      const next = new Set(prev);
-      if (adding) {
-        next.delete(id); // re-add so it lands at the END (newest) of the set
-        next.add(id);
-      } else {
-        next.delete(id);
-      }
-      void AsyncStorage.setItem('ape:myCourseMarks', JSON.stringify([...next]));
-      return next;
-    });
-    if (adding) setPendingScrollId(id); // move the view to it instantly
-  }, []);
 
   const load = useCallback(async () => {
     setError(null);
@@ -810,6 +759,7 @@ export function CourseSelectionScreen() {
   // (locked) + those topic cards + bundle cards.
   const homeGs = useHomeGs();
   const homeBundleKeys = useHomeBundles();
+  const defaultHomeGs = useDefaultHomeGs();
   const bundles = useBundles();
   const displayDeck = useMemo<Card[] | null>(() => {
     if (!cards) return cards;
@@ -839,24 +789,11 @@ export function CourseSelectionScreen() {
         }));
       return [...fixed, ...bundleCards, ...topicCards];
     }
-    // The "my marked courses" deck is academy-only (free/anonymous/lapsed without
-    // Home cards see the default deck).
-    if (!academy) return cards;
-    const byId = new Map(cards.map((c) => [c.id, c] as const));
-    // Newest-marked FIRST so the just-selected card sits at the landing spot.
-    const marked = [...marks]
-      .reverse()
-      .map((id) => byId.get(id))
-      .filter((c): c is Card => !!c && isMarkable(c));
-    if (marked.length === 0) return cards;
-    const fixed = cards.filter((c) => c.kind === 'tools' || c.kind === 'glossary');
-    const other = OTHER_CERTS_COUNT;
-    return [
-      ...fixed,
-      ...marked,
-      ...(other > 0 ? [{ kind: 'more' as const, id: 'more' as const, count: other }] : []),
-    ];
-  }, [cards, academy, lapsed, marks, homeGs, homeBundleKeys, bundles]);
+    // No Home-Setup cards placed → the default deck from load(). The legacy
+    // per-card "my courses" star deck was removed (user request 2026-07-24);
+    // Home Setup now owns course selection + default position.
+    return cards;
+  }, [cards, academy, lapsed, homeGs, homeBundleKeys, bundles]);
 
   // "+ N other programs" count for the retitled Career and Business card (user
   // request 2026-07-22): Academy Program Certificates not represented by a
@@ -873,26 +810,15 @@ export function CourseSelectionScreen() {
     return Math.max(0, PROGRAM_PATHS.length - shown);
   }, [displayDeck]);
 
-  // Selecting a card jumps the view to it instantly (user request 2026-07-18).
-  useEffect(() => {
-    if (!pendingScrollId || !displayDeck) return;
-    const i = displayDeck.findIndex((c) => c.id === pendingScrollId);
-    if (i >= 0) {
-      setActiveIdx(i);
-      listRef.current?.scrollToIndex({ index: i, animated: true });
-    }
-    setPendingScrollId(null);
-  }, [pendingScrollId, displayDeck]);
-
-  // Entering HOME fronts the GLOSSARY card by default (Booth 2026-07-11) —
-  // BUT when the academy student has marked courses, open on their FIRST marked
-  // card instead ("open carousel there", user request 2026-07-18). Keyed on
-  // `cards` so it fires on focus/reload, not on every mark toggle.
+  // Entering HOME fronts the GLOSSARY card by default (Booth 2026-07-11) — BUT
+  // when the user has picked a default landing card in Home Setup, open on that
+  // card instead (user request 2026-07-24). Keyed on `cards` + the default so it
+  // fires on focus/reload and when the choice changes.
   useEffect(() => {
     if (!displayDeck || displayDeck.length <= GLOSSARY_IDX) return;
     let target = GLOSSARY_IDX;
-    if (academy && marks.size) {
-      const i = displayDeck.findIndex((c) => isMarkable(c) && marks.has(c.id));
+    if (defaultHomeGs != null) {
+      const i = displayDeck.findIndex((c) => c.id === `home-${defaultHomeGs}`);
       if (i >= 0) target = i;
     }
     target = Math.min(target, displayDeck.length - 1);
@@ -900,7 +826,7 @@ export function CourseSelectionScreen() {
     const t = setTimeout(() => listRef.current?.scrollToIndex({ index: target, animated: false }), 0);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cards]);
+  }, [cards, defaultHomeGs]);
 
   const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
     const idx = viewableItems[0]?.index;
@@ -1125,7 +1051,7 @@ export function CourseSelectionScreen() {
         horizontal
         showsHorizontalScrollIndicator={false}
         keyExtractor={(c) => c.id}
-        extraData={[marks, otherProgramsCount]}
+        extraData={otherProgramsCount}
         snapToInterval={CARD_W + CARD_GAP}
         decelerationRate="fast"
         contentContainerStyle={{ paddingHorizontal: SIDE_PAD, gap: CARD_GAP, alignItems: 'center' }}
@@ -1145,8 +1071,6 @@ export function CourseSelectionScreen() {
             onOpenTopic={openTopic}
             onOpenBundle={openBundle}
             academy={academy}
-            marked={marks.has(item.id)}
-            onToggleMark={() => toggleMark(item.id)}
             otherProgramsCount={otherProgramsCount}
           />
         )}
@@ -1323,31 +1247,6 @@ const styles = StyleSheet.create({
   },
   homeTopicSubject: { fontFamily: fonts.barlowRegular, fontSize: 13, color: '#b7a7e0', textAlign: 'center' },
   homeTopicCta: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.2, color: '#c4a2ff' },
-  // Academy "my courses" mark control — icon-only, top-right (user request
-  // 2026-07-18).
-  markBtn: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    zIndex: 3,
-    // Star 37% smaller (user request 2026-07-18); the button shrinks with it.
-    width: 25,
-    height: 25,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 13,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,.3)',
-    backgroundColor: 'rgba(8,8,10,.72)',
-  },
-  markBtnOn: { borderColor: 'rgba(255,180,0,.85)', backgroundColor: 'rgba(40,28,4,.85)' },
-  markStar: { fontSize: 12, color: '#d8d8d8' },
-  markStarOn: {
-    color: colors.amber,
-    textShadowColor: 'rgba(255,180,0,.55)',
-    textShadowRadius: 5,
-    textShadowOffset: { width: 0, height: 0 },
-  },
   lockTint: {
     position: 'absolute',
     top: 0,

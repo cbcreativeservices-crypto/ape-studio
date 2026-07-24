@@ -136,24 +136,176 @@ export function useTermList(kind: TermListKind): ReadonlySet<string> {
   return snap;
 }
 
-/* ---- Bookmark-list convenience API (the ⭐→🔖 list) ---- */
+/* ---- PER-CONTEXT bookmark API (the 🔖 list) ----
+ * Bookmarks are no longer one global list: each CONTEXT (the Glossary, or a
+ * given topic) keeps its own bookmark set under `ape:bm:<ctx>`. Same
+ * hand-rolled external-store pattern as the term lists above, but the stores
+ * are created lazily per ctx and held in a Map. Fresh start — the old global
+ * `ape:glossaryFavs` (BOOKMARK_KEY) is abandoned and never read. */
+const bookmarkStores = new Map<string, SetStore>();
 
-export function getBookmarks(): ReadonlySet<string> {
-  return getTermList('bookmark');
+function bookmarkKey(ctx: string): string {
+  return `ape:bm:${ctx}`;
 }
 
-export function isBookmarked(id: string): boolean {
-  return stores.bookmark.ids.has(id);
+function bookmarkStore(ctx: string): SetStore {
+  let s = bookmarkStores.get(ctx);
+  if (!s) {
+    s = { ids: new Set(), hydrated: false, hydrating: null, listeners: new Set() };
+    bookmarkStores.set(ctx, s);
+  }
+  return s;
 }
 
-export function toggleBookmark(id: string): boolean {
-  return toggleTermList('bookmark', id);
+function emitBookmarks(s: SetStore) {
+  s.listeners.forEach((l) => l());
 }
 
-export function removeBookmarks(ids: Iterable<string>): void {
-  removeManyFromTermList('bookmark', ids);
+function hydrateBookmarks(ctx: string): Promise<void> {
+  const s = bookmarkStore(ctx);
+  if (s.hydrated) return Promise.resolve();
+  if (!s.hydrating) {
+    s.hydrating = (async () => {
+      try {
+        const raw = await AsyncStorage.getItem(bookmarkKey(ctx));
+        if (raw) s.ids = new Set(JSON.parse(raw) as string[]);
+      } catch {
+        // corrupt/absent → start empty
+      }
+      s.hydrated = true;
+      emitBookmarks(s);
+    })();
+  }
+  return s.hydrating;
 }
 
-export function useBookmarks(): ReadonlySet<string> {
-  return useTermList('bookmark');
+function persistBookmarks(ctx: string) {
+  void AsyncStorage.setItem(bookmarkKey(ctx), JSON.stringify([...bookmarkStore(ctx).ids]));
+}
+
+export function getBookmarks(ctx: string): ReadonlySet<string> {
+  void hydrateBookmarks(ctx);
+  return bookmarkStore(ctx).ids;
+}
+
+export function isBookmarked(ctx: string, id: string): boolean {
+  return bookmarkStore(ctx).ids.has(id);
+}
+
+export function toggleBookmark(ctx: string, id: string): boolean {
+  const s = bookmarkStore(ctx);
+  const next = new Set(s.ids);
+  if (next.has(id)) next.delete(id);
+  else next.add(id);
+  s.ids = next; // new identity so React state updates propagate
+  persistBookmarks(ctx);
+  emitBookmarks(s);
+  return next.has(id);
+}
+
+export function removeBookmarks(ctx: string, ids: Iterable<string>): void {
+  const s = bookmarkStore(ctx);
+  let changed = false;
+  const next = new Set(s.ids);
+  for (const id of ids) {
+    if (next.delete(id)) changed = true;
+  }
+  if (!changed) return;
+  s.ids = next;
+  persistBookmarks(ctx);
+  emitBookmarks(s);
+}
+
+/** Every context that currently holds ≥1 bookmark — scanned from storage. Used
+ *  by the Glossary's two-level bookmark filter (user request 2026-07-24). */
+export async function listBookmarkContexts(): Promise<{ ctx: string; count: number }[]> {
+  const keys = await AsyncStorage.getAllKeys();
+  const out: { ctx: string; count: number }[] = [];
+  for (const k of keys) {
+    if (!k.startsWith('ape:bm:')) continue;
+    try {
+      const raw = await AsyncStorage.getItem(k);
+      const arr = raw ? (JSON.parse(raw) as string[]) : [];
+      if (Array.isArray(arr) && arr.length > 0) out.push({ ctx: k.slice('ape:bm:'.length), count: arr.length });
+    } catch {
+      // skip corrupt entries
+    }
+  }
+  return out;
+}
+
+/** Live view of one context's bookmark set (re-renders on change, any screen). */
+export function useBookmarks(ctx: string): ReadonlySet<string> {
+  const [snap, setSnap] = useState<ReadonlySet<string>>(bookmarkStore(ctx).ids);
+  useEffect(() => {
+    const s = bookmarkStore(ctx);
+    const l = () => setSnap(bookmarkStore(ctx).ids);
+    s.listeners.add(l);
+    void hydrateBookmarks(ctx).then(l);
+    return () => {
+      s.listeners.delete(l);
+    };
+  }, [ctx]);
+  return snap;
+}
+
+/* ---- "Show my Custom List on the Dashboard" toggle ----
+ * A device-local boolean (same hand-rolled external-store pattern as the term
+ * lists above): module var + listeners + hydrate-once + persist. Controls
+ * whether the user's Custom List appears as a synthetic current-topic on the
+ * Dashboard. Default false. */
+const CUSTOM_ON_DASHBOARD_KEY = 'ape:customOnDashboard';
+
+const customOnDashboard = {
+  value: false,
+  hydrated: false,
+  hydrating: null as Promise<void> | null,
+  listeners: new Set<() => void>(),
+};
+
+function emitCustomOnDashboard() {
+  customOnDashboard.listeners.forEach((l) => l());
+}
+
+async function hydrateCustomOnDashboard(): Promise<void> {
+  if (customOnDashboard.hydrated) return;
+  if (!customOnDashboard.hydrating) {
+    customOnDashboard.hydrating = (async () => {
+      try {
+        const raw = await AsyncStorage.getItem(CUSTOM_ON_DASHBOARD_KEY);
+        if (raw != null) customOnDashboard.value = raw === 'true';
+      } catch {
+        // corrupt/absent → keep default false
+      }
+      customOnDashboard.hydrated = true;
+      emitCustomOnDashboard();
+    })();
+  }
+  return customOnDashboard.hydrating;
+}
+
+export function getCustomOnDashboard(): boolean {
+  void hydrateCustomOnDashboard();
+  return customOnDashboard.value;
+}
+
+export function setCustomOnDashboard(v: boolean): void {
+  if (customOnDashboard.value === v) return;
+  customOnDashboard.value = v;
+  void AsyncStorage.setItem(CUSTOM_ON_DASHBOARD_KEY, v ? 'true' : 'false');
+  emitCustomOnDashboard();
+}
+
+/** Live view of the "show custom list on dashboard" flag (any screen). */
+export function useCustomOnDashboard(): boolean {
+  const [snap, setSnap] = useState<boolean>(customOnDashboard.value);
+  useEffect(() => {
+    const l = () => setSnap(customOnDashboard.value);
+    customOnDashboard.listeners.add(l);
+    void hydrateCustomOnDashboard().then(l);
+    return () => {
+      customOnDashboard.listeners.delete(l);
+    };
+  }, []);
+  return snap;
 }

@@ -14,10 +14,13 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
+import { DeckIcon } from '../../components/DeckIcon';
 import { fonts } from '../../theme/tokens';
 import {
   setInTermList,
+  toggleBookmark,
   toggleTermList,
+  useBookmarks,
   useTermList,
 } from './flaggedStore';
 
@@ -154,9 +157,8 @@ function IconToggle({
   );
 }
 
-export function TermSelectIcons({ id }: { id: string }) {
-  const bookmarked = useTermList('bookmark');
-  const heart = useTermList('heart');
+export function TermSelectIcons({ id, bookmarkCtx }: { id: string; bookmarkCtx: string }) {
+  const bookmarked = useBookmarks(bookmarkCtx);
   const starred = useTermList('starred');
   const known = useTermList('known');
   const isKnown = known.has(id);
@@ -167,26 +169,20 @@ export function TermSelectIcons({ id }: { id: string }) {
       <IconToggle
         renderGlyph={(c) => <BookmarkIcon color={c} filled={bookmarked.has(id)} />}
         on={bookmarked.has(id)}
-        onColor="#ffa64d"
+        onColor="#b45bff"
         label={bookmarked.has(id) ? 'Remove bookmark' : 'Bookmark term'}
-        onPress={() => toggleTermList('bookmark', id)}
+        onPress={() => toggleBookmark(bookmarkCtx, id)}
         onLongPress={() => showHint(bookmarked.has(id) ? 'Removes from Bookmarks' : 'Adds to Bookmarks')}
       />
       <IconToggle
-        glyph={heart.has(id) ? '♥' : '♡'}
-        on={heart.has(id)}
-        onColor="#ff6a5e"
-        label={heart.has(id) ? 'Remove heart' : 'Heart term'}
-        onPress={() => toggleTermList('heart', id)}
-        onLongPress={() => showHint(heart.has(id) ? '♥ Removes from Favorites' : '♥ Adds to Favorites')}
-      />
-      <IconToggle
-        glyph={starred.has(id) ? '★' : '☆'}
+        renderGlyph={(c) => (
+          <DeckIcon color={c} size={17} fill={starred.has(id) ? `${c}33` : 'none'} />
+        )}
         on={starred.has(id)}
-        onColor="#ffc64d"
+        onColor="#2f9bff"
         label={starred.has(id) ? 'Remove from custom list' : 'Add to custom list'}
         onPress={() => toggleTermList('starred', id)}
-        onLongPress={() => showHint(starred.has(id) ? '★ Removes from Custom list' : '★ Adds to Custom list')}
+        onLongPress={() => showHint(starred.has(id) ? 'Removes from Custom list' : 'Adds to Custom list')}
       />
       <IconToggle
         glyph="✓"

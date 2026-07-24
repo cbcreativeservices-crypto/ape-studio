@@ -132,7 +132,7 @@ export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
       {hasAccount ? (
         <Text style={[styles.introTitle, styles.registryGreenTitle]}>{BRAND_PHRASE}</Text>
       ) : (
-        <Text style={styles.introTitle}>{DIRECTORY_INTRO_TITLE}</Text>
+        <Text style={[styles.introTitle, { color: '#37e05f' }]}>{DIRECTORY_INTRO_TITLE}</Text>
       )}
 
       {/* Corrected copy (user-provided 2026-07-22). The Registry name renders

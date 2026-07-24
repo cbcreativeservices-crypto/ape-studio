@@ -16,7 +16,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { BookIcon } from '../../components/BookIcon';
 import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
 import { MATRIX_SUBJECTS } from '../../data/courseTopicMatrix';
-import { getHomeGs, HOME_MAX, setHomeGs } from '../../features/home/homeCardsStore';
+import { getDefaultHomeGs, getHomeGs, HOME_MAX, setDefaultHomeGs, setHomeGs } from '../../features/home/homeCardsStore';
 
 const GREEN = '#37e05f';
 const BLUE = '#7fbfff';
@@ -26,6 +26,7 @@ type Sort = 'custom' | 'az' | 'subject';
 export function HomeSetupSheet({ visible, onClose }: { visible: boolean; onClose: () => void }) {
   const insets = useSafeAreaInsets();
   const [draft, setDraft] = useState<number[]>([]);
+  const [defaultDraft, setDefaultDraft] = useState<number | null>(null);
   const [sort, setSort] = useState<Sort>('custom');
   const [openSubject, setOpenSubject] = useState<number | null>(null);
   const [warn, setWarn] = useState(false);
@@ -33,6 +34,7 @@ export function HomeSetupSheet({ visible, onClose }: { visible: boolean; onClose
   useEffect(() => {
     if (visible) {
       setDraft(getHomeGs());
+      setDefaultDraft(getDefaultHomeGs());
       setSort('custom');
     }
   }, [visible]);
@@ -46,7 +48,9 @@ export function HomeSetupSheet({ visible, onClose }: { visible: boolean; onClose
   const subjectFor = (gs: number) => topicIndex.get(gs)?.subject ?? '';
   const inDraft = (gs: number) => draft.includes(gs);
 
-  const place = (gs: number) =>
+  const place = (gs: number) => {
+    // Dropping a card that is the default clears the default too.
+    setDefaultDraft((d) => (d === gs ? null : d));
     setDraft((prev) => {
       if (prev.includes(gs)) return prev.filter((g) => g !== gs);
       if (prev.length >= HOME_MAX) {
@@ -55,6 +59,7 @@ export function HomeSetupSheet({ visible, onClose }: { visible: boolean; onClose
       }
       return [...prev, gs];
     });
+  };
 
   const applySort = (mode: Sort) => {
     setSort(mode);
@@ -107,24 +112,42 @@ export function HomeSetupSheet({ visible, onClose }: { visible: boolean; onClose
           {draft.length === 0 ? (
             <Text style={styles.empty}>None yet — add topics from the list below.</Text>
           ) : (
-            draft.map((gs) => (
-              <View key={gs} style={styles.placedRow}>
-                <Pressable onPress={() => place(gs)} hitSlop={8} accessibilityRole="button" accessibilityLabel={`Remove ${nameFor(gs)} from Home`}>
-                  <BookIcon color={GREEN} filled size={20} />
-                </Pressable>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.placedName} numberOfLines={1}>
-                    {nameFor(gs)}
-                  </Text>
-                  <Text style={styles.placedSubject} numberOfLines={1}>
-                    {subjectFor(gs)}
-                  </Text>
+            <>
+              <Text style={styles.defaultHint}>
+                The card marked DEFAULT is where your Home carousel opens.
+              </Text>
+              {draft.map((gs) => (
+                <View key={gs} style={styles.placedRow}>
+                  <Pressable onPress={() => place(gs)} hitSlop={8} accessibilityRole="button" accessibilityLabel={`Remove ${nameFor(gs)} from Home`}>
+                    <BookIcon color={GREEN} filled size={20} />
+                  </Pressable>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.placedName} numberOfLines={1}>
+                      {nameFor(gs)}
+                    </Text>
+                    <Text style={styles.placedSubject} numberOfLines={1}>
+                      {subjectFor(gs)}
+                    </Text>
+                  </View>
+                  {/* Default landing-card picker (user request 2026-07-24) — one
+                      at a time; tap again to clear. */}
+                  <Pressable
+                    style={[styles.defaultBtn, defaultDraft === gs && styles.defaultBtnOn]}
+                    onPress={() => setDefaultDraft((d) => (d === gs ? null : gs))}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: defaultDraft === gs }}
+                    accessibilityLabel={defaultDraft === gs ? `${nameFor(gs)} is the default opening card` : `Set ${nameFor(gs)} as the default opening card`}
+                  >
+                    <Text style={[styles.defaultText, defaultDraft === gs && styles.defaultTextOn]}>
+                      {defaultDraft === gs ? 'DEFAULT' : 'SET DEFAULT'}
+                    </Text>
+                  </Pressable>
+                  <Pressable style={styles.removeBtn} onPress={() => place(gs)} accessibilityRole="button" accessibilityLabel={`Remove ${nameFor(gs)}`}>
+                    <Text style={styles.removeText}>Remove</Text>
+                  </Pressable>
                 </View>
-                <Pressable style={styles.removeBtn} onPress={() => place(gs)} accessibilityRole="button" accessibilityLabel={`Remove ${nameFor(gs)}`}>
-                  <Text style={styles.removeText}>Remove</Text>
-                </Pressable>
-              </View>
-            ))
+              ))}
+            </>
           )}
 
           {/* Add topics — subject → topic, book icon toggles placement. */}
@@ -156,7 +179,7 @@ export function HomeSetupSheet({ visible, onClose }: { visible: boolean; onClose
 
         {/* Footer actions. */}
         <View style={[styles.footer, { paddingBottom: insets.bottom + 10 }]}>
-          <Pressable style={styles.resetBtn} onPress={() => setDraft([])} accessibilityRole="button" accessibilityLabel="Reset Home">
+          <Pressable style={styles.resetBtn} onPress={() => { setDraft([]); setDefaultDraft(null); }} accessibilityRole="button" accessibilityLabel="Reset Home">
             <Text style={styles.resetText}>RESET</Text>
           </Pressable>
           <Pressable style={styles.cancelBtn} onPress={onClose} accessibilityRole="button" accessibilityLabel="Cancel">
@@ -166,6 +189,7 @@ export function HomeSetupSheet({ visible, onClose }: { visible: boolean; onClose
             style={styles.saveBtn}
             onPress={() => {
               setHomeGs(draft);
+              setDefaultHomeGs(defaultDraft);
               onClose();
             }}
             accessibilityRole="button"
@@ -222,6 +246,11 @@ const styles = StyleSheet.create({
   placedSubject: { fontFamily: fonts.barlowRegular, fontSize: 12, color: colors.textSub, marginTop: 1 },
   removeBtn: { paddingVertical: 4, paddingHorizontal: 6 },
   removeText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.6, color: colors.textSub },
+  defaultHint: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 12, color: colors.textSub, marginBottom: 2 },
+  defaultBtn: { borderWidth: 1, borderColor: '#3a3a3a', borderRadius: 8, paddingVertical: 4, paddingHorizontal: 8 },
+  defaultBtnOn: { borderColor: 'rgba(55,224,95,.7)', backgroundColor: 'rgba(55,224,95,.14)' },
+  defaultText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 0.6, color: colors.textSub },
+  defaultTextOn: { color: GREEN },
 
   subjectCard: { borderWidth: 1, borderColor: '#232323', borderRadius: 9, backgroundColor: '#141414', overflow: 'hidden' },
   subjectHead: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 11, paddingHorizontal: 12 },

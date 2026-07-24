@@ -111,4 +111,52 @@ dev-branch → tests → advisors → merge:
   marshaling + pending-flag arming after build 2; the RT60 screen shows
   R² 0.00 against build-2 clients until then).
 
+## Addendum — UI/behavior pass (owner, 2026-07-24)
+
+A large owner-driven UI iteration session. Significant **behavioral** decisions of
+record (cosmetic tweaks omitted). All work is UNCOMMITTED on branch
+`audio-tools-engine` atop `572aa6b` at time of writing (16 files modified, 2 new:
+`src/features/dev/popupSuppressStore.ts`, this session's edits).
+
+### D1 — Bookmarks are PER-CONTEXT (fresh start)
+Bookmarks are no longer one global list. Each context keeps its own set under
+`ape:bm:<ctx>`: `glossary`, each topic (`achievementId`), the custom list
+(`flagged`). API in `flaggedStore.ts` is context-keyed (`getBookmarks(ctx)`,
+`toggleBookmark(ctx,id)`, `useBookmarks(ctx)`, `removeBookmarks(ctx,ids)`,
+`listBookmarkContexts()`); `TermSelectIcons` requires a `bookmarkCtx` prop. The old
+global `ape:glossaryFavs` is **abandoned (not migrated)** — owner chose a fresh
+start. The **heart** list was removed entirely; the custom **starred** list stays
+GLOBAL by design.
+
+### D2 — Required core courses are LOCKED into the study deck until completed
+Every incomplete enrolled required-core course (`COREQ_TOPIC_GS`) is force-loaded
+into the Dashboard deck and **cannot be deactivated or removed** until it reaches
+100% (then it unlocks). Shown with a "🔒 until completed" caption on its deck
+toggle. (Previously only Pro Audio Safety was locked; now all cores.)
+
+### D3 — "My Custom List" can ride the Dashboard as a current topic
+New Enrollment container + `flaggedStore.customOnDashboard` toggle. When ON, a
+synthetic topic (`id = FLAGGED_TOPIC_ID`) is appended to the Dashboard topic swipe
+and renders a flashcards-only panel (no method rack / quiz — it has no server
+topic). Off by default; toggled from the Enrollment container.
+
+### D4 — Home Setup owns the Dashboard's default landing card
+`homeCardsStore` gained a `defaultGs` (persisted `ape:homeDefaultGs`) set via a
+"SET DEFAULT" picker in Home Setup; the Course-Select carousel opens on that card.
+The old per-card "my courses" ★ marks system was removed.
+
+### D5 — Study icons deep-link to the Dashboard with their topic
+Enrollment study icons pass a `focusGs` nav param; the Dashboard fronts that topic
+on arrival (topic gs, or `FLAGGED_TOPIC_ID` for the custom list).
+
+### D6 — Dev master popup kill-switch
+`popupSuppressStore` (`ape:devSuppressPopups`) + a DevVisualIndex toggle suppress
+ALL popups (screen intros, welcome/commitment, learning sheets, coach marks),
+winning over `DEV_BYPASS.alwaysShowIntros`.
+
+### D7 — Glossary two-level bookmark filter (glossary-only)
+Holding the Glossary bookmark filter opens a LEVEL-1 picker of every context with
+≥1 bookmark (name + count), then LEVEL-2 shows that context's terms. This two-step
+behavior is Glossary-only.
+
 *End of decisions log.*

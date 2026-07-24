@@ -87,7 +87,7 @@ function pageTint(key: PageKey): string {
     : key === 'program'
       ? PURPLE
       : key === 'directory'
-        ? DIRECTORY_GREEN
+        ? '#ffffff' // Pro Registry tab tint = white (was DIRECTORY_GREEN)
         : key === 'enrollment'
           ? DIRECTORY_GREEN
           : AMBER;

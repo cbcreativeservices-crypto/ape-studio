@@ -23,6 +23,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { GlassButton } from '../../components/GlassButton';
 import { LedMeterWell, segmentsForPct } from '../../components/LedMeter';
 import { StudioButton } from '../../components/StudioButton';
+import { DeckIcon } from '../../components/DeckIcon';
 import { useCoachMark } from '../../lib/coachMark';
 import { isHazardTerm } from '../../lib/hazard';
 import { useShake } from '../../lib/useShake';
@@ -150,12 +151,13 @@ function levelText(item: GlossaryItem, level: number): string {
   }
 }
 
-type ChipTint = 'amber' | 'green' | 'orange' | 'blue';
+type ChipTint = 'amber' | 'green' | 'orange' | 'blue' | 'purple';
 const CHIP_TINTS: Record<ChipTint, { bg: [string, string]; border: string; fg: string }> = {
   amber: { bg: ['#2a2008', '#1a1405'], border: 'rgba(255,180,0,.65)', fg: '#ffc64d' },
   green: { bg: ['#0c2412', '#081a0c'], border: 'rgba(55,224,95,.65)', fg: '#5bff85' },
   orange: { bg: ['#2b1c0a', '#1c1206'], border: 'rgba(255,138,30,.7)', fg: '#ffa64d' },
   blue: { bg: ['#0e2033', '#081521'], border: 'rgba(47,155,255,.7)', fg: '#7fbfff' },
+  purple: { bg: ['#1e1030', '#140a22'], border: 'rgba(180,91,255,.7)', fg: '#c48cff' },
 };
 
 function FilterChip({
@@ -202,12 +204,65 @@ function FilterChip({
   );
 }
 
-/** Reveal "eye" glyph (the show-password eye) for the SOLO study-view button. */
-function EyeIcon({ color }: { color: string }) {
+/** Eye glyph (user request 2026-07-24) — a pointed almond outline with a
+ *  concentric iris ring and a solid round pupil, for the SOLO study-view button. */
+function EyeIcon({ color, pupil }: { color: string; pupil: string }) {
   return (
-    <Svg width={22} height={16} viewBox="0 0 22 16">
-      <Ellipse cx={11} cy={8} rx={9.5} ry={6} fill="none" stroke={color} strokeWidth={1.6} />
-      <Circle cx={11} cy={8} r={3} fill={color} />
+    <Svg width={24} height={29} viewBox="0 0 24 29">
+      {/* Natural eye lids (arched upper, flatter lower, slight tilt) — even
+          taller so the iris ring + pupil read clearly (user request 2026-07-24). */}
+      <Path
+        d="M2 15 Q12 2 22 13.5 Q12 25 2 15 Z"
+        fill="none"
+        stroke={color}
+        strokeWidth={1.6}
+        strokeLinejoin="round"
+      />
+      {/* Iris ring. */}
+      <Circle cx={12} cy={14.5} r={5} fill="none" stroke={color} strokeWidth={1.5} />
+      {/* Center pupil (color/brightness set by caller). */}
+      <Circle cx={12} cy={14.5} r={2.3} fill={pupil} />
+    </Svg>
+  );
+}
+
+/** Full-screen glyph — four corner brackets (an SVG, so it aligns tightly with
+ *  the card's other SVG corner icons; user request 2026-07-24). */
+function FullscreenIcon({ color }: { color: string }) {
+  return (
+    <Svg width={23} height={23} viewBox="0 0 24 24">
+      {/* Corner-bracket frame — larger within the same button (user 2026-07-24). */}
+      <Path
+        d="M3 9V3h6M21 9V3h-6M3 15v6h6M21 15v6h-6"
+        fill="none"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Thin double-sided diagonal arrow (bottom-left ↔ top-right), gapped from
+          the brackets (user request 2026-07-24). */}
+      <Path
+        d="M8.5 15.5 L15.5 8.5 M15.5 8.5 L12 8.5 M15.5 8.5 L15.5 12 M8.5 15.5 L12 15.5 M8.5 15.5 L8.5 12"
+        fill="none"
+        stroke={color}
+        strokeWidth={1.3}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+/** Reset/replay glyph (user request 2026-07-24) — a counterclockwise circular
+ *  arrow (the "undo/reset" symbol) for the RESET DECK button. */
+function ResetIcon({ color }: { color: string }) {
+  return (
+    <Svg width={19} height={19} viewBox="0 0 24 24">
+      <Path
+        d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"
+        fill={color}
+      />
     </Svg>
   );
 }
@@ -254,7 +309,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   // Flag list (Booth 2026-07-18): the ONE shared flagged set (glossary star ↔
   // flashcards flag ↔ Flagged dashboard topic) via features/flags/flaggedStore.
   // Replaces the old per-topic `ape:fcHard:<id>` list.
-  const bookmarked = useBookmarks();
+  const bookmarked = useBookmarks(achievementId);
   // ★ starred = the user's notifications list (Booth 2026-07-18) — its own
   // view chip + popup list alongside flagged.
   const starred = useTermList('starred');
@@ -270,7 +325,6 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   const [diffSel, setDiffSel] = useState<Set<Difficulty>>(new Set());
   const [bookmarkedOnly, setBookmarkedOnly] = useState(false);
   const [starredOnly, setStarredOnly] = useState(false);
-  const [unseenOnly, setUnseenOnly] = useState(false); // cards never viewed / not known
   const [orderMode, setOrderMode] = useState<'az' | 'shuffle'>('az');
   const [shuffleNonce, setShuffleNonce] = useState(1);
   const [revealedThisVisit, setRevealedThisVisit] = useState<Set<string>>(new Set());
@@ -406,10 +460,6 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   // always all topic items (integrity invariant).
   const deck = useMemo(() => {
     if (!items) return [];
-    const isUnseen = (id: string) => {
-      const s = states[id];
-      return !s || (((s.views ?? 0) === 0) && !s.known);
-    };
     const filtered = items.filter((it) => {
       // View chips are a UNION (Booth 2026-07-08 fix): KNOWN+FLAGGED lit
       // together = cards that are known OR flagged. Neither lit = the normal
@@ -423,12 +473,11 @@ export function FlashcardsScreen({ navigation, route }: Props) {
           : !hidden.has(it.id);
       return (
         inView &&
-        (diffSel.size === 0 || diffSel.has(it.difficulty as Difficulty)) &&
-        (!unseenOnly || isUnseen(it.id))
+        (diffSel.size === 0 || diffSel.has(it.difficulty as Difficulty))
       );
     });
     return orderMode === 'shuffle' ? seededShuffle(filtered, shuffleNonce) : filtered; // items pre-sorted A–Z
-  }, [items, states, hidden, bookmarked, starred, knownList, showKnown, diffSel, bookmarkedOnly, starredOnly, unseenOnly, orderMode, shuffleNonce]);
+  }, [items, hidden, bookmarked, starred, knownList, showKnown, diffSel, bookmarkedOnly, starredOnly, orderMode, shuffleNonce]);
 
   const card = deck[Math.min(idx, Math.max(0, deck.length - 1))];
 
@@ -681,7 +730,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   const toggleBookmarkTerm = useCallback(() => {
     if (!card) return;
     if (!dwellOk()) return; // 1.5s dwell before tagging (Booth 2026-07-16)
-    toggleBookmark(card.id);
+    toggleBookmark(achievementId, card.id);
   }, [card]);
 
   /** Toggle the current card on the ★ CUSTOM LIST (starred) — so each term can
@@ -927,7 +976,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             const empty = new Set<string>();
             setHidden(empty);
             persistHidden(empty);
-            removeBookmarks(deckFlagIds);
+            removeBookmarks(achievementId, deckFlagIds);
           },
         },
       ],
@@ -1022,7 +1071,12 @@ export function FlashcardsScreen({ navigation, route }: Props) {
               resetToStart();
             }}
           />
-          <FilterChip label="RESET" active={false} onPress={resetDeck} />
+          <FilterChip
+            label="Reset deck"
+            icon={(c) => <ResetIcon color={c} />}
+            active={false}
+            onPress={resetDeck}
+          />
           {/* Reveal SOLO (user request 2026-07-18): red eye button — shows the
               term + primary definition together (open study view). While ON it
               overrides the reveal filters, so the FILTERS chip is locked out
@@ -1035,23 +1089,26 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             accessibilityLabel={soloReveal ? 'Close study view' : 'Open study view (show definition)'}
           >
             {/* Lit red only when active; neutral grey when off (user request 2026-07-18). */}
-            <EyeIcon color={soloReveal ? '#ff6a5e' : '#8a8c90'} />
+            {/* Selected → whole eye red + full-brightness pupil; unselected →
+                gray eye with a 50%-brightness red pupil (user request 2026-07-24). */}
+            <EyeIcon color={soloReveal ? '#ff5b52' : '#8a8c90'} pupil={soloReveal ? '#ff5b52' : '#7f2d29'} />
           </Pressable>
           <FilterChip
-            label="FILTERS"
+            label="FILTER"
             active={sections.size < ALL_LEVELS.length || !showMedia}
             activeTint="blue"
             disabled={soloReveal}
             onPress={() => setFiltersOpen(true)}
           />
-          {/* Full-screen mode — icon-only, fits the row (Booth 2026-07-11). */}
+          {/* Full-screen mode — green icon button, right of FILTER (user request
+              2026-07-24, moved back here from the card corner). */}
           <Pressable
             style={styles.fsBtn}
             onPress={() => setFullscreen(true)}
             accessibilityRole="button"
             accessibilityLabel="Full screen"
           >
-            <Text style={styles.fsBtnIcon}>⛶</Text>
+            <FullscreenIcon color={colors.green} />
           </Pressable>
         </View>
         <View style={styles.filterRow}>
@@ -1073,13 +1130,6 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             />
           ))}
           <FilterChip
-            label="UNSEEN"
-            active={unseenOnly}
-            activeTint="blue"
-            onPress={() => { setUnseenOnly((v) => !v); resetToStart(); }}
-            onLongPress={() => handleChipLongPress('Unseen terms', 'unseen')}
-          />
-          <FilterChip
             label="KNOWN"
             active={showKnown}
             activeTint="green"
@@ -1092,15 +1142,17 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             label="Bookmarks"
             icon={(c) => <BookmarkIcon color={c} filled={bookmarkedOnly} />}
             active={bookmarkedOnly}
-            activeTint="orange"
+            activeTint="purple"
             onPress={() => { setBookmarkedOnly((v) => !v); resetToStart(); }}
             onLongPress={() => handleChipLongPress('Bookmarks', 'bookmark')}
           />
-          {/* ★ = the user's CUSTOM LIST (Booth 2026-07-18 naming). */}
+          {/* The 3-card deck = the user's CUSTOM LIST (user request 2026-07-24,
+              replacing the old ★ symbol). */}
           <FilterChip
-            label="★"
+            label="Custom list"
+            icon={(c) => <DeckIcon color={c} size={17} fill={starredOnly ? `${c}33` : 'none'} />}
             active={starredOnly}
-            activeTint="amber"
+            activeTint="blue"
             onPress={() => { setStarredOnly((v) => !v); resetToStart(); }}
             onLongPress={() => handleChipLongPress('Custom list', 'starred')}
           />
@@ -1117,7 +1169,6 @@ export function FlashcardsScreen({ navigation, route }: Props) {
               style={{ flex: 1 }}
             >
               <View style={[styles.card, soloReveal && styles.cardSolo]}>
-                <View style={[styles.pilotDot, { left: 7 }]} />
                 {/* Bookmark toggle on the card (user request 2026-07-18) —
                     same shared list as the Glossary bookmark. */}
                 <Pressable
@@ -1128,7 +1179,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                   accessibilityLabel={bookmarked.has(card.id) ? 'Remove bookmark' : 'Bookmark term'}
                 >
                   <BookmarkIcon
-                    color={bookmarked.has(card.id) ? colors.amber : colors.textMuted}
+                    color={bookmarked.has(card.id) ? colors.purple : colors.textMuted}
                     filled={bookmarked.has(card.id)}
                     size={20}
                   />
@@ -1142,9 +1193,11 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                   accessibilityRole="button"
                   accessibilityLabel={starred.has(card.id) ? 'Remove from custom list' : 'Add to custom list'}
                 >
-                  <Text style={[styles.cardStarText, starred.has(card.id) && styles.cardStarOn]}>
-                    {starred.has(card.id) ? '★' : '☆'}
-                  </Text>
+                  <DeckIcon
+                    color={starred.has(card.id) ? colors.blue : colors.textMuted}
+                    size={21}
+                    fill={starred.has(card.id) ? 'rgba(47,155,255,0.22)' : 'none'}
+                  />
                 </Pressable>
                 {isHazardTerm(card.term) ? (
                   <View style={{ marginBottom: 10 }}>
@@ -1184,15 +1237,17 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                       <Text style={styles.term}>{card.term}</Text>
                     </View>
                     {coach.visible && (
-                      <>
-                        <Text style={styles.hint}>Tap to see definitions</Text>
-                        <Text style={styles.hint}>Swipe to change terms</Text>
-                      </>
+                      <Text style={styles.hint} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
+                        Tap to see definitions  ·  Swipe to change terms
+                      </Text>
                     )}
                   </>
                 ) : (
                   <>
-                    <Text style={styles.levelTerm}>{card.term}</Text>
+                    {/* Term name intentionally omitted here (user request
+                        2026-07-24) — in regular flip mode only the definition
+                        shows; the term + definition appear together only in the
+                        eyeball SOLO view. */}
                     <Text style={styles.levelEyebrow}>{LEVEL_LABELS[level - 1]}</Text>
                     {/* Long definitions scroll INSIDE the card instead of
                         running under the footer buttons (Booth 2026-07-08). */}
@@ -1207,10 +1262,9 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                       <Text style={styles.levelBody}>{renderLinked(levelText(card, level), card.id)}</Text>
                     </ScrollView>
                     {coach.visible && (
-                      <>
-                        <Text style={styles.hint}>Tap to see definitions</Text>
-                        <Text style={styles.hint}>Swipe to change terms</Text>
-                      </>
+                      <Text style={styles.hint} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
+                        Tap to see definitions  ·  Swipe to change terms
+                      </Text>
                     )}
                   </>
                 )}
@@ -1450,13 +1504,21 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                       accessibilityRole="button"
                       accessibilityLabel={`Open ${r.term}`}
                     >
-                      <Text style={[styles.tlItem, styles.tlItemLink]} numberOfLines={1}>
+                      <Text
+                        style={[
+                          styles.tlItem,
+                          styles.tlItemLink,
+                          termList?.key === 'bookmark' && { color: '#b45bff' },
+                          termList?.key === 'starred' && { color: '#2f9bff' },
+                        ]}
+                        numberOfLines={1}
+                      >
                         {r.term} ›
                       </Text>
                     </Pressable>
                     {/* Select icons (Booth 2026-07-18): tag this term into the
                         user's flagged/heart/notify/known lists. */}
-                    <TermSelectIcons id={r.id} />
+                    <TermSelectIcons id={r.id} bookmarkCtx={achievementId} />
                   </View>
                 ))
               ) : (
@@ -1619,11 +1681,17 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.deepBorder,
     borderRadius: 10,
-    padding: 20,
+    // A bit more inset so the term title/text clear all four corner icons, with
+    // extra headroom up top before the term title (user request 2026-07-24).
+    padding: 24,
+    paddingTop: 32,
     gap: 12,
   },
   // Card flag star (Booth 2026-07-18) — mirrors the Glossary's star.
   cardFlag: { position: 'absolute', top: 8, right: 10, zIndex: 2 },
+  // Top-left corner, tops aligned with the bookmark/custom icons on the right
+  // (user request 2026-07-24) — pulled up and out so it clears the term title.
+  cardFsBtn: { position: 'absolute', top: 6, left: 8, zIndex: 3 },
   // ★ custom-list toggle, sitting just left of the bookmark (user request 2026-07-23).
   cardStar: { position: 'absolute', top: 6, right: 40, zIndex: 2 },
   cardStarText: { fontSize: 21, lineHeight: 23, color: colors.textMuted },

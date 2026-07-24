@@ -32,11 +32,12 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { StudyStackParamList } from '../../navigation/types';
 import Svg, { Circle, Rect } from 'react-native-svg';
 import { AppHeader } from '../../components/AppHeader';
+import { DeckIcon } from '../../components/DeckIcon';
 import { ElevatedFrame } from '../../components/ElevatedFrame';
 import { GlassButton } from '../../components/GlassButton';
 import { LedMeter, segmentsForPct } from '../../components/LedMeter';
@@ -52,6 +53,7 @@ import {
   getLastTopicIndex,
   setLastTopicIndex,
   type DashboardData,
+  type Topic,
 } from '../../features/dashboard/api';
 import { isFreeEnrollGs, useEnrollment } from '../../features/enrollment/enrollmentStore';
 import { gateReadout, pctColor } from '../../features/dashboard/gates';
@@ -59,6 +61,7 @@ import { fetchGlossaryItemsByIds, fetchTopicItems, studyDisplayPct } from '../..
 import {
   FLAGGED_TOPIC_ID,
   FLAGGED_TOPIC_NAME,
+  useCustomOnDashboard,
   useTermList,
 } from '../../features/flags/flaggedStore';
 import { TermSelectIcons } from '../../features/flags/TermSelectIcons';
@@ -78,7 +81,6 @@ const METHOD_ORDER: { key: MethodKey; label: string }[] = [
   { key: 'flashcards', label: 'FLASHCARDS' },
   { key: 'fill_in_blank', label: 'FILL-IN-BLANK' },
   { key: 'matching', label: 'MATCHING' },
-  { key: 'ear_training', label: 'EAR TRAINING' },
   { key: 'scenarios', label: 'SCENARIOS' },
 ];
 
@@ -176,6 +178,18 @@ function EngravedTitle({
       >
         {display}
       </Text>
+      {/* Near-white trace ON TOP of the floor (user request 2026-07-24) — a light
+          line inside each debossed letter. Applied to ALL titles (on AND off);
+          it is a style detail, NOT the on/off indicator. */}
+      <Text
+        style={[styles.engLayer, styles.engTrace]}
+        numberOfLines={1}
+        adjustsFontSizeToFit
+        minimumFontScale={0.7}
+        importantForAccessibility="no-hide-descendants"
+      >
+        {display}
+      </Text>
     </View>
   );
 }
@@ -202,6 +216,7 @@ const STUDY_ROUTES: Partial<
 export function DashboardScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<StudyStackParamList>>();
+  const route = useRoute<RouteProp<StudyStackParamList, 'Dashboard'>>();
   const [data, setData] = useState<DashboardData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [errorCode, setErrorCode] = useState<string | null>(null);
@@ -247,6 +262,10 @@ export function DashboardScreen() {
   // Flashcards term popups (user request 2026-07-18: the card is the star list,
   // not the ⚑ flagged list).
   const starred = useTermList('starred');
+
+  // Whether the user's Custom List shows as a synthetic current-topic here
+  // (toggled from the Enrollment screen). Device-local; default off.
+  const customOnDashboard = useCustomOnDashboard();
 
   // Learning intros (user request 2026-07-18): a COURSE intro before beginning
   // a course and a TOPIC intro before beginning each topic. Auto-shown once
@@ -390,9 +409,40 @@ export function DashboardScreen() {
     return () => loop.stop();
   }, [pulse]);
 
-  // Derived per-render (cheap; small arrays).
-  const topics = data?.topics ?? [];
+  // Derived per-render (cheap; small arrays). When the user has opted in, a
+  // synthetic "My Custom List" topic is appended LAST so it rides the same
+  // current-topic carousel. It carries applicable_methods=[] so every derived
+  // value (overallPct, quizState, rowsForTopic…) computes safely to 0/empty.
+  const customTopic: Topic = {
+    id: FLAGGED_TOPIC_ID,
+    course_id: '',
+    sequence_in_course: 9999,
+    name: FLAGGED_TOPIC_NAME,
+    applicable_methods: [],
+    is_prerequisite: false,
+    icon_url: null,
+    global_sequence: null,
+  };
+  const topics = data
+    ? customOnDashboard
+      ? [...data.topics, customTopic]
+      : data.topics
+    : [];
   const topic = topics[topicIdx];
+  const isCustom = topic?.id === FLAGGED_TOPIC_ID;
+
+  // Study-icon deep link (user request 2026-07-24): when navigated here with a
+  // `focusGs` (a topic global_sequence, or FLAGGED_TOPIC_ID for the custom list),
+  // front that topic immediately once its data is loaded, then clear the param.
+  const focusGs = route.params?.focusGs;
+  useEffect(() => {
+    if (focusGs == null || topics.length === 0) return;
+    const i = topics.findIndex((t) =>
+      typeof focusGs === 'string' ? t.id === focusGs : t.global_sequence === focusGs,
+    );
+    if (i >= 0) setTopicIdx(i);
+    navigation.setParams({ focusGs: undefined });
+  }, [focusGs, topics, navigation]);
   const status = topic ? (data!.progressByTopic.get(topic.id)?.status ?? 'locked') : 'locked';
   const lastTopicIdx = Math.max(0, topics.length - 1);
 
@@ -623,10 +673,10 @@ export function DashboardScreen() {
               style={styles.myEnrollBtn}
               onPress={() => (navigation as any).navigate('Awards', { category: 'enrollment' })}
               accessibilityRole="button"
-              accessibilityLabel="My enrollments"
+              accessibilityLabel="Enrollments"
             >
               <Text style={styles.myEnrollBtnText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
-                MY ENROLLMENTS
+                ENROLLMENTS
               </Text>
             </Pressable>
           }
@@ -665,16 +715,18 @@ export function DashboardScreen() {
           {/* Tap the title area → full term list for this topic (Booth
               2026-07-18). Swipe still owned by the card's PanResponder. */}
           <Pressable
-            onPress={openTerms}
+            onPress={isCustom ? openFlaggedTerms : openTerms}
             accessibilityRole="button"
-            accessibilityLabel={`List all terms in ${topic.name}`}
+            accessibilityLabel={isCustom ? `List terms in ${topic.name}` : `List all terms in ${topic.name}`}
           >
             <Text style={styles.topicEyebrow}>{topicInactive ? 'CURRENT TOPIC · INACTIVE' : 'CURRENT TOPIC'}</Text>
             <Text style={[styles.topicName, styles.topicNameInset, topicInactive && styles.topicNameDim]}>
               {topic.name}
             </Text>
             <Text style={[styles.topicMeta, styles.topicNameInset]}>
-              {`TOPIC ${topicIdx + 1} OF ${topics.length} · ${data.currentCourse.name.toUpperCase()}`}
+              {isCustom
+                ? `${starred.size} TERM${starred.size === 1 ? '' : 'S'}`
+                : `TOPIC ${topicIdx + 1} OF ${topics.length} · ${data.currentCourse.name.toUpperCase()}`}
               {swipeHint ? `  ·  ${swipeHint}` : ''}
             </Text>
           </Pressable>
@@ -702,6 +754,36 @@ export function DashboardScreen() {
             2026-07-07: 6 meters total on this screen incl. the topic card).
             Rack group: tight inter-panel gap like a real 500 lunchbox (#6). */}
         <View style={styles.rackGroup}>
+        {isCustom ? (
+          // Custom List body — no methods, no quiz: a single dark panel that
+          // studies the user's ★ starred terms in local Flashcards mode.
+          <ElevatedFrame depressed={false} contentStyle={styles.methodInner}>
+            <View style={styles.customRow}>
+              <View style={styles.customDeck}>
+                <DeckIcon color={colors.blue} size={40} fill="rgba(47,155,255,0.22)" />
+              </View>
+              <View style={styles.methodLeft}>
+                <Text style={styles.customCount}>
+                  {`${starred.size} TERM${starred.size === 1 ? '' : 'S'} · MY CUSTOM LIST`}
+                </Text>
+              </View>
+              <SwitchButton
+                label="Study"
+                variant="primary"
+                width={96}
+                height={58}
+                disabled={starred.size === 0}
+                onPress={() =>
+                  navigation.navigate('Flashcards', {
+                    achievementId: FLAGGED_TOPIC_ID,
+                    topicName: FLAGGED_TOPIC_NAME,
+                  })
+                }
+              />
+            </View>
+          </ElevatedFrame>
+        ) : (
+          <>
         {METHOD_ORDER.map((m, i) => {
           const isApplicable = applicable.has(m.key);
           const cfgRow = rowFor(m.key);
@@ -746,7 +828,7 @@ export function DashboardScreen() {
                     <View style={styles.iconSticker}>
                       <MethodIcon
                         method={m.key}
-                        size={46}
+                        size={43}
                         mono={!isApplicable}
                         glowColor={isApplicable && complete ? METHOD_COLORS[m.key] : undefined}
                       />
@@ -780,8 +862,8 @@ export function DashboardScreen() {
                       // Start (blue) → Continue (amber) → Review (green), by progress.
                       label={pct >= 100 ? 'Review' : pct <= 0 ? 'Start' : 'Continue'}
                       variant={pct >= 100 ? 'success' : pct <= 0 ? 'outline' : 'primary'}
-                      width={96}
-                      height={58}
+                      width={89}
+                      height={54}
                       onPress={() => {
                         const routeName = STUDY_ROUTES[m.key];
                         if (routeName) {
@@ -796,8 +878,8 @@ export function DashboardScreen() {
                     <SwitchButton
                       label="Open"
                       variant="outline"
-                      width={96}
-                      height={58}
+                      width={89}
+                      height={54}
                       onPress={() => {
                         const routeName = STUDY_ROUTES[m.key];
                         if (routeName) {
@@ -809,7 +891,7 @@ export function DashboardScreen() {
                     // Inactive slots carry the SAME action button as a CLEAR,
                     // UNLIT cap (not grey) — a DEAD switch: it travels + clicks
                     // on touch but opens nothing (Booth 2026-07-11).
-                    <SwitchButton label="" variant="clear" width={96} height={58} disabled />
+                    <SwitchButton label="" variant="clear" width={89} height={54} disabled />
                   )}
                   {/* right mounting screw — buttons nudged left for padding */}
                   <View style={{ marginLeft: 3 }}>
@@ -926,51 +1008,13 @@ export function DashboardScreen() {
             );
           })()}
         </ElevatedFrame>
+          </>
+        )}
         </View>
 
-        {/* The user's custom "Flagged" topic (Booth 2026-07-18): a personal
-            topic card over the ONE shared flagged list (Glossary + Flashcards
-            stars). Tap = full term list; STUDY = flashcards over the list.
-            Local-only study — no server achievement row, so no quiz/progress
-            (documented limitation until a backend topic exists). */}
-        <View style={styles.flagCard}>
-          <Text style={styles.flagStar}>★</Text>
-          {/* HOLD (not tap) opens the list — the title is deduped to one line
-              and the hint says so clearly (user request 2026-07-18). */}
-          <Pressable
-            style={{ flex: 1 }}
-            onLongPress={openFlaggedTerms}
-            delayLongPress={350}
-            accessibilityRole="button"
-            accessibilityLabel="My custom list"
-            accessibilityHint="Hold to see the full list of terms"
-          >
-            <Text style={styles.topicEyebrow}>MY CUSTOM LIST</Text>
-            <Text style={styles.topicMeta}>
-              {starred.size === 0
-                ? 'STAR TERMS IN THE GLOSSARY OR ON FLASHCARDS TO BUILD THIS LIST'
-                : `${starred.size} TERM${starred.size === 1 ? '' : 'S'}  ·  HOLD FOR LIST`}
-            </Text>
-          </Pressable>
-          <SwitchButton
-            label="Study"
-            variant={starred.size === 0 ? 'outline' : 'primary'}
-            width={96}
-            height={58}
-            disabled={starred.size === 0}
-            onPress={() =>
-              navigation.navigate('Flashcards', {
-                achievementId: FLAGGED_TOPIC_ID,
-                topicName: FLAGGED_TOPIC_NAME,
-              })
-            }
-          />
-          {/* Trailing screw aligns the Study button's right edge with the method
-              rows above (which end in a screw + 3px margin). */}
-          <View style={{ marginLeft: 3 }}>
-            <PanelScrew angle={90} />
-          </View>
-        </View>
+        {/* The bottom "My Custom List" card was removed (user request
+            2026-07-24). The custom list is moving to a selection from the topic
+            carousel at the top of the current-topic area. */}
       </ScrollView>
 
       <TrophyModal
@@ -1028,7 +1072,10 @@ export function DashboardScreen() {
                       </Text>
                       {/* Select icons (Booth 2026-07-18): tag this term into
                           the user's flagged/heart/notify/known lists. */}
-                      <TermSelectIcons id={item.id} />
+                      <TermSelectIcons
+                        id={item.id}
+                        bookmarkCtx={termsSource === 'flagged' ? 'glossary' : (topicIdForTerms ?? 'glossary')}
+                      />
                     </View>
                   )}
                 />
@@ -1207,17 +1254,17 @@ const styles = StyleSheet.create({
   // MY ENROLLMENTS header button — matches the home screen's green Enrollments
   // nav button (user request 2026-07-23).
   myEnrollBtn: {
-    width: 120,
+    width: 82,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 6,
-    borderRadius: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 5,
+    borderRadius: 7,
     borderWidth: 1,
     borderColor: 'rgba(55,224,95,.7)',
     backgroundColor: 'rgba(55,224,95,.1)',
   },
-  myEnrollBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 0.3, color: '#37e05f' },
+  myEnrollBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 0.2, color: '#37e05f' },
   modeBtnTextOn: { color: colors.amber },
   modeBtnTextOnGreen: { color: '#37e05f' },
   pilotDot: {
@@ -1289,7 +1336,17 @@ const styles = StyleSheet.create({
   // Real 500-series blank-panel proportion (~3.5:1 on its side) restored via
   // minHeight; the 58px content row centers, so icon/title/LED/button still
   // share top+bottom edges (Booth 2026-07-11 #4/#5).
-  methodInner: { paddingVertical: 8, paddingHorizontal: 8, minHeight: 92, justifyContent: 'center' },
+  methodInner: { paddingVertical: 7, paddingHorizontal: 8, minHeight: 86, justifyContent: 'center' },
+  // Custom List panel — deck icon · count line · STUDY switch, aligned like a
+  // method row so it seats flush in the rack.
+  customRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 4 },
+  customDeck: { width: 48, alignItems: 'center', justifyContent: 'center' },
+  customCount: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 13,
+    letterSpacing: 1,
+    color: colors.blue,
+  },
   // Rack group — panels nearly touching, like real 500-series slots.
   // Rack CHASSIS (Booth 2026-07-11 #5): the topic card's metallic side rails
   // continue DOWN behind the method panels + quiz to the bottom of the rack —
@@ -1319,7 +1376,7 @@ const styles = StyleSheet.create({
   methodRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   // Column spans the button height; title at top, LED at bottom → their edges
   // align with the button's top/bottom.
-  methodLeft: { flex: 1, height: 58, justifyContent: 'space-between' },
+  methodLeft: { flex: 1, height: 54, justifyContent: 'space-between' },
   // Top row: engraved title (left, on the coat) + square % LED box (right).
   methodTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   // Virtually-engraved Cinzel nameplate (Booth 2026-07-15). The wrapper bounds
@@ -1344,6 +1401,10 @@ const styles = StyleSheet.create({
   // the (lightened) panel so it reads as pressed IN, not raised.
   engDark: { color: 'rgba(0,0,0,0.95)', transform: [{ translateX: -0.9 }, { translateY: -1.3 }] },
   engLight: { color: 'rgba(255,255,255,0.6)', transform: [{ translateX: 1.0 }, { translateY: 1.5 }] },
+  // Thin near-white inner trace (user request 2026-07-24) — a very light-gray
+  // copy nudged a hair up-left so it reads as a fine white line inside the
+  // debossed letters, not a full re-fill.
+  engTrace: { color: 'rgba(238,238,238,0.9)', transform: [{ translateX: -0.25 }, { translateY: -0.3 }] },
   // Base floor style shared by all fills (color set per variant).
   engFillBase: {
     textShadowColor: 'rgba(255,255,255,0.5)',
@@ -1381,7 +1442,7 @@ const styles = StyleSheet.create({
   // Small SQUARE recessed LED box holding just the % (or quiz status).
   pctBox: {
     minWidth: 40,
-    height: 34,
+    height: 32,
     paddingHorizontal: 7,
     alignItems: 'center',
     justifyContent: 'center',
@@ -1426,7 +1487,7 @@ const styles = StyleSheet.create({
   },
   pctDigits: {
     fontFamily: fonts.barlowCondensedSemiBold,
-    fontSize: 13,
+    fontSize: 12,
     letterSpacing: 0.5,
     textShadowColor: 'rgba(255,255,255,0.25)',
     textShadowRadius: 3,
@@ -1456,8 +1517,8 @@ const styles = StyleSheet.create({
   // Recessed cutout WELL — 58×58 so its top/bottom align with the button +
   // title/LED column (#5). Neutral dark recess (NOT lit).
   iconWell: {
-    width: 58,
-    height: 58,
+    width: 54,
+    height: 54,
     borderRadius: 3,
     alignItems: 'center',
     justifyContent: 'center',
@@ -1472,8 +1533,8 @@ const styles = StyleSheet.create({
   // TILE's own border, Booth 2026-07-11 #1). Sized so the enlarged 46px tile
   // (#7) sits with a small black margin inside the 58 well.
   iconSticker: {
-    width: 54,
-    height: 54,
+    width: 50,
+    height: 50,
     borderRadius: 3,
     alignItems: 'center',
     justifyContent: 'center',

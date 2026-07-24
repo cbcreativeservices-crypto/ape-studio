@@ -15,7 +15,7 @@
  * drag uses an estimated row height (no gesture lib).
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, PanResponder, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Animated, Modal, PanResponder, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { colors, fonts } from '../../theme/tokens';
@@ -58,6 +58,9 @@ import {
   useHomeBundles,
   useHomeGs,
 } from '../../features/home/homeCardsStore';
+import { FLAGGED_TOPIC_ID, setCustomOnDashboard, useCustomOnDashboard, useTermList } from '../../features/flags/flaggedStore';
+import { TermSelectIcons } from '../../features/flags/TermSelectIcons';
+import { fetchGlossaryItemsByIds } from '../../features/study/api';
 
 const GREEN = '#37e05f';
 const BLUE = '#7fbfff';
@@ -163,7 +166,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   const [recordOpen, setRecordOpen] = useState(false);
   // BROWSE & ADD list collapse (user request 2026-07-23) — the title + tabs stay,
   // the list below hides. Open by default.
-  const [browseOpen, setBrowseOpen] = useState(true);
+  const [browseOpen, setBrowseOpen] = useState(false); // collapsed on open (user request 2026-07-24)
   const toggleCollapse = (id: string) =>
     setCollapsed((prev) => {
       const n = new Set(prev);
@@ -222,12 +225,15 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   const activeGs = useMemo(() => new Set(enrolled.filter((e) => e.active).map((e) => e.gs)), [enrolled]);
   const activeCount = enrolled.filter((e) => e.active).length;
 
-  // Pro Audio Safety is always ACTIVE and can't be deactivated (user request
-  // 2026-07-22) — keep the store in sync if it was ever left inactive.
+  // Every incomplete required core course is force-loaded into the Dashboard deck
+  // and stays active until completed (user request 2026-07-24) — a student must
+  // finish them, so they can't be deactivated or removed while incomplete.
   useEffect(() => {
-    const safety = enrolled.find((e) => e.gs === COREQ_TOPIC_GS[0]);
-    if (safety && !safety.active) setActiveMany([COREQ_TOPIC_GS[0]], true);
-  }, [enrolled]);
+    const toActivate = COREQ_TOPIC_GS.filter(
+      (gs) => enrolledGs.has(gs) && (prog.get(gs)?.pct ?? 0) < 100 && !activeGs.has(gs),
+    );
+    if (toActivate.length) setActiveMany(toActivate, true);
+  }, [enrolledGs, prog, activeGs]);
 
   // Required core courses auto-RESERVE a Home slot while incomplete, and auto-
   // free it once completed (user request 2026-07-22) — so 3 of the 20 Home
@@ -315,7 +321,32 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
       return n;
     });
 
-  const goStudy = () => navigation.navigate('Main', { screen: 'Study', params: { screen: 'Dashboard' } });
+  // Open the Dashboard; with a focus target (topic gs, or FLAGGED_TOPIC_ID for
+  // the custom list) the Dashboard fronts that topic immediately (user 2026-07-24).
+  const goStudy = (focusGs?: number | string) =>
+    navigation.navigate('Main', {
+      screen: 'Study',
+      params: { screen: 'Dashboard', params: focusGs != null ? { focusGs } : undefined },
+    });
+
+  // Whether the user's "My Custom List" rides the Dashboard as a current topic.
+  const customOnDash = useCustomOnDashboard();
+  const starred = useTermList('starred');
+
+  // SEE & EDIT → a term-list popup of the custom list (like a flashcards filter's
+  // held list); the TermSelectIcons row lets the user edit membership inline.
+  const [customListOpen, setCustomListOpen] = useState(false);
+  const [customListRows, setCustomListRows] = useState<{ id: string; term: string }[] | null>(null);
+  const openCustomList = async () => {
+    setCustomListOpen(true);
+    setCustomListRows(null);
+    try {
+      const items = await fetchGlossaryItemsByIds([...starred]);
+      setCustomListRows(items.map((i) => ({ id: i.id, term: i.term })));
+    } catch {
+      setCustomListRows([]);
+    }
+  };
 
   // Continue Learning: best active topic to resume.
   const resume = useMemo(() => {
@@ -683,6 +714,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
               setBrowseTab(k);
               setOpenSubject(null);
               setOpenItem(null);
+              setBrowseOpen(true); // clicking a filter auto-reveals the list (user request 2026-07-24)
             }}
             accessibilityRole="button"
             accessibilityState={{ selected: on }}
@@ -718,18 +750,68 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
         <View style={styles.topBlock}>
         {/* Slim "Continue Learning" banner — notification height. */}
         {resume ? (
-          <Pressable style={styles.continueBar} onPress={goStudy} accessibilityRole="button" accessibilityLabel={`Continue ${nameFor(resume.gs)}`}>
+          <Pressable style={styles.continueBar} onPress={() => goStudy(resume.gs)} accessibilityRole="button" accessibilityLabel={`Continue ${nameFor(resume.gs)}`}>
             <View style={{ flex: 1 }}>
               <Text style={styles.continueEyebrow}>CONTINUE LEARNING · {resume.pct}%</Text>
               <Text style={styles.continueName} numberOfLines={1}>
                 Resume {nameFor(resume.gs)}
               </Text>
             </View>
-            {/* Blue bottom-nav STUDY icon instead of "Continue →" (user request
-                2026-07-23). */}
-            <NavIcon icon="Study" lit />
+            {/* Blue bottom-nav STUDY icon — in the shared studyNavBtn slot so it
+                aligns with the other rows' study icons (user request 2026-07-24). */}
+            <View style={styles.studyNavBtn}>
+              <NavIcon icon="Study" lit />
+            </View>
           </Pressable>
         ) : null}
+
+        {/* "My Custom List" — the user's ★ starred terms as a study deck. The
+            large deck icon + name IS the Custom List; the small deck icon toggles
+            whether it appears on the Dashboard as a current topic; the blue Study
+            icon opens the Dashboard with it present. */}
+        {/* OFF state: gray border, dimmed background, gray toggle + study icons
+            (study not pressable). The large deck icon, title, and SEE & EDIT stay
+            NORMAL in both states (user request 2026-07-24). */}
+        <View style={[styles.customBar, !customOnDash && styles.customBarOff]}>
+          <View style={styles.customIcon}>
+            <DeckIcon color={colors.blue} size={34} fill={BLUE} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.customName} numberOfLines={1}>
+              My Custom List
+            </Text>
+          </View>
+          {/* SEE & EDIT → the custom-list terms popup (edit membership inline). */}
+          <Pressable
+            onPress={openCustomList}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel="See and edit my custom list"
+          >
+            <Text style={styles.customSeeEdit}>SEE &amp; EDIT</Text>
+          </Pressable>
+          {/* Small deck toggle: show/hide the Custom List on the Dashboard. */}
+          <Pressable
+            style={styles.bookToggle}
+            onPress={() => setCustomOnDashboard(!customOnDash)}
+            accessibilityRole="button"
+            accessibilityState={{ selected: customOnDash }}
+            accessibilityLabel={customOnDash ? 'Remove my custom list from the dashboard' : 'Show my custom list on the dashboard'}
+          >
+            <DeckIcon color={customOnDash ? colors.blue : GRAY} fill={customOnDash ? BLUE : '#8a8a8a'} size={33} />
+          </Pressable>
+          {/* Study → only when ON (grayed + unpressable when OFF). */}
+          <Pressable
+            style={styles.studyNavBtn}
+            onPress={customOnDash ? () => goStudy(FLAGGED_TOPIC_ID) : undefined}
+            disabled={!customOnDash}
+            accessibilityRole="button"
+            accessibilityState={{ disabled: !customOnDash }}
+            accessibilityLabel="Study my custom list"
+          >
+            <NavIcon icon="Study" lit={customOnDash} />
+          </Pressable>
+        </View>
 
         {/* The standalone "REQUIRED CORE COURSES" section was removed (user
             request 2026-07-22) — the cores now live in the My Enrollment list
@@ -797,18 +879,15 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
           displayed.map((e) => {
             const free = isFreeEnrollGs(e.gs);
             const acc = paid || free;
-            // Pro Audio Safety is permanently active — the pill is locked ON
-            // (user request 2026-07-22).
-            const isSafety = e.gs === COREQ_TOPIC_GS[0];
-            const showActive = isSafety || e.active;
-            const activeGreen = acc && showActive;
-            const pct = pctFor(e.gs);
             // Required core courses (Safety, Grounding, Workplace Skills) are
-            // permanent until completed — then they can be removed/hidden. All
-            // other topics (incl. the optional free DAW topic) can always be
-            // removed (user request 2026-07-22).
+            // LOCKED into the Dashboard deck and can't be deactivated OR removed
+            // until completed — then they unlock (user request 2026-07-24). All
+            // other topics can always be removed.
+            const pct = pctFor(e.gs);
             const isCore = COREQ_TOPIC_GS.includes(e.gs);
             const coreLocked = isCore && pct < 100;
+            const showActive = coreLocked || e.active;
+            const activeGreen = acc && showActive;
             // Press-hold-to-lift reorder (custom order only, user request
             // 2026-07-23): DON'T claim on touch (list scrolls freely); only claim
             // a vertical drag AFTER the finger has been held ~1s — then the row
@@ -854,6 +933,19 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                     {nameFor(e.gs)}
                   </Text>
                   <Text style={styles.cardPct}>{pct}%</Text>
+                  {/* Deck toggle right in the collapsed row (user request 2026-07-24):
+                      add/remove from the study deck without expanding. Core-locked
+                      topics stay on and can't be toggled. */}
+                  <Pressable
+                    onPress={coreLocked ? undefined : () => toggleActive(e.gs)}
+                    disabled={coreLocked}
+                    hitSlop={8}
+                    accessibilityRole="button"
+                    accessibilityState={{ disabled: coreLocked, selected: showActive }}
+                    accessibilityLabel={coreLocked ? 'Locked in your study deck' : showActive ? 'Remove from study deck' : 'Add to study deck'}
+                  >
+                    <DeckIcon color={showActive ? colors.blue : GRAY} fill={showActive ? BLUE : '#8a8a8a'} size={22} />
+                  </Pressable>
                 </Pressable>
               );
             }
@@ -891,17 +983,24 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                       2026-07-22). */}
                   {isCore ? <Text style={styles.requiredTag}>Required</Text> : null}
                   <View style={{ flex: 1 }} />
+                  {/* Core required courses are LOCKED into the deck until completed
+                      (user request 2026-07-24): a "🔒 until completed" caption sits
+                      beside the 3-card icon, and the toggle can't turn them off. */}
+                  {coreLocked ? (
+                    <Text style={styles.lockCaption} numberOfLines={1}>
+                      🔒 until completed
+                    </Text>
+                  ) : null}
                   {/* Deck-of-cards = loaded into the Dashboard deck. Green when in
-                      the deck, gray when not; tap toggles (user request 2026-07-23).
-                      Ungated + persists; Safety is permanently in the deck. */}
+                      the deck, gray when not; tap toggles (user request 2026-07-23). */}
                   <Pressable
                     style={styles.bookToggle}
-                    onPress={isSafety ? undefined : () => toggleActive(e.gs)}
-                    disabled={isSafety}
+                    onPress={coreLocked ? undefined : () => toggleActive(e.gs)}
+                    disabled={coreLocked}
                     accessibilityRole="button"
-                    accessibilityState={{ disabled: isSafety, selected: showActive }}
+                    accessibilityState={{ disabled: coreLocked, selected: showActive }}
                     accessibilityLabel={
-                      isSafety ? 'Always in your study deck' : showActive ? 'Remove from study deck' : 'Add to study deck'
+                      coreLocked ? 'Locked in your study deck until completed' : showActive ? 'Remove from study deck' : 'Add to study deck'
                     }
                   >
                     <DeckIcon color={showActive ? colors.blue : GRAY} fill={showActive ? BLUE : '#8a8a8a'} size={33} />
@@ -911,7 +1010,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                       blue = tap to open the Dashboard with it loaded. */}
                   <Pressable
                     style={styles.studyNavBtn}
-                    onPress={showActive ? () => goStudy() : undefined}
+                    onPress={showActive ? () => goStudy(e.gs) : undefined}
                     disabled={!showActive}
                     accessibilityRole="button"
                     accessibilityState={{ disabled: !showActive }}
@@ -1093,15 +1192,36 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
         </View>
         ) : null}
 
-        {/* Jump back to the top of the enrollment list (user request 2026-07-22). */}
-        <Pressable
-          style={styles.returnTopBtn}
-          onPress={() => scrollRef.current?.scrollTo({ y: 0, animated: true })}
-          accessibilityRole="button"
-          accessibilityLabel="Return to top"
-        >
-          <Text style={styles.returnTopText}>↑ RETURN TO TOP</Text>
-        </Pressable>
+        {/* Bottom actions: return to top + global expand/collapse of every
+            enrollment-list container (user request 2026-07-24). */}
+        <View style={styles.bottomActions}>
+          <Pressable
+            style={styles.bottomBtn}
+            onPress={() => scrollRef.current?.scrollTo({ y: 0, animated: true })}
+            accessibilityRole="button"
+            accessibilityLabel="Return to top"
+          >
+            <Text style={styles.returnTopText}>↑ RETURN TO TOP</Text>
+          </Pressable>
+          <Pressable
+            style={styles.bottomBtn}
+            onPress={() => setCollapsed(new Set())}
+            accessibilityRole="button"
+            accessibilityLabel="Expand all containers"
+          >
+            <Text style={styles.returnTopText}>▾ EXPAND ALL</Text>
+          </Pressable>
+          <Pressable
+            style={styles.bottomBtn}
+            onPress={() =>
+              setCollapsed(new Set([...enrolled.map((e) => `t:${e.gs}`), ...bundles.map((b) => b.key)]))
+            }
+            accessibilityRole="button"
+            accessibilityLabel="Collapse all containers"
+          >
+            <Text style={styles.returnTopText}>▸ COLLAPSE ALL</Text>
+          </Pressable>
+        </View>
       </ScrollView>
 
       {/* Pinned BROWSE & ADD tab bar — an absolute overlay OUTSIDE the ScrollView
@@ -1140,6 +1260,41 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
 
       {/* Home screen customizer (paid). */}
       <HomeSetupSheet visible={homeSetupOpen} onClose={() => setHomeSetupOpen(false)} />
+
+      {/* Custom-list terms popup — SEE & EDIT (user request 2026-07-24). Mirrors
+          the flashcards held-filter list; TermSelectIcons edit membership inline. */}
+      <Modal visible={customListOpen} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setCustomListOpen(false)}>
+        <View style={styles.clBackdrop}>
+          <Pressable
+            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+            onPress={() => setCustomListOpen(false)}
+            accessibilityRole="button"
+            accessibilityLabel="Dismiss"
+          />
+          <View style={styles.clCard}>
+            <Text style={styles.clTitle}>MY CUSTOM LIST · {customListRows?.length ?? 0}</Text>
+            <ScrollView style={{ flexGrow: 0 }} showsVerticalScrollIndicator>
+              {customListRows == null ? (
+                <Text style={styles.clEmpty}>Loading…</Text>
+              ) : customListRows.length > 0 ? (
+                customListRows.map((r) => (
+                  <View key={r.id} style={styles.clRow}>
+                    <Text style={styles.clItem} numberOfLines={1}>
+                      {r.term}
+                    </Text>
+                    <TermSelectIcons id={r.id} bookmarkCtx="glossary" />
+                  </View>
+                ))
+              ) : (
+                <Text style={styles.clEmpty}>No terms yet — star terms in the Glossary to build this list.</Text>
+              )}
+            </ScrollView>
+            <Pressable style={styles.clClose} onPress={() => setCustomListOpen(false)} accessibilityRole="button" accessibilityLabel="Close">
+              <Text style={styles.clCloseText}>CLOSE</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -1186,7 +1341,16 @@ const styles = StyleSheet.create({
     elevation: 12,
   },
   pinnedLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: GREEN, marginBottom: 4 },
-  // RETURN TO TOP button at the very bottom.
+  // Bottom action row: return-to-top + expand/collapse all.
+  bottomActions: { flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap', gap: 8, marginTop: 10 },
+  bottomBtn: {
+    borderWidth: 1,
+    borderColor: '#3a3a3a',
+    backgroundColor: '#161616',
+    borderRadius: 8,
+    paddingVertical: 9,
+    paddingHorizontal: 12,
+  },
   returnTopBtn: {
     alignSelf: 'center',
     marginTop: 10,
@@ -1214,6 +1378,34 @@ const styles = StyleSheet.create({
   continueEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.4, color: colors.amber },
   continueName: { fontFamily: fonts.oswaldMedium, fontSize: 16, color: colors.textPrimary, marginTop: 1 },
   continueCta: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.6, color: colors.amber },
+
+  // "My Custom List" bar — blue-framed sibling of the continue banner.
+  customBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(127,191,255,.55)',
+    backgroundColor: '#0d1626',
+    borderRadius: 10,
+    paddingVertical: 9,
+    paddingHorizontal: 12,
+  },
+  customIcon: { width: 40, alignItems: 'center', justifyContent: 'center' },
+  customEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.4, color: BLUE },
+  customName: { fontFamily: fonts.oswaldMedium, fontSize: 16, color: colors.textPrimary, marginTop: 1 },
+  customSeeEdit: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.6, color: BLUE },
+  // OFF state: gray border + dimmed (de-blued) background.
+  customBarOff: { borderColor: 'rgba(255,255,255,.18)', backgroundColor: '#141619' },
+  // SEE & EDIT term-list popup.
+  clBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', alignItems: 'center', justifyContent: 'center', padding: 20 },
+  clCard: { width: '100%', maxWidth: 460, maxHeight: '80%', backgroundColor: '#141414', borderRadius: 12, borderWidth: 1, borderColor: '#2a2a2a', padding: 14, gap: 8 },
+  clTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.2, color: BLUE, marginBottom: 2 },
+  clRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 8, borderTopWidth: 1, borderTopColor: '#1e1e1e' },
+  clItem: { flex: 1, fontFamily: fonts.barlowRegular, fontSize: 15, color: '#2f9bff' },
+  clEmpty: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 14, color: colors.textSub, paddingVertical: 10 },
+  clClose: { marginTop: 8, alignItems: 'center', paddingVertical: 10, borderRadius: 8, borderWidth: 1, borderColor: '#3a3a3a' },
+  clCloseText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.4, color: colors.textSubAlt },
 
   sectionHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: GREEN, marginTop: 4 },
 
@@ -1256,6 +1448,7 @@ const styles = StyleSheet.create({
   },
   // "Required" label inside a core card — green.
   requiredTag: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.6, color: GREEN },
+  lockCaption: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.2, color: GREEN, marginRight: 3, textAlign: 'right' },
   cardTop: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   cardName: { flex: 1, fontFamily: fonts.oswaldMedium, fontSize: 16, letterSpacing: 0.2, color: colors.textPrimary },
   handle: { paddingHorizontal: 4, paddingVertical: 2 },
@@ -1273,9 +1466,11 @@ const styles = StyleSheet.create({
   pillText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 0.8 },
   studyBtn: { borderRadius: 6, paddingVertical: 4, paddingHorizontal: 10, borderWidth: 1 },
   // Study control that mirrors the bottom-nav STUDY icon (user request 2026-07-23).
-  studyNavBtn: { paddingHorizontal: 6, paddingVertical: 2, alignItems: 'center', justifyContent: 'center' },
+  // Fixed-width slots so every row's study icon + deck toggle line up in
+  // vertical columns on the right (user request 2026-07-24).
+  studyNavBtn: { width: 42, paddingVertical: 2, alignItems: 'center', justifyContent: 'center' },
   // Open-book toggle = topic loaded into the study deck (user request 2026-07-23).
-  bookToggle: { paddingVertical: 3, paddingHorizontal: 4 },
+  bookToggle: { width: 42, paddingVertical: 3, alignItems: 'center', justifyContent: 'center' },
   // Award "STUDY ALL" (blue) — loads every topic into the deck.
   studyAllBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1, borderColor: 'rgba(127,191,255,.6)', backgroundColor: 'rgba(127,191,255,.12)', borderRadius: 7, paddingVertical: 5, paddingHorizontal: 10 },
   studyAllText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.6, color: BLUE },

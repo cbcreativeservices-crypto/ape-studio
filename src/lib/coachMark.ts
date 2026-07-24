@@ -17,6 +17,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { devBypass } from '../config/devMode';
+import { usePopupsSuppressed } from '../features/dev/popupSuppressStore';
 
 export const MAX_OPENS = 5;
 
@@ -36,9 +37,13 @@ export function useCoachMark(storageKey: string, dismissAfter: number) {
   const qualified = useRef(false); // this session already counted
   const opens = useRef(0);
   const started = useRef(false);
+  // Dev master kill-switch: when suppression is on, never enter the visible
+  // state — this wins even over DEV_BYPASS.alwaysShowIntros below.
+  const suppressed = usePopupsSuppressed();
 
   useEffect(() => {
     if (started.current) return; // once per mount
+    if (suppressed) return; // suppressed → never show (untouched on toggle-off; re-entry re-decides)
     started.current = true;
     // DEV BYPASS (Booth 2026-07-18): first-time experience on EVERY entry —
     // show regardless of the persisted retire counter (counter untouched).
@@ -52,7 +57,7 @@ export function useCoachMark(storageKey: string, dismissAfter: number) {
       opens.current = raw ? Number(raw) || 0 : 0;
       if (opens.current < MAX_OPENS) setVisible(true); // else: retired
     })();
-  }, [storageKey]);
+  }, [storageKey, suppressed]);
 
   /**
    * Call when the user completes one unit of the taught action (a full
@@ -72,5 +77,5 @@ export function useCoachMark(storageKey: string, dismissAfter: number) {
     }
   }, [visible, dismissAfter, storageKey]);
 
-  return { visible, registerAction };
+  return { visible: visible && !suppressed, registerAction };
 }

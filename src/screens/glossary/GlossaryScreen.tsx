@@ -19,6 +19,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { MethodIcon } from '../../components/MethodIcon';
+import { DeckIcon } from '../../components/DeckIcon';
 import { CoachMark } from '../../components/CoachMark';
 import { ShareIcon } from '../../components/ShareIcon';
 import { ShareTermSheet, type ShareTermPayload } from '../../components/ShareTermSheet';
@@ -26,7 +27,7 @@ import { LowLightDim } from '../../features/settings/LowLightLayer';
 import { BookmarkIcon, HoldHintPressable, TermSelectIcons } from '../../features/flags/TermSelectIcons';
 import { SpeakButton, stopAllSpeech } from '../../components/SpeakButton';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
-import { toggleBookmark, toggleTermList, useBookmarks, useTermList } from '../../features/flags/flaggedStore';
+import { listBookmarkContexts, toggleBookmark, toggleTermList, useBookmarks, useTermList } from '../../features/flags/flaggedStore';
 import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
 import { COPY } from '../../lib/copy';
 import { useCoachMark } from '../../lib/coachMark';
@@ -477,7 +478,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
   // Flagged terms (Booth 2026-07-18): ONE list shared with Flashcards and the
   // custom "Flagged" dashboard topic — lives in features/flags/flaggedStore
   // (same ape:glossaryFavs key, so previously starred terms carry over).
-  const bookmarks = useBookmarks();
+  const bookmarks = useBookmarks('glossary');
   // ★ Custom list (starred) — its own per-term toggle (user request 2026-07-18).
   const starred = useTermList('starred');
   // Self-retiring hint: "click term to expand" — hides after 2 expands, for
@@ -486,10 +487,18 @@ export function GlossaryScreen({ route, navigation }: Props) {
   const [recent, setRecent] = useState<string[]>([]);
   // Held filter chip → internal list of just that set's terms, like Flashcards
   // (user request 2026-07-22). kind picks which set the rows come from.
-  const [termListModal, setTermListModal] = useState<{ title: string; kind: 'bookmark' | 'starred' | 'recent' } | null>(null);
+  const [termListModal, setTermListModal] = useState<{ title: string; kind: 'bookmark' | 'starred' | 'recent'; bookmarkCtx?: string } | null>(null);
+  // Two-level bookmark filter (glossary only, user request 2026-07-24): LEVEL 1 is
+  // a picker of which bookmark list to view; LEVEL 2 reuses the term-list modal,
+  // scoped to the chosen context via `bookmarkCtx`.
+  const [bmPicker, setBmPicker] = useState<{ ctx: string; count: number }[] | null>(null);
+  const pickedBookmarks = useBookmarks(termListModal?.bookmarkCtx ?? 'glossary');
+  const topicsById = useMemo(() => new Map(topics.map((t) => [t.id, t.name])), [topics]);
+  const ctxName = (ctx: string) =>
+    ctx === 'glossary' ? 'Glossary' : ctx === 'flagged' ? 'My Custom List' : topicsById.get(ctx) ?? 'Topic';
 
   const toggleFav = useCallback((id: string) => {
-    toggleBookmark(id);
+    toggleBookmark('glossary', id);
   }, []);
 
   // Share a term + its definition — now opens the PREVIEW pop-up first (user
@@ -770,13 +779,13 @@ export function GlossaryScreen({ route, navigation }: Props) {
   // stay A–Z (entries are already term-sorted).
   const termListRows = useMemo(() => {
     if (!termListModal) return [] as Entry[];
-    if (termListModal.kind === 'bookmark') return entries.filter((e) => bookmarks.has(e.id));
+    if (termListModal.kind === 'bookmark') return entries.filter((e) => pickedBookmarks.has(e.id));
     if (termListModal.kind === 'starred') return entries.filter((e) => starred.has(e.id));
     const order = new Map(recent.map((id, i) => [id, i]));
     return entries
       .filter((e) => order.has(e.id))
       .sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
-  }, [termListModal, entries, bookmarks, starred, recent]);
+  }, [termListModal, entries, pickedBookmarks, starred, recent]);
 
   // Tapping a term in the overlay opens it in the popup (the popup overlay
   // renders in both list and card mode) and closes the overlay.
@@ -884,7 +893,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
           accessibilityRole="button"
           accessibilityLabel={cardView ? 'Switch to list view' : 'Switch to cards view'}
         >
-          <Text style={styles.headerToggleText}>{cardView ? 'LIST' : 'CARDS'}</Text>
+          <Text style={styles.headerToggleText}>{cardView ? 'LIST VIEW' : 'CARD VIEW'}</Text>
         </Pressable>
         {/* Which definition the speakers read (Booth 2026-07-10):
             ADV = official definition (default) · BEG = plain English. */}
@@ -908,9 +917,9 @@ export function GlossaryScreen({ route, navigation }: Props) {
           <Text style={styles.headerToggleText}>{ttsBeg ? 'BEG' : 'ADV'}</Text>
         </Pressable>
         <View style={{ flex: 1 }} />
-        {/* Current # of terms, WHITE (user request 2026-07-22) — dropped the
-            gray "shown / total" readout. */}
-        <Text style={styles.count}>{loading ? '…' : `${visible.length}`}</Text>
+        {/* Current # of terms, WHITE — labeled "# of Terms" in the title font
+            (user request 2026-07-24). */}
+        <Text style={styles.count}>{loading ? '… Terms' : `${visible.length} Terms`}</Text>
       </View>
 
       <View style={styles.searchBox}>
@@ -970,27 +979,44 @@ export function GlossaryScreen({ route, navigation }: Props) {
             Tap filters to bookmarked terms; HOLD opens the internal list. */}
         <Chip
           label={`Bookmarks${bookmarks.size > 0 ? ` ${bookmarks.size}` : ''}`}
-          accent="#37e05f"
+          accent="#b45bff"
           active={filter === 'favorites'}
           icon={(c) => (
             // Glyph + text label so this chip matches the size of the Topic /
             // Custom chips next to it (user request 2026-07-23).
+            // Icon + count only — the word "Bookmarks" was dropped (user
+            // request 2026-07-24), leaving just the glyph and the # count.
             <View style={styles.chipIconWrap}>
               <BookmarkIcon color={c} filled={filter === 'favorites'} size={15} />
-              <Text style={[styles.chipText, { color: c }]}>{`BOOKMARKS${bookmarks.size > 0 ? ` ${bookmarks.size}` : ''}`}</Text>
+              {bookmarks.size > 0 ? (
+                <Text style={[styles.chipText, { color: c }]}>{bookmarks.size}</Text>
+              ) : null}
             </View>
           )}
           onPress={() => {
             setFilter('favorites');
             setTopicPickerOpen(false);
           }}
-          onLongPress={() => setTermListModal({ title: 'Bookmarks', kind: 'bookmark' })}
+          onLongPress={() => {
+            void listBookmarkContexts().then(setBmPicker); // LEVEL 1: pick a bookmark list
+          }}
         />
         {/* Custom list (★ starred) filter — new (user request 2026-07-22). */}
         <Chip
           label={`Custom${starred.size > 0 ? ` ${starred.size}` : ''}`}
-          accent="#c4a2ff"
+          accent="#2f9bff"
           active={filter === 'custom'}
+          icon={(c) => (
+            // "CUSTOM" + the 3-card deck glyph + # count (user request
+            // 2026-07-24 — the deck replaces the old ★ custom-list symbol).
+            <View style={styles.chipIconWrap}>
+              <Text style={[styles.chipText, { color: c }]}>CUSTOM</Text>
+              <DeckIcon color={c} size={16} fill={filter === 'custom' ? `${c}33` : 'none'} />
+              {starred.size > 0 ? (
+                <Text style={[styles.chipText, { color: c }]}>{starred.size}</Text>
+              ) : null}
+            </View>
+          )}
           onPress={() => {
             setFilter('custom');
             setTopicPickerOpen(false);
@@ -999,7 +1025,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
         />
         <Chip
           label="Recent"
-          accent="#5bb0ff"
+          accent="#37e05f"
           active={filter === 'recent'}
           onLongPress={() => setTermListModal({ title: 'Recent', kind: 'recent' })}
           onPress={() => {
@@ -1140,7 +1166,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
                           icons (share 18 / speak 19 / star 19) — user request
                           2026-07-22. */}
                       <BookmarkIcon
-                        color={bookmarks.has(item.id) ? colors.amber : colors.textMuted}
+                        color={bookmarks.has(item.id) ? colors.purple : colors.textMuted}
                         filled={bookmarks.has(item.id)}
                         size={15}
                       />
@@ -1153,9 +1179,11 @@ export function GlossaryScreen({ route, navigation }: Props) {
                       selected={starred.has(item.id)}
                       accessibilityLabel={starred.has(item.id) ? 'Remove from custom list' : 'Add to custom list'}
                     >
-                      <Text style={[styles.customStar, starred.has(item.id) && styles.customStarOn]}>
-                        {starred.has(item.id) ? '★' : '☆'}
-                      </Text>
+                      <DeckIcon
+                        color={starred.has(item.id) ? colors.blue : colors.textMuted}
+                        size={19}
+                        fill={starred.has(item.id) ? 'rgba(47,155,255,0.22)' : 'none'}
+                      />
                     </HoldHintPressable>
                     {/* The +/- expand toggle was removed (user request
                         2026-07-23) — tapping the term row already shows/hides it. */}
@@ -1437,11 +1465,18 @@ export function GlossaryScreen({ route, navigation }: Props) {
                       accessibilityRole="button"
                       accessibilityLabel={`Open ${r.term}`}
                     >
-                      <Text style={styles.tlItem} numberOfLines={1}>
+                      <Text
+                        style={[
+                          styles.tlItem,
+                          termListModal?.kind === 'bookmark' && { color: '#b45bff' },
+                          termListModal?.kind === 'starred' && { color: '#2f9bff' },
+                        ]}
+                        numberOfLines={1}
+                      >
                         {r.term} ›
                       </Text>
                     </Pressable>
-                    <TermSelectIcons id={r.id} />
+                    <TermSelectIcons id={r.id} bookmarkCtx={termListModal?.bookmarkCtx ?? 'glossary'} />
                   </View>
                 ))
               ) : (
@@ -1449,6 +1484,50 @@ export function GlossaryScreen({ route, navigation }: Props) {
               )}
             </ScrollView>
             <Pressable style={styles.tlClose} onPress={() => setTermListModal(null)} accessibilityRole="button" accessibilityLabel="Close list">
+              <Text style={styles.tlCloseText}>CLOSE</Text>
+            </Pressable>
+          </View>
+        </View>
+        <LowLightDim />
+      </Modal>
+
+      {/* Two-level bookmark filter — LEVEL 1: pick which bookmark list to view
+          (glossary only, user request 2026-07-24). Selecting one opens the term
+          list (level 2) scoped to that context's bookmarks. */}
+      <Modal visible={!!bmPicker} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setBmPicker(null)}>
+        <View style={styles.tlBackdrop}>
+          <Pressable
+            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+            onPress={() => setBmPicker(null)}
+            accessibilityRole="button"
+            accessibilityLabel="Dismiss"
+          />
+          <View style={styles.tlCard}>
+            <Text style={styles.tlTitle}>BOOKMARK LISTS · {bmPicker?.length ?? 0}</Text>
+            <ScrollView style={{ flexGrow: 0 }} showsVerticalScrollIndicator>
+              {bmPicker && bmPicker.length > 0 ? (
+                bmPicker.map((b) => (
+                  <Pressable
+                    key={b.ctx}
+                    style={styles.tlRow}
+                    onPress={() => {
+                      setTermListModal({ title: ctxName(b.ctx), kind: 'bookmark', bookmarkCtx: b.ctx });
+                      setBmPicker(null);
+                    }}
+                    accessibilityRole="button"
+                    accessibilityLabel={`View ${ctxName(b.ctx)} bookmarks`}
+                  >
+                    <Text style={[styles.tlItem, { color: '#b45bff', flex: 1 }]} numberOfLines={1}>
+                      {ctxName(b.ctx)} ›
+                    </Text>
+                    <Text style={styles.tlCount}>{b.count}</Text>
+                  </Pressable>
+                ))
+              ) : (
+                <Text style={styles.tlEmpty}>No bookmarks yet — bookmark terms in the Glossary or any topic.</Text>
+              )}
+            </ScrollView>
+            <Pressable style={styles.tlClose} onPress={() => setBmPicker(null)} accessibilityRole="button" accessibilityLabel="Close">
               <Text style={styles.tlCloseText}>CLOSE</Text>
             </Pressable>
           </View>
@@ -1480,7 +1559,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     color: colors.amber,
   },
-  count: { textAlign: 'right', fontFamily: fonts.mono, fontSize: 12, color: colors.textPrimary },
+  count: { textAlign: 'right', fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: colors.textPrimary },
   searchBox: {
     height: 44,
     borderRadius: 6,
@@ -1872,6 +1951,7 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
   },
   tlItem: { flex: 1, fontFamily: fonts.barlowRegular, fontSize: 15, lineHeight: 26, color: '#7fbfff' },
+  tlCount: { fontFamily: fonts.mono, fontSize: 13, color: colors.textSecondary, marginLeft: 8 },
   tlEmpty: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 14, color: colors.textMuted },
   tlClose: { marginTop: 12, alignItems: 'center', paddingVertical: 10, borderRadius: 8, borderWidth: 1, borderColor: '#3a3a3a' },
   tlCloseText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.4, color: colors.textSubAlt },

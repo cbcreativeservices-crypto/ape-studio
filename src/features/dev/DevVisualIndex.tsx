@@ -7,7 +7,7 @@
  * delete this file + its <DevVisualIndex/> usage.
  */
 import { useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Modal, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -20,6 +20,7 @@ import { TrophyModal } from '../../components/TrophyModal';
 import { ShareTermSheet } from '../../components/ShareTermSheet';
 import { LearningIntroSheet } from '../intro/LearningIntroSheet';
 import type { LearningIntro } from '../intro/learningIntros';
+import { setPopupsSuppressed, usePopupsSuppressed } from './popupSuppressStore';
 
 const MOCK_STUDY = { achievementId: FLAGGED_TOPIC_ID, topicName: 'Preview' };
 const MOCK_SHARE = {
@@ -177,6 +178,7 @@ export function DevVisualIndex() {
   const [previewIntro, setPreviewIntro] = useState<IntroKey | null>(null);
   const [standalone, setStandalone] = useState<StandaloneKey | null>(null);
   const [note, setNote] = useState<string | null>(null);
+  const popupsSuppressed = usePopupsSuppressed();
 
   const goScreen = (entry: ScreenEntry) => {
     setOpen(false);
@@ -233,6 +235,23 @@ export function DevVisualIndex() {
           ) : null}
 
           <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 24 }}>
+            <View style={styles.group}>
+              <Text style={styles.groupHead}>OPTIONS</Text>
+              <View style={[styles.row, styles.toggleRow]}>
+                <View style={{ flex: 1, paddingRight: 12 }}>
+                  <Text style={styles.rowText}>Suppress all popups</Text>
+                  <Text style={styles.toggleHint}>
+                    Hides every intro, welcome, learning-intro & coach mark (overrides dev “always show”).
+                  </Text>
+                </View>
+                <Switch
+                  value={popupsSuppressed}
+                  onValueChange={setPopupsSuppressed}
+                  accessibilityLabel="Suppress all popups"
+                />
+              </View>
+            </View>
+
             {SCREENS.map((group) => (
               <View key={group.section} style={styles.group}>
                 <Text style={styles.groupHead}>{group.section}</Text>
@@ -359,6 +378,8 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   resetRow: { backgroundColor: '#1c1405', borderColor: '#3a2f14' },
+  toggleRow: { paddingVertical: 11 },
+  toggleHint: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16, color: colors.textSub, marginTop: 3 },
   rowText: { flex: 1, fontFamily: fonts.barlowMedium, fontSize: 15, color: colors.textSecondary },
   rowGo: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: colors.textSub, marginLeft: 8 },
 });
