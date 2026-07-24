@@ -24,7 +24,11 @@ struct Rt60BandResult {
   double edtSec = 0.0;      // early decay time (0..−10 fit ×6); 0 = unavailable
   double t20Rt60Sec = 0.0;  // RT60 extrapolated from T20 (−5..−25 ×3); 0 = unavailable
   double t30Rt60Sec = 0.0;  // RT60 extrapolated from T30 (−5..−35 ×2); 0 = unavailable
-  double r2 = 0.0;          // R² of the best available fit
+  double r2 = 0.0;          // R² of the best available fit (validity gate)
+  // Per-fit R² so a displayed value carries ITS OWN fit quality — never the
+  // other method's (review 2026-07-23; §13 method-honesty). 0 = fit unavailable.
+  double t20R2 = 0.0;
+  double t30R2 = 0.0;
   double decayRangeDb = 0.0;  // peak-to-noise-floor headroom actually available
   bool valid = false;         // true when at least T20 had range + a sane fit
 };
@@ -147,6 +151,7 @@ class Rt60 {
     if (i5 != none && i25 != none && r.decayRangeDb > 35.0 &&
         lineFit(curve, i5, i25, &slope, &r2) && slope < 0) {
       r.t20Rt60Sec = (-60.0 / slope) / fs;
+      r.t20R2 = r2;
       r.r2 = r2;
       r.valid = r2 > 0.90;
     }
@@ -154,6 +159,7 @@ class Rt60 {
     if (i5 != none && i35 != none && r.decayRangeDb > 45.0 &&
         lineFit(curve, i5, i35, &slope, &r2) && slope < 0) {
       r.t30Rt60Sec = (-60.0 / slope) / fs;
+      r.t30R2 = r2;
       if (r2 > r.r2) r.r2 = r2;
     }
 

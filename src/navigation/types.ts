@@ -112,6 +112,7 @@ export type RootStackParamList = {
   WaveformLive: undefined;
   SignalGen: undefined;
   SpectrogramLive: undefined;
+  Rt60Live: undefined;
   /** Spike-0 dev-only debug screen (ape-dsp proof) — __DEV__ entry on ToolsHub. */
   DspDebug: undefined;
 };

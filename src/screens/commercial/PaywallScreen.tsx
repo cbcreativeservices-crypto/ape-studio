@@ -43,8 +43,8 @@ export function PaywallScreen({ navigation }: Props) {
 
       <ScrollView contentContainerStyle={styles.scroll}>
         <Text style={styles.eyebrow}>ACADEMY MODE</Text>
-        <Text style={styles.title}>{COPY.upgradePhrase}</Text>
-        <Text style={styles.body}>{COPY.marketingLine}</Text>
+        <Text style={styles.title}>{COPY.paywallTitle}</Text>
+        <Text style={styles.body}>{COPY.paywallBody}</Text>
 
         <View style={styles.plans}>
           {PLANS.map((p) => {

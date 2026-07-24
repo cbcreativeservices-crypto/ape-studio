@@ -59,11 +59,7 @@ export function ToolInfoScreen({ navigation, route }: Props) {
         {/* Engine build (2026-07-23): OPEN TOOL for tools with a live screen.
             The live screen gates itself honestly (EngineGate) when the native
             engine isn't in this build — never a fake meter. */}
-        {(tool.key === 'spl' ||
-          tool.key === 'rta' ||
-          tool.key === 'waveform' ||
-          tool.key === 'spectrogram' ||
-          tool.key === 'signalgen') && (
+        {tool.key !== 'hzcounter' && (
           <GlassButton
             label="OPEN TOOL"
             tint={tool.tint}
@@ -79,7 +75,9 @@ export function ToolInfoScreen({ navigation, route }: Props) {
                       ? 'WaveformLive'
                       : tool.key === 'spectrogram'
                         ? 'SpectrogramLive'
-                        : 'SignalGen',
+                        : tool.key === 'rt60'
+                          ? 'Rt60Live'
+                          : 'SignalGen',
               )
             }
           />

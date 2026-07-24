@@ -59,8 +59,55 @@ function payloadLines(m: SavedMeasurement): { label: string; value: string }[] {
       { label: 'INTERVALS', value: `${p.intervals}` },
     ];
   }
-  // Engine-tool payloads land with the native engine — planned types only today.
-  return [{ label: 'DATA', value: p.kind.replace(/_/g, ' ') }];
+  if (p.kind === 'impulse_response') {
+    const valid = p.perBand.filter((b) => b.rt60Sec != null);
+    const lines: { label: string; value: string }[] = valid.map((b) => ({
+      label: b.bandHz >= 1000 ? `${b.bandHz / 1000} kHz` : `${b.bandHz} Hz`,
+      // Per-band method (§13 "always labeled" — range gates are per band, so a
+      // band's fit can differ from the broadband headline). `?? p.method`
+      // keeps pre-2026-07-23 records (no per-band method) rendering as before.
+      value: `${b.rt60Sec!.toFixed(2)} s · ${b.method ?? p.method} · R² ${b.confidence.toFixed(2)}`,
+    }));
+    // Honest gaps: invalid bands are listed as such, never hidden (spec §13).
+    const invalid = p.perBand.length - valid.length;
+    if (invalid > 0) lines.push({ label: 'UNRELIABLE BANDS', value: `${invalid} (insufficient range)` });
+    lines.push({
+      label: 'NOISE FLOOR',
+      value: p.noiseFloorDb != null ? `${p.noiseFloorDb.toFixed(0)} dB rel. peak` : '—',
+    });
+    return lines;
+  }
+  // Remaining engine-tool payloads (SPL log, spectrum trace, snapshots) — summary rows.
+  if (p.kind === 'spl_log') {
+    // Unit follows the record's calibration status (ruling R1): field-
+    // calibrated logs stored dB SPL values, uncalibrated logs stored dBFS.
+    const unit = m.calibration_status === 'calibrated' ? 'dB SPL' : 'dBFS';
+    return [
+      { label: 'LEQ', value: `${p.avgDb.toFixed(1)} ${unit} (${p.weighting})` },
+      { label: 'PEAK', value: `${p.peakDb.toFixed(1)} ${unit}` },
+      { label: 'DURATION', value: `${Math.round(p.durationSec)} s · ${p.response}` },
+    ];
+  }
+  if (p.kind === 'spectrum_trace') {
+    return [
+      { label: 'BANDS', value: `${p.bandsHz.length} × 1/${p.fraction} octave` },
+      { label: 'AVERAGING', value: p.averaging },
+    ];
+  }
+  if (p.kind === 'waveform_snapshot') {
+    return [
+      { label: 'PEAK', value: `${p.peakDbfs.toFixed(1)} dBFS` },
+      { label: 'CLIPPED RUNS', value: `${p.clippedRuns}` },
+      { label: 'WINDOW', value: `${p.durationSec.toFixed(1)} s` },
+    ];
+  }
+  if (p.kind === 'spectrogram_snapshot') {
+    return [
+      { label: 'GRID', value: `${p.grid.length} cols × ${p.bandsHz.length} cells` },
+      { label: 'DYNAMIC RANGE', value: `${p.dynamicRangeDb} dB · ${p.fftPreset}` },
+    ];
+  }
+  return [{ label: 'DATA', value: (p as { kind: string }).kind.replace(/_/g, ' ') }];
 }
 
 function ContextBlock({ m }: { m: SavedMeasurement }) {

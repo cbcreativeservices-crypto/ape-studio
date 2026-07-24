@@ -77,7 +77,14 @@ export function ConceptModuleScreen({ navigation, route }: Props) {
                     <Pressable
                       key={k}
                       style={styles.toolRow}
-                      onPress={() => navigation.navigate('ToolInfo', { toolKey: k })}
+                      onPress={() =>
+                        // The Frequency Counter has its own modes+results screen;
+                        // the rest open their info screen (mirrors ToolsHub —
+                        // review 2026-07-23: ToolInfo('hzcounter') was a dead end).
+                        k === 'hzcounter'
+                          ? navigation.navigate('FrequencyCounter')
+                          : navigation.navigate('ToolInfo', { toolKey: k })
+                      }
                       accessibilityRole="button"
                       accessibilityLabel={t.name}
                     >

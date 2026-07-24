@@ -153,7 +153,9 @@ export type Rt60Band = {
   edtSec: number; // 0 = unavailable
   t20Rt60Sec: number; // 0 = unavailable — NEVER fabricated
   t30Rt60Sec: number;
-  r2: number;
+  r2: number; // best available fit (validity gate)
+  t20R2: number; // R² of the T20 fit; 0 = unavailable
+  t30R2: number; // R² of the T30 fit; 0 = unavailable
   decayRangeDb: number;
   valid: boolean;
 };

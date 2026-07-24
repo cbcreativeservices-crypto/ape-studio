@@ -7,6 +7,12 @@ export const COPY = {
   upgradePhrase: 'Upgrade from reference mode to full academy mode.',
   marketingLine:
     'Use the free glossary as a reference tool. Upgrade from reference mode to full academy mode to unlock common mistakes, guided practice, audio tool tutorials, quizzes, topic trophies, progress tracking, and completion records.',
+  // Paywall-screen header copy (user request 2026-07-23) — added, not reworded,
+  // so the shared upgradePhrase/marketingLine used elsewhere stay untouched.
+  paywallTitle: 'Upgrade from Reference Mode to Full Academy Mode',
+  paywallBody:
+    'The free glossary is your professional audio reference. Upgrade to Academy Mode to unlock guided learning, study tools, quizzes, progress tracking, and the ability to earn verified Academy certificates.\n\n' +
+    'Create an optional profile in the Pro Audio Training Academy Professional Registry. As you earn certificates, your profile becomes a verified graduate record that employers can validate online and you can share on résumés, job applications, portfolios, and professional networking profiles.',
   // Introductory lifetime offer (Booth 2026-07-15).
   lifetimePrice: '$99.99',
   lifetimeOffer:

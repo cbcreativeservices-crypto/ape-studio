@@ -164,11 +164,17 @@ export type SpectrogramSnapshotPayload = {
   fftPreset: string;
 };
 
-/** RT60 / impulse-response measurement (engine tool — planned; spec §13). */
+/** RT60 / impulse-response measurement (spec §13). `method` is the BROADBAND
+ *  headline fit; range gates are per band, so bands carry their OWN method. */
 export type ImpulseResponsePayload = {
   kind: 'impulse_response';
   method: 'T20' | 'T30' | 'EDT';
-  perBand: { bandHz: number; rt60Sec: number | null; confidence: number }[];
+  /** Per-band decay fits. `method` is that band's fit (§13 "always labeled" —
+   *  may differ from the broadband headline; optional for pre-2026-07-23
+   *  records, null when the band was invalid). `confidence` is the raw R² of
+   *  the line fit backing rt60Sec (0–1 goodness-of-fit — NOT a probability;
+   *  render as "R²", never as a percent). */
+  perBand: { bandHz: number; rt60Sec: number | null; method?: 'T20' | 'T30' | null; confidence: number }[];
   noiseFloorDb: number | null;
   /** Downsampled decay curve in dB (numerical). */
   decayDb: number[];

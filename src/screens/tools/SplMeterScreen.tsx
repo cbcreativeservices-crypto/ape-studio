@@ -22,6 +22,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
 import { GlassButton } from '../../components/GlassButton';
 import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
+import { setSplCalibration, useSplCalibration } from '../../features/tools/measure/calibrationStore';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO, type SplLogPayload } from '../../features/tools/measure/types';
@@ -89,10 +90,28 @@ export function SplMeterScreen({ navigation }: Props) {
     [],
   );
 
+  // Field calibration (ruling R1, 2026-07-23): a single DEVICE-LOCAL offset
+  // maps dBFS → displayed dB SPL. Calibrated stays APPROXIMATE — this is a
+  // field calibration against the user's reference, not an IEC instrument.
+  const cal = useSplCalibration();
+  const offset = cal?.offsetDb ?? null;
+  const [calibrating, setCalibrating] = useState(false);
+  // Draft offset while the calibrate panel is open. 100 dB is only a starting
+  // point (0 dBFS ≈ 100–120 dB SPL on typical phone mics) — the user matches
+  // their reference meter.
+  const [draftOffset, setDraftOffset] = useState(100);
+  const unitLabel = offset != null ? 'dB SPL · field-calibrated (approximate)' : 'dBFS · uncalibrated approximate';
+  /** Level shown to the user: calibrated when an offset exists, else raw dBFS. */
+  const shown = (rawDb: number, withDraft = false) =>
+    rawDb + (withDraft ? draftOffset : (offset ?? 0));
+
   const running = state === 'running';
   // Readouts come ONLY from a live frame — stale frames after STOP are not
   // shown (measurement-integrity: no value the mic isn't producing right now).
   const meter = running ? frames.meter : null;
+  // Note: meterWarningFlags raises 'uncalibrated_input' only for OS-PROCESSED
+  // input (measurement mode not honored) — that stays a warning even when
+  // field-calibrated, because it undermines the calibration itself.
   const flags = meterWarningFlags(meter);
 
   /** SAVE LOG → Saved Measurement Library (spec §7; payload = SplLogPayload). */
@@ -100,12 +119,17 @@ export function SplMeterScreen({ navigation }: Props) {
     const m = state === 'running' ? frames.meter : null;
     if (!m) return;
     const saveFlags = meterWarningFlags(m);
-    // Phone-mic input is ALWAYS uncalibrated (spec §9 required warning) — the
-    // stored record says so even when the OS isn't filtering the input.
-    if (!saveFlags.includes('uncalibrated_input')) saveFlags.push('uncalibrated_input');
+    // Without a field calibration the record is explicitly uncalibrated
+    // (spec §9 required warning). With one (ruling R1), the record carries
+    // calibration_status 'calibrated' + the disclosed offset instead.
+    if (offset == null && !saveFlags.includes('uncalibrated_input'))
+      saveFlags.push('uncalibrated_input');
     // The engine logs Leq(A) and Leq(Z) only — a C-weighted selection stores
     // the unweighted Leq(Z) as its average (documented honest fallback).
-    const avgDb = weighting === 'A' ? m.leqADb : m.leqZDb;
+    // Values are stored AS DISPLAYED: dB SPL when field-calibrated, else dBFS
+    // (compare mode already warns on calibrated-vs-uncalibrated pairs).
+    const avgDb = shown(weighting === 'A' ? m.leqADb : m.leqZDb);
+    const unit = offset != null ? 'dB SPL' : 'dBFS';
     const payload: SplLogPayload = {
       kind: 'spl_log',
       weighting,
@@ -113,19 +137,22 @@ export function SplMeterScreen({ navigation }: Props) {
       durationSec: m.elapsedSec,
       timeline: [], // timeline capture ships with a later engine pass
       timelineStepSec: 0,
-      peakDb: m.peakHoldDb,
+      peakDb: shown(m.peakHoldDb),
       avgDb,
     };
     saveMeasurement({
       id: Crypto.randomUUID(),
       tool_type: 'spl',
       created_at: new Date().toISOString(),
-      title: `SPL Log — Leq(${weighting === 'A' ? 'A' : 'Z'}) ${fmtDb(avgDb)} dBFS · ${fmtElapsed(m.elapsedSec)}`,
+      title: `SPL Log — Leq(${weighting === 'A' ? 'A' : 'Z'}) ${fmtDb(avgDb)} ${unit} · ${fmtElapsed(m.elapsedSec)}`,
       notes: '',
       input_device: 'phone microphone',
-      calibration_status: 'uncalibrated',
+      calibration_status: offset != null ? 'calibrated' : 'uncalibrated',
       sample_rate: null, // info polling is out of scope for this screen
-      measurement_settings: { weighting, response },
+      measurement_settings:
+        offset != null
+          ? { weighting, response, cal_offset_db: offset, cal_set_at: cal?.setAt ?? null }
+          : { weighting, response },
       quality_state: evaluateQuality(saveFlags),
       warning_flags: saveFlags,
       data_payload: payload,
@@ -133,7 +160,8 @@ export function SplMeterScreen({ navigation }: Props) {
     setJustSaved(true);
     if (savedTimer.current) clearTimeout(savedTimer.current);
     savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
-  }, [state, frames.meter, weighting, response]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state, frames.meter, weighting, response, offset, cal]);
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -196,21 +224,109 @@ export function SplMeterScreen({ navigation }: Props) {
                 {`L${weighting}${response === 'fast' ? 'F' : 'S'} · ${weighting}-WEIGHTED · ${response.toUpperCase()}`}
               </Text>
               <Text style={styles.readoutValue}>
-                {meter ? fmtDb(selectedLevelDb(meter, weighting, response)) : '—'}
+                {meter ? fmtDb(shown(selectedLevelDb(meter, weighting, response))) : '—'}
               </Text>
-              <Text style={styles.readoutSub}>dBFS · uncalibrated approximate</Text>
+              <Text style={styles.readoutSub}>{unitLabel}</Text>
+            </View>
+
+            {/* Field calibration (ruling R1, 2026-07-23): device-local offset,
+                matched against the user's reference meter. */}
+            <View style={styles.calCard}>
+              <View style={styles.calHeadRow}>
+                <Text style={styles.sectionHead}>CALIBRATION</Text>
+                <Text style={[styles.calStatus, offset != null && styles.calStatusOn]}>
+                  {offset != null ? `FIELD-CALIBRATED · +${offset.toFixed(1)} dB` : 'UNCALIBRATED'}
+                </Text>
+              </View>
+              {!calibrating ? (
+                <View style={styles.controls}>
+                  <Pressable
+                    style={styles.ctrlBtn}
+                    onPress={() => {
+                      setDraftOffset(offset ?? 100);
+                      setCalibrating(true);
+                    }}
+                    accessibilityRole="button"
+                    accessibilityLabel="Calibrate against a reference meter"
+                  >
+                    <Text style={styles.ctrlText}>{offset != null ? 'RE-CALIBRATE' : 'CALIBRATE'}</Text>
+                  </Pressable>
+                  {offset != null && (
+                    <Pressable
+                      style={styles.ctrlBtn}
+                      onPress={() => setSplCalibration(null)}
+                      accessibilityRole="button"
+                      accessibilityLabel="Clear calibration"
+                    >
+                      <Text style={styles.ctrlText}>CLEAR</Text>
+                    </Pressable>
+                  )}
+                </View>
+              ) : (
+                <>
+                  <Text style={styles.calHint}>
+                    Play steady pink noise and adjust until this reading matches your reference
+                    sound-level meter (same weighting and response on both).
+                  </Text>
+                  <Text style={styles.calDraftValue}>
+                    {meter ? fmtDb(shown(selectedLevelDb(meter, weighting, response), true)) : '—'}
+                    <Text style={styles.calDraftUnit}>  dB SPL (candidate)</Text>
+                  </Text>
+                  <View style={styles.controls}>
+                    {[-5, -0.5, +0.5, +5].map((step) => (
+                      <Pressable
+                        key={step}
+                        style={styles.ctrlBtn}
+                        onPress={() => setDraftOffset((d) => Math.round((d + step) * 2) / 2)}
+                        accessibilityRole="button"
+                        accessibilityLabel={`Adjust ${step > 0 ? 'up' : 'down'} ${Math.abs(step)} dB`}
+                      >
+                        <Text style={styles.ctrlText}>{step > 0 ? `+${step}` : step}</Text>
+                      </Pressable>
+                    ))}
+                  </View>
+                  <View style={styles.controls}>
+                    <Pressable
+                      style={styles.ctrlBtn}
+                      onPress={() => setCalibrating(false)}
+                      accessibilityRole="button"
+                      accessibilityLabel="Cancel calibration"
+                    >
+                      <Text style={styles.ctrlText}>CANCEL</Text>
+                    </Pressable>
+                    <Pressable
+                      style={[styles.ctrlBtn, styles.ctrlBtnSaved]}
+                      onPress={() => {
+                        setSplCalibration(draftOffset);
+                        setCalibrating(false);
+                      }}
+                      accessibilityRole="button"
+                      accessibilityLabel="Set calibration"
+                    >
+                      <Text style={[styles.ctrlText, styles.ctrlTextSaved]}>SET</Text>
+                    </Pressable>
+                  </View>
+                </>
+              )}
+              <Text style={styles.calNote}>
+                Field calibration is stored on this device only and stays approximate — it is not a
+                certified instrument calibration.
+              </Text>
             </View>
 
             {/* PEAK / PEAK HOLD — may exceed 0 dBFS (F1): red at ≥ 0, never clamped. */}
             <View style={styles.peakRow}>
+              {/* Peak cells stay RAW dBFS always — they are digital-headroom
+                  indicators; the ≥0 dBFS hot state is about the converter
+                  ceiling, not acoustic level (F1). */}
               <View style={styles.peakCell}>
-                <Text style={styles.cellLabel}>PEAK</Text>
+                <Text style={styles.cellLabel}>PEAK (dBFS)</Text>
                 <Text style={[styles.cellValue, meter != null && meter.peakDb >= 0 && styles.cellValueHot]}>
                   {meter ? fmtDb(meter.peakDb) : '—'}
                 </Text>
               </View>
               <View style={styles.peakCell}>
-                <Text style={styles.cellLabel}>PEAK HOLD</Text>
+                <Text style={styles.cellLabel}>PEAK HOLD (dBFS)</Text>
                 <Text style={[styles.cellValue, meter != null && meter.peakHoldDb >= 0 && styles.cellValueHot]}>
                   {meter ? fmtDb(meter.peakHoldDb) : '—'}
                 </Text>
@@ -239,11 +355,11 @@ export function SplMeterScreen({ navigation }: Props) {
               <View style={styles.logRow}>
                 <View style={styles.logCell}>
                   <Text style={styles.cellLabel}>Leq(A)</Text>
-                  <Text style={styles.cellValue}>{meter ? fmtDb(meter.leqADb) : '—'}</Text>
+                  <Text style={styles.cellValue}>{meter ? fmtDb(shown(meter.leqADb)) : '—'}</Text>
                 </View>
                 <View style={styles.logCell}>
                   <Text style={styles.cellLabel}>Leq(Z)</Text>
-                  <Text style={styles.cellValue}>{meter ? fmtDb(meter.leqZDb) : '—'}</Text>
+                  <Text style={styles.cellValue}>{meter ? fmtDb(shown(meter.leqZDb)) : '—'}</Text>
                 </View>
                 <View style={styles.logCell}>
                   <Text style={styles.cellLabel}>ELAPSED</Text>
@@ -251,7 +367,7 @@ export function SplMeterScreen({ navigation }: Props) {
                 </View>
               </View>
               <Text style={styles.logNote}>
-                Leq = equivalent continuous level over the session · dBFS · uncalibrated approximate
+                Leq = equivalent continuous level over the session · {unitLabel}
               </Text>
               <View style={styles.controls}>
                 <Pressable style={styles.ctrlBtn} onPress={resetLeq} accessibilityRole="button" accessibilityLabel="Reset log">
@@ -409,6 +525,23 @@ const styles = StyleSheet.create({
 
   // Live quality warning line (spec §6) — house amber warning style.
   liveWarn: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18.5, color: colors.amber },
+
+  // Field-calibration card (ruling R1, 2026-07-23).
+  calCard: {
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#131316',
+    padding: 14,
+    gap: 10,
+  },
+  calHeadRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
+  calStatus: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: colors.textSub },
+  calStatusOn: { color: '#5bff85' },
+  calHint: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 19, color: colors.textSecondary },
+  calDraftValue: { fontFamily: fonts.mono, fontSize: 30, color: colors.textPrimary, textAlign: 'center' },
+  calDraftUnit: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.amber },
+  calNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted },
 
   libraryLink: {
     fontFamily: fonts.oswaldSemiBold,

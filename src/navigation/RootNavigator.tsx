@@ -27,6 +27,7 @@ import { RtaScreen } from '../screens/tools/RtaScreen';
 import { WaveformScreen } from '../screens/tools/WaveformScreen';
 import { SignalGenScreen } from '../screens/tools/SignalGenScreen';
 import { SpectrogramScreen } from '../screens/tools/SpectrogramScreen';
+import { Rt60Screen } from '../screens/tools/Rt60Screen';
 import { FrequencyCounterScreen } from '../screens/tools/FrequencyCounterScreen';
 import { DspDebugScreen } from '../screens/tools/DspDebugScreen';
 import { LandingScreen } from '../screens/landing/LandingScreen';
@@ -72,6 +73,7 @@ export function RootNavigator() {
       <Stack.Screen name="WaveformLive" component={WaveformScreen} />
       <Stack.Screen name="SignalGen" component={SignalGenScreen} />
       <Stack.Screen name="SpectrogramLive" component={SpectrogramScreen} />
+      <Stack.Screen name="Rt60Live" component={Rt60Screen} />
       {/* Frequency Counter & Tuner tool (2026-07-18; tuner merged 2026-07-23). */}
       <Stack.Screen name="FrequencyCounter" component={FrequencyCounterScreen} />
       {/* Spike-0 dev-only debug (entry rendered only when __DEV__). */}

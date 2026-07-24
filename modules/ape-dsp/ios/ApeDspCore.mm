@@ -268,6 +268,8 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
         @"t20Rt60Sec" : @(b.t20Rt60Sec),
         @"t30Rt60Sec" : @(b.t30Rt60Sec),
         @"r2" : @(b.r2),
+        @"t20R2" : @(b.t20R2),
+        @"t30R2" : @(b.t30R2),
         @"decayRangeDb" : @(b.decayRangeDb),
         @"valid" : @(b.valid),
       }];

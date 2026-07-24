@@ -115,14 +115,16 @@ class EngineHub {
     rt60Buf_.assign(static_cast<size_t>(fs * 3.5), 0.0f);
     rt60Written_ = 0;
     rt60State_.store(static_cast<int>(Rt60State::Off));
+    rt60ArmPending_.store(false);  // stale arm must not survive a reconfigure
     resetMetersLocked();  // already holding mu_ — never resetMeters() here
   }
 
   // ---- RT60 guided capture (bridge thread arms; analysis thread records) ----
-  void rt60Arm() {
-    rt60Written_ = 0;
-    rt60State_.store(static_cast<int>(Rt60State::Armed));
-  }
+  // Arming rides an atomic flag serviced by the ANALYSIS thread at the next
+  // chunk boundary — same pattern as resetLeq() (review 2026-07-23):
+  // rt60Written_/rt60Buf_ are analysis-thread-owned, and a bridge-side write
+  // could race an in-flight recording (double-tap ARM within the poll lag).
+  void rt60Arm() { rt60ArmPending_.store(true, std::memory_order_release); }
   void rt60Cancel() { rt60State_.store(static_cast<int>(Rt60State::Off)); }
   Rt60State rt60State() const { return static_cast<Rt60State>(rt60State_.load()); }
   Rt60Analysis rt60Result() const {
@@ -183,6 +185,11 @@ class EngineHub {
     if (leqResetPending_.exchange(false, std::memory_order_acq_rel)) {
       leqZSum_ = leqASum_ = 0.0;
       leqCount_ = 0;
+    }
+    // Service a pending RT60 arm on the owning thread (see rt60Arm()).
+    if (rt60ArmPending_.exchange(false, std::memory_order_acq_rel)) {
+      rt60Written_ = 0;
+      rt60State_.store(static_cast<int>(Rt60State::Armed), std::memory_order_relaxed);
     }
     float maxAbs = 0.0f;
     if (samples != nullptr && n > 0) {
@@ -442,6 +449,7 @@ class EngineHub {
 
   // RT60 guided capture (buffer analysis-thread-only; state atomic; result mu_).
   std::atomic<int> rt60State_{0};
+  std::atomic<bool> rt60ArmPending_{false};
   std::vector<float> rt60Buf_;
   size_t rt60Written_ = 0;
   Rt60Analysis rt60Result_{};
