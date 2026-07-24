@@ -21,6 +21,11 @@ android {
   namespace "expo.modules.apedsp"
 
   defaultConfig {
+    // Required by expo-module-gradle-plugin (matches the installed-module style,
+    // e.g. expo-sqlite). Their absence fails project configuration.
+    versionCode 1
+    versionName "0.1.0"
+
     externalNativeBuild {
       cmake {
         abiFilters(*reactNativeArchitectures())
