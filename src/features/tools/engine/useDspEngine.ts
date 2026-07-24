@@ -13,6 +13,7 @@
  * simulate (measurement-tools §1.7).
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { PermissionsAndroid, Platform } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import {
   ApeDsp,
@@ -23,6 +24,18 @@ import {
   type WaveBucket,
 } from '../../../../modules/ape-dsp';
 import type { WarningFlag } from '../measure/types';
+
+/** Android runtime mic-permission request (iOS requests it natively inside the
+ *  module). Returns true if granted. No-op → true on non-Android. */
+async function ensureMicPermission(): Promise<boolean> {
+  if (Platform.OS !== 'android') return true;
+  try {
+    const res = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.RECORD_AUDIO);
+    return res === PermissionsAndroid.RESULTS.GRANTED;
+  } catch {
+    return false;
+  }
+}
 
 export type EngineState =
   | 'absent' // module not in this build (web/Android/old client)
@@ -76,6 +89,12 @@ export function useDspEngine(config: EngineConfig, poll: {
     const gen = ++genRef.current;
     setState('starting');
     try {
+      // Android: request RECORD_AUDIO before capture (iOS requests natively).
+      if (!(await ensureMicPermission())) {
+        if (gen === genRef.current) setState('denied');
+        return;
+      }
+      if (gen !== genRef.current) return;
       ApeDsp.setEngineConfig(configRef.current);
       await ApeDsp.start();
       if (gen !== genRef.current) {

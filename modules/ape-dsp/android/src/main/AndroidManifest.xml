@@ -1,0 +1,7 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <!-- ape-dsp needs the microphone for live measurement (capture). Merged into
+       the app manifest by Expo autolinking. Runtime request is handled in
+       ApeDspModule.start(). -->
+  <uses-permission android:name="android.permission.RECORD_AUDIO" />
+  <uses-feature android:name="android.hardware.microphone" android:required="false" />
+</manifest>

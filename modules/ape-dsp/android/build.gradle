@@ -1,0 +1,56 @@
+// ape-dsp — Android build (engine build 2026-07-23, ruling R3 Android port).
+// Mirrors the SDK-57 installed-module style: the expo-module-gradle-plugin
+// supplies Kotlin, expo-modules-core, and compileSdk/minSdk/targetSdk
+// (36/24/36) — do NOT set those here (drift risk). Only the native-build +
+// Oboe wiring is added.
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'com.cbcreativeservices.apedsp'
+version = '0.1.0'
+
+// Match the app's target ABIs (falls back to the RN default set).
+def reactNativeArchitectures() {
+  def value = project.getProperties().get("reactNativeArchitectures")
+  return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
+
+android {
+  namespace "expo.modules.apedsp"
+
+  defaultConfig {
+    externalNativeBuild {
+      cmake {
+        abiFilters(*reactNativeArchitectures())
+        // Oboe's prefab ships the SHARED C++ STL — must match it.
+        arguments "-DANDROID_STL=c++_shared"
+        cppFlags "-std=c++17", "-fexceptions", "-frtti"
+      }
+    }
+  }
+
+  externalNativeBuild {
+    cmake {
+      path "CMakeLists.txt"
+    }
+  }
+
+  // Oboe (prefab) exposes the C++ shared STL, and React Native already ships
+  // libc++_shared.so — pick one to avoid a duplicate-.so merge failure.
+  packagingOptions {
+    pickFirst "**/libc++_shared.so"
+  }
+
+  buildFeatures {
+    // Required for the Oboe prefab AAR (native headers + .so via find_package).
+    prefab true
+  }
+}
+
+dependencies {
+  // Oboe 1.10.0 (2024-09-15) — adds Android 15 16 KB-page support; AAudio path
+  // on API 27+, honest OpenSL-ES fallback below (see the module's input logic).
+  implementation 'com.google.oboe:oboe:1.10.0'
+}
