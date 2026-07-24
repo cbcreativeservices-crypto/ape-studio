@@ -11,6 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { GlassButton } from '../../components/GlassButton';
 import { ApeDsp } from '../../../modules/ape-dsp';
+import { useToolUsage } from '../../features/tools/telemetry';
 import { colors, fonts } from '../../theme/tokens';
 import { ENGINE_NOTE, MIC_LIMITS, toolByKey } from './toolsData';
 import type { RootStackParamList } from '../../navigation/types';
@@ -33,6 +34,9 @@ function Bullets({ items }: { items: string[] }) {
 export function ToolInfoScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
   const tool = toolByKey(route.params.toolKey);
+  // T-1 telemetry: this screen owns the tool session (stays mounted while the
+  // live screen is pushed on top), so its lifetime ≈ time spent in the tool.
+  useToolUsage(tool.key);
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>

@@ -36,7 +36,28 @@ the shared foundation; the work order is the platform bridge:
   the Q5/A13 ruling). FFT ceiling ≤16384 unchanged.
 - Until the port lands, Android clients keep the honest "not in this build" gate.
 
-### R4 — Backend deploys: BOTH GREEN-LIT (execute in the backend session)
+### R4 — Backend deploys: EXECUTED 2026-07-24 (production yjgolswjggmlpeowvtxr)
+Both applied directly to production (a dev branch `r4-telemetry-h3` was created per
+the ruled path but came up MIGRATIONS_FAILED — the project's migration history
+doesn't replay cleanly onto a fresh branch, so merge was unsafe; T-1 was validated
+on the branch, then both migrations applied directly + advisors + branch deleted):
+- **H3** — migration `h3_flashcard_gate_views_2_to_1`: in `record_study_progress`
+  the flashcard completion gate is now `views >= 1 OR known` (was `>= 2`),
+  matching the client `studyDisplayPct`. Applied via a fail-closed
+  pg_get_functiondef replace (verified single occurrence). Verified live.
+- **T-1** — migration `t1_tool_usage_telemetry` (+ `t1_tool_usage_rls_initplan_optimize`):
+  new table `public.tool_usage_log` (id, user_id→users, tool_id, opened_at,
+  duration_seconds, created_at; RLS own-row SELECT) + RPC `record_tool_usage(text,
+  timestamptz,integer)` SECURITY DEFINER, authenticated-only, inserts one row.
+  Opens+durations only; no measurement content/audio; no progression writes.
+  Advisors: zero new ERRORs; one WARN (authenticated SECURITY DEFINER RPC — the
+  accepted student-RPC class, same as record_study_progress/submit_quiz).
+- **FOLLOW-UP (client, not done):** wire the client to call `record_tool_usage`
+  on tool open/close. Table is empty until then. Also flag `MIGRATIONS_FAILED`
+  branching to the DBA — the migration history needs cleanup before branch-based
+  deploys work.
+
+### R4 (original ruling) — Backend deploys: BOTH GREEN-LIT (execute in the backend session)
 The client stays frozen; the backend/governance session executes via
 dev-branch → tests → advisors → merge:
 1. **T-1 tool-usage telemetry** — its deploy trigger ("until the engine

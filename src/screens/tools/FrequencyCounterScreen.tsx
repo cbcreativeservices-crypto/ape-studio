@@ -25,6 +25,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
 import { GlassButton } from '../../components/GlassButton';
+import { useToolUsage } from '../../features/tools/telemetry';
 import { useDspEngine } from '../../features/tools/engine/useDspEngine';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
@@ -446,6 +447,7 @@ function TapMode({ onOpenLibrary }: { onOpenLibrary: () => void }) {
 export function FrequencyCounterScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
   const [mode, setMode] = useState<Mode | null>(null);
+  useToolUsage('hzcounter'); // T-1 telemetry (this tool skips ToolInfo)
 
   const goBack = () => (mode ? setMode(null) : navigation.goBack());
   const modeMeta = MODES.find((m) => m.key === mode) ?? null;
