@@ -159,4 +159,69 @@ Holding the Glossary bookmark filter opens a LEVEL-1 picker of every context wit
 ≥1 bookmark (name + count), then LEVEL-2 shows that context's terms. This two-step
 behavior is Glossary-only.
 
+## Pending big features & backend changes (owner, 2026-07-25) — NOT YET BUILT
+
+Captured from the owner's spec so nothing is lost; these are large / backend /
+destructive and warrant focused, confirmed builds.
+
+### P1 — Quiz redesign (⚠️ BACKEND UPDATE REQUIRED — backend is FROZEN, needs approval)
+- Quiz is **always 10 minutes** and **always 30 questions** (fixed).
+- **Pass = score ≥ 28** (of 30).
+- **Remove the lower-score-to-unlock threshold entirely** — strict topic sequencing
+  is no longer used/valid for this project, so there's no "partial pass unlocks the
+  next topic" anymore.
+- Requires updating the server quiz config + `start_quiz_attempt`/gate logic (10/30/28,
+  drop unlock threshold). Supabase migration + governance sign-off before doing it.
+
+### P2 — Delete account & 100% data erasure (⚠️ DESTRUCTIVE + BACKEND + GOVERNANCE)
+- Settings, at the very bottom: a **Delete account** action.
+- UI: **press-and-hold 5 s** (animate a ring/fill + show the countdown timer), then a
+  **final confirm popup**.
+- On confirm: erase **100%** of the account + personal data — progress, records, and
+  **certificates** — and **invalidate any generated links/QR codes** pointing to the
+  user (e.g. the Professional Registry link/QR).
+- IRREVERSIBLE. Needs a backend erasure RPC (Supabase) + registry-link invalidation +
+  governance approval. Per safety rules Claude builds the UI and calls the
+  USER-triggered RPC; Claude does not perform the deletion itself.
+
+### P3 — Study-method PACE TIMER (large new feature; Fill-in-Blank, Matching, Scenarios)
+- New **timer button** (timer/stopwatch icon) at the top of each of those 3 screens,
+  **left of the return button**. Opens a popup to turn a countdown timer **on/off** and
+  choose a **pace**.
+- Pace basis: quiz = 10 min / 30 q = **20 s per question**. The timer lets the user set a
+  pace **at or below quiz pace** (needs a short user-facing explanation of the concept).
+  Owner's options (verbatim, resolve at build): slower multiples **0.5x, 1x, 1.5x, 2x,
+  3x, 4x** (slower than quiz pace) and **faster 1.5x, 2x**; plus, at the extreme, a
+  **STOPWATCH mode** (time yourself over 30 questions — no target).
+- Real-time **ahead / on-pace / behind** animation vs the set pace (like the owner's PACE
+  reference: horizontal BEHIND ← ON PACE → AHEAD scale w/ a marker, "N of M answered",
+  "mm:ss / mm:ss", "+mm:ss AHEAD"). **Readout must be HORIZONTAL and THIN** (low vertical
+  height — NOT the vertically-tall example).
+- Stopwatch mode stores **pace records for future return**: best time, average time, and
+  other **encouraging metrics** — ALL labels/feedback must be **positive & encouraging**.
+  (Records store: device-local first, or backend — decide at build.)
+- When the timer is ON, a **new thin horizontal timer-bar container** appears in the study
+  screen **below the top section (LED meter)** and **above the study area**, showing the
+  timer settings, the pace readout, and a button to open settings.
+
+  **RESOLVED (owner, 2026-07-25):**
+  1. **Pace scale = multiple of time-per-question.** 1× = quiz pace (20s/q). Slower = MORE
+     time: 1.5×=30s, 2×=40s, 3×=60s, 4×=80s. Faster = LESS time: 1.5×faster≈13s, 2×faster=10s.
+     **Drop 0.5×.** Presets: 2×/1.5× faster · 1× · 1.5×/2×/3×/4× slower · **Stopwatch**.
+  2. **Records: BACKEND (account-synced)** — needs a Supabase migration (approved new change).
+  3. **Time-out = pace tracker only, NO hard stop** — never blocks study; on running out show an
+     encouraging "time's up — keep going!". Practice, not a test.
+  4. **Thin readout = status word + offset + mini scale** in one low-height row
+     (e.g. `AHEAD +01:05   BEHIND ◄──●──► AHEAD   16/25 · 10:20`).
+
+**P1 & P2 status: APPROVED to build (owner 2026-07-25).** P2 refinement: delete only what is
+legally required for the user's privacy + personal records; the registry QR/link redirects to a
+**generic "this account has been deleted" page with NO personal info**.
+
+### Already done this cycle (2026-07-25)
+- Shared `FullscreenIcon` component; study-method overlay (`StudyFsOverlay.FsButton`) now
+  uses the same green glyph as flashcards.
+- Glossary bookmark popup redesign (glossary list default + other lists below) and
+  `TermSelectIcons` `hideKnown` (✓/✗ hidden in bookmark/custom list popups) + confirm-on-close.
+
 *End of decisions log.*

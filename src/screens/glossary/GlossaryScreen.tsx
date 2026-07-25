@@ -11,7 +11,7 @@
  * Search by term · empty: "No results for [filter]" · bottom nav visible.
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { FlatList, Image, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type StyleProp, type TextStyle } from 'react-native';
+import { Alert, FlatList, Image, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type StyleProp, type TextStyle } from 'react-native';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -27,7 +27,7 @@ import { LowLightDim } from '../../features/settings/LowLightLayer';
 import { BookmarkIcon, HoldHintPressable, TermSelectIcons } from '../../features/flags/TermSelectIcons';
 import { SpeakButton, stopAllSpeech } from '../../components/SpeakButton';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
-import { listBookmarkContexts, toggleBookmark, toggleTermList, useBookmarks, useTermList } from '../../features/flags/flaggedStore';
+import { getBookmarks, listBookmarkContexts, toggleBookmark, toggleTermList, useBookmarks, useTermList } from '../../features/flags/flaggedStore';
 import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
 import { COPY } from '../../lib/copy';
 import { useCoachMark } from '../../lib/coachMark';
@@ -488,10 +488,18 @@ export function GlossaryScreen({ route, navigation }: Props) {
   // Held filter chip → internal list of just that set's terms, like Flashcards
   // (user request 2026-07-22). kind picks which set the rows come from.
   const [termListModal, setTermListModal] = useState<{ title: string; kind: 'bookmark' | 'starred' | 'recent'; bookmarkCtx?: string } | null>(null);
-  // Two-level bookmark filter (glossary only, user request 2026-07-24): LEVEL 1 is
-  // a picker of which bookmark list to view; LEVEL 2 reuses the term-list modal,
-  // scoped to the chosen context via `bookmarkCtx`.
-  const [bmPicker, setBmPicker] = useState<{ ctx: string; count: number }[] | null>(null);
+  // Single bookmark popup (redesign, user request 2026-07-25): ONE modal that
+  // shows the SELECTED context's bookmarked terms up top and an "other lists"
+  // switcher below. Defaults to the glossary's own bookmark list; switching a
+  // context swaps the terms shown. Replaces the old two-level bmPicker flow.
+  const [bmOpen, setBmOpen] = useState(false);
+  const [bmCtx, setBmCtx] = useState('glossary');
+  const [bmContexts, setBmContexts] = useState<{ ctx: string; count: number }[]>([]);
+  // Baseline membership of the CURRENTLY-selected list, captured when the popup
+  // opens or the selected list changes — confirm-on-close compares against it to
+  // count how many shown terms were removed (task 4).
+  const bmBaseline = useRef<ReadonlySet<string>>(new Set());
+  const bmBookmarks = useBookmarks(bmCtx);
   const pickedBookmarks = useBookmarks(termListModal?.bookmarkCtx ?? 'glossary');
   const topicsById = useMemo(() => new Map(topics.map((t) => [t.id, t.name])), [topics]);
   const ctxName = (ctx: string) =>
@@ -787,6 +795,10 @@ export function GlossaryScreen({ route, navigation }: Props) {
       .sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
   }, [termListModal, entries, pickedBookmarks, starred, recent]);
 
+  // Members of the SELECTED bookmark context (single bookmark popup). Reacts to
+  // both the ctx selection (bmBookmarks is useBookmarks(bmCtx)) and edits.
+  const bmRows = useMemo(() => entries.filter((e) => bmBookmarks.has(e.id)), [entries, bmBookmarks]);
+
   // Tapping a term in the overlay opens it in the popup (the popup overlay
   // renders in both list and card mode) and closes the overlay.
   const openTermFromList = useCallback(
@@ -796,6 +808,52 @@ export function GlossaryScreen({ route, navigation }: Props) {
     },
     [openPopupRoot],
   );
+
+  // Open a term straight from the bookmark popup.
+  const openTermFromBm = useCallback(
+    (id: string) => {
+      setBmOpen(false);
+      openPopupRoot(id);
+    },
+    [openPopupRoot],
+  );
+
+  // Open the single bookmark popup, defaulting to the glossary's own list.
+  const openBookmarkPopup = useCallback(() => {
+    setBmCtx('glossary');
+    bmBaseline.current = new Set(getBookmarks('glossary'));
+    setBmOpen(true);
+    void listBookmarkContexts().then(setBmContexts);
+  }, []);
+
+  // Switch the popup to another context's bookmarks; re-baseline so removals are
+  // counted per-list (task 4).
+  const switchBmCtx = useCallback((ctx: string) => {
+    bmBaseline.current = new Set(getBookmarks(ctx));
+    setBmCtx(ctx);
+  }, []);
+
+  // Confirm-on-close (task 4): if ≥1 term was removed from the currently-shown
+  // list since it was opened/selected, ask before closing. A fresh read via
+  // getBookmarks avoids any stale hook snapshot.
+  const requestCloseBookmarkPopup = useCallback(() => {
+    const current = getBookmarks(bmCtx);
+    let removed = 0;
+    for (const id of bmBaseline.current) if (!current.has(id)) removed++;
+    if (removed >= 1) {
+      Alert.alert(
+        'Removed from list',
+        `You removed ${removed} term${removed === 1 ? '' : 's'} from ${ctxName(bmCtx)}.`,
+        [
+          { text: 'Keep open', style: 'cancel' },
+          { text: 'Close', style: 'destructive', onPress: () => setBmOpen(false) },
+        ],
+      );
+    } else {
+      setBmOpen(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bmCtx]);
 
   // Booth ruling: the STUDY nav button must NEVER land on the Glossary. The
   // tab-level navigate can't reliably move a stack that's already focused
@@ -978,43 +1036,33 @@ export function GlossaryScreen({ route, navigation }: Props) {
         {/* Bookmark filter — the bookmark glyph up top (user request 2026-07-22).
             Tap filters to bookmarked terms; HOLD opens the internal list. */}
         <Chip
-          label={`Bookmarks${bookmarks.size > 0 ? ` ${bookmarks.size}` : ''}`}
+          label="Bookmarks"
           accent="#b45bff"
           active={filter === 'favorites'}
           icon={(c) => (
-            // Glyph + text label so this chip matches the size of the Topic /
-            // Custom chips next to it (user request 2026-07-23).
-            // Icon + count only — the word "Bookmarks" was dropped (user
-            // request 2026-07-24), leaving just the glyph and the # count.
+            // Icon only — count removed; the total is shown in the top-right
+            // "# Terms" readout (user request 2026-07-24).
             <View style={styles.chipIconWrap}>
               <BookmarkIcon color={c} filled={filter === 'favorites'} size={15} />
-              {bookmarks.size > 0 ? (
-                <Text style={[styles.chipText, { color: c }]}>{bookmarks.size}</Text>
-              ) : null}
             </View>
           )}
           onPress={() => {
             setFilter('favorites');
             setTopicPickerOpen(false);
           }}
-          onLongPress={() => {
-            void listBookmarkContexts().then(setBmPicker); // LEVEL 1: pick a bookmark list
-          }}
+          onLongPress={openBookmarkPopup}
         />
         {/* Custom list (★ starred) filter — new (user request 2026-07-22). */}
         <Chip
-          label={`Custom${starred.size > 0 ? ` ${starred.size}` : ''}`}
+          label="Custom"
           accent="#2f9bff"
           active={filter === 'custom'}
           icon={(c) => (
-            // "CUSTOM" + the 3-card deck glyph + # count (user request
-            // 2026-07-24 — the deck replaces the old ★ custom-list symbol).
+            // "CUSTOM" + the 3-card deck glyph; count removed (shown in the
+            // top-right "# Terms" readout, user request 2026-07-24).
             <View style={styles.chipIconWrap}>
               <Text style={[styles.chipText, { color: c }]}>CUSTOM</Text>
               <DeckIcon color={c} size={16} fill={filter === 'custom' ? `${c}33` : 'none'} />
-              {starred.size > 0 ? (
-                <Text style={[styles.chipText, { color: c }]}>{starred.size}</Text>
-              ) : null}
             </View>
           )}
           onPress={() => {
@@ -1476,7 +1524,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
                         {r.term} ›
                       </Text>
                     </Pressable>
-                    <TermSelectIcons id={r.id} bookmarkCtx={termListModal?.bookmarkCtx ?? 'glossary'} />
+                    <TermSelectIcons id={r.id} bookmarkCtx={termListModal?.bookmarkCtx ?? 'glossary'} hideKnown />
                   </View>
                 ))
               ) : (
@@ -1491,43 +1539,66 @@ export function GlossaryScreen({ route, navigation }: Props) {
         <LowLightDim />
       </Modal>
 
-      {/* Two-level bookmark filter — LEVEL 1: pick which bookmark list to view
-          (glossary only, user request 2026-07-24). Selecting one opens the term
-          list (level 2) scoped to that context's bookmarks. */}
-      <Modal visible={!!bmPicker} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setBmPicker(null)}>
+      {/* Single bookmark popup (redesign, user request 2026-07-25) — the SELECTED
+          context's bookmarked terms up top (each re-taggable via the select
+          icons), then an OTHER LISTS switcher for every other context that holds
+          bookmarks. Closing confirms if terms were removed from the shown list. */}
+      <Modal visible={bmOpen} transparent animationType="fade" statusBarTranslucent onRequestClose={requestCloseBookmarkPopup}>
         <View style={styles.tlBackdrop}>
           <Pressable
             style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-            onPress={() => setBmPicker(null)}
+            onPress={requestCloseBookmarkPopup}
             accessibilityRole="button"
             accessibilityLabel="Dismiss"
           />
           <View style={styles.tlCard}>
-            <Text style={styles.tlTitle}>BOOKMARK LISTS · {bmPicker?.length ?? 0}</Text>
-            <ScrollView style={{ flexGrow: 0 }} showsVerticalScrollIndicator>
-              {bmPicker && bmPicker.length > 0 ? (
-                bmPicker.map((b) => (
-                  <Pressable
-                    key={b.ctx}
-                    style={styles.tlRow}
-                    onPress={() => {
-                      setTermListModal({ title: ctxName(b.ctx), kind: 'bookmark', bookmarkCtx: b.ctx });
-                      setBmPicker(null);
-                    }}
-                    accessibilityRole="button"
-                    accessibilityLabel={`View ${ctxName(b.ctx)} bookmarks`}
-                  >
-                    <Text style={[styles.tlItem, { color: '#b45bff', flex: 1 }]} numberOfLines={1}>
-                      {ctxName(b.ctx)} ›
-                    </Text>
-                    <Text style={styles.tlCount}>{b.count}</Text>
-                  </Pressable>
+            <Text style={styles.tlTitle}>{ctxName(bmCtx).toUpperCase()} · {bmRows.length}</Text>
+            <ScrollView style={{ flexGrow: 0 }} showsVerticalScrollIndicator {...NO_TOUCH_DELAY}>
+              {bmRows.length > 0 ? (
+                bmRows.map((r) => (
+                  <View key={r.id} style={styles.tlRow}>
+                    <Pressable
+                      style={{ flex: 1 }}
+                      onPress={() => openTermFromBm(r.id)}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Open ${r.term}`}
+                    >
+                      <Text style={[styles.tlItem, { color: '#b45bff' }]} numberOfLines={1}>
+                        {r.term} ›
+                      </Text>
+                    </Pressable>
+                    <TermSelectIcons id={r.id} bookmarkCtx={bmCtx} hideKnown />
+                  </View>
                 ))
               ) : (
-                <Text style={styles.tlEmpty}>No bookmarks yet — bookmark terms in the Glossary or any topic.</Text>
+                <Text style={styles.tlEmpty}>No bookmarks in this list yet.</Text>
               )}
+
+              {/* OTHER LISTS — every other context that has bookmarks; tap to
+                  switch the terms shown above. */}
+              {bmContexts.some((b) => b.ctx !== bmCtx) ? (
+                <View style={styles.bmOtherWrap}>
+                  <Text style={styles.bmOtherLabel}>OTHER LISTS</Text>
+                  {bmContexts
+                    .filter((b) => b.ctx !== bmCtx)
+                    .map((b) => (
+                      <Pressable
+                        key={b.ctx}
+                        style={styles.tlRow}
+                        onPress={() => switchBmCtx(b.ctx)}
+                        accessibilityRole="button"
+                        accessibilityLabel={`Switch to ${ctxName(b.ctx)}`}
+                      >
+                        <Text style={[styles.tlItem, { color: '#b45bff', flex: 1 }]} numberOfLines={1}>
+                          {ctxName(b.ctx)} ›
+                        </Text>
+                        <Text style={styles.tlCount}>{b.count}</Text>
+                      </Pressable>
+                    ))}
+                </View>
+              ) : null}
             </ScrollView>
-            <Pressable style={styles.tlClose} onPress={() => setBmPicker(null)} accessibilityRole="button" accessibilityLabel="Close">
+            <Pressable style={styles.tlClose} onPress={requestCloseBookmarkPopup} accessibilityRole="button" accessibilityLabel="Close list">
               <Text style={styles.tlCloseText}>CLOSE</Text>
             </Pressable>
           </View>
@@ -1953,6 +2024,9 @@ const styles = StyleSheet.create({
   tlItem: { flex: 1, fontFamily: fonts.barlowRegular, fontSize: 15, lineHeight: 26, color: '#7fbfff' },
   tlCount: { fontFamily: fonts.mono, fontSize: 13, color: colors.textSecondary, marginLeft: 8 },
   tlEmpty: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 14, color: colors.textMuted },
+  // "OTHER LISTS" switcher inside the single bookmark popup (user request 2026-07-25).
+  bmOtherWrap: { marginTop: 14, borderTopWidth: 1, borderTopColor: '#242427', paddingTop: 10 },
+  bmOtherLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.textMuted, marginBottom: 4 },
   tlClose: { marginTop: 12, alignItems: 'center', paddingVertical: 10, borderRadius: 8, borderWidth: 1, borderColor: '#3a3a3a' },
   tlCloseText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.4, color: colors.textSubAlt },
 });

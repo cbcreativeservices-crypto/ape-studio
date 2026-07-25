@@ -157,7 +157,17 @@ function IconToggle({
   );
 }
 
-export function TermSelectIcons({ id, bookmarkCtx }: { id: string; bookmarkCtx: string }) {
+export function TermSelectIcons({
+  id,
+  bookmarkCtx,
+  hideKnown = false,
+}: {
+  id: string;
+  bookmarkCtx: string;
+  /** Bookmark/custom lists only need the bookmark + custom toggles — hide the
+   *  ✓/✗ known–unknown pair (user request 2026-07-25). */
+  hideKnown?: boolean;
+}) {
   const bookmarked = useBookmarks(bookmarkCtx);
   const starred = useTermList('starred');
   const known = useTermList('known');
@@ -184,22 +194,26 @@ export function TermSelectIcons({ id, bookmarkCtx }: { id: string; bookmarkCtx: 
         onPress={() => toggleTermList('starred', id)}
         onLongPress={() => showHint(starred.has(id) ? 'Removes from Custom list' : 'Adds to Custom list')}
       />
-      <IconToggle
-        glyph="✓"
-        on={isKnown}
-        onColor="#5bff85"
-        label="Mark known"
-        onPress={() => setInTermList('known', id, true)}
-        onLongPress={() => showHint('✓ Marks as Known')}
-      />
-      {/* ✗ deliberately has NO hold hint (user request 2026-07-17: "not remove"). */}
-      <IconToggle
-        glyph="✗"
-        on={!isKnown}
-        onColor="#ff6a5e"
-        label="Mark unknown"
-        onPress={() => setInTermList('known', id, false)}
-      />
+      {hideKnown ? null : (
+        <>
+          <IconToggle
+            glyph="✓"
+            on={isKnown}
+            onColor="#5bff85"
+            label="Mark known"
+            onPress={() => setInTermList('known', id, true)}
+            onLongPress={() => showHint('✓ Marks as Known')}
+          />
+          {/* ✗ deliberately has NO hold hint (user request 2026-07-17: "not remove"). */}
+          <IconToggle
+            glyph="✗"
+            on={!isKnown}
+            onColor="#ff6a5e"
+            label="Mark unknown"
+            onPress={() => setInTermList('known', id, false)}
+          />
+        </>
+      )}
     </View>
   );
 }

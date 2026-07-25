@@ -117,7 +117,7 @@ export function ResultsScreen({ navigation, route }: Props) {
           <Text style={styles.resultsEyebrow}>{isPractice ? 'RESULTS · PRACTICE' : 'RESULTS'}</Text>
           <View style={styles.scoreRow}>
             <Text style={styles.scoreBig}>{result.score}</Text>
-            <Text style={styles.scoreOf}>/ 25</Text>
+            <Text style={styles.scoreOf}>/ 30</Text>
           </View>
           {timedOut && <Text style={styles.timedOut}>Time expired — not passed</Text>}
         </View>

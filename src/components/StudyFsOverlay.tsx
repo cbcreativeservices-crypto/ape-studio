@@ -10,6 +10,7 @@ import { Modal, PanResponder, Pressable, StyleSheet, Text, View } from 'react-na
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors, fonts } from '../theme/tokens';
 import { LowLightDim } from '../features/settings/LowLightLayer';
+import { FullscreenIcon } from './FullscreenIcon';
 import { useShake } from '../lib/useShake';
 
 export function StudyFsOverlay({
@@ -97,11 +98,12 @@ export function StudyFsOverlay({
   );
 }
 
-/** Small ⛶ button for the LED row (icon only). */
+/** Full-screen button for the LED row — same green glyph as flashcards (user
+ *  request 2026-07-25). */
 export function FsButton({ onPress }: { onPress: () => void }) {
   return (
     <Pressable style={styles.fsBtn} onPress={onPress} accessibilityRole="button" accessibilityLabel="Full screen">
-      <Text style={styles.fsBtnIcon}>⛶</Text>
+      <FullscreenIcon color={colors.green} size={20} />
     </Pressable>
   );
 }
