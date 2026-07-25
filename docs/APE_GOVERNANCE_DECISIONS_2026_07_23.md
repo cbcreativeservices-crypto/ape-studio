@@ -229,6 +229,16 @@ destructive and warrant focused, confirmed builds.
 legally required for the user's privacy + personal records; the registry QR/link redirects to a
 **generic "this account has been deleted" page with NO personal info**.
 
+**P3 DONE 2026-07-25** (dev). Backend migration `p3_pace_records`: table `study_pace_records`
+(RLS on, access via SECURITY DEFINER RPCs only) + `record_pace_session(method,seconds,questions)`
++ `get_pace_records()` (authenticated). Client: `src/features/study/paceStore.ts` (device-local
+per-method settings + `paceMath` + presets/SEC_PER_Q), `paceRecords.ts` (RPC wrappers),
+`PaceReadout.tsx` (thin horizontal status+offset+mini-scale+K/M·elapsed), `PaceTimerBar.tsx`,
+`PaceTimerModal.tsx` (on/off + preset radio + explanation + stopwatch records). `StudyHeader`
+gained an optional `onOpenTimer` (⏱ button left of RETURN). Integrated into FillInBlank/Matching/
+Scenarios (bar below LED row / above content when enabled; answered from states/idx; 1s elapsed
+tick; stopwatch records once on completion). No hard stop on overtime.
+
 ### Already done this cycle (2026-07-25)
 - Shared `FullscreenIcon` component; study-method overlay (`StudyFsOverlay.FsButton`) now
   uses the same green glyph as flashcards.

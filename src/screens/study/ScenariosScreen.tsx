@@ -10,7 +10,7 @@
  * "ITEM n OF m · SINGLE PASS" · after all items → first-pass summary
  * (S7 Results handoff is content-dependent — wired when content ships).
  */
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -25,6 +25,10 @@ import {
   fetchScenarioItems,
   type ScenarioItem,
 } from '../../features/study/mediaTypes';
+import { usePaceSettings } from '../../features/study/paceStore';
+import { recordPaceSession } from '../../features/study/paceRecords';
+import { PaceTimerBar } from '../../features/study/PaceTimerBar';
+import { PaceTimerModal } from '../../features/study/PaceTimerModal';
 import { StudyHeader } from './StudyHeader';
 import type { StudyStackParamList } from '../../navigation/types';
 
@@ -49,9 +53,39 @@ export function ScenariosScreen({ route }: Props) {
   const [finished, setFinished] = useState(false);
   const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Pace timer (practice aid — device-local settings, never blocks study).
+  const { settings: pace } = usePaceSettings('scenarios');
+  const [timerOpen, setTimerOpen] = useState(false);
+  const [elapsed, setElapsed] = useState(0);
+  const startRef = useRef<number | null>(null);
+  const recordedRef = useRef(false);
+
   useState(() => {
     fetchScenarioItems(achievementId).then(setItems).catch(() => setItems([]));
   });
+
+  // Pace clock: start when the timer is enabled, tick ~1s while on, reset off.
+  useEffect(() => {
+    if (!pace.enabled) {
+      startRef.current = null;
+      recordedRef.current = false;
+      setElapsed(0);
+      return;
+    }
+    if (startRef.current == null) startRef.current = Date.now();
+    const id = setInterval(() => {
+      if (startRef.current != null) setElapsed((Date.now() - startRef.current) / 1000);
+    }, 1000);
+    return () => clearInterval(id);
+  }, [pace.enabled]);
+
+  // STOPWATCH: on finishing the single pass, log the run once.
+  useEffect(() => {
+    if (!pace.enabled || pace.preset !== 'stopwatch' || recordedRef.current) return;
+    if (!finished || !items || items.length === 0 || startRef.current == null) return;
+    recordedRef.current = true;
+    void recordPaceSession('scenarios', (Date.now() - startRef.current) / 1000, items.length);
+  }, [pace.enabled, pace.preset, finished, items]);
 
   const item = items && !finished ? items[idx] : null;
 
@@ -167,11 +201,21 @@ export function ScenariosScreen({ route }: Props) {
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScrollView contentContainerStyle={styles.scroll}>
-        <StudyHeader method="scenarios" title="SCENARIO" />
+        <StudyHeader method="scenarios" title="SCENARIO" onOpenTimer={() => setTimerOpen(true)} />
         <View style={{ alignSelf: 'stretch' }}>
           {/* LED = +1 per item ANSWERED (progress, not score) — locked */}
           <LedMeterWell filled={Math.round((idx / Math.max(1, items.length)) * 21)} />
         </View>
+
+        {pace.enabled ? (
+          <PaceTimerBar
+            preset={pace.preset}
+            answered={idx}
+            total={items.length}
+            elapsed={elapsed}
+            onOpenSettings={() => setTimerOpen(true)}
+          />
+        ) : null}
 
         {item.media?.kind === 'audio' && <AudioPlayer uri={item.media.url} />}
         {item.media?.kind === 'image' && (
@@ -241,6 +285,8 @@ export function ScenariosScreen({ route }: Props) {
           ITEM {idx + 1} OF {items.length} · SINGLE PASS
         </Text>
       </ScrollView>
+
+      <PaceTimerModal visible={timerOpen} onClose={() => setTimerOpen(false)} method="scenarios" />
     </View>
   );
 }

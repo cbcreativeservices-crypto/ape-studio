@@ -30,6 +30,10 @@ import {
 } from '../../features/study/api';
 import { StudySession } from '../../features/study/sync';
 import { saveLocalMethodStates } from '../../features/study/localProgress';
+import { usePaceSettings } from '../../features/study/paceStore';
+import { recordPaceSession } from '../../features/study/paceRecords';
+import { PaceTimerBar } from '../../features/study/PaceTimerBar';
+import { PaceTimerModal } from '../../features/study/PaceTimerModal';
 import { StudyHeader } from './StudyHeader';
 import type { StudyStackParamList } from '../../navigation/types';
 
@@ -63,6 +67,13 @@ export function MatchingScreen({ navigation, route }: Props) {
   const [wrongPair, setWrongPair] = useState<{ left: string; right: string } | null>(null);
   const [correctFlash, setCorrectFlash] = useState<string | null>(null); // item id flashing green
   const session = useRef<StudySession | null>(null);
+
+  // Pace timer (practice aid — device-local settings, never blocks study).
+  const { settings: pace } = usePaceSettings('matching');
+  const [timerOpen, setTimerOpen] = useState(false);
+  const [elapsed, setElapsed] = useState(0);
+  const startRef = useRef<number | null>(null);
+  const recordedRef = useRef(false);
 
   useEffect(() => {
     let alive = true;
@@ -98,6 +109,35 @@ export function MatchingScreen({ navigation, route }: Props) {
   useEffect(() => {
     if (Object.keys(states).length) void saveLocalMethodStates(achievementId, 'matching', states);
   }, [states, achievementId]);
+
+  // Pace clock: start when the timer is enabled, tick ~1s while on, reset off.
+  useEffect(() => {
+    if (!pace.enabled) {
+      startRef.current = null;
+      recordedRef.current = false;
+      setElapsed(0);
+      return;
+    }
+    if (startRef.current == null) startRef.current = Date.now();
+    const id = setInterval(() => {
+      if (startRef.current != null) setElapsed((Date.now() - startRef.current) / 1000);
+    }, 1000);
+    return () => clearInterval(id);
+  }, [pace.enabled]);
+
+  // answered = distinct items with at least one attempt (a confirmed pair).
+  const answered = useMemo(
+    () => Object.values(states).filter((s) => (s.attempts ?? 0) > 0).length,
+    [states],
+  );
+
+  // STOPWATCH: on pairing every item, log the run once (encouraging records).
+  useEffect(() => {
+    if (!pace.enabled || pace.preset !== 'stopwatch' || recordedRef.current) return;
+    if (!items || items.length === 0 || answered < items.length || startRef.current == null) return;
+    recordedRef.current = true;
+    void recordPaceSession('matching', (Date.now() - startRef.current) / 1000, items.length);
+  }, [pace.enabled, pace.preset, answered, items]);
 
   const boards = useMemo(() => {
     if (!items) return [];
@@ -272,7 +312,12 @@ export function MatchingScreen({ navigation, route }: Props) {
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scroll}>
-        <StudyHeader method="matching" title="MATCHING · PAIR EACH" subtitle={`Topic · ${topicName}`} />
+        <StudyHeader
+          method="matching"
+          title="MATCHING · PAIR EACH"
+          subtitle={`Topic · ${topicName}`}
+          onOpenTimer={() => setTimerOpen(true)}
+        />
         <View style={styles.ledRow}>
           <View style={{ flex: 1 }}>
             <LedMeterWell filled={segmentsForPct(displayPct)} />
@@ -283,6 +328,16 @@ export function MatchingScreen({ navigation, route }: Props) {
           </Text>
           <FsButton onPress={() => setFullscreen(true)} />
         </View>
+
+        {pace.enabled ? (
+          <PaceTimerBar
+            preset={pace.preset}
+            answered={answered}
+            total={items.length}
+            elapsed={elapsed}
+            onOpenSettings={() => setTimerOpen(true)}
+          />
+        ) : null}
 
         {/* Column delineation (Booth 2026-07-08, rev 2): NO text — two subtle
             tinted bars over the columns mark the two sides to be matched. */}
@@ -324,6 +379,8 @@ export function MatchingScreen({ navigation, route }: Props) {
         {sideBars}
         <View style={styles.columns}>{columnsBody}</View>
       </StudyFsOverlay>
+
+      <PaceTimerModal visible={timerOpen} onClose={() => setTimerOpen(false)} method="matching" />
     </View>
   );
 }

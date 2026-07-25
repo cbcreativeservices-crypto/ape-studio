@@ -13,11 +13,15 @@ export function StudyHeader({
   method,
   title,
   subtitle,
+  onOpenTimer,
 }: {
   method: MethodKey;
   title: string;
   /** e.g. the topic under study (Booth 2026-07-08). */
   subtitle?: string;
+  /** When provided (the 3 paced study screens), show a pace-timer button to the
+   *  LEFT of RETURN that opens the pace-timer settings popup. */
+  onOpenTimer?: () => void;
 }) {
   const navigation = useNavigation();
   return (
@@ -38,25 +42,47 @@ export function StudyHeader({
           </Text>
         ) : null}
       </View>
-      {/* Explicit RETURN control on every study method screen (Booth
-          2026-07-18) — the icon tap above stays, but this one is visible. */}
-      <Pressable
-        onPress={() => (navigation as any).navigate('Dashboard')}
-        hitSlop={8}
-        style={styles.returnBtn}
-        accessibilityRole="button"
-        accessibilityLabel="Return to Dashboard"
-      >
-        <Text style={styles.returnText}>‹ RETURN</Text>
-      </Pressable>
+      {/* Right cluster: optional pace-timer button, then the always-visible
+          RETURN control (Booth 2026-07-18). */}
+      <View style={styles.rightCluster}>
+        {onOpenTimer ? (
+          <Pressable
+            onPress={onOpenTimer}
+            hitSlop={8}
+            style={styles.timerBtn}
+            accessibilityRole="button"
+            accessibilityLabel="Pace timer"
+          >
+            <Text style={styles.timerGlyph}>⏱</Text>
+          </Pressable>
+        ) : null}
+        <Pressable
+          onPress={() => (navigation as any).navigate('Dashboard')}
+          hitSlop={8}
+          style={styles.returnBtn}
+          accessibilityRole="button"
+          accessibilityLabel="Return to Dashboard"
+        >
+          <Text style={styles.returnText}>‹ RETURN</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   row: { alignSelf: 'stretch', flexDirection: 'row', alignItems: 'center', gap: 10 },
+  rightCluster: { marginLeft: 'auto', flexDirection: 'row', alignItems: 'center', gap: 8 },
+  timerBtn: {
+    borderWidth: 1,
+    borderColor: '#3a3a3a',
+    borderRadius: 4.5,
+    backgroundColor: '#1b1b1b',
+    paddingVertical: 6,
+    paddingHorizontal: 9,
+  },
+  timerGlyph: { fontSize: 15, color: colors.textSub },
   returnBtn: {
-    marginLeft: 'auto',
     borderWidth: 1,
     borderColor: '#3a3a3a',
     borderRadius: 4.5,

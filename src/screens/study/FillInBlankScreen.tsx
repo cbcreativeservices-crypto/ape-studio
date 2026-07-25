@@ -32,6 +32,10 @@ import {
 } from '../../features/study/api';
 import { StudySession } from '../../features/study/sync';
 import { saveLocalMethodStates } from '../../features/study/localProgress';
+import { usePaceSettings } from '../../features/study/paceStore';
+import { recordPaceSession } from '../../features/study/paceRecords';
+import { PaceTimerBar } from '../../features/study/PaceTimerBar';
+import { PaceTimerModal } from '../../features/study/PaceTimerModal';
 import { StudyHeader } from './StudyHeader';
 import type { StudyStackParamList } from '../../navigation/types';
 
@@ -70,6 +74,13 @@ export function FillInBlankScreen({ navigation, route }: Props) {
   const [fullscreen, setFullscreen] = useState(false);
   const session = useRef<StudySession | null>(null);
 
+  // Pace timer (practice aid — device-local settings, never blocks study).
+  const { settings: pace } = usePaceSettings('fill_in_blank');
+  const [timerOpen, setTimerOpen] = useState(false);
+  const [elapsed, setElapsed] = useState(0);
+  const startRef = useRef<number | null>(null);
+  const recordedRef = useRef(false);
+
   useEffect(() => {
     let alive = true;
     (async () => {
@@ -100,6 +111,35 @@ export function FillInBlankScreen({ navigation, route }: Props) {
   useEffect(() => {
     if (Object.keys(states).length) void saveLocalMethodStates(achievementId, 'fill_in_blank', states);
   }, [states, achievementId]);
+
+  // Pace clock: start when the timer is enabled, tick ~1s while on, reset off.
+  useEffect(() => {
+    if (!pace.enabled) {
+      startRef.current = null;
+      recordedRef.current = false;
+      setElapsed(0);
+      return;
+    }
+    if (startRef.current == null) startRef.current = Date.now();
+    const id = setInterval(() => {
+      if (startRef.current != null) setElapsed((Date.now() - startRef.current) / 1000);
+    }, 1000);
+    return () => clearInterval(id);
+  }, [pace.enabled]);
+
+  // answered = distinct items with at least one attempt (progress through M).
+  const answered = useMemo(
+    () => Object.values(states).filter((s) => (s.attempts ?? 0) > 0).length,
+    [states],
+  );
+
+  // STOPWATCH: on completing all items, log the run once (encouraging records).
+  useEffect(() => {
+    if (!pace.enabled || pace.preset !== 'stopwatch' || recordedRef.current) return;
+    if (!items || items.length === 0 || answered < items.length || startRef.current == null) return;
+    recordedRef.current = true;
+    void recordPaceSession('fill_in_blank', (Date.now() - startRef.current) / 1000, items.length);
+  }, [pace.enabled, pace.preset, answered, items]);
 
   // Working order: items still needing attempts first, then the rest.
   const order = useMemo(() => {
@@ -233,7 +273,12 @@ export function FillInBlankScreen({ navigation, route }: Props) {
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <View style={styles.body}>
-        <StudyHeader method="fill_in_blank" title="FILL IN THE BLANK" subtitle={`Topic · ${topicName}`} />
+        <StudyHeader
+          method="fill_in_blank"
+          title="FILL IN THE BLANK"
+          subtitle={`Topic · ${topicName}`}
+          onOpenTimer={() => setTimerOpen(true)}
+        />
         {/* LED + compact item count (Booth 2026-07-08: count lives up here,
             never floating over the answer grid). */}
         <View style={styles.ledRow}>
@@ -246,6 +291,16 @@ export function FillInBlankScreen({ navigation, route }: Props) {
           </Text>
           <FsButton onPress={() => setFullscreen(true)} />
         </View>
+
+        {pace.enabled ? (
+          <PaceTimerBar
+            preset={pace.preset}
+            answered={answered}
+            total={items.length}
+            elapsed={elapsed}
+            onOpenSettings={() => setTimerOpen(true)}
+          />
+        ) : null}
 
         {questionBody}
 
@@ -286,6 +341,8 @@ export function FillInBlankScreen({ navigation, route }: Props) {
       >
         {questionBody}
       </StudyFsOverlay>
+
+      <PaceTimerModal visible={timerOpen} onClose={() => setTimerOpen(false)} method="fill_in_blank" />
     </View>
   );
 }
