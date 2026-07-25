@@ -184,6 +184,17 @@ destructive and warrant focused, confirmed builds.
   governance approval. Per safety rules Claude builds the UI and calls the
   USER-triggered RPC; Claude does not perform the deletion itself.
 
+  **DONE 2026-07-25 (dev, no users).** Migration `p2_delete_my_account_rpc` →
+  `public.delete_my_account()` (SECURITY DEFINER, owner postgres, authenticated-only):
+  deletes the CALLER's personal records + PII across all user_id tables (quiz_attempts→
+  items cascade, progress, badges, method progress, performance_metrics, enrollment,
+  entitlements, notification prefs/log, session_logs, tool_usage_log, audit_log) + the
+  `users` row + a best-effort `auth.users` delete. No `registry` table exists yet, so
+  removing the user record inherently makes any future registry link resolve to a generic
+  "account deleted" page (nothing to explicitly invalidate now — revisit when the registry
+  backend is wired). Client: `DeleteAccountButton` (5s press-hold animated fill + countdown
+  → final confirm Alert → RPC → signOut → Splash), at the bottom of Settings.
+
 ### P3 — Study-method PACE TIMER (large new feature; Fill-in-Blank, Matching, Scenarios)
 - New **timer button** (timer/stopwatch icon) at the top of each of those 3 screens,
   **left of the return button**. Opens a popup to turn a countdown timer **on/off** and

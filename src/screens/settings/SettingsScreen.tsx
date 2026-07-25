@@ -38,6 +38,7 @@ import {
   type NotificationPrefs,
 } from '../../features/settings/store';
 import { NotifyScheduleModal } from '../../features/settings/NotifyScheduleModal';
+import { DeleteAccountButton } from '../../features/settings/DeleteAccountButton';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
@@ -299,6 +300,14 @@ export function SettingsScreen({ navigation }: Props) {
             <Text style={styles.rowLabel}>Reset onboarding hints</Text>
             <Text style={[styles.mono, { color: colors.amber }]}>RESET</Text>
           </Pressable>
+        </View>
+
+        {/* DELETE ACCOUNT — permanent, at the very bottom (user request 2026-07-25).
+            Hold 5s → final confirm → erase personal data via delete_my_account, then
+            sign out and bounce to Splash. */}
+        <View>
+          <Text style={styles.sectionEyebrow}>DELETE ACCOUNT</Text>
+          <DeleteAccountButton onDeleted={() => navigation.reset({ index: 0, routes: [{ name: 'Splash' }] })} />
         </View>
       </ScrollView>
 
