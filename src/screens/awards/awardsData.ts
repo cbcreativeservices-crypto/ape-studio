@@ -101,7 +101,7 @@ const PROGRAM: AwardPage = {
   introTitle: 'Master a Professional Audio Specialty',
   intro:
     'Academy Program Professional Certificates recognize completion of a comprehensive learning pathway.\n\n' +
-    'Each program combines multiple related subjects to develop broad knowledge and practical skills within a ' +
+    'Each program combines multiple related subjects to develop comprehensive knowledge and achieve terminology mastery within a ' +
     'professional audio discipline.',
   accent: '#c4a2ff', // academy purple — multi-topic award
   tiers: [

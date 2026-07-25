@@ -1453,7 +1453,9 @@ const styles = StyleSheet.create({
   cardName: { flex: 1, fontFamily: fonts.oswaldMedium, fontSize: 16, letterSpacing: 0.2, color: colors.textPrimary },
   handle: { paddingHorizontal: 4, paddingVertical: 2 },
   handleIcon: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, color: colors.textSub },
-  cardSubject: { fontFamily: fonts.barlowRegular, fontSize: 12, color: colors.textSub },
+  // flexShrink so a long subject truncates instead of pushing the deck/study
+  // icons off the right edge on narrow screens (user report 2026-07-25, Pixel).
+  cardSubject: { flexShrink: 1, fontFamily: fonts.barlowRegular, fontSize: 12, color: colors.textSub },
   dim: { opacity: 0.5 },
   cardSubRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   // Subject + ACTIVE/Study buttons row, dropped below the full-width title.
