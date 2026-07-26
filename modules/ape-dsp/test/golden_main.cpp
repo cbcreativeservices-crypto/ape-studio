@@ -584,6 +584,40 @@ int main() {
     truthy("RT60 cancel returns to OFF", hub.rt60State() == Rt60State::Off);
   }
 
+  // ---- 9) Speaker-safety high-pass (route-aware generator HPF, engineVersion 4)
+  {
+    // 9a. Filter DESIGN — 2nd-order Butterworth HP; magnitude matches the JS
+    //     speakerSafety response |H|^2 = r^4/(1+r^4), r = f/fc, fc = 150 Hz.
+    BiquadCascade hp;
+    hp.sections.push_back(Biquad::highpass(150.0, fs));
+    near("Speaker HPF -3 dB at corner (150 Hz)", db(hp.measureGainAt(150.0, fs)), -3.01, 0.3);
+    near("Speaker HPF -12 dB/oct one octave below (75 Hz)", db(hp.measureGainAt(75.0, fs)), -12.30, 0.5);
+    near("Speaker HPF passband unity (2 kHz)", db(hp.measureGainAt(2000.0, fs)), 0.0, 0.2);
+    truthy("Speaker HPF rejects sub-bass (20 Hz <= -28 dB)", db(hp.measureGainAt(20.0, fs)) < -28.0);
+
+    // 9b. End-to-end through the Generator: OFF BY DEFAULT (regression — the
+    //     other vectors assume a flat path), ENGAGED attenuates lows, passband
+    //     untouched.
+    auto sineMeanDb = [&](double freq, bool engage) {
+      Generator g;
+      g.configure(fs);
+      g.setMode(GenMode::Sine);
+      g.setFrequency(freq);
+      g.setLevelDb(-20.0);
+      if (engage) g.setHpf(150.0);
+      g.start();
+      std::vector<float> buf(static_cast<size_t>(fs * 0.6));
+      g.render(buf.data(), (uint32_t)buf.size());
+      const size_t skip = static_cast<size_t>(fs * 0.2);
+      double sumSq = 0.0;
+      for (size_t i = skip; i < buf.size(); ++i) sumSq += (double)buf[i] * buf[i];
+      return 10.0 * std::log10(sumSq / (double)(buf.size() - skip));
+    };
+    near("Speaker HPF OFF by default: 75 Hz sine flat (-23 dBFS)", sineMeanDb(75.0, false), -23.01, 0.3);
+    near("Speaker HPF ON: 75 Hz sine attenuated ~12.3 dB", sineMeanDb(75.0, true), -35.31, 0.6);
+    near("Speaker HPF ON: 2 kHz sine passband untouched", sineMeanDb(2000.0, true), -23.01, 0.3);
+  }
+
   std::printf("\n==== GOLDEN RESULT: %d passed, %d failed ====\n", g_pass, g_fail);
   return g_fail == 0 ? 0 : 1;
 }

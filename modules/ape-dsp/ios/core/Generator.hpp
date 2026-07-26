@@ -24,6 +24,8 @@
 #include <cmath>
 #include <cstdint>
 
+#include "Biquad.hpp"  // route-aware speaker-safety high-pass (2nd-order Butterworth)
+
 namespace apedsp {
 
 namespace genlevel {
@@ -89,6 +91,16 @@ class Generator {
     retrigger_.store(true);
   }
   void setClickBpm(double bpm) { clickBpm_.store(bpm < 20 ? 20 : (bpm > 300 ? 300 : bpm)); }
+  /// ROUTE-AWARE SPEAKER-SAFETY HIGH-PASS. The platform layer detects the
+  /// output route and sets the cutoff: a positive Hz ENGAGES a 2nd-order
+  /// Butterworth high-pass on the generator output (built-in speaker — protects
+  /// the micro-driver from low-frequency over-excursion); 0 BYPASSES it
+  /// (headphones/line-out — full range, no excursion risk). Applied to EVERY
+  /// mode (sine/noise/additive/sweep) since it sits after sample(). The cutoff
+  /// matches the JS speakerSafety response so app displays and audio agree.
+  /// Default 0 (off) so the golden vectors — which assume a flat path — stay
+  /// green; the route layer turns it on. NaN-proofed (the !(x>=0) form).
+  void setHpf(double hz) { hpfHz_.store(!(hz >= 0.0) ? 0.0 : hz); }
   /// ADDITIVE (HV-2): flat layout [f0, a1..a12, p1..p12] — 25 doubles. The
   /// SAME ordering crosses every bridge (JSI/JNI) verbatim; amps are relative
   /// 0..1, phases in degrees. These are TARGETS only: the render thread ramps
@@ -115,6 +127,10 @@ class Generator {
   /// 1/max(1, Σaₙ) peak bound is pulling levels down). Published from the
   /// render path for honest genStatus display.
   double additiveNorm() const { return addNormPub_.load(std::memory_order_relaxed); }
+  /// Speaker-safety HPF cutoff in Hz (0 = bypassed) and whether it's engaged —
+  /// published for honest genStatus display (the app shows the exact filter).
+  double hpfHz() const { return hpfHz_.load(std::memory_order_relaxed); }
+  bool hpfEngaged() const { return hpfHz_.load(std::memory_order_relaxed) > 0.0; }
   /// Q4 tap-through confirm — session-scoped unlock above the −12 dBFS cap.
   void unlockCap() { capUnlocked_.store(true); }
   void relockCap() { capUnlocked_.store(false); }
@@ -171,6 +187,16 @@ class Generator {
     // be hoisted before a mid-block applyTrigger adopts the mode.
     if ((modeCur_ == GenMode::Additive || modeTarget == GenMode::Additive) && fs > 0)
       additivePrepare(fs);
+    // Speaker-safety HPF: read the cutoff once per render; (re)design the biquad
+    // only when the cutoff or sample rate actually changes (route change / first
+    // engage). 0 = bypassed (headphones/line-out — full range).
+    const double hpfHz = hpfHz_.load(std::memory_order_relaxed);
+    const bool hpfOn = hpfHz > 0.0 && fs > 0.0;
+    if (hpfOn && (hpfHz != hpfDesignedHz_ || fs != hpfDesignedFs_)) {
+      hpf_ = Biquad::highpass(hpfHz, fs);
+      hpfDesignedHz_ = hpfHz;
+      hpfDesignedFs_ = fs;
+    }
     for (uint32_t i = 0; i < n; ++i) {
       // Fade envelope toward the run target (click-free start/stop, Q4-safe);
       // a pending trigger holds the target at 0 until the reset has landed.
@@ -185,7 +211,12 @@ class Generator {
         continue;
       }
       ampCur_ = ramp(ampCur_, ampTarget, gainStep);
-      out[i] = static_cast<float>(ampCur_ * env_ * sample(modeCur_, fs));
+      // HPF sits on the raw generator signal, BEFORE the Q4 level/cap gain, so
+      // the cap chain (ampCur_ * env_) stays the single final amplitude
+      // authority. Bypassed (route off) → the raw sample passes untouched.
+      double s = sample(modeCur_, fs);
+      if (hpfOn) s = static_cast<double>(hpf_.process(static_cast<float>(s)));
+      out[i] = static_cast<float>(ampCur_ * env_ * s);
     }
   }
 
@@ -210,6 +241,10 @@ class Generator {
       pCur_[h] = pT_[h];
     }
     addSnap_ = true;
+    // Clean the HPF state on every (re)trigger — this only runs with env_ at 0
+    // (silent), so clearing the biquad memory can't step audible output and a
+    // re-engage never clicks from stale state.
+    hpf_.reset();
     trigPending_ = false;
   }
 
@@ -451,6 +486,8 @@ class Generator {
   std::atomic<double> sweepStart_{20.0}, sweepEnd_{20000.0}, sweepSecs_{5.0};
   std::atomic<bool> sweepRepeat_{true};
   std::atomic<double> clickBpm_{120.0};
+  // Speaker-safety HPF cutoff (Hz), 0 = bypassed. Route layer writes it.
+  std::atomic<double> hpfHz_{0.0};
 
   // Additive (HV-2) control atomics — TARGETS only; render ramps toward them.
   // Defaults: fundamental only (a1=1), phases 0, f0 1 kHz.
@@ -485,6 +522,11 @@ class Generator {
   double addF0R_ = 1000.0;
   double ampStep_ = 1.0 / 384.0, phStep_ = kPi / 384.0;
   bool addSnap_ = true;
+  // Speaker-safety HPF render state (audio thread). Re-designed only when the
+  // cutoff or sample rate changes; default coeffs are a no-op pass-through.
+  Biquad hpf_;
+  double hpfDesignedHz_ = 0.0;
+  double hpfDesignedFs_ = 0.0;
   double sweepPhase01_ = 0.0;
   double clickTimer_ = 0.0;
   double burstTimer_ = 0.0;

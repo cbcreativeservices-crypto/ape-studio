@@ -65,6 +65,19 @@ struct Biquad {
     q.a2 = a2d / a0d;
     return q;
   }
+
+  // 2nd-order Butterworth HIGH-PASS (−12 dB/oct, −3 dB at f0). Analog prototype
+  // H(s) = s^2 / (s^2 + (w/Q)s + w^2), w = 2*pi*f0, Q = 1/sqrt(2), bilinear-
+  // transformed at fs. For Q=1/sqrt(2) the magnitude is exactly
+  // |H|^2 = r^4 / (1 + r^4), r = f/f0 — identical to the JS speakerSafety
+  // response, so the native generator filter and the app displays agree.
+  // Used to protect the built-in phone speaker from low-frequency
+  // over-excursion (route-aware generator HPF; HV speaker-safety).
+  static Biquad highpass(double f0, double fs) {
+    const double w = 2.0 * 3.14159265358979323846 * f0;
+    const double Q = 0.70710678118654752440;  // Butterworth
+    return fromAnalog(1.0, 0.0, 0.0, 1.0, w / Q, w * w, fs);
+  }
 };
 
 // A cascade of biquads with an output gain.

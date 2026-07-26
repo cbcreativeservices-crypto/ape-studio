@@ -34,15 +34,17 @@ namespace apedsp {
 
 /// Engine capability version the module reports to JS (getInfo().engineVersion).
 /// 1 = Spike-0 (rms/peak only); 2 = engine build 2026-07-23; 3 = additive
-/// generator (HV-2 Build 1, GenMode::Additive). JS feature-gates additive UI
-/// on >= 3 and falls back to sine-only on older installed builds.
+/// generator (HV-2 Build 1, GenMode::Additive); 4 = route-aware speaker-safety
+/// generator HPF + output-route reporting (genHpfHz/genHpfEngaged/outputRoute).
+/// JS feature-gates additive UI on >= 3 and the native HPF surface on >= 4, and
+/// falls back gracefully on older installed builds.
 /// This constant is the ONE source of truth: every bridge surface reads it —
 /// iOS via ApeDspCore.mm (@(apedsp::kEngineVersion) in frame()) and the
 /// +[ApeDspCore engineVersion] accessor Swift's getInfo() uses; Android via
 /// the nativeEngineVersion() JNI getter (ApeDspJni.cpp) that ApeDspModule.kt
 /// calls for getInfo()/getFrame(). Bumping it here bumps every platform;
 /// nothing hardcodes the value downstream.
-constexpr uint32_t kEngineVersion = 3;
+constexpr uint32_t kEngineVersion = 4;
 
 struct EngineConfig {
   uint32_t fftSize = 4096;      // ≤16384 (Q5 ruling)
