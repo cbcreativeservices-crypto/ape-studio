@@ -38,6 +38,11 @@ import { CautionBadge } from '../../components/CautionBadge';
 import { supabase } from '../../lib/supabase';
 import { SUPABASE_URL } from '../../lib/env';
 import { colors, fonts } from '../../theme/tokens';
+import {
+  getLearningProfile,
+  ACTION_LABELS,
+  type GlossaryAction,
+} from '../../features/glossary/learningProfiles';
 import type { StudyStackParamList } from '../../navigation/types';
 
 /** Small framed-image glyph — marks a term that has a media element. */
@@ -315,6 +320,7 @@ function TermDetails({
   commercial = false,
   commonMistakesLocked = false,
   term,
+  onLabAction,
 }: {
   d: EntryDetail;
   /** The term name — auto-tagged into a "suggest a correction" report. */
@@ -332,8 +338,14 @@ function TermDetails({
    *  HEADING always shows; the body is entitlement-gated. */
   commercial?: boolean;
   commonMistakesLocked?: boolean;
+  /** Audio-lab action handler. Present ⇒ the action row MAY render (only for
+   *  terms with a READY Learning Profile — honest-metrics §1.7). Absent (e.g.
+   *  no navigation context) ⇒ never rendered. */
+  onLabAction?: (action: GlossaryAction) => void;
 }) {
   const linkable = selfId != null && index != null && onLink != null;
+  // Audio-lab action row — ONLY for terms whose lab link is functional today.
+  const labProfile = onLabAction ? getLearningProfile(term) : null;
   const mistakesText = d.common_mistakes?.length
     ? d.common_mistakes.map((s) => `• ${s}`).join('\n')
     : null;
@@ -345,6 +357,27 @@ function TermDetails({
   return (
     <View style={styles.detailBlock}>
       {isHazardTerm(term) ? <CautionBadge /> : null}
+      {/* AUDIO LEARNING LAB action row — rendered ONLY for terms with a ready,
+          functional lab link (getLearningProfile). Never shown for planned-but-
+          unwired or unrelated terms (owner directive 2026-07-26). */}
+      {labProfile && onLabAction ? (
+        <View style={styles.labActionWrap}>
+          <Text style={styles.detailEyebrow}>AUDIO LEARNING LAB</Text>
+          <View style={styles.labActionRow}>
+            {labProfile.actions.map((action) => (
+              <Pressable
+                key={action.kind}
+                style={styles.labActionBtn}
+                onPress={() => onLabAction(action)}
+                accessibilityRole="button"
+                accessibilityLabel={ACTION_LABELS[action.kind].replace(/\s+/g, ' ').trim()}
+              >
+                <Text style={styles.labActionText}>{ACTION_LABELS[action.kind]}</Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+      ) : null}
       {linkable && firstText ? (
         <View style={styles.detailSection}>
           <Text style={styles.detailEyebrow}>{firstLabel}</Text>
@@ -678,6 +711,17 @@ export function GlossaryScreen({ route, navigation }: Props) {
       else setChooser(ids);
     },
     [openLinked],
+  );
+
+  /** Open the audio lab for a glossary action. Only READY terms surface actions
+   *  (getLearningProfile), and every current action opens its live lab screen;
+   *  HarmonicLab is a RootStack route, reached from this nested Glossary by
+   *  letting the navigate bubble to the root navigator. */
+  const onLabAction = useCallback(
+    (action: GlossaryAction) => {
+      (navigation as unknown as { navigate: (name: string) => void }).navigate(action.route);
+    },
+    [navigation],
   );
 
   /** Unwind one hop (back pill / tap on popup body); closes at the root. A tap
@@ -1394,6 +1438,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
                       begFirst={ttsBeg}
                       commercial={commercialMode}
                       commonMistakesLocked={!caps.commonMistakes}
+                      onLabAction={onLabAction}
                     />
                   ) : (
                     <Text style={styles.detailLoading}>Loading…</Text>
@@ -1508,6 +1553,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
                             begFirst={ttsBeg}
                             commercial={commercialMode}
                             commonMistakesLocked={!caps.commonMistakes}
+                            onLabAction={onLabAction}
                           />
                         ) : (
                           <Text style={styles.detailLoading}>Loading…</Text>
@@ -2134,6 +2180,20 @@ const styles = StyleSheet.create({
   detailBlock: { marginTop: 10, gap: 12 },
   detailSection: { gap: 4 },
   detailEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: colors.amberLabel },
+  // Audio Learning Lab action row (only on READY terms — learningProfiles.ts).
+  labActionWrap: { gap: 7 },
+  labActionRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  labActionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255,198,77,.5)',
+    backgroundColor: '#17140c',
+    paddingVertical: 9,
+    paddingHorizontal: 13,
+  },
+  labActionText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 0.5, color: colors.amber },
   detailBody: { fontFamily: fonts.barlowMedium, fontSize: 16, lineHeight: 25, color: colors.textSecondary },
   // "Suggest a correction" affordance at the foot of each detail reveal.
   suggestRow: {
