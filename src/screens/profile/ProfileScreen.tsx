@@ -205,7 +205,9 @@ export function ProfileScreen() {
   // flip false only for an actual institutional deployment.
   const commercialProfileOnly: boolean = true;
   if (commercialProfileOnly || commercialMode) {
-    const academy = caps.allTopics; // academy = full access
+    // REAL paid-member status — NOT the __DEV__-bypassed `caps` (which forces
+    // academy on in dev). Drives the membership tag + upgrade CTA (fix 2026-07-26).
+    const academy = entitlement === 'academy';
     return (
       <View style={[styles.root, { paddingTop: insets.top }]}>
         <ScrollView contentContainerStyle={styles.bodyScroll} keyboardShouldPersistTaps="handled">

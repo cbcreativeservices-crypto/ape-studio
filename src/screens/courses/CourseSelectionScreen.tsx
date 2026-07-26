@@ -826,10 +826,13 @@ export function CourseSelectionScreen() {
   const bundles = useBundles();
   const displayDeck = useMemo<Card[] | null>(() => {
     if (!cards) return cards;
-    // A LAPSED member still SEES their saved Home cards (opening them is blocked
-    // at tap-time). Free/anonymous never have Home cards → fall through to the
-    // default deck (user request 2026-07-23).
-    if ((academy || lapsed) && (homeGs.length > 0 || homeBundleKeys.length > 0)) {
+    // HOME is LOCKED to the DEFAULT deck (all cards) for everyone EXCEPT an
+    // ACTIVE PAID academy member (user request 2026-07-26). Only entitlement
+    // 'academy' unlocks the custom Home deck; free / guest / anonymous / LAPSED
+    // all fall through to the default. Gate on the REAL entitlement, never the
+    // __DEV__-bypassed `caps` (which forces academy on in dev). When a
+    // subscription expires (lapsed) Home reverts to the default automatically.
+    if (entitlement === 'academy' && (homeGs.length > 0 || homeBundleKeys.length > 0)) {
       const fixed = cards.filter((c) => c.kind === 'tools' || c.kind === 'glossary');
       const topicCards: Card[] = homeGs.map((gs) => ({
         kind: 'homeTopic',
@@ -856,7 +859,7 @@ export function CourseSelectionScreen() {
     // per-card "my courses" star deck was removed (user request 2026-07-24);
     // Home Setup now owns course selection + default position.
     return cards;
-  }, [cards, academy, lapsed, homeGs, homeBundleKeys, bundles]);
+  }, [cards, entitlement, homeGs, homeBundleKeys, bundles]);
 
   // "+ N other programs" count for the retitled Career and Business card (user
   // request 2026-07-22): Academy Program Certificates not represented by a
