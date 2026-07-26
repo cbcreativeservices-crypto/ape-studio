@@ -95,6 +95,7 @@ import { ApeDsp, GEN_MODES, type EngineConfig, type GenParams } from '../../../m
 import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
+import { safeToneLevelDb, LOW_FREQ_ADVISORY } from '../../features/audio/speakerSafety';
 import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
 import { WARNING_INFO } from '../../features/tools/measure/types';
 import { EngineGate } from '../tools/EngineGate';
@@ -747,6 +748,9 @@ export function HarmonicsView({
     const t = setTimeout(() => {
       if (gen !== toneGenRef.current) return;
       additivePushAtRef.current = Date.now();
+      // Speaker guard: re-level for f0 (a drop to a low f0 must re-attenuate)
+      // alongside the phase-continuous payload re-send.
+      ApeDsp.genSet({ levelDb: safeToneLevelDb(GEN_LEVEL_DB, f0) });
       ApeDsp.genSetAdditive(additivePayload(model, f0));
       noteAudioActivity();
     }, wait);
@@ -776,10 +780,14 @@ export function HarmonicsView({
       const ok = await requestAudioOutput();
       if (!ok || gen !== toneGenRef.current) return false;
       setGenError('');
+      // Speaker guard: base level keyed on the frequency this start will play
+      // (solo passes { frequency: n×f0 }); playModel passes its own guarded
+      // levelDb in `params`, which wins via the spread.
+      const guardHz = params?.frequency ?? f0Ref.current;
       ApeDsp.genSet({
         mode: GEN_MODES.sine,
         frequency: f0Ref.current,
-        levelDb: GEN_LEVEL_DB,
+        levelDb: safeToneLevelDb(GEN_LEVEL_DB, guardHz),
         ...params,
       });
       try {
@@ -851,7 +859,9 @@ export function HarmonicsView({
     // include f0): `frequency` moves only the sine path, so the full payload
     // is re-sent and the core retunes phase-continuously — same UX as today.
     if (soloN != null) stopTone();
-    else if (genRunning && !additiveOn) ApeDsp.genSet({ frequency: hz });
+    // Speaker guard: retune the sine AND re-level for the new (lower) f0.
+    else if (genRunning && !additiveOn)
+      ApeDsp.genSet({ frequency: hz, levelDb: safeToneLevelDb(GEN_LEVEL_DB, hz) });
   };
 
   const pickAxis = (a: AxisMode) => {
@@ -895,7 +905,12 @@ export function HarmonicsView({
     setSoloN(n);
     if (genRunning) {
       // Leaving the additive model needs the mode switch alongside the tune.
-      ApeDsp.genSet(additiveOn ? { mode: GEN_MODES.sine, frequency: hz } : { frequency: hz });
+      // Speaker guard: re-level for the solo frequency (n×f0 can be as low as f0).
+      ApeDsp.genSet(
+        additiveOn
+          ? { mode: GEN_MODES.sine, frequency: hz, levelDb: safeToneLevelDb(GEN_LEVEL_DB, hz) }
+          : { frequency: hz, levelDb: safeToneLevelDb(GEN_LEVEL_DB, hz) },
+      );
       setAdditiveOn(false);
       setAdditiveNorm(null);
       noteAudioActivity();
@@ -929,7 +944,8 @@ export function HarmonicsView({
     const params: GenParams = {
       mode: GEN_MODES.additive,
       additive: additivePayload(model, f0),
-      levelDb: GEN_LEVEL_DB,
+      // Speaker guard: key on the fundamental (the lowest content in the mix).
+      levelDb: safeToneLevelDb(GEN_LEVEL_DB, f0),
     };
     setSoloN(null);
     setAdditiveOn(true);
@@ -1642,9 +1658,10 @@ export function HarmonicsView({
               />
               <Text style={styles.caption}>
                 {additiveReady
-                  ? `Model output ${GEN_LEVEL_DB} dBFS · uncalibrated — digital output level, not dB SPL; the harmonic sum is peak-normalized inside the level cap.`
-                  : `Tone output ${GEN_LEVEL_DB} dBFS · uncalibrated — digital output level, not dB SPL.`}
+                  ? `Model output up to ${GEN_LEVEL_DB} dBFS · uncalibrated — digital output level, not dB SPL; the harmonic sum is peak-normalized inside the level cap.`
+                  : `Tone output up to ${GEN_LEVEL_DB} dBFS · uncalibrated — digital output level, not dB SPL.`}
               </Text>
+              <Text style={styles.lowFreqAdvisory}>{LOW_FREQ_ADVISORY}</Text>
               {additiveOn && additiveNorm != null && additiveNorm < 0.995 ? (
                 // Subtle auto-level hint — shown only while normalization is
                 // actually attenuating (norm < 1, from genStatus).
@@ -1875,6 +1892,7 @@ const styles = StyleSheet.create({
   chipTextSelected: { color: colors.amber },
 
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
+  lowFreqAdvisory: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16, color: colors.amber },
   honestyNote: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18.5, color: colors.amber },
   liveWarn: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18.5, color: colors.amber },
   errorText: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: '#ff8d7a' },

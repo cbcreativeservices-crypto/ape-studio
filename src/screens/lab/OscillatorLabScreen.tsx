@@ -28,6 +28,7 @@ import { ApeDsp, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
+import { safeToneLevelDb, LOW_FREQ_ADVISORY } from '../../features/audio/speakerSafety';
 import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
@@ -87,10 +88,14 @@ export function OscillatorLabScreen() {
 
   /** Params for the CURRENT wave: additive recipe on v3, sine on v2. */
   const paramsFor = useCallback(
-    (w: PresetKey, hz: number): GenParams =>
-      additiveReady
-        ? { mode: GEN_MODES.additive, additive: additivePayload(buildPreset(w), hz), levelDb: GEN_LEVEL_DB }
-        : { mode: GEN_MODES.sine, frequency: hz, levelDb: GEN_LEVEL_DB },
+    (w: PresetKey, hz: number): GenParams => {
+      // Speaker guard: attenuate as the fundamental drops into the range the
+      // built-in speaker can't reproduce (keyed on hz — the lowest content).
+      const levelDb = safeToneLevelDb(GEN_LEVEL_DB, hz);
+      return additiveReady
+        ? { mode: GEN_MODES.additive, additive: additivePayload(buildPreset(w), hz), levelDb }
+        : { mode: GEN_MODES.sine, frequency: hz, levelDb };
+    },
     [additiveReady],
   );
 
@@ -218,6 +223,7 @@ export function OscillatorLabScreen() {
               ? `Output ${GEN_LEVEL_DB} dBFS · uncalibrated. Band-limited by construction — harmonics at/above Nyquist are omitted, never aliased (that omission is the anti-aliasing lesson).`
               : `This engine build predates the additive generator — audio is the fundamental SINE only; square/saw/triangle/pulse stay visual until the v3 dev build is installed.`}
           </Text>
+          <Text style={styles.advisory}>{LOW_FREQ_ADVISORY}</Text>
           {genError ? <Text style={styles.error}>{genError}</Text> : null}
         </>
       ) : null}
@@ -307,6 +313,7 @@ const styles = StyleSheet.create({
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   sectionHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.5, color: colors.amber },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
+  advisory: { fontFamily: fonts.barlowMedium, fontSize: 12, lineHeight: 16, color: colors.amber },
   error: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: '#ff6b5e' },
   panelCard: {
     gap: 8,

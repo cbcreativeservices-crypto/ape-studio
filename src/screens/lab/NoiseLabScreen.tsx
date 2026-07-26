@@ -25,6 +25,7 @@ import { ApeDsp, GEN_MODES } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
+import { safeNoiseLevelDb, LOW_FREQ_ADVISORY } from '../../features/audio/speakerSafety';
 import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
@@ -83,7 +84,9 @@ export function NoiseLabScreen() {
     const ok = await requestAudioOutput();
     if (!ok || gen !== genRef.current) return;
     setGenError('');
-    ApeDsp.genSet({ mode: COLORS.find((c) => c.key === color)!.mode, levelDb: GEN_LEVEL_DB });
+    // Speaker guard: brown/pink pile energy into the sub-bass the built-in
+    // speaker can't handle → attenuate by color slope (white/blue/violet safe).
+    ApeDsp.genSet({ mode: COLORS.find((c) => c.key === color)!.mode, levelDb: safeNoiseLevelDb(GEN_LEVEL_DB, color) });
     try {
       await ApeDsp.genStart();
       if (gen !== genRef.current) {
@@ -114,7 +117,8 @@ export function NoiseLabScreen() {
   const pickColor = (c: NoiseColor) => {
     setColor(c);
     if (running) {
-      ApeDsp.genSet({ mode: COLORS.find((x) => x.key === c)!.mode });
+      // Re-apply the per-color guard on a live switch (brown/pink are the risk).
+      ApeDsp.genSet({ mode: COLORS.find((x) => x.key === c)!.mode, levelDb: safeNoiseLevelDb(GEN_LEVEL_DB, c) });
       noteAudioActivity();
     }
   };
@@ -170,6 +174,7 @@ export function NoiseLabScreen() {
           <Text style={styles.caption}>
             {`Output ${GEN_LEVEL_DB} dBFS · uncalibrated — digital output level, not dB SPL.`}
           </Text>
+          <Text style={styles.advisory}>{LOW_FREQ_ADVISORY}</Text>
           {genError ? <Text style={styles.error}>{genError}</Text> : null}
         </>
       ) : null}
@@ -272,6 +277,7 @@ const styles = StyleSheet.create({
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   sectionHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.5, color: colors.amber },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
+  advisory: { fontFamily: fonts.barlowMedium, fontSize: 12, lineHeight: 16, color: colors.amber },
   error: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: '#ff6b5e' },
   panelCard: {
     gap: 8,

@@ -25,6 +25,7 @@ import { ApeDsp, GEN_MODES } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
+import { safeToneLevelDb, LOW_FREQ_ADVISORY } from '../../features/audio/speakerSafety';
 import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
@@ -109,7 +110,8 @@ export function HarmonographLabScreen() {
     ApeDsp.genSet({
       mode: GEN_MODES.additive,
       additive: intervalPayload(ratio.n1, ratio.n2),
-      levelDb: GEN_LEVEL_DB,
+      // Speaker guard: key on the LOWEST sounding harmonic of the interval.
+      levelDb: safeToneLevelDb(GEN_LEVEL_DB, Math.min(ratio.n1, ratio.n2) * BASE_F0),
     });
     try {
       await ApeDsp.genStart();
@@ -141,7 +143,10 @@ export function HarmonographLabScreen() {
   const pickRatio = (i: number) => {
     setRatioIdx(i);
     if (running) {
-      ApeDsp.genSet({ additive: intervalPayload(RATIOS[i].n1, RATIOS[i].n2) });
+      ApeDsp.genSet({
+        additive: intervalPayload(RATIOS[i].n1, RATIOS[i].n2),
+        levelDb: safeToneLevelDb(GEN_LEVEL_DB, Math.min(RATIOS[i].n1, RATIOS[i].n2) * BASE_F0),
+      });
       noteAudioActivity();
     }
   };
@@ -255,6 +260,7 @@ export function HarmonographLabScreen() {
               <Text style={styles.caption}>
                 {`Harmonics ${ratio.n2} and ${ratio.n1} of ${BASE_F0} Hz through the additive engine — an exact ${ratio.label} ratio. Output ${GEN_LEVEL_DB} dBFS · uncalibrated.`}
               </Text>
+              <Text style={styles.advisory}>{LOW_FREQ_ADVISORY}</Text>
               {genError ? <Text style={styles.error}>{genError}</Text> : null}
             </>
           ) : (
@@ -341,6 +347,7 @@ const styles = StyleSheet.create({
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   sectionHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.5, color: colors.amber },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
+  advisory: { fontFamily: fonts.barlowMedium, fontSize: 12, lineHeight: 16, color: colors.amber },
   error: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: '#ff6b5e' },
   panelCard: {
     gap: 8,
