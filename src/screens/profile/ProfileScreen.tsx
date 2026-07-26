@@ -197,7 +197,14 @@ export function ProfileScreen() {
   const profileComplete = pub.name.trim().length > 0 && pub.registryName.trim().length > 0 && emailValid;
   const registryActive = pub.showInRegistry && profileComplete;
 
-  if (commercialMode) {
+  // This product ships COMMERCIAL-only: the institutional / "MIRAMAR COLLEGE" Profile
+  // variant (further below) is retired — EVERY user, including guests, gets this
+  // commercial profile (identical to a regular account; a guest just can't persist).
+  // Zero academic/institutional references (user request 2026-07-26). Typed `boolean`
+  // so the retained institutional variant stays reachable code (no unused-symbol churn);
+  // flip false only for an actual institutional deployment.
+  const commercialProfileOnly: boolean = true;
+  if (commercialProfileOnly || commercialMode) {
     const academy = caps.allTopics; // academy = full access
     return (
       <View style={[styles.root, { paddingTop: insets.top }]}>
