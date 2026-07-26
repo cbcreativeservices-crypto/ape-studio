@@ -174,6 +174,17 @@ export function resetEnrollment(): void {
   commit(FREE_ENROLL_GS.map((gs) => ({ gs, favorite: false, active: true })));
 }
 
+/** Reset the IN-MEMORY cache (account wipe / user switch — clearLocalAccountData).
+ *  Clears the list + hydrated flags and emits so live useEnrollment() hooks
+ *  re-render empty; the next read re-hydrates from the (cleared) storage, which
+ *  re-seeds the free topics = correct new-user default. */
+export function resetLocal(): void {
+  list = [];
+  hydrated = false;
+  hydrating = null;
+  emit();
+}
+
 /** Move an entry up (-1) or down (+1) in the user's order. */
 export function moveTopic(gs: number, dir: -1 | 1): void {
   const i = list.findIndex((e) => e.gs === gs);

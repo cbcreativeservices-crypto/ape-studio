@@ -284,6 +284,34 @@ export function useAutoTrack(method: PaceMethodKey): boolean {
 }
 
 /**
+ * Reset ALL in-memory pace caches (account wipe / user switch —
+ * clearLocalAccountData). Clears the persisted per-method SETTINGS cache +
+ * hydrated flags (so the next read re-hydrates from the cleared storage) and the
+ * session-only running / brain-output / auto-track caches, emitting to each
+ * affected method so live hooks re-render at their defaults. Safe with no
+ * subscribers.
+ */
+export function resetLocal(): void {
+  const methods = new Set<PaceMethodKey>([
+    ...cache.keys(),
+    ...runningCache.keys(),
+    ...brainCache.keys(),
+    ...autoTrackCache.keys(),
+  ]);
+  cache.clear();
+  hydrated.clear();
+  runningCache.clear();
+  brainCache.clear();
+  autoTrackCache.clear();
+  for (const m of methods) {
+    emit(m); // settings subscribers
+    runningListeners.get(m)?.forEach((l) => l());
+    emitBrain(m);
+    autoTrackListeners.get(m)?.forEach((l) => l());
+  }
+}
+
+/**
  * Quantize an offset (in seconds) to the nearest whole STEP (default 5s), so the
  * readout's signed offset — and the marker driven from it — moves in discrete
  * 5-second steps (up as the learner gets ahead, down as they fall behind)

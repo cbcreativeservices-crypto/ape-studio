@@ -115,6 +115,16 @@ export function updateMeasurement(id: string, patch: Partial<Pick<SavedMeasureme
   });
 }
 
+/** Reset the IN-MEMORY cache (account wipe / user switch — clearLocalAccountData).
+ *  Clears the list + hydrated flags and emits so live useMeasurements() hooks
+ *  re-render empty; the next read re-hydrates from the (cleared) storage. */
+export function resetLocal(): void {
+  list = [];
+  hydrated = false;
+  hydrating = null;
+  emit();
+}
+
 /** Reactive hook — hydrates on first use. */
 export function useMeasurements(toolKey?: ToolKey): SavedMeasurement[] {
   const [, setTick] = useState(0);

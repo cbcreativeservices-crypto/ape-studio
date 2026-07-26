@@ -8,6 +8,7 @@
 import { useRef, useState } from 'react';
 import { Alert, Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { supabase } from '../../lib/supabase';
+import { clearLocalAccountData, resetAllLocalStores } from '../account/clearLocalAccountData';
 import { colors, fonts } from '../../theme/tokens';
 
 const HOLD_MS = 5000;
@@ -72,6 +73,12 @@ export function DeleteAccountButton({ onDeleted }: { onDeleted: () => void }) {
       const { error } = await supabase.rpc('delete_my_account');
       if (error) throw error;
       await supabase.auth.signOut();
+      // Backend is gone; now wipe the device-local user data + reset the
+      // in-memory store caches so no stale academic state survives to the next
+      // account (user bug 2026-07-26). No JS reload available (expo-updates not
+      // installed), so the cache reset is what refreshes live screens.
+      await clearLocalAccountData();
+      resetAllLocalStores();
       onDeleted();
     } catch {
       setBusy(false);

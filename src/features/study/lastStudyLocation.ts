@@ -84,6 +84,15 @@ async function hydrate(): Promise<void> {
   }
 }
 
+/** Reset the IN-MEMORY cache (account wipe / user switch — clearLocalAccountData).
+ *  Clears the current location + hydrated flag and emits so live hooks re-render
+ *  null; the next read re-hydrates from the (cleared) storage. */
+export function resetLocal(): void {
+  current = null;
+  hydrated = false;
+  emit();
+}
+
 /** Subscribe to the last study location; hydrates from storage on first use. */
 export function useLastStudyLocation(): LastStudyLocation {
   return useSyncExternalStore(

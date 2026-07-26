@@ -13,6 +13,7 @@ import { EntitlementProvider } from './src/features/commercial/EntitlementProvid
 import { AudioOutputGate } from './src/features/audio/AudioOutputGate';
 import { AudioBorderFrame } from './src/features/audio/AudioBorderFrame';
 import { LowLightDim } from './src/features/settings/LowLightLayer';
+import { useAccountLocalSync } from './src/features/account/accountLocalSync';
 import { colors, fontAssets } from './src/theme/tokens';
 
 const navTheme: Theme = {
@@ -30,6 +31,11 @@ const navTheme: Theme = {
 
 export default function App() {
   const [fontsLoaded] = useFonts(fontAssets);
+
+  // Account-switch guard (user bug 2026-07-26): wipe device-local data whenever a
+  // DIFFERENT user signs in. Called before the early return to keep hook order
+  // stable. Kept separate from AudioOutputGate's own onAuthStateChange.
+  useAccountLocalSync();
 
   // Hold on a dark surface until fonts resolve (avoids a white flash + FOUT).
   if (!fontsLoaded) {

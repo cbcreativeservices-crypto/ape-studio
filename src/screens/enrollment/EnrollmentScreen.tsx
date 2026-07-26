@@ -1224,8 +1224,8 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
               new-user default. Progress is kept; topics re-add from Browse & Add
               below (user request 2026-07-25). */}
           <HoldToActivate
-            label="✕ CLEAR LIST"
-            holdingLabel="HOLD TO CLEAR"
+            label="✕"
+            holdingLabel="CLEAR LIST"
             tint="#e0342f"
             onComplete={() =>
               Alert.alert(

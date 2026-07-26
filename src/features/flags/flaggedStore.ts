@@ -309,3 +309,34 @@ export function useCustomOnDashboard(): boolean {
   }, []);
   return snap;
 }
+
+/* ---- Account-wipe reset (clearLocalAccountData / user switch) ---- */
+
+/** Reset ALL in-memory caches owned by this module — the four term lists, every
+ *  per-context bookmark store, and the customOnDashboard flag — and emit to each
+ *  so live hooks re-render empty. The next read of any list re-hydrates from the
+ *  (already-cleared) storage. Safe with no subscribers. */
+export function resetLocal(): void {
+  // Four fixed term lists.
+  (Object.keys(stores) as TermListKind[]).forEach((kind) => {
+    const s = stores[kind];
+    s.ids = new Set();
+    s.hydrated = false;
+    s.hydrating = null;
+    emit(kind);
+  });
+  // Per-context bookmark stores (lazily created Map). Reset IN PLACE — never
+  // clear the Map: mounted useBookmarks() hooks subscribe to the captured store
+  // object, so replacing it would orphan their listeners.
+  bookmarkStores.forEach((s) => {
+    s.ids = new Set();
+    s.hydrated = false;
+    s.hydrating = null;
+    emitBookmarks(s);
+  });
+  // "Show custom list on dashboard" flag → default.
+  customOnDashboard.value = false;
+  customOnDashboard.hydrated = false;
+  customOnDashboard.hydrating = null;
+  emitCustomOnDashboard();
+}

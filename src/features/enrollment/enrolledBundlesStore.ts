@@ -98,6 +98,16 @@ export function loadedBundleGs(): number[] {
   return Array.from(new Set(list.filter((b) => b.loaded).flatMap((b) => b.topics)));
 }
 
+/** Reset the IN-MEMORY cache (account wipe / user switch — clearLocalAccountData).
+ *  Clears the list + hydrated flags and emits so live useBundles() hooks
+ *  re-render empty; the next read re-hydrates from the (cleared) storage. */
+export function resetLocal(): void {
+  list = [];
+  hydrated = false;
+  hydrating = null;
+  emit();
+}
+
 export function useBundles(): EnrolledBundle[] {
   const [snap, setSnap] = useState<EnrolledBundle[]>(list);
   useEffect(() => {

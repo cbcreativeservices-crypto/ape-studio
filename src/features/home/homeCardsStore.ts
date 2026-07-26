@@ -190,6 +190,19 @@ export function useHomeGs(): number[] {
   return snap;
 }
 
+/** Reset ALL in-memory caches (account wipe / user switch — clearLocalAccountData).
+ *  Clears the topic list, bundle list, default-landing gs, and hydrated flags,
+ *  then emits so every live hook (useHomeGs / useHomeBundles / useDefaultHomeGs)
+ *  re-renders empty; the next read re-hydrates from the (cleared) storage. */
+export function resetLocal(): void {
+  list = [];
+  bundleList = [];
+  defaultGs = null;
+  hydrated = false;
+  hydrating = null;
+  emit();
+}
+
 /* ---- Default landing card (user request 2026-07-24) ----
  * The Home (Course Select) carousel opens on this topic's card. null = no
  * explicit choice → the carousel opens on Glossary (its prior default). Always
