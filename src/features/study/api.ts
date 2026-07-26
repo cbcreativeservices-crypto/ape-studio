@@ -19,6 +19,15 @@ export type GlossaryItem = {
   related_terms: string[] | null;
   category: string | null;
   difficulty: string | null;
+  /** Equation/formula fields (glossary.formula_symbolic / formula_words). A term
+   *  is an "equation/formula" when formula_symbolic is non-empty. NOT selected in
+   *  the study fetches below: as of 2026-07-26 no client role (anon/authenticated)
+   *  holds a SELECT grant on these two columns, so adding them to the study SELECT
+   *  would 403 the whole fetch. Populated null here until the backend grants them;
+   *  the Glossary "Equations & Formulas" filter reads them via its own isolated,
+   *  non-fatal query (see GlossaryScreen.loadAllGlossaryFormulas). */
+  formula_symbolic: string | null;
+  formula_words: string | null;
 };
 
 export type ItemState = { views?: number; known?: boolean; attempts?: number; correct?: number };
@@ -65,6 +74,8 @@ export async function fetchTopicItems(achievementId: string): Promise<GlossaryIt
         related_terms: g.related_terms ?? null,
         category: g.category ?? null,
         difficulty: g.difficulty ?? null,
+        formula_symbolic: g.formula_symbolic ?? null,
+        formula_words: g.formula_words ?? null,
       }));
     }
     if (error) console.warn('[study] glossary_study_v unavailable, falling back:', error.message);
@@ -92,7 +103,12 @@ export async function fetchTopicItems(achievementId: string): Promise<GlossaryIt
     )
     .in('id', ids);
   if (error) throw error;
-  const items: GlossaryItem[] = (data ?? []).map((g: any) => ({ ...g, common_mistakes: null }));
+  const items: GlossaryItem[] = (data ?? []).map((g: any) => ({
+    ...g,
+    common_mistakes: null,
+    formula_symbolic: null,
+    formula_words: null,
+  }));
   const byId = new Map<string, GlossaryItem>(items.map((it) => [it.id, it]));
 
   // 3) common_mistakes from the academy-gated view — NON-FATAL. The view's mask
@@ -137,7 +153,12 @@ export async function fetchGlossaryItemsByIds(idList: string[]): Promise<Glossar
     )
     .in('id', ids);
   if (error) throw error;
-  const items: GlossaryItem[] = (data ?? []).map((g: any) => ({ ...g, common_mistakes: null }));
+  const items: GlossaryItem[] = (data ?? []).map((g: any) => ({
+    ...g,
+    common_mistakes: null,
+    formula_symbolic: null,
+    formula_words: null,
+  }));
   const byId = new Map<string, GlossaryItem>(items.map((it) => [it.id, it]));
   try {
     const { data: masked } = await supabase

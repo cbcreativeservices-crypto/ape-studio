@@ -557,15 +557,9 @@ export function ProfileScreen() {
           </View>
         </View>
 
-        {/* Certifications */}
-        <View style={styles.panel}>
-          <Text style={styles.panelEyebrow}>CERTIFICATIONS</Text>
-          <View style={styles.certRow}>
-            {CERTS.map((c) => (
-              <CertIcon key={c} cert={c} active={profile?.earnedCerts.has(c) ?? false} />
-            ))}
-          </View>
-        </View>
+        {/* CERTIFICATIONS grid (MIC/REC/MIX/PA) PARKED — a future academic-version
+            feature, not part of the current commercial product (user request
+            2026-07-26). Kept out of the render on purpose. */}
 
         {/* Album Level */}
         <View style={[styles.panel, styles.albumRow]}>

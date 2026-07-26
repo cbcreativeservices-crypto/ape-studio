@@ -155,7 +155,8 @@ export function AuthScreen({ navigation }: Props) {
         </View>
 
         {/* Beta pricing note on signup (Booth 2026-07-18). */}
-        <Text style={styles.betaNote}>{COPY.betaPricingNote}</Text>
+        {/* Beta-pricing note removed from the login screen (user request 2026-07-26);
+            still shown on the plan/paywall screens via COPY.betaPricingNote. */}
 
         {/* Credentials */}
         <TextField

@@ -48,6 +48,7 @@ import { useDefaultHomeGs, useHomeBundles, useHomeGs } from '../../features/home
 import { setBundleLoaded, useBundles } from '../../features/enrollment/enrolledBundlesStore';
 import { isFreeEnrollGs, setActiveMany } from '../../features/enrollment/enrollmentStore';
 import { BookIcon } from '../../components/BookIcon';
+import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
 
 type Card =
   | { kind: 'tools'; id: 'tools' }
@@ -293,8 +294,9 @@ function CourseCardView({
   onOpenTools: () => void;
   /** Open the Ear Training & Critical Listening Lab (Phase 1 SHELL). */
   onOpenLab: () => void;
-  /** CM6: open a public course → its commercial dashboard. */
-  onOpenPublic: (order: number) => void;
+  /** CM6: open a public course → its commercial dashboard. `isFreeTopic` marks
+   *  the free-topic taster cards, which a guest may open (paid cards are gated). */
+  onOpenPublic: (order: number, isFreeTopic?: boolean) => void;
   /** CM2/CM3: academy-locked tap → the upgrade surface. */
   onLockedPress: () => void;
   /** The "+ XX other" tally card → open the full Curriculum. */
@@ -564,7 +566,7 @@ function CourseCardView({
           {free ? (
             // Always unlocked, full color, INCLUDED FREE (Booth 2026-07-11).
             <View style={{ width: CARD_BTN_W }}>
-              <GlassButton label="INCLUDED FREE" tint="green" height={50} onPress={() => onOpenPublic(free.courseOrder)} />
+              <GlassButton label="INCLUDED FREE" tint="green" height={50} onPress={() => onOpenPublic(free.courseOrder, true)} />
             </View>
           ) : isTools ? (
             // Audio Tools is ALWAYS FREE to open (Booth 2026-07-11 #4); the
@@ -652,6 +654,10 @@ export function CourseSelectionScreen() {
   // CM2 — commercial mode + entitlement (mock provider; server truth later).
   const { commercialMode, entitlement, caps, setCommercialMode, setEntitlement } = useEntitlement();
   const [upgradeOpen, setUpgradeOpen] = useState(false);
+  // A session-less GUEST may study the FREE topics only; opening any paid topic
+  // shows a friendly sign-up prompt (set in load(), keyed on the real session).
+  const [isGuest, setIsGuest] = useState(false);
+  const [guestGateOpen, setGuestGateOpen] = useState(false);
   // A LAPSED (cancelled) member keeps their Home cards as they set them up (the
   // store persists), but can no longer open them — a "Membership Expired" warning
   // fires instead (user request 2026-07-23).
@@ -674,6 +680,7 @@ export function CourseSelectionScreen() {
     // the mock 'anonymous' entitlement.
     const { data: sessData } = await supabase.auth.getSession();
     const isGuest = !sessData.session;
+    setIsGuest(isGuest);
     if (commercialMode || isGuest) {
       // v2.13: catalog from public_courses/public_course_topics (seed fallback).
       const catalog = await getPublicCatalog();
@@ -959,11 +966,18 @@ export function CourseSelectionScreen() {
   // CM6: open a public course → the commercial dashboard (Study tab), which
   // reads the persisted order and renders the seq-ordered topics.
   const openPublicCourse = useCallback(
-    async (order: number) => {
+    async (order: number, isFreeTopic = false) => {
+      // A session-less GUEST may study the FREE topics only. Opening any non-free
+      // (paid) topic shows a friendly sign-up prompt instead of dropping them into
+      // a topic with no on-device study path (owner decision 2026-07-26).
+      if (isGuest && !isFreeTopic) {
+        setGuestGateOpen(true);
+        return;
+      }
       await setLastPublicCourse(order);
       (navigation as any).navigate('Study', { screen: 'Dashboard' });
     },
-    [navigation],
+    [navigation, isGuest],
   );
 
   if (error) {
@@ -1162,6 +1176,24 @@ export function CourseSelectionScreen() {
           setUpgradeOpen(false);
           (navigation as any).navigate('Paywall');
         }}
+      />
+
+      {/* Guest sign-up gate (owner decision 2026-07-26): a session-less guest
+          tapping a non-free topic is invited to create a free account rather than
+          dropped into a paid topic. Free topics open normally into Study. */}
+      <PrePaywallPrompt
+        visible={guestGateOpen}
+        onClose={() => setGuestGateOpen(false)}
+        title="Create a free account"
+        lines={[
+          'Sign up to study this topic. Your free topics — Professional Audio Safety and DAW Fundamentals — are open to explore right now.',
+        ]}
+        primaryLabel="CREATE FREE ACCOUNT"
+        onPrimary={() => {
+          setGuestGateOpen(false);
+          (navigation as any).navigate('Auth');
+        }}
+        dismissLabel="NOT NOW"
       />
 
       {/* The app WELCOME now greets first-run users BEFORE the login screen

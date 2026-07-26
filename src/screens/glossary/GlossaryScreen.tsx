@@ -77,6 +77,40 @@ async function loadAllGlossaryMedia(): Promise<Record<string, string>> {
   return out;
 }
 
+/** Formula map for the "Equations & Formulas" filter: id → the term's symbolic
+ *  formula (+ plain-language words). A term counts as an equation/formula when
+ *  its `formula_symbolic` is non-empty. Loaded in ONE isolated, NON-FATAL paged
+ *  pass, deliberately kept OUT of the main corpus select (loadEntries below):
+ *  as of 2026-07-26 NO client role (anon/authenticated/service_role) holds a
+ *  SELECT grant on `formula_symbolic`/`formula_words`, so a direct select 403s
+ *  today for every user. Isolating it means that 403 yields an empty map (the
+ *  filter shows no terms) WITHOUT breaking the glossary corpus load. Once the
+ *  backend grants the columns and populates them, the filter lights up with no
+ *  client change. (Verified 2026-07-26: 0 of 14,246 rows currently carry one.) */
+async function loadAllGlossaryFormulas(): Promise<Record<string, { symbolic: string; words: string | null }>> {
+  const out: Record<string, { symbolic: string; words: string | null }> = {};
+  try {
+    const PAGE_F = 1000;
+    for (let from = 0; ; from += PAGE_F) {
+      const { data, error } = await supabase
+        .from('glossary')
+        .select('id, formula_symbolic, formula_words')
+        .order('id')
+        .range(from, from + PAGE_F - 1);
+      if (error || !data || data.length === 0) break;
+      for (const r of data as { id: string; formula_symbolic: string | null; formula_words: string | null }[]) {
+        if (r.formula_symbolic && r.formula_symbolic.trim() !== '') {
+          out[r.id] = { symbolic: r.formula_symbolic, words: r.formula_words ?? null };
+        }
+      }
+      if (data.length < PAGE_F) break;
+    }
+  } catch {
+    /* non-fatal — the Equations & Formulas filter simply shows no terms */
+  }
+  return out;
+}
+
 type Props = NativeStackScreenProps<StudyStackParamList, 'Glossary'>;
 
 type Entry = {
@@ -212,7 +246,7 @@ function LinkedText({
 }
 type CourseRef = { id: string; code: string; sequence: number };
 type TopicRef = { id: string; name: string; course_id: string; sequence_in_course: number };
-type Filter = 'all' | 'course' | 'topic' | 'favorites' | 'custom' | 'recent';
+type Filter = 'all' | 'course' | 'topic' | 'equations' | 'favorites' | 'custom' | 'recent';
 
 // Flagged-terms key now lives in features/flags/flaggedStore (FLAGGED_KEY) —
 // same 'ape:glossaryFavs' storage, shared app-wide (Booth 2026-07-18).
@@ -479,6 +513,13 @@ export function GlossaryScreen({ route, navigation }: Props) {
   const [mediaPopup, setMediaPopup] = useState<string | null>(null); // URL shown in the tap-to-close viewer
   useEffect(() => {
     loadAllGlossaryMedia().then(setMediaById);
+  }, []);
+  // Equations & Formulas (user request 2026-07-26): id → symbolic/words for any
+  // term that carries a formula. Loaded once, isolated + non-fatal (see
+  // loadAllGlossaryFormulas) so a missing column-grant never breaks the corpus.
+  const [formulaById, setFormulaById] = useState<Record<string, { symbolic: string; words: string | null }>>({});
+  useEffect(() => {
+    loadAllGlossaryFormulas().then(setFormulaById);
   }, []);
   // Flagged terms (Booth 2026-07-18): ONE list shared with Flashcards and the
   // custom "Flagged" dashboard topic — lives in features/flags/flaggedStore
@@ -750,8 +791,24 @@ export function GlossaryScreen({ route, navigation }: Props) {
   // caps, so this reads false on dev builds). Academy + institutional select normally.
   const topicLinksLocked = commercialMode && !caps.allTopics;
 
+  // "Equations & Formulas" pseudo-topic (user request 2026-07-26): the count of
+  // corpus terms that carry a symbolic formula. DELIBERATELY NOT member-gated —
+  // it's a cross-topic reference list of free-value content, so it stays
+  // selectable for everyone even when the per-topic links are locked.
+  const equationCount = useMemo(
+    () => entries.reduce((n, e) => (formulaById[e.id] ? n + 1 : n), 0),
+    [entries, formulaById],
+  );
+  const selectEquations = useCallback(() => {
+    setFilter('equations');
+    setSelTopicId(null); // a clean cross-topic view — no lingering topic selection
+    setTopicPickerOpen(false);
+  }, []);
+
   const filterLabel =
-    filter === 'all'
+    filter === 'equations'
+      ? 'Equations & Formulas'
+      : filter === 'all'
       ? 'All'
       : filter === 'course'
         ? (selCourse?.code ?? 'Course')
@@ -777,6 +834,13 @@ export function GlossaryScreen({ route, navigation }: Props) {
       const ids = new Set(name ? topicIdsByName.get(name) ?? [selTopicId] : [selTopicId]);
       list = list.filter((e) => e.achievement_id != null && ids.has(e.achievement_id));
     }
+    if (filter === 'equations') {
+      // ONLY terms that ARE equations/formulas (non-empty formula_symbolic),
+      // as a flat cross-topic list sorted ALPHABETICALLY by term.
+      list = list
+        .filter((e) => formulaById[e.id] != null)
+        .sort((a, b) => a.term.localeCompare(b.term));
+    }
     if (filter === 'favorites') list = list.filter((e) => bookmarks.has(e.id));
     if (filter === 'custom') list = list.filter((e) => starred.has(e.id));
     if (filter === 'recent') {
@@ -788,7 +852,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
     const q = search.trim().toLowerCase();
     if (q) list = list.filter((e) => e.term.toLowerCase().includes(q));
     return list;
-  }, [entries, filter, search, selCourseId, selTopicId, bookmarks, starred, recent, topics, topicIdsByName]);
+  }, [entries, filter, search, selCourseId, selTopicId, bookmarks, starred, recent, topics, topicIdsByName, formulaById]);
 
   // Rows for the held-chip term list overlay (user request 2026-07-22): the
   // members of one set (Bookmarks / Custom / Recent), independent of the main
@@ -1061,8 +1125,18 @@ export function GlossaryScreen({ route, navigation }: Props) {
         {/* The "Course" filter was removed (user request 2026-07-23) — the app is
             commercial and has no academic course codes in the public glossary. */}
         <Chip
-          label={filter === 'topic' && selTopic ? 'Topic ✓' : 'Topic'}
-          active={filter === 'topic'}
+          // The Topic chip doubles as the entry point for the pinned
+          // "Equations & Formulas" filter (reached from the same picker), so it
+          // reflects that mode with the glossary's cyan accent when active.
+          label={
+            filter === 'equations'
+              ? 'Equations ✓'
+              : filter === 'topic' && selTopic
+                ? 'Topic ✓'
+                : 'Topic'
+          }
+          active={filter === 'topic' || filter === 'equations'}
+          accent={filter === 'equations' ? colors.cyanBright : '#ffc64d'}
           onPress={() => {
             setFilter('topic');
             setTopicPickerOpen(true); // reopen the A–Z list to re-pick
@@ -1173,7 +1247,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
           ListEmptyComponent={
             loading ? null : <Text style={styles.empty}>No results for {search.trim() || filterLabel}</Text>
           }
-          extraData={[expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById]}
+          extraData={[expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById]}
           renderItem={({ item }) => {
             // List view expands INLINE; card view stays compact and opens the
             // popup overlay instead (below).
@@ -1296,6 +1370,17 @@ export function GlossaryScreen({ route, navigation }: Props) {
                     {ttsBeg ? item.plain_english || item.definition : item.definition}
                   </Text>
                 )}
+
+                {/* In the Equations & Formulas view, surface the term's symbolic
+                    formula (and its plain-language form) right on the row. */}
+                {filter === 'equations' && formulaById[item.id] ? (
+                  <View style={styles.formulaWrap}>
+                    <Text style={styles.formulaSymbolic}>{formulaById[item.id].symbolic}</Text>
+                    {formulaById[item.id].words ? (
+                      <Text style={styles.formulaWords}>{formulaById[item.id].words}</Text>
+                    ) : null}
+                  </View>
+                ) : null}
 
                 {expanded &&
                   (d ? (
@@ -1485,6 +1570,18 @@ export function GlossaryScreen({ route, navigation }: Props) {
               </View>
               <Text style={styles.topicLockHint}>{COPY.upgradePhrase}</Text>
               <ScrollView keyboardShouldPersistTaps="handled" {...NO_TOUCH_DELAY}>
+                {/* Equations & Formulas is a free cross-topic reference list, so
+                    it stays SELECTABLE even here where per-topic links are
+                    member-locked (user request 2026-07-26). */}
+                <Pressable
+                  style={styles.equationsRow}
+                  onPress={selectEquations}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Equations & Formulas, ${equationCount} term${equationCount === 1 ? '' : 's'}`}
+                >
+                  <Text style={styles.equationsRowText}>∑  Equations &amp; Formulas</Text>
+                  <Text style={styles.equationsCount}>{equationCount}</Text>
+                </Pressable>
                 {topicsAZ.map((t) => (
                   <Pressable
                     key={t.id}
@@ -1503,6 +1600,17 @@ export function GlossaryScreen({ route, navigation }: Props) {
             <View style={styles.topicOverlay}>
               <Text style={styles.topicOverlayTitle}>SELECT A TOPIC · A–Z</Text>
               <ScrollView keyboardShouldPersistTaps="handled" {...NO_TOUCH_DELAY}>
+                {/* Pinned cross-topic filter: only the terms that ARE
+                    equations/formulas, alphabetical. Not member-gated. */}
+                <Pressable
+                  style={styles.equationsRow}
+                  onPress={selectEquations}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Equations & Formulas, ${equationCount} term${equationCount === 1 ? '' : 's'}`}
+                >
+                  <Text style={styles.equationsRowText}>∑  Equations &amp; Formulas</Text>
+                  <Text style={styles.equationsCount}>{equationCount}</Text>
+                </Pressable>
                 {topicsAZ.map((t) => {
                   const active = selTopicId === t.id;
                   return (
@@ -1751,6 +1859,31 @@ const styles = StyleSheet.create({
     borderBottomColor: '#1a1a1a',
   },
   topicRowActive: { backgroundColor: '#1d1607' },
+  // Pinned "Equations & Formulas" row at the top of the topic picker — its own
+  // cyan accent so it reads as a special cross-topic filter, not a topic.
+  equationsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 10,
+    paddingVertical: 15,
+    paddingHorizontal: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(127,212,255,0.22)',
+    backgroundColor: 'rgba(127,212,255,0.06)',
+  },
+  equationsRowText: {
+    flexShrink: 1,
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 14,
+    letterSpacing: 0.6,
+    color: colors.cyanBright,
+  },
+  equationsCount: { fontFamily: fonts.mono, fontSize: 13, color: colors.cyanBright },
+  // Formula shown on a row in the Equations & Formulas view.
+  formulaWrap: { marginTop: 8, gap: 2 },
+  formulaSymbolic: { fontFamily: fonts.mono, fontSize: 16, lineHeight: 24, color: colors.cyanBright },
+  formulaWords: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 14, lineHeight: 20, color: colors.textSub },
   topicRowText: { flexShrink: 1, fontFamily: fonts.barlowMedium, fontSize: 15, color: colors.textSecondary },
   // View-only topic overlay header: title + ✕ (rows no longer close it).
   topicLockedHeader: {

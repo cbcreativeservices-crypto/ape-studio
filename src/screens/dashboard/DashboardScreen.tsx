@@ -55,7 +55,8 @@ import {
   type DashboardData,
   type Topic,
 } from '../../features/dashboard/api';
-import { isFreeEnrollGs, useEnrollment } from '../../features/enrollment/enrollmentStore';
+import { FREE_ENROLL_GS, isFreeEnrollGs, useEnrollment } from '../../features/enrollment/enrollmentStore';
+import { supabase } from '../../lib/supabase';
 import { gateReadout, pctColor } from '../../features/dashboard/gates';
 import { fetchGlossaryItemsByIds, fetchTopicItems, studyDisplayPct } from '../../features/study/api';
 import { setLastStudyLocation } from '../../features/study/lastStudyLocation';
@@ -377,8 +378,20 @@ export function DashboardScreen() {
           `Score ${result.score}/25 — ${result.outcome.replace(/_/g, ' ')}. (Full results screen builds in M6.)`,
         );
       }
-      const d =
-        viewModeRef.current === 'enrollment' && enrolledGsRef.current.length > 0
+      // A session-less GUEST studies the FREE topics on-device only. It must NEVER
+      // touch the student-record path: fetchDashboard()/fetchCommercialDashboard()
+      // query users/enrollment/progress, which throw 'user_not_found' for a guest
+      // (that used to blank the whole Study tab). Instead load the free topics
+      // through the guest-safe enrollment fetch (userId stays 'local' → no progress
+      // queries; content — achievements/glossary — is anon-readable). Progress = the
+      // device-local mirror merged below. Keyed on the real session, NOT entitlement,
+      // since returning authed users also default to the mock 'anonymous' state.
+      const { data: sessData } = await supabase.auth.getSession();
+      const isGuest = !sessData.session;
+      const guestFreeGs = enrolledGsRef.current.filter(isFreeEnrollGs);
+      const d = isGuest
+        ? await fetchEnrollmentDashboard(guestFreeGs.length > 0 ? guestFreeGs : [...FREE_ENROLL_GS])
+        : viewModeRef.current === 'enrollment' && enrolledGsRef.current.length > 0
           ? await fetchEnrollmentDashboard(enrolledGsRef.current)
           : commercialMode
             ? await fetchCommercialDashboard((await getLastPublicCourse()) ?? 1, caps)

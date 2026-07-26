@@ -131,12 +131,17 @@ export async function fetchEnrollmentDashboard(gsList: number[]): Promise<Dashbo
     color_hex: null,
   };
 
-  // Method configs are global — always load them so the method blocks render.
+  // Method configs are global — load them so the method blocks render. NON-FATAL:
+  // a session-less GUEST (anon role) has no table-level grant on study_methods, so
+  // this select 403s for them. That must NOT break guest study of the free topics
+  // — the method panels render from the static METHOD_ORDER regardless, and the
+  // free topics' gates are display-only. On any error configs stay empty (an authed
+  // user always has the grant, so their result is unchanged).
   const { data: cfg, error: cfgErr } = await supabase
     .from('study_methods')
     .select('key, name, sequence, min_engagement_seconds, requires_accuracy, accuracy_threshold, required_passes')
     .order('sequence');
-  if (cfgErr) throw cfgErr;
+  if (cfgErr) console.warn('[dashboard] study_methods unavailable (guest?):', cfgErr.message);
   const methodConfigs = (cfg ?? []) as StudyMethodConfig[];
 
   const empty: DashboardData = {
