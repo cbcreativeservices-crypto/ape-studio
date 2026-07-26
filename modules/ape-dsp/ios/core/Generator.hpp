@@ -187,16 +187,25 @@ class Generator {
     // be hoisted before a mid-block applyTrigger adopts the mode.
     if ((modeCur_ == GenMode::Additive || modeTarget == GenMode::Additive) && fs > 0)
       additivePrepare(fs);
-    // Speaker-safety HPF: read the cutoff once per render; (re)design the biquad
-    // only when the cutoff or sample rate actually changes (route change / first
-    // engage). 0 = bypassed (headphones/line-out — full range).
+    // Speaker-safety HPF. Read the cutoff once. Design the biquad when an ACTIVE
+    // cutoff first appears / changes (fixed 150 Hz in practice → designed once);
+    // a 0 (bypass, e.g. headphones) KEEPS the last design and rides the crossfade
+    // below to zero mix. The ON/OFF is a short CROSSFADE between the raw and the
+    // high-passed signal, never an abrupt insert — an abrupt one steps the low
+    // end on a route change (speaker↔headphone) and clicks loudly. The biquad is
+    // run every audible sample once designed, so its state never goes stale and a
+    // re-engage never clicks either.
     const double hpfHz = hpfHz_.load(std::memory_order_relaxed);
-    const bool hpfOn = hpfHz > 0.0 && fs > 0.0;
-    if (hpfOn && (hpfHz != hpfDesignedHz_ || fs != hpfDesignedFs_)) {
+    if (hpfHz > 0.0 && fs > 0.0 && (hpfHz != hpfDesignedHz_ || fs != hpfDesignedFs_)) {
       hpf_ = Biquad::highpass(hpfHz, fs);
       hpfDesignedHz_ = hpfHz;
       hpfDesignedFs_ = fs;
     }
+    const bool hpfDesigned = hpfDesignedHz_ > 0.0;
+    const double hpfMixTarget = (hpfHz > 0.0) ? 1.0 : 0.0;
+    // ~40 ms linear raw↔filtered crossfade (route on/off), fixed-rate like the
+    // amp/gain ramps.
+    const double hpfMixStep = 1.0 / (fs * 0.040 < 1.0 ? 1.0 : fs * 0.040);
     for (uint32_t i = 0; i < n; ++i) {
       // Fade envelope toward the run target (click-free start/stop, Q4-safe);
       // a pending trigger holds the target at 0 until the reset has landed.
@@ -213,9 +222,17 @@ class Generator {
       ampCur_ = ramp(ampCur_, ampTarget, gainStep);
       // HPF sits on the raw generator signal, BEFORE the Q4 level/cap gain, so
       // the cap chain (ampCur_ * env_) stays the single final amplitude
-      // authority. Bypassed (route off) → the raw sample passes untouched.
+      // authority. Raw and high-passed are crossfaded by hpfMix_ (0 = raw/
+      // bypassed, 1 = fully filtered) so engaging/bypassing on a route change is
+      // click-free.
       double s = sample(modeCur_, fs);
-      if (hpfOn) s = static_cast<double>(hpf_.process(static_cast<float>(s)));
+      if (hpfDesigned) {
+        const double filtered = static_cast<double>(hpf_.process(static_cast<float>(s)));
+        hpfMix_ = hpfMix_ < hpfMixTarget
+                      ? (hpfMix_ + hpfMixStep > hpfMixTarget ? hpfMixTarget : hpfMix_ + hpfMixStep)
+                      : (hpfMix_ - hpfMixStep < hpfMixTarget ? hpfMixTarget : hpfMix_ - hpfMixStep);
+        s = s * (1.0 - hpfMix_) + filtered * hpfMix_;
+      }
       out[i] = static_cast<float>(ampCur_ * env_ * s);
     }
   }
@@ -243,8 +260,11 @@ class Generator {
     addSnap_ = true;
     // Clean the HPF state on every (re)trigger — this only runs with env_ at 0
     // (silent), so clearing the biquad memory can't step audible output and a
-    // re-engage never clicks from stale state.
+    // re-engage never clicks from stale state. Snap the crossfade to the current
+    // route (silent, so no click) — the 40 ms crossfade is only for MID-TONE
+    // route changes, not for the start of a fresh tone.
     hpf_.reset();
+    hpfMix_ = (hpfHz_.load() > 0.0) ? 1.0 : 0.0;
     trigPending_ = false;
   }
 
@@ -527,6 +547,7 @@ class Generator {
   Biquad hpf_;
   double hpfDesignedHz_ = 0.0;
   double hpfDesignedFs_ = 0.0;
+  double hpfMix_ = 0.0;  // raw↔filtered crossfade (0 = bypassed, 1 = filtered)
   double sweepPhase01_ = 0.0;
   double clickTimer_ = 0.0;
   double burstTimer_ = 0.0;

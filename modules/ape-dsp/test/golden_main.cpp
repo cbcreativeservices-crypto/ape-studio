@@ -616,6 +616,36 @@ int main() {
     near("Speaker HPF OFF by default: 75 Hz sine flat (-23 dBFS)", sineMeanDb(75.0, false), -23.01, 0.3);
     near("Speaker HPF ON: 75 Hz sine attenuated ~12.3 dB", sineMeanDb(75.0, true), -35.31, 0.6);
     near("Speaker HPF ON: 2 kHz sine passband untouched", sineMeanDb(2000.0, true), -23.01, 0.3);
+
+    // 9c. Route change is CLICK-FREE (crossfade, not an abrupt insert) — the
+    //     boundary sample at a mid-tone engage/disengage must not step. (The
+    //     abrupt version steps the low end by ~the filtered/raw amplitude
+    //     difference and clicks loudly on a headphone plug/unplug.)
+    {
+      Generator g;
+      g.configure(fs);
+      g.setMode(GenMode::Sine);
+      g.setFrequency(75.0);
+      g.setLevelDb(-20.0);
+      g.setHpf(150.0);  // start on the speaker (engaged)
+      g.start();
+      std::vector<float> a(static_cast<size_t>(fs * 0.3));
+      g.render(a.data(), (uint32_t)a.size());
+      g.setHpf(0.0);  // route → headphones mid-tone (disengage)
+      std::vector<float> b(static_cast<size_t>(fs * 0.3));
+      g.render(b.data(), (uint32_t)b.size());
+      // Per-sample delta of the settled RAW tone (b's tail, crossfade done).
+      double steadyRaw = 0.0;
+      for (size_t i = b.size() * 3 / 4; i < b.size(); ++i)
+        steadyRaw = std::max(steadyRaw, (double)std::fabs(b[i] - b[i - 1]));
+      const double jumpAB = std::fabs((double)b[0] - (double)a.back());
+      truthy("Route HPF disengage click-free (boundary step <= 2x steady)", jumpAB <= steadyRaw * 2.0 + 1e-6);
+      g.setHpf(150.0);  // route → speaker mid-tone (re-engage)
+      std::vector<float> c(static_cast<size_t>(fs * 0.3));
+      g.render(c.data(), (uint32_t)c.size());
+      const double jumpBC = std::fabs((double)c[0] - (double)b.back());
+      truthy("Route HPF engage click-free (boundary step <= 2x steady)", jumpBC <= steadyRaw * 2.0 + 1e-6);
+    }
   }
 
   std::printf("\n==== GOLDEN RESULT: %d passed, %d failed ====\n", g_pass, g_fail);
