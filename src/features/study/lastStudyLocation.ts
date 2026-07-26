@@ -10,15 +10,14 @@
 import { useSyncExternalStore } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-/** The five study-method routes (route names EXACTLY as in StudyStackParamList). */
-export type StudyMethodRoute = 'Flashcards' | 'Matching' | 'FillInBlank' | 'Scenarios' | 'EarTraining';
+/** The four study-method routes (route names EXACTLY as in StudyStackParamList). */
+export type StudyMethodRoute = 'Flashcards' | 'Matching' | 'FillInBlank' | 'Scenarios';
 
 const METHOD_ROUTES: ReadonlySet<string> = new Set<StudyMethodRoute>([
   'Flashcards',
   'Matching',
   'FillInBlank',
   'Scenarios',
-  'EarTraining',
 ]);
 
 /** The learner's last recorded study position. null = nothing recorded yet. */

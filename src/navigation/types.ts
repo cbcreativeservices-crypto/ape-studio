@@ -21,8 +21,9 @@ export type StudyStackParamList = {
     achievementId?: string;
     topicName?: string;
   };
-  // S12/S13 — screens only for Fall (no content, not gate-relevant).
-  EarTraining: StudyScreenParams;
+  // S13 — Scenarios screen only for Fall (no content, not gate-relevant). The
+  // S12 EarTraining study method was retired (Booth 2026-07-26, v4 MASTER §13);
+  // the Audio Learning Lab (EarLab route) replaces it.
   Scenarios: StudyScreenParams;
 };
 
@@ -115,10 +116,15 @@ export type RootStackParamList = {
   Rt60Live: undefined;
   /** Spike-0 dev-only debug screen (ape-dsp proof) — __DEV__ entry on ToolsHub. */
   DspDebug: undefined;
-  /** Ear Training & Critical Listening Lab (Phase 1 SHELL) — pinned Home card +
-   *  Learn/Explore/Practice/Test mode tabs; the Explore harmonics view mounts in
-   *  a later step. Its own card/route (NOT a ToolsHub tile). */
+  /** AUDIO LEARNING LAB landing menu (v4 MASTER §13) — reached from the pinned
+   *  "Ear Training & Critical Listening Lab" HOME card. Menu into the 16 audio
+   *  labs + Signal Chain Builder + Wave Physics Lab. Its own card/route (NOT a
+   *  ToolsHub tile). */
   EarLab: undefined;
+  /** Lab 13 "Harmonic" (v4 MASTER §7) — the hear-see-control harmonics
+   *  centerpiece (additive synthesis · spectrum · distortion), with
+   *  Learn/Explore/Practice/Test modes. Opened from the EarLab landing menu. */
+  HarmonicLab: undefined;
 };
 
 declare global {

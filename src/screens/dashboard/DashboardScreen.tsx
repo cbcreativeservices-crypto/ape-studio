@@ -273,12 +273,11 @@ const SCREW_ROT: [number, number][] = [
 ];
 
 const STUDY_ROUTES: Partial<
-  Record<MethodKey, 'Flashcards' | 'FillInBlank' | 'Matching' | 'EarTraining' | 'Scenarios'>
+  Record<MethodKey, 'Flashcards' | 'FillInBlank' | 'Matching' | 'Scenarios'>
 > = {
   flashcards: 'Flashcards',
   fill_in_blank: 'FillInBlank',
   matching: 'Matching',
-  ear_training: 'EarTraining',
   scenarios: 'Scenarios',
 };
 

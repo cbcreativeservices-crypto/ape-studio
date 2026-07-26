@@ -1,84 +1,95 @@
 /**
- * EarLabScreen — "Ear Training & Critical Listening Lab" SHELL (Phase 1).
+ * EarLabScreen — AUDIO LEARNING LAB landing menu (v4 MASTER §13).
  *
- * SHELL: header + intro + four mode tabs (Learn / Explore / Practice / Test)
- * + an audio-output prompt on entry. Explore mounts HarmonicsView — the
- * hear-see-control harmonics centerpiece (search for HARMONICS below).
+ * Reached from the pinned "Ear Training & Critical Listening Lab" HOME card.
+ * This is the landing menu into the whole Learning-Lab ecosystem:
+ *   • Pillar B — the 16 Audio Learning Labs
+ *   • Pillar B capstone — Signal Chain Builder
+ *   • Pillar C — Wave Physics Laboratory (Room Builder + 15 modules)
  *
- * Honesty (measurement-tools §1.7): no fake meters, no simulated output. The
- * shell itself produces no sound — HarmonicsView owns every sound path (all
- * behind the audio-output gate, with its own noteAudioActivity keepalive);
- * the on-entry gate merely lets the user enable output up front. Engine
- * awareness is a SUBTLE note in Explore (live mode needs the DSP engine);
- * the shell never hard-blocks — Learn/Practice/Test render without the engine.
+ * The former single harmonics experience that lived on this route now has its
+ * own `HarmonicLab` route (see HarmonicLabScreen) and is the one lab that is
+ * live today; every other entry renders an HONEST "In development" state — no
+ * fake interactivity, no dead links (measurement-tools §1.7).
+ *
+ * The `ear_training` STUDY METHOD (old Screen 12) is a separate, retired
+ * concept — this landing menu replaces it (Booth 2026-07-26, D-LAB-1).
  */
-import { useEffect, useState } from 'react';
+import { Fragment } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { ApeDsp } from '../../../modules/ape-dsp';
-import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
-import { EngineGate } from '../tools/EngineGate';
-import { HarmonicsView } from './HarmonicsView';
-import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'EarLab'>;
 
-type LabMode = 'learn' | 'explore' | 'practice' | 'test';
+const INTRO =
+  'Develop technical listening by hearing, identifying, measuring, and ' +
+  'manipulating frequency, noise, distortion, dynamics, spatial effects, and ' +
+  'real-world audio-system conditions — one continuous Learn It · Hear It · See It flow.';
 
-const MODES: { key: LabMode; label: string }[] = [
-  { key: 'learn', label: 'LEARN' },
-  { key: 'explore', label: 'EXPLORE' },
-  { key: 'practice', label: 'PRACTICE' },
-  { key: 'test', label: 'TEST' },
+/** A lab entry in the landing menu. `route` present ⇒ live & tappable; absent
+ *  ⇒ honest "In development" (per §1.7 — no fake interactivity). */
+type LabEntry = {
+  /** Display number (spec order); Signal Chain / Wave Physics use a glyph. */
+  tag: string;
+  name: string;
+  blurb: string;
+  route?: keyof RootStackParamList;
+};
+
+type LabSection = { title: string; note?: string; entries: LabEntry[] };
+
+// Pillar B — the 16 Audio Learning Labs (v4 MASTER §7). Only Harmonic (Lab 13)
+// is live today (the additive engine v3 path); the rest are honest placeholders.
+const AUDIO_LABS: LabEntry[] = [
+  { tag: '1', name: 'Equalizer', blurb: 'Graphic, parametric, shelves, filters, dynamic EQ.' },
+  { tag: '2', name: 'Delay', blurb: 'Echoes, slapback, tempo sync, feedback.' },
+  { tag: '3', name: 'Reverb', blurb: 'Rooms, pre-delay, decay, RT60, damping.' },
+  { tag: '4', name: 'Chorus', blurb: 'Detuned voices, width, modulation.' },
+  { tag: '5', name: 'Flanger', blurb: 'Sweeping comb-filter notches.' },
+  { tag: '6', name: 'Phaser', blurb: 'All-pass stages, phase cancellation.' },
+  { tag: '7', name: 'Compression', blurb: 'Threshold, ratio, attack/release, envelope.' },
+  { tag: '8', name: 'Gate', blurb: 'Downward expansion, chatter, sidechain.' },
+  { tag: '9', name: 'Limiter', blurb: 'Brickwall ceiling, true-peak, loudness.' },
+  { tag: '10', name: 'Distortion', blurb: 'Harmonics, clipping, saturation, aliasing.' },
+  { tag: '11', name: 'Noise', blurb: 'White → violet colors, floor, SNR, masking.' },
+  { tag: '12', name: 'Phase', blurb: 'Polarity vs phase, correlation, mono.' },
+  { tag: '13', name: 'Harmonic', blurb: 'Additive synthesis, spectrum, Fourier.', route: 'HarmonicLab' },
+  { tag: '14', name: 'Oscillator', blurb: 'Sine/square/saw, FM, AM, band-limiting.' },
+  { tag: '15', name: 'Stereo Imaging', blurb: 'Pan, width, Mid/Side, mono-fold.' },
+  { tag: '16', name: 'Harmonograph', blurb: 'Frequency ratios ↔ musical intervals.' },
 ];
 
-const INTRO =
-  'Develop technical listening skills by hearing, identifying, measuring, and ' +
-  'manipulating frequencies, noise, distortion, dynamics, spatial effects, and ' +
-  'real-world audio-system conditions.';
-
-/** Small labeled "in development" card — the honest placeholder for the panels
- *  whose content lands in later steps (no simulated interactivity). */
-function DevPlaceholder({ text }: { text: string }) {
-  return (
-    <View style={styles.placeholder}>
-      <Text style={styles.placeholderText}>{text}</Text>
-    </View>
-  );
-}
+const SECTIONS: LabSection[] = [
+  { title: 'THE 16 AUDIO LEARNING LABS', entries: AUDIO_LABS },
+  {
+    title: 'SIGNAL CHAIN BUILDER',
+    note: 'The capstone — assemble a full chain and see per-module and cumulative effect.',
+    entries: [
+      {
+        tag: '⛓',
+        name: 'Signal Chain Builder',
+        blurb: 'Generator → EQ → Comp → Gate → FX → Reverb → Limiter → Output.',
+      },
+    ],
+  },
+  {
+    title: 'WAVE PHYSICS LABORATORY',
+    note: 'Spatial acoustics — one Room Builder engine, 15 modules as presets.',
+    entries: [
+      {
+        tag: '◎',
+        name: 'Wave Physics Lab',
+        blurb: 'Reflection, absorption, diffusion, interference, coverage, and more.',
+      },
+    ],
+  },
+];
 
 export function EarLabScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
-  const { requestAudioOutput } = useAudioOutputGate();
-
-  // Default to EXPLORE (spec) — the mode that will host the harmonics view.
-  const [mode, setMode] = useState<LabMode>('explore');
-
-  // Vertical stem drags in HarmonicsView's editor must WIN over the panel's
-  // ScrollView: while a drag is active the scroll is disabled (the editor's
-  // responder also refuses termination, but Android ScrollView can still
-  // steal — this is the reliable half of the belt-and-braces pair).
-  const [scrollLocked, setScrollLocked] = useState(false);
-
-  // Engine gate — computed ONCE (native availability cannot change mid-session);
-  // mirrors the tool screens. 'idle' = engine usable; 'absent'/'spike' render the
-  // shared honest EngineGate card as a SUBTLE note in Explore only.
-  const [gate] = useState<EngineState>(() => {
-    if (!ApeDsp.isAvailable()) return 'absent';
-    return ApeDsp.engineVersion() >= 2 ? 'idle' : 'spike';
-  });
-  const engineReady = gate === 'idle';
-
-  // AUDIO-OUTPUT PROMPT ON ENTRY (owner-confirmed 2026-07-25): entering the Lab
-  // prompts the user to enable sound up front. Rendering does NOT block on the
-  // result — the shell renders regardless; the shell emits no sound yet.
-  useEffect(() => {
-    void requestAudioOutput();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -87,85 +98,59 @@ export function EarLabScreen({ navigation }: Props) {
           <Text style={styles.back}>‹</Text>
         </Pressable>
         <View style={{ flexShrink: 1 }}>
-          <Text style={styles.title}>EAR TRAINING & CRITICAL LISTENING LAB</Text>
-          <Text style={styles.subtitle}>Technical Listening</Text>
+          <Text style={styles.title}>AUDIO LEARNING LAB</Text>
+          <Text style={styles.subtitle}>Ear Training & Critical Listening</Text>
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll} scrollEnabled={!scrollLocked}>
-        {/* INSTRUCTION — what this lab is for. */}
+      <ScrollView contentContainerStyle={styles.scroll}>
         <Text style={styles.intro}>{INTRO}</Text>
 
-        {/* MODE TABS — Learn / Explore / Practice / Test (default Explore). */}
-        <View style={styles.tabRow}>
-          {MODES.map((m) => {
-            const selected = mode === m.key;
-            return (
-              <Pressable
-                key={m.key}
-                style={[styles.tab, selected && styles.tabSelected]}
-                onPress={() => {
-                  // A tab press can land MID-STEM-DRAG (tabs stay pressable
-                  // during a PanResponder drag); switching away unmounts the
-                  // editor before its release fires, so free the scroll lock
-                  // here too (the editor also releases it on unmount).
-                  setScrollLocked(false);
-                  setMode(m.key);
-                }}
-                accessibilityRole="button"
-                accessibilityState={{ selected }}
-                accessibilityLabel={`${m.label} mode`}
-              >
-                <Text style={[styles.tabText, selected && styles.tabTextSelected]}>{m.label}</Text>
-              </Pressable>
-            );
-          })}
-        </View>
-
-        {/* PANELS — one per mode. */}
-        {mode === 'learn' ? (
-          <View style={styles.panel}>
-            <Text style={styles.caption}>
-              The app identifies the sound and explains what to hear and observe.
-            </Text>
-            <DevPlaceholder text="Lessons in development" />
+        {SECTIONS.map((section) => (
+          <View key={section.title} style={styles.section}>
+            <Text style={styles.sectionTitle}>{section.title}</Text>
+            {section.note ? <Text style={styles.sectionNote}>{section.note}</Text> : null}
+            <View style={styles.list}>
+              {section.entries.map((e) => (
+                <Fragment key={e.name}>
+                  <LabRow entry={e} onOpen={() => e.route && navigation.navigate(e.route as never)} />
+                </Fragment>
+              ))}
+            </View>
           </View>
-        ) : null}
-
-        {mode === 'explore' ? (
-          <View style={styles.panel}>
-            <Text style={styles.caption}>
-              Freely change the generator, analyzer, level, and other controls.
-            </Text>
-
-            {/* Subtle, HONEST engine note — the interactive view needs the DSP
-                engine. Renders nothing when the engine is ready; the shell never
-                hard-blocks on it. */}
-            {!engineReady ? <EngineGate state={gate} /> : null}
-
-            {/* HARMONICS / HEAR-SEE-CONTROL VIEW — the interactive centerpiece.
-                HarmonicsView owns its state, sound, cleanup, and card chrome
-                entirely — mounted directly in the panel (which has gap: 12).
-                onDragActive locks this screen's scroll during stem drags. */}
-            <HarmonicsView onDragActive={setScrollLocked} />
-          </View>
-        ) : null}
-
-        {mode === 'practice' ? (
-          <View style={styles.panel}>
-            <Text style={styles.caption}>Exercises with optional hints and immediate feedback.</Text>
-            <DevPlaceholder text="Exercises in development" />
-          </View>
-        ) : null}
-
-        {mode === 'test' ? (
-          <View style={styles.panel}>
-            <Text style={styles.caption}>Randomized scored exercises without instructional overlays.</Text>
-            <DevPlaceholder text="Scored tests in development" />
-          </View>
-        ) : null}
+        ))}
       </ScrollView>
     </View>
+  );
+}
+
+/** One lab row. Live entries (have a `route`) are amber-accented and tappable
+ *  with a chevron; in-development entries are muted and non-interactive with an
+ *  honest "IN DEVELOPMENT" tag (no dead navigation). */
+function LabRow({ entry, onOpen }: { entry: LabEntry; onOpen: () => void }) {
+  const live = !!entry.route;
+  return (
+    <Pressable
+      onPress={live ? onOpen : undefined}
+      disabled={!live}
+      accessibilityRole={live ? 'button' : undefined}
+      accessibilityState={{ disabled: !live }}
+      accessibilityLabel={live ? `Open ${entry.name} lab` : `${entry.name} — in development`}
+      style={({ pressed }) => [styles.row, live && styles.rowLive, pressed && live && styles.rowPressed]}
+    >
+      <View style={[styles.numBadge, live && styles.numBadgeLive]}>
+        <Text style={[styles.numText, live && styles.numTextLive]}>{entry.tag}</Text>
+      </View>
+      <View style={{ flex: 1 }}>
+        <Text style={[styles.rowName, live && styles.rowNameLive]}>{entry.name}</Text>
+        <Text style={styles.rowBlurb}>{entry.blurb}</Text>
+      </View>
+      {live ? (
+        <Text style={styles.chevron}>›</Text>
+      ) : (
+        <Text style={styles.devTag}>IN DEVELOPMENT</Text>
+      )}
+    </Pressable>
   );
 }
 
@@ -175,37 +160,46 @@ const styles = StyleSheet.create({
   back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1.4, color: colors.textPrimary },
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
-  scroll: { padding: 16, paddingBottom: 28, gap: 14 },
+  scroll: { padding: 16, paddingBottom: 28, gap: 20 },
 
   intro: { fontFamily: fonts.barlowRegular, fontSize: 14.5, lineHeight: 21, color: colors.textSecondary },
 
-  // Segmented mode tabs (inline pill row — no shared component exists; matches
-  // the SignalGen chip idiom).
-  tabRow: { flexDirection: 'row', gap: 8 },
-  tab: {
-    flex: 1,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#131316',
-    paddingVertical: 9,
+  section: { gap: 8 },
+  sectionTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.5, color: colors.amber },
+  sectionNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub, marginBottom: 2 },
+  list: { gap: 8 },
+
+  row: {
+    flexDirection: 'row',
     alignItems: 'center',
-  },
-  tabSelected: { borderColor: 'rgba(255,198,77,.65)', backgroundColor: '#1a1409' },
-  tabText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textSecondary },
-  tabTextSelected: { color: colors.amber },
-
-  panel: { gap: 12 },
-  caption: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSub },
-
-  // "In development" placeholder (Learn / Practice / Test).
-  placeholder: {
+    gap: 12,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#26262c',
     backgroundColor: '#131316',
-    padding: 20,
-    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 12,
   },
-  placeholderText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.4, color: colors.textSub },
+  rowLive: { borderColor: 'rgba(255,198,77,.45)', backgroundColor: '#17140c' },
+  rowPressed: { backgroundColor: '#1f1a0e' },
+
+  numBadge: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: '#2c2c33',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  numBadgeLive: { borderColor: 'rgba(255,198,77,.55)', backgroundColor: 'rgba(255,198,77,.10)' },
+  numText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: colors.textSub },
+  numTextLive: { color: colors.amber },
+
+  rowName: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 0.4, color: colors.textSecondary },
+  rowNameLive: { color: colors.textPrimary },
+  rowBlurb: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub, marginTop: 1 },
+
+  chevron: { fontFamily: fonts.oswaldSemiBold, fontSize: 22, color: colors.amber, paddingHorizontal: 4 },
+  devTag: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1, color: colors.textSub },
 });

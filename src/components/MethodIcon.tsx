@@ -2,7 +2,7 @@
  * MethodIcon — neon per-method glyph in a recessed dark tile (design-reference
  * MethodIcon.dc.html). SVG geometry transcribed verbatim from the prototype:
  *   flashcards (blue cards) · fill_in_blank (gold puzzle) · matching (red TRS
- *   patch cable, silver connectors) · ear_training (green ear) · scenarios
+ *   patch cable, silver connectors) · scenarios
  *   (purple speech bubble) · quiz (yellow clipboard) · glossary (blue book).
  * The CSS drop-shadow neon glow has no react-native-svg equivalent; it's
  * approximated with a wider low-opacity under-stroke of the same paths.
@@ -14,7 +14,6 @@ export type MethodKey =
   | 'flashcards'
   | 'fill_in_blank'
   | 'matching'
-  | 'ear_training'
   | 'scenarios'
   | 'quiz'
   | 'glossary';
@@ -23,7 +22,6 @@ export const METHOD_COLORS: Record<MethodKey, string> = {
   flashcards: '#2f9bff',
   fill_in_blank: '#f2a81f',
   matching: '#ff4b3a',
-  ear_training: '#37e05f',
   scenarios: '#b45bff',
   quiz: '#ffd23c',
   glossary: '#5bb0ff',
@@ -110,13 +108,6 @@ function Glyph({ method, glow, color }: { method: MethodKey; glow?: boolean; col
               <Rect x={13} y={17.4} width={0.9} height={2.2} rx={0.3} fill="#ff4b3a" />
             </>
           )}
-        </>
-      );
-    case 'ear_training':
-      return (
-        <>
-          <Path d="M6 8.5a6.5 6.5 0 1 1 13 0c0 6 -6 6 -6 10a3.5 3.5 0 1 1 -7 0" {...common} strokeWidth={glow ? 4.4 : 1.8} />
-          <Path d="M15 8.5a2.5 2.5 0 0 0 -5 0v1a2 2 0 1 1 0 4" {...common} strokeWidth={glow ? 4.4 : 1.8} />
         </>
       );
     case 'scenarios':

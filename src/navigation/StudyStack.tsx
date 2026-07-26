@@ -10,7 +10,6 @@ import { FillInBlankScreen } from '../screens/study/FillInBlankScreen';
 import { MatchingScreen } from '../screens/study/MatchingScreen';
 import { QuizScreen } from '../screens/quiz/QuizScreen';
 import { GlossaryScreen } from '../screens/glossary/GlossaryScreen';
-import { EarTrainingScreen } from '../screens/study/EarTrainingScreen';
 import { ScenariosScreen } from '../screens/study/ScenariosScreen';
 import type { StudyStackParamList } from './types';
 
@@ -32,7 +31,6 @@ export function StudyStack() {
       <Stack.Screen name="Matching" component={MatchingScreen} />
       <Stack.Screen name="Quiz" component={QuizScreen} />
       <Stack.Screen name="Glossary" component={GlossaryScreen} />
-      <Stack.Screen name="EarTraining" component={EarTrainingScreen} />
       <Stack.Screen name="Scenarios" component={ScenariosScreen} />
     </Stack.Navigator>
   );

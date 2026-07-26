@@ -110,7 +110,6 @@ const SCREENS: { section: string; items: ScreenEntry[] }[] = [
       { label: 'Fill in the Blank', go: (n) => n.navigate('Study', { screen: 'FillInBlank', params: MOCK_STUDY }) },
       { label: 'Matching', go: (n) => n.navigate('Study', { screen: 'Matching', params: MOCK_STUDY }) },
       { label: 'Quiz', go: (n) => n.navigate('Study', { screen: 'Quiz', params: MOCK_STUDY }) },
-      { label: 'Ear Training', go: (n) => n.navigate('Study', { screen: 'EarTraining', params: MOCK_STUDY }) },
       { label: 'Scenarios', go: (n) => n.navigate('Study', { screen: 'Scenarios', params: MOCK_STUDY }) },
     ],
   },

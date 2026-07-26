@@ -22,8 +22,7 @@ export type PaceMethodKey =
   | 'fill_in_blank'
   | 'matching'
   | 'scenarios'
-  | 'flashcards'
-  | 'ear_training';
+  | 'flashcards';
 
 /**
  * A pace preset. Pace = a MULTIPLE of quiz time-per-question (20s/q).

@@ -4,8 +4,9 @@
  * expo-av was removed from this project on purpose: the EAS iOS build failed
  * with EXAV / ExpoModulesCore errors, and no Fall audio content exists to
  * play anyway. This component preserves the locked S12 layout and the same
- * prop contract ({ uri }) so EarTrainingScreen / ScenariosScreen are
- * untouched, but it imports NO audio module and renders the disabled state
+ * prop contract ({ uri }) so ScenariosScreen is untouched (the EarTraining
+ * study method that also used it was retired 2026-07-26, v4 MASTER §13), but
+ * it imports NO audio module and renders the disabled state
  * permanently. When audio content ships (Spring) and the team picks a
  * working audio library for SDK 57+ (e.g. expo-audio), reimplement playback
  * here — callers won't change.

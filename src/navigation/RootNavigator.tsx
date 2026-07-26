@@ -31,6 +31,7 @@ import { Rt60Screen } from '../screens/tools/Rt60Screen';
 import { FrequencyCounterScreen } from '../screens/tools/FrequencyCounterScreen';
 import { DspDebugScreen } from '../screens/tools/DspDebugScreen';
 import { EarLabScreen } from '../screens/lab/EarLabScreen';
+import { HarmonicLabScreen } from '../screens/lab/HarmonicLabScreen';
 import { LandingScreen } from '../screens/landing/LandingScreen';
 import { PublicGlossaryScreen } from '../screens/landing/PublicGlossaryScreen';
 import { PaywallScreen } from '../screens/commercial/PaywallScreen';
@@ -79,9 +80,11 @@ export function RootNavigator() {
       <Stack.Screen name="FrequencyCounter" component={FrequencyCounterScreen} />
       {/* Spike-0 dev-only debug (entry rendered only when __DEV__). */}
       <Stack.Screen name="DspDebug" component={DspDebugScreen} />
-      {/* Ear Training & Critical Listening Lab (Phase 1 SHELL) — own pinned Home
-          card + route; bottom nav hidden like the other tool screens. */}
+      {/* Audio Learning Lab (v4 MASTER §13) — the pinned Home card opens the
+          EarLab landing menu; HarmonicLab is the one live lab today. Bottom nav
+          hidden like the other tool screens. */}
       <Stack.Screen name="EarLab" component={EarLabScreen} />
+      <Stack.Screen name="HarmonicLab" component={HarmonicLabScreen} />
       {/* CM2 (commercialMode): pre-auth Landing + anonymous glossary. Only
           reached when the flag is ON (Splash routes there); registering them
           unconditionally changes nothing with the flag OFF. */}
