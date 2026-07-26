@@ -311,6 +311,10 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
 - (void)genSetHpf:(double)hz {
   _gen->setHpf(hz);
 }
+// Stereo dual-oscillator (hard-panned L/R) — on + the two channel frequencies.
+- (void)genSetStereo:(BOOL)on freqL:(double)fL freqR:(double)fR {
+  _gen->setStereo(on == YES, fL, fR);
+}
 // ADDITIVE (HV-2): flat [f0, a1..a12, p1..p12] — 25 doubles (Hz, 0..1, degrees).
 // Copy out of the NSArray and forward; the core NaN-proofs/clamps and ignores
 // short arrays (count < 25). NOTE: genSetFrequency does NOT retune the additive
@@ -350,6 +354,9 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
 }
 - (void)genRender:(float *)buffer frames:(uint32_t)frames {
   _gen->render(buffer, frames);
+}
+- (void)genRenderStereo:(float *)left right:(float *)right frames:(uint32_t)frames {
+  _gen->renderStereo(left, right, frames);
 }
 
 @end

@@ -151,6 +151,10 @@ export type GenParams = {
    *  NOTE: `frequency` retunes the SINE path only — retuning the additive
    *  f0 means resending this whole array (phase-continuous in the core). */
   additive?: number[];
+  /** Stereo dual-oscillator (engineVersion ≥ 5): hard-panned L = sine(fL),
+   *  R = sine(fR). `on:false` returns to mono (L==R). Used by stereo lab tools
+   *  (Harmonograph: harmonic n1 → L, n2 → R). No-op below v5. */
+  stereo?: { on: boolean; fL: number; fR: number };
 };
 
 export type GenStatus = {

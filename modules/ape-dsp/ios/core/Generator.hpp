@@ -101,6 +101,17 @@ class Generator {
   /// Default 0 (off) so the golden vectors — which assume a flat path — stay
   /// green; the route layer turns it on. NaN-proofed (the !(x>=0) form).
   void setHpf(double hz) { hpfHz_.store(!(hz >= 0.0) ? 0.0 : hz); }
+  /// STEREO dual-oscillator: when on, the output is L = sine(fL), R = sine(fR),
+  /// HARD-PANNED — used by stereo lab tools (e.g. the Harmonograph: harmonic
+  /// n1 → Left, n2 → Right, matching the XY figure). Off → the selected mode
+  /// plays mono (L == R). No retrigger: frequency changes glide phase-
+  /// continuously, so it is safe to call at UI rate. NaN-proofed (!(x>=1)).
+  void setStereo(bool on, double fL, double fR) {
+    stereoFreqL_.store(!(fL >= 1.0) ? 1.0 : fL);
+    stereoFreqR_.store(!(fR >= 1.0) ? 1.0 : fR);
+    stereoOn_.store(on);
+  }
+  bool stereoOn() const { return stereoOn_.load(); }
   /// ADDITIVE (HV-2): flat layout [f0, a1..a12, p1..p12] — 25 doubles. The
   /// SAME ordering crosses every bridge (JSI/JNI) verbatim; amps are relative
   /// 0..1, phases in degrees. These are TARGETS only: the render thread ramps
@@ -152,11 +163,22 @@ class Generator {
     return req > cap ? cap : req;
   }
 
-  // ---- Render (audio thread): fill n mono samples ----
-  void render(float* out, uint32_t n) {
+  // ---- Render (audio thread) ----
+  // Mono callers pass R = nullptr (fills L only — goldens + any mono path).
+  // Stereo callers pass both deinterleaved L and R. When stereo playback is
+  // engaged (stereoOn_ + a stereo caller) the two channels are INDEPENDENT sine
+  // oscillators (stereoFreqL_/R_) — hard-panned tools like the Harmonograph
+  // (harmonic n1 → Left, n2 → Right, matching the XY figure). Otherwise both
+  // channels carry the same mono signal (L == R — perceptually identical to the
+  // old mono output). Each channel has its own speaker-safety HPF state.
+  void render(float* out, uint32_t n) { renderInto(out, nullptr, n); }
+  void renderStereo(float* left, float* right, uint32_t n) { renderInto(left, right, n); }
+
+  void renderInto(float* L, float* R, uint32_t n) {
     const double fs = fs_.load();
     const auto modeTarget = static_cast<GenMode>(mode_.load());
     const bool wantRun = running_.load() && modeTarget != GenMode::Off && fs > 0;
+    const bool stereo = (R != nullptr) && stereoOn_.load();
     if (retrigger_.exchange(false)) {
       // A retrigger while AUDIBLE (in-place mode switch — HV-2 Build 3's solo
       // ↔ model retune idiom — sweep reprogram, stop→start overlap) must not
@@ -198,6 +220,7 @@ class Generator {
     const double hpfHz = hpfHz_.load(std::memory_order_relaxed);
     if (hpfHz > 0.0 && fs > 0.0 && (hpfHz != hpfDesignedHz_ || fs != hpfDesignedFs_)) {
       hpf_ = Biquad::highpass(hpfHz, fs);
+      hpfR_ = hpf_;  // same coefficients; independent state for the R channel
       hpfDesignedHz_ = hpfHz;
       hpfDesignedFs_ = fs;
     }
@@ -234,22 +257,33 @@ class Generator {
       if (wantRun && env_ >= 0.999) envSettled_ = true;
       if (trigPending_ && env_ <= 0.0) applyTrigger(modeTarget);
       if (env_ <= 0.0 && !wantRun) {
-        out[i] = 0.0f;
+        L[i] = 0.0f;
+        if (R) R[i] = 0.0f;
         continue;
       }
       ampCur_ = ramp(ampCur_, ampTarget, gainStep);
-      // HPF sits on the raw generator signal, BEFORE the Q4 level/cap gain, so
-      // the cap chain (ampCur_ * env_) stays the single final amplitude
-      // authority. Raw and high-passed are crossfaded by hpfMix_ (0 = raw/
-      // bypassed, 1 = fully filtered) so engaging/bypassing on a route change is
-      // click-free.
-      double s = sample(modeCur_, fs);
+      // Raw signal(s): stereo = two independent sine oscillators (hard L/R);
+      // mono = the selected mode, duplicated.
+      double rawL, rawR;
+      if (stereo) {
+        rawL = stereoStep(stereoPhL_, stereoFreqL_.load(), fs);
+        rawR = stereoStep(stereoPhR_, stereoFreqR_.load(), fs);
+      } else {
+        rawL = sample(modeCur_, fs);
+        rawR = rawL;
+      }
+      // HPF sits on the raw signal, BEFORE the Q4 level/cap gain (the cap chain
+      // ampCur_*env_ stays the single amplitude authority). Raw↔filtered is
+      // crossfaded by hpfMix_ (shared) for click-free route on/off; the biquad
+      // STATE is per-channel (hpf_ / hpfR_).
+      double sL = rawL, sR = rawR;
       if (hpfDesigned) {
-        const double filtered = static_cast<double>(hpf_.process(static_cast<float>(s)));
         hpfMix_ = hpfMix_ < hpfMixTarget
                       ? (hpfMix_ + hpfMixStep > hpfMixTarget ? hpfMixTarget : hpfMix_ + hpfMixStep)
                       : (hpfMix_ - hpfMixStep < hpfMixTarget ? hpfMixTarget : hpfMix_ - hpfMixStep);
-        s = s * (1.0 - hpfMix_) + filtered * hpfMix_;
+        sL = rawL * (1.0 - hpfMix_) + static_cast<double>(hpf_.process(static_cast<float>(rawL))) * hpfMix_;
+        sR = stereo ? rawR * (1.0 - hpfMix_) + static_cast<double>(hpfR_.process(static_cast<float>(rawR))) * hpfMix_
+                    : sL;
       }
       // Route-change gate envelope: fast out → silent hold (snap the HPF here,
       // masked) → slow fade in.
@@ -270,7 +304,9 @@ class Generator {
           routeGatePhase_ = 0;
         }
       }
-      out[i] = static_cast<float>(ampCur_ * env_ * routeGate_ * s);
+      const double g = ampCur_ * env_ * routeGate_;
+      L[i] = static_cast<float>(g * sL);
+      if (R) R[i] = static_cast<float>(g * sR);
     }
   }
 
@@ -301,6 +337,9 @@ class Generator {
     // route (silent, so no click) — the 40 ms crossfade is only for MID-TONE
     // route changes, not for the start of a fresh tone.
     hpf_.reset();
+    hpfR_.reset();
+    stereoPhL_ = 0.0;
+    stereoPhR_ = 0.0;
     hpfMix_ = (hpfHz_.load() > 0.0) ? 1.0 : 0.0;
     // Open the route gate and sync the change detector: a fresh tone starts at
     // full level with the correct filter, and its initial hpfHz (set before the
@@ -310,6 +349,14 @@ class Generator {
     envSettled_ = false;  // block the gate until this new tone's onset completes
     prevHpfHz_ = hpfHz_.load();
     trigPending_ = false;
+  }
+
+  // One stereo-channel sine sample; advances `phase` (in cycles) in place.
+  double stereoStep(double& phase, double freq, double fs) {
+    const double v = std::sin(2.0 * kPi * phase);
+    phase += freq / fs;
+    if (phase >= 1.0) phase -= std::floor(phase);
+    return v;
   }
 
   // One raw sample of the selected signal at unit level.
@@ -552,6 +599,9 @@ class Generator {
   std::atomic<double> clickBpm_{120.0};
   // Speaker-safety HPF cutoff (Hz), 0 = bypassed. Route layer writes it.
   std::atomic<double> hpfHz_{0.0};
+  // Stereo dual-oscillator (hard-panned L/R) — off by default (mono, L == R).
+  std::atomic<bool> stereoOn_{false};
+  std::atomic<double> stereoFreqL_{440.0}, stereoFreqR_{440.0};
 
   // Additive (HV-2) control atomics — TARGETS only; render ramps toward them.
   // Defaults: fundamental only (a1=1), phases 0, f0 1 kHz.
@@ -589,9 +639,11 @@ class Generator {
   // Speaker-safety HPF render state (audio thread). Re-designed only when the
   // cutoff or sample rate changes; default coeffs are a no-op pass-through.
   Biquad hpf_;
+  Biquad hpfR_;          // R-channel HPF (same coeffs, independent state)
   double hpfDesignedHz_ = 0.0;
   double hpfDesignedFs_ = 0.0;
   double hpfMix_ = 0.0;  // raw↔filtered crossfade (0 = bypassed, 1 = filtered)
+  double stereoPhL_ = 0.0, stereoPhR_ = 0.0;  // stereo sine accumulators (cycles)
   // Route-change GATE: a mid-tone cutoff change (headphone plug/unplug) mutes
   // the output fast, holds silent while the HPF swaps + the OS route settles,
   // then fades back in slowly — masking the filter transition AND the hardware

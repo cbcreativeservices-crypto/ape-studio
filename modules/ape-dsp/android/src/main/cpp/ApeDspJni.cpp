@@ -158,7 +158,20 @@ class NativeEngine {
   struct OutputCallback : oboe::AudioStreamDataCallback {
     NativeEngine* eng;
     oboe::DataCallbackResult onAudioReady(oboe::AudioStream*, void* data, int32_t numFrames) override {
-      eng->gen_.render(static_cast<float*>(data), static_cast<uint32_t>(numFrames));
+      float* out = static_cast<float*>(data);
+      const uint32_t nf = static_cast<uint32_t>(numFrames);
+      // Stereo (2-ch, interleaved LRLR). Render deinterleaved into the
+      // preallocated scratch, then interleave. Falls back to silence if a burst
+      // ever exceeds the reserved size (it shouldn't).
+      if (nf <= eng->outL_.size()) {
+        eng->gen_.renderStereo(eng->outL_.data(), eng->outR_.data(), nf);
+        for (uint32_t i = 0; i < nf; ++i) {
+          out[2 * i] = eng->outL_[i];
+          out[2 * i + 1] = eng->outR_[i];
+        }
+      } else {
+        for (uint32_t i = 0; i < nf * 2u; ++i) out[i] = 0.0f;
+      }
       return oboe::DataCallbackResult::Continue;
     }
   };
@@ -218,13 +231,16 @@ class NativeEngine {
         ->setPerformanceMode(oboe::PerformanceMode::LowLatency)
         ->setSharingMode(oboe::SharingMode::Exclusive)
         ->setFormat(oboe::AudioFormat::Float)
-        ->setChannelCount(oboe::ChannelCount::Mono)
+        ->setChannelCount(oboe::ChannelCount::Stereo)
         ->setSampleRate(48000)
         ->setSampleRateConversionQuality(oboe::SampleRateConversionQuality::None)
         ->setUsage(oboe::Usage::Media)
         ->setContentType(oboe::ContentType::Sonification)
         ->setDataCallback(&outputCb_);
     outputCb_.eng = this;
+    // Preallocate the deinterleave scratch generously (bursts are far smaller).
+    outL_.assign(8192, 0.0f);
+    outR_.assign(8192, 0.0f);
     oboe::Result r = b.openStream(outStream_);
     if (r != oboe::Result::OK || !outStream_) {
       outStream_.reset();
@@ -277,6 +293,10 @@ class NativeEngine {
   double inRate_ = 48000.0;
   double outRate_ = 48000.0;
   int32_t framesBurst_ = 0;
+  // Deinterleaved stereo scratch for the output callback (renderStereo writes
+  // separate L/R; Oboe wants interleaved LRLR). Preallocated in openOutput —
+  // never resized in the RT callback.
+  std::vector<float> outL_, outR_;
 
  public:
   bool measurementMode() const { return measurementMode_; }
@@ -484,6 +504,12 @@ Java_expo_modules_apedsp_ApeDspModule_nativeGenSetClickBpm(JNIEnv*, jobject, jlo
 JNIEXPORT void JNICALL
 Java_expo_modules_apedsp_ApeDspModule_nativeGenSetHpf(JNIEnv*, jobject, jlong h, jdouble hz) {
   eng(h)->gen_.setHpf(hz);
+}
+// Stereo dual-oscillator (hard-panned L/R) — on + the two channel frequencies.
+JNIEXPORT void JNICALL
+Java_expo_modules_apedsp_ApeDspModule_nativeGenSetStereo(JNIEnv*, jobject, jlong h, jboolean on,
+                                                         jdouble fL, jdouble fR) {
+  eng(h)->gen_.setStereo(on == JNI_TRUE, fL, fR);
 }
 // ADDITIVE (HV-2): flat [f0, a1..a12, p1..p12] — 25 doubles (Hz, 0..1, degrees).
 // Same ordering as iOS/JS. Copy semantics per the existing convention (region

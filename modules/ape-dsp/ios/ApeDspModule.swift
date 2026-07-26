@@ -178,6 +178,11 @@ public class ApeDspModule: Module {
           self.core.genSetAdditive(vals.map { NSNumber(value: $0) })
         }
       }
+      // STEREO dual-oscillator (hard-panned L/R) — { on, fL, fR }. Targets-first.
+      if let st = params["stereo"] as? [String: Any],
+         let fL = st["fL"] as? Double, let fR = st["fR"] as? Double {
+        self.core.genSetStereo((st["on"] as? Bool) ?? false, freqL: fL, freqR: fR)
+      }
       if let m = params["mode"] as? Int { self.core.genSetMode(Int32(m)) }
     }
     Function("genUnlockCap") { () -> Void in
@@ -226,7 +231,10 @@ public class ApeDspModule: Module {
     }
     let sr = session.sampleRate > 0 ? session.sampleRate : 48_000
     core.configureSampleRate(sr)
-    guard let format = AVAudioFormat(standardFormatWithSampleRate: sr, channels: 1) else {
+    // STEREO output (2-ch, deinterleaved float — standardFormat gives one buffer
+    // per channel). Mono content plays L==R; stereo lab tools (Harmonograph)
+    // hard-pan L/R. Falls back to mono if only one buffer is presented.
+    guard let format = AVAudioFormat(standardFormatWithSampleRate: sr, channels: 2) else {
       throw NSError(domain: "ApeDsp", code: 1,
                     userInfo: [NSLocalizedDescriptionKey: "no output format"])
     }
@@ -234,9 +242,13 @@ public class ApeDspModule: Module {
     let node = AVAudioSourceNode(format: format) { [weak self] _, _, frameCount, audioBufferList -> OSStatus in
       guard let self else { return noErr }
       let abl = UnsafeMutableAudioBufferListPointer(audioBufferList)
-      guard let mData = abl.first?.mData else { return noErr }
-      let ptr = mData.assumingMemoryBound(to: Float.self)
-      self.core.genRender(ptr, frames: frameCount)
+      if abl.count >= 2, let lData = abl[0].mData, let rData = abl[1].mData {
+        let l = lData.assumingMemoryBound(to: Float.self)
+        let r = rData.assumingMemoryBound(to: Float.self)
+        self.core.genRenderStereo(l, right: r, frames: frameCount)
+      } else if let mData = abl.first?.mData {
+        self.core.genRender(mData.assumingMemoryBound(to: Float.self), frames: frameCount)
+      }
       return noErr
     }
     engine.attach(node)

@@ -68,6 +68,7 @@ class ApeDspModule : Module() {
   private external fun nativeGenSetSweep(h: Long, s0: Double, s1: Double, secs: Double, repeat: Boolean)
   private external fun nativeGenSetClickBpm(h: Long, bpm: Double)
   private external fun nativeGenSetHpf(h: Long, hz: Double)
+  private external fun nativeGenSetStereo(h: Long, on: Boolean, fL: Double, fR: Double)
   // ADDITIVE (HV-2): flat [f0, a1..a12, p1..p12] — 25 doubles (Hz, 0..1, degrees).
   private external fun nativeGenSetAdditive(h: Long, vals: DoubleArray)
   private external fun nativeGenUnlockCap(h: Long)
@@ -300,6 +301,13 @@ class ApeDspModule : Module() {
       (params["additive"] as? List<*>)?.let { list ->
         val vals = list.mapNotNull { (it as? Number)?.toDouble() }
         if (vals.size == list.size) nativeGenSetAdditive(handle, vals.toDoubleArray())
+      }
+      // STEREO dual-oscillator (hard-panned L/R) — { on, fL, fR }. Targets-first
+      // like the rest (before mode). Same shape on iOS/JS.
+      (params["stereo"] as? Map<*, *>)?.let { st ->
+        val fL = (st["fL"] as? Number)?.toDouble()
+        val fR = (st["fR"] as? Number)?.toDouble()
+        if (fL != null && fR != null) nativeGenSetStereo(handle, (st["on"] as? Boolean) ?: false, fL, fR)
       }
       (params["mode"] as? Number)?.let { nativeGenSetMode(handle, it.toInt()) }
     }

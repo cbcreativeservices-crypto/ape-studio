@@ -21,7 +21,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Svg, { Path, Rect } from 'react-native-svg';
-import { ApeDsp, GEN_MODES } from '../../../modules/ape-dsp';
+import { ApeDsp, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
@@ -71,6 +71,10 @@ export function HarmonographLabScreen() {
   });
   const engineReady = gate === 'idle';
   const additiveReady = engineReady && ApeDsp.engineVersion() >= 3;
+  // engineVersion ≥ 5: native STEREO output — play the interval HARD-PANNED
+  // (harmonic n1 → Left, n2 → Right, matching the XY figure). Below v5 fall back
+  // to the mono additive mixture.
+  const stereoReady = engineReady && ApeDsp.engineVersion() >= 5;
 
   const [ratioIdx, setRatioIdx] = useState(2); // 3:2 — the fifth
   const [phase, setPhase] = useState<(typeof PHASES)[number]>(90);
@@ -101,19 +105,25 @@ export function HarmonographLabScreen() {
     return [BASE_F0, ...amps, ...new Array(12).fill(0)];
   }, []);
 
+  /** GenParams for the interval: HARD-PANNED stereo on v5+ (harmonic n1 → Left,
+   *  n2 → Right — the XY figure as audio), else the mono additive mixture (with
+   *  the JS speaker guard below v4). The native route-aware HPF (v4+) protects
+   *  each channel, so no client filter is applied on the stereo path. */
+  const intervalGenParams = useCallback(
+    (n1: number, n2: number): GenParams =>
+      stereoReady
+        ? { mode: GEN_MODES.sine, stereo: { on: true, fL: n1 * BASE_F0, fR: n2 * BASE_F0 }, levelDb: GEN_LEVEL_DB }
+        : { mode: GEN_MODES.additive, additive: guardAdditiveForEngine(intervalPayload(n1, n2)), levelDb: GEN_LEVEL_DB },
+    [stereoReady, intervalPayload],
+  );
+
   const startInterval = useCallback(async () => {
     if (!additiveReady || detune !== 0) return;
     const gen = ++genRef.current;
     const ok = await requestAudioOutput();
     if (!ok || gen !== genRef.current) return;
     setGenError('');
-    ApeDsp.genSet({
-      mode: GEN_MODES.additive,
-      // Engine-aware per-harmonic high-pass (JS below v4, native on ≥4) — the
-      // lower harmonic is attenuated by |H| at its frequency (see note below).
-      additive: guardAdditiveForEngine(intervalPayload(ratio.n1, ratio.n2)),
-      levelDb: GEN_LEVEL_DB,
-    });
+    ApeDsp.genSet(intervalGenParams(ratio.n1, ratio.n2));
     try {
       await ApeDsp.genStart();
       if (gen !== genRef.current) {
@@ -125,11 +135,14 @@ export function HarmonographLabScreen() {
     } catch (e) {
       if (gen === genRef.current) setGenError(e instanceof Error ? e.message : String(e));
     }
-  }, [additiveReady, detune, requestAudioOutput, intervalPayload, ratio]);
+  }, [additiveReady, detune, requestAudioOutput, intervalGenParams, ratio]);
 
   const stopInterval = useCallback(() => {
     genRef.current++;
     void ApeDsp.genStop();
+    // Clear the (global) stereo flag so the next mono tool doesn't inherit the
+    // hard-panned dual-oscillator (no-op below v5).
+    ApeDsp.genSet({ stereo: { on: false, fL: BASE_F0, fR: BASE_F0 } });
     setRunning(false);
   }, []);
 
@@ -144,10 +157,7 @@ export function HarmonographLabScreen() {
   const pickRatio = (i: number) => {
     setRatioIdx(i);
     if (running) {
-      ApeDsp.genSet({
-        additive: guardAdditiveForEngine(intervalPayload(RATIOS[i].n1, RATIOS[i].n2)),
-        levelDb: GEN_LEVEL_DB,
-      });
+      ApeDsp.genSet(intervalGenParams(RATIOS[i].n1, RATIOS[i].n2));
       noteAudioActivity();
     }
   };
@@ -252,14 +262,16 @@ export function HarmonographLabScreen() {
           detune === 0 ? (
             <>
               <GlassButton
-                label={running ? 'STOP' : `PLAY INTERVAL — ${hz2} + ${hz1} Hz`}
+                label={running ? 'STOP' : stereoReady ? `PLAY INTERVAL — ${hz1} L · ${hz2} R` : `PLAY INTERVAL — ${hz2} + ${hz1} Hz`}
                 tint="green"
                 height={52}
                 fontSize={15}
                 onPress={() => (running ? stopInterval() : void startInterval())}
               />
               <Text style={styles.caption}>
-                {`Harmonics ${ratio.n2} and ${ratio.n1} of ${BASE_F0} Hz through the additive engine — an exact ${ratio.label} ratio. Output ${GEN_LEVEL_DB} dBFS · uncalibrated.`}
+                {stereoReady
+                  ? `HARD-PANNED STEREO — ${hz1} Hz on LEFT, ${hz2} Hz on RIGHT (harmonics ${ratio.n1} & ${ratio.n2} of ${BASE_F0} Hz), an exact ${ratio.label} ratio. The XY figure as sound: X-drive left, Y-drive right — headphones split it cleanly.`
+                  : `Harmonics ${ratio.n2} and ${ratio.n1} of ${BASE_F0} Hz through the additive engine — an exact ${ratio.label} ratio. Output ${GEN_LEVEL_DB} dBFS · uncalibrated.`}
               </Text>
               <Text style={styles.advisory}>
                 {`Speaker high-pass (${SPEAKER_HPF_HZ} Hz): the ${hz2} Hz tone is attenuated ${speakerGuardDb(hz2).toFixed(1)} dB` +

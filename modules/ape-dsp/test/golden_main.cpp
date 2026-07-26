@@ -687,6 +687,65 @@ int main() {
     }
   }
 
+  // ---- 10) Stereo dual-oscillator (engineVersion 5) -----------------------
+  {
+    auto magAtCh = [&](const std::vector<float>& buf, size_t skip, size_t len, double f) {
+      double re = 0.0, im = 0.0;
+      const double w = 2.0 * 3.14159265358979323846 * f / fs;
+      for (size_t i = 0; i < len; ++i) {
+        const double x = buf[skip + i];
+        re += x * std::cos(w * i);
+        im -= x * std::sin(w * i);
+      }
+      return 2.0 * std::sqrt(re * re + im * im) / len;
+    };
+    Generator g;
+    g.configure(fs);
+    g.setMode(GenMode::Sine);
+    g.setLevelDb(-20.0);
+    g.setStereo(true, 220.0, 660.0);  // L = 220 Hz, R = 660 Hz (hard-panned)
+    g.start();
+    std::vector<float> Lb(static_cast<size_t>(fs * 0.4)), Rb(static_cast<size_t>(fs * 0.4));
+    g.renderStereo(Lb.data(), Rb.data(), (uint32_t)Lb.size());
+    const size_t skip = static_cast<size_t>(fs * 0.2), len = Lb.size() - skip;
+    // Each channel carries ITS tone and NOT the other's.
+    truthy("Stereo L has 220 Hz", magAtCh(Lb, skip, len, 220.0) > 0.05);
+    truthy("Stereo L excludes 660 Hz (hard-panned)", magAtCh(Lb, skip, len, 660.0) < 0.005);
+    truthy("Stereo R has 660 Hz", magAtCh(Rb, skip, len, 660.0) > 0.05);
+    truthy("Stereo R excludes 220 Hz (hard-panned)", magAtCh(Rb, skip, len, 220.0) < 0.005);
+
+    // Stereo + speaker HPF: the low L tone is attenuated per-channel; R (660 Hz,
+    // in the passband) is not.
+    Generator gh;
+    gh.configure(fs);
+    gh.setMode(GenMode::Sine);
+    gh.setLevelDb(-20.0);
+    gh.setStereo(true, 90.0, 660.0);  // L low (below corner), R in passband
+    gh.setHpf(150.0);
+    gh.start();
+    std::vector<float> Lh(static_cast<size_t>(fs * 0.4)), Rh(static_cast<size_t>(fs * 0.4));
+    gh.renderStereo(Lh.data(), Rh.data(), (uint32_t)Lh.size());
+    truthy("Stereo HPF attenuates the low L channel", magAtCh(Lh, skip, len, 90.0) < magAtCh(Rh, skip, len, 660.0));
+
+    // A mono caller (R = nullptr) still works and equals the mono path — stereo
+    // OFF leaves the existing behavior byte-for-byte (regression).
+    Generator gm;
+    gm.configure(fs);
+    gm.setMode(GenMode::Sine);
+    gm.setFrequency(440.0);
+    gm.setLevelDb(-20.0);
+    gm.start();
+    std::vector<float> mono(static_cast<size_t>(fs * 0.4));
+    gm.render(mono.data(), (uint32_t)mono.size());
+    near("Mono render unchanged after stereo refactor (440 Hz RMS)",
+         10.0 * std::log10([&] {
+           double s = 0.0;
+           for (size_t i = skip; i < mono.size(); ++i) s += (double)mono[i] * mono[i];
+           return s / (mono.size() - skip);
+         }()),
+         -23.01, 0.3);
+  }
+
   std::printf("\n==== GOLDEN RESULT: %d passed, %d failed ====\n", g_pass, g_fail);
   return g_fail == 0 ? 0 : 1;
 }
