@@ -1,0 +1,294 @@
+/**
+ * NoiseLabScreen — Lab 11 "Noise" (v4 MASTER §7) on the shared LabShell.
+ * The noise-color lab: hear the colors, see their spectral slopes.
+ *
+ * AUDIO (honest, real): white / pink / brown / blue / violet are NATIVE
+ * generator modes (GEN_MODES 2–6) — every color chip plays the real thing.
+ * Grey + the textured real-world sources (speech noise, HVAC, traffic, wind,
+ * hum, buzz, RF, crackle, static, ground loop) need new native sources or
+ * recorded assets — listed honestly as in development, no dead chips (§1.7).
+ *
+ * DISPLAY (analytic, labeled): the slope chart draws the IDEALIZED dB/octave
+ * lines that DEFINE each color (white 0 · pink −3 · brown −6 · blue +3 ·
+ * violet +6, anchored at 1 kHz) — mathematics, not a measurement, and badged
+ * as such. The "why does white sound brighter than it looks" moment is the
+ * point of the lab.
+ *
+ * Sound lifecycle = the SignalGen idiom (gate → genSet/genStart → stale
+ * guard → 2 Hz keepalive → stop on toggle/blur/unmount).
+ */
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+import Svg, { Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import { ApeDsp, GEN_MODES } from '../../../modules/ape-dsp';
+import { GlassButton } from '../../components/GlassButton';
+import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
+import { noteAudioActivity } from '../../features/audio/audioOutputStore';
+import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
+import { EngineGate } from '../tools/EngineGate';
+import type { EngineState } from '../../features/tools/engine/useDspEngine';
+import { colors, fonts } from '../../theme/tokens';
+import { LabShell, LabChip } from './LabShell';
+
+const GEN_LEVEL_DB = -20;
+const ACTIVITY_MS = 500;
+
+type NoiseColor = 'white' | 'pink' | 'brown' | 'blue' | 'violet';
+
+/** The five NATIVE colors: generator mode + defining slope (dB/octave). */
+const COLORS: { key: NoiseColor; label: string; mode: number; slope: number }[] = [
+  { key: 'white', label: 'WHITE', mode: GEN_MODES.white, slope: 0 },
+  { key: 'pink', label: 'PINK', mode: GEN_MODES.pink, slope: -3 },
+  { key: 'brown', label: 'BROWN', mode: GEN_MODES.brown, slope: -6 },
+  { key: 'blue', label: 'BLUE', mode: GEN_MODES.blue, slope: 3 },
+  { key: 'violet', label: 'VIOLET', mode: GEN_MODES.violet, slope: 6 },
+];
+
+const PENDING_SOURCES =
+  'Grey · Speech noise · HVAC · Traffic · Wind · Hum · Buzz · RF · Crackle · Static · Ground loop';
+
+const INTRO =
+  'Hear the colors of noise and see the spectral slopes that define them. White is equal ' +
+  'energy per Hz (bright); pink is equal energy per octave (balanced) — switching between ' +
+  'them live is the core lesson.';
+
+export function NoiseLabScreen() {
+  const { requestAudioOutput } = useAudioOutputGate();
+
+  const [gate] = useState<EngineState>(() => {
+    if (!ApeDsp.isAvailable()) return 'absent';
+    return ApeDsp.engineVersion() >= 2 ? 'idle' : 'spike';
+  });
+  const engineReady = gate === 'idle';
+
+  const [color, setColor] = useState<NoiseColor>('pink');
+  const [running, setRunning] = useState(false);
+  const [genError, setGenError] = useState('');
+
+  const [lessonKey, setLessonKey] = useState<string | undefined>(undefined);
+  const [lessonOpen, setLessonOpen] = useState(false);
+  const openLesson = useCallback((key?: string) => {
+    setLessonKey(key);
+    setLessonOpen(true);
+  }, []);
+
+  const selected = COLORS.find((c) => c.key === color)!;
+
+  // -- Noise lifecycle (one tone owner, stale-guarded) -----------------------
+  const genRef = useRef(0);
+
+  const startNoise = useCallback(async () => {
+    const gen = ++genRef.current;
+    const ok = await requestAudioOutput();
+    if (!ok || gen !== genRef.current) return;
+    setGenError('');
+    ApeDsp.genSet({ mode: COLORS.find((c) => c.key === color)!.mode, levelDb: GEN_LEVEL_DB });
+    try {
+      await ApeDsp.genStart();
+      if (gen !== genRef.current) {
+        void ApeDsp.genStop();
+        return;
+      }
+      setRunning(true);
+      noteAudioActivity();
+    } catch (e) {
+      if (gen === genRef.current) setGenError(e instanceof Error ? e.message : String(e));
+    }
+  }, [requestAudioOutput, color]);
+
+  const stopNoise = useCallback(() => {
+    genRef.current++;
+    void ApeDsp.genStop();
+    setRunning(false);
+  }, []);
+
+  useFocusEffect(useCallback(() => () => stopNoise(), [stopNoise]));
+  useEffect(() => {
+    if (!running) return;
+    const id = setInterval(noteAudioActivity, ACTIVITY_MS);
+    return () => clearInterval(id);
+  }, [running]);
+
+  // Live color switch while sounding (retune idiom) — THE A/B lesson.
+  const pickColor = (c: NoiseColor) => {
+    setColor(c);
+    if (running) {
+      ApeDsp.genSet({ mode: COLORS.find((x) => x.key === c)!.mode });
+      noteAudioActivity();
+    }
+  };
+
+  return (
+    <LabShell
+      labId="noise"
+      title="NOISE LAB"
+      subtitle="Colors · Slopes · Floor & Masking"
+      intro={INTRO}
+      exploreCaption="Pick a color — switch colors WHILE it plays to hear the slope change."
+    >
+      {!engineReady ? <EngineGate state={gate} /> : null}
+
+      <View style={styles.chipRow}>
+        <LabChip label="ⓘ GUIDED LESSON" selected={lessonOpen} onPress={() => openLesson()} />
+      </View>
+      <Text style={styles.caption}>Long-press a color for its guided lesson.</Text>
+
+      <Text style={styles.sectionHead}>NOISE COLOR</Text>
+      <View style={styles.chipRow}>
+        {COLORS.map((c) => (
+          <LabChip
+            key={c.key}
+            label={c.label}
+            selected={color === c.key}
+            onPress={() => pickColor(c.key)}
+            onLongPress={() => openLesson(c.key)}
+          />
+        ))}
+      </View>
+
+      {/* SLOPE CHART — the defining mathematics, not a measurement. */}
+      <View style={styles.panelCard}>
+        <Text style={styles.badge}>IDEALIZED SPECTRAL SLOPES — ANALYTIC, NOT A MEASUREMENT</Text>
+        <SlopeChart selectedKey={color} />
+        <Text style={styles.caption}>
+          {`${selected.label.charAt(0)}${selected.label.slice(1).toLowerCase()} = ${
+            selected.slope > 0 ? '+' : ''
+          }${selected.slope} dB per octave (anchored at 1 kHz). Equal energy per Hz sounds bright because every higher octave holds twice the bandwidth.`}
+        </Text>
+      </View>
+
+      {engineReady ? (
+        <>
+          <GlassButton
+            label={running ? 'STOP' : 'PLAY NOISE'}
+            tint="green"
+            height={52}
+            fontSize={15}
+            onPress={() => (running ? stopNoise() : void startNoise())}
+          />
+          <Text style={styles.caption}>
+            {`Output ${GEN_LEVEL_DB} dBFS · uncalibrated — digital output level, not dB SPL.`}
+          </Text>
+          {genError ? <Text style={styles.error}>{genError}</Text> : null}
+        </>
+      ) : null}
+
+      {/* Textured sources — honest status, no dead chips (§1.7). */}
+      <View style={styles.devNote}>
+        <Text style={styles.devNoteHead}>REAL-WORLD SOURCES — IN DEVELOPMENT</Text>
+        <Text style={styles.caption}>
+          {PENDING_SOURCES} need new native sources or recorded assets and will appear here when
+          they land. Their theory (hum vs buzz vs ground loop on a spectrogram) is in this lab’s
+          lesson (ⓘ).
+        </Text>
+      </View>
+
+      <GuidedLessonSheet
+        visible={lessonOpen}
+        lesson={getLabLesson('noise')}
+        controlKey={lessonKey}
+        onClose={() => setLessonOpen(false)}
+      />
+    </LabShell>
+  );
+}
+
+/** The five color slopes over a 20 Hz–20 kHz log axis, selected one bright. */
+function SlopeChart({ selectedKey }: { selectedKey: NoiseColor }) {
+  const W = 320;
+  const H = 150;
+  const padL = 8;
+  const padR = 34; // room for line labels at the right edge
+  const OCT_LO = Math.log2(20 / 1000); // ≈ −5.64 octaves re 1 kHz
+  const OCT_HI = Math.log2(20000 / 1000); // ≈ +4.32
+  const DB_RANGE = 38; // ±38 dB vertical
+
+  const xAt = (oct: number) => padL + ((oct - OCT_LO) / (OCT_HI - OCT_LO)) * (W - padL - padR);
+  const yAt = (db: number) => H / 2 - (db / DB_RANGE) * (H / 2 - 8);
+
+  const lines = useMemo(
+    () =>
+      COLORS.map((c) => ({
+        key: c.key,
+        label: c.label,
+        d: `M${xAt(OCT_LO).toFixed(1)} ${yAt(c.slope * OCT_LO).toFixed(1)} L${xAt(OCT_HI).toFixed(1)} ${yAt(
+          c.slope * OCT_HI,
+        ).toFixed(1)}`,
+        endY: yAt(c.slope * OCT_HI),
+      })),
+    // Geometry is constant; recompute never needed.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+
+  const freqTicks = [20, 200, 1000, 2000, 20000];
+  return (
+    <Svg width="100%" height={H + 16} viewBox={`0 0 ${W} ${H + 16}`}>
+      <Rect x={0} y={0} width={W} height={H} fill="#0c0c0f" />
+      {/* 0 dB reference + 1 kHz anchor */}
+      <Line x1={padL} y1={H / 2} x2={W - padR} y2={H / 2} stroke="#22222a" strokeWidth={1} />
+      <Line x1={xAt(0)} y1={4} x2={xAt(0)} y2={H - 4} stroke="#22222a" strokeWidth={1} />
+      {lines.map((l) => {
+        const active = l.key === selectedKey;
+        return (
+          <Path
+            key={l.key}
+            d={l.d}
+            stroke={active ? colors.amber : '#3a3a44'}
+            strokeWidth={active ? 2.2 : 1.2}
+            fill="none"
+          />
+        );
+      })}
+      {lines.map((l) => (
+        <SvgText
+          key={`t${l.key}`}
+          x={W - padR + 3}
+          y={Math.min(Math.max(l.endY + 3, 10), H - 4)}
+          fill={l.key === selectedKey ? colors.amber : colors.textSub}
+          fontSize={8}
+        >
+          {l.label}
+        </SvgText>
+      ))}
+      {freqTicks.map((f) => (
+        <SvgText
+          key={f}
+          x={xAt(Math.log2(f / 1000))}
+          y={H + 12}
+          fill={colors.textSub}
+          fontSize={8}
+          textAnchor="middle"
+        >
+          {f >= 1000 ? `${f / 1000}k` : `${f}`}
+        </SvgText>
+      ))}
+    </Svg>
+  );
+}
+
+const styles = StyleSheet.create({
+  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  sectionHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.5, color: colors.amber },
+  caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
+  error: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: '#ff6b5e' },
+  panelCard: {
+    gap: 8,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#131316',
+    padding: 12,
+  },
+  badge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.2, color: colors.textSub },
+  devNote: {
+    gap: 6,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#131316',
+    padding: 12,
+  },
+  devNoteHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: colors.textSecondary },
+});

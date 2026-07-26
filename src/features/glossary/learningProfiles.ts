@@ -23,7 +23,7 @@ import type { LabId } from '../lab/guidedLessons';
 
 /** A route to a LIVE lab screen (must be a registered RootStack route). Extend
  *  as labs ship. */
-export type LabRoute = 'HarmonicLab';
+export type LabRoute = 'HarmonicLab' | 'OscillatorLab' | 'NoiseLab' | 'HarmonographLab';
 
 /** The four glossary actions (v4 MASTER §6.1). */
 export type GlossaryActionKind = 'hear_it' | 'experiment' | 'watch_it' | 'launch_lab';
@@ -65,9 +65,31 @@ const READY_TERMS_HARMONIC = [
   'Triangle Wave', 'Waveform',
 ];
 
-const READY: Record<string, LearningProfile> = Object.fromEntries(
-  READY_TERMS_HARMONIC.map((t) => [normTerm(t), { lab: 'harmonic', actions: LAUNCH_HARMONIC } as LearningProfile]),
-);
+// Oscillator / Noise / Harmonograph labs LIVE (2026-07-26): their DB-verified
+// glossary terms go READY with Launch Lab (the wired action). Brown/Blue/Violet
+// Noise, FM, AM, Lissajous etc. are NOT glossary terms today — nothing to link.
+const launch = (route: LabRoute): GlossaryAction[] => [{ kind: 'launch_lab', route }];
+
+const READY_TERMS_OSCILLATOR = ['Oscillator', 'Signal Generator'];
+const READY_TERMS_NOISE = ['Noise', 'White Noise', 'Pink Noise'];
+const READY_TERMS_HARMONOGRAPH = [
+  'Interval', 'Octave', 'Unison', 'Consonance', 'Dissonance', 'Beat Frequency',
+];
+
+const READY: Record<string, LearningProfile> = Object.fromEntries([
+  ...READY_TERMS_HARMONIC.map(
+    (t) => [normTerm(t), { lab: 'harmonic', actions: LAUNCH_HARMONIC } as LearningProfile] as const,
+  ),
+  ...READY_TERMS_OSCILLATOR.map(
+    (t) => [normTerm(t), { lab: 'oscillator', actions: launch('OscillatorLab') } as LearningProfile] as const,
+  ),
+  ...READY_TERMS_NOISE.map(
+    (t) => [normTerm(t), { lab: 'noise', actions: launch('NoiseLab') } as LearningProfile] as const,
+  ),
+  ...READY_TERMS_HARMONOGRAPH.map(
+    (t) => [normTerm(t), { lab: 'harmonograph', actions: launch('HarmonographLab') } as LearningProfile] as const,
+  ),
+]);
 
 // ── BUCKET 2 · PLANNED, NOT READY ────────────────────────────────────────────
 // Known to need a lab link once the target lab ships — NEVER returned by

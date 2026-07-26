@@ -54,12 +54,12 @@ const AUDIO_LABS: LabEntry[] = [
   { tag: '8', name: 'Gate', blurb: 'Downward expansion, chatter, sidechain.' },
   { tag: '9', name: 'Limiter', blurb: 'Brickwall ceiling, true-peak, loudness.' },
   { tag: '10', name: 'Distortion', blurb: 'Harmonics, clipping, saturation, aliasing.' },
-  { tag: '11', name: 'Noise', blurb: 'White → violet colors, floor, SNR, masking.' },
+  { tag: '11', name: 'Noise', blurb: 'White → violet colors, floor, SNR, masking.', route: 'NoiseLab' },
   { tag: '12', name: 'Phase', blurb: 'Polarity vs phase, correlation, mono.' },
   { tag: '13', name: 'Harmonic', blurb: 'Additive synthesis, spectrum, Fourier.', route: 'HarmonicLab' },
-  { tag: '14', name: 'Oscillator', blurb: 'Sine/square/saw, FM, AM, band-limiting.' },
+  { tag: '14', name: 'Oscillator', blurb: 'Sine/square/saw, FM, AM, band-limiting.', route: 'OscillatorLab' },
   { tag: '15', name: 'Stereo Imaging', blurb: 'Pan, width, Mid/Side, mono-fold.' },
-  { tag: '16', name: 'Harmonograph', blurb: 'Frequency ratios ↔ musical intervals.' },
+  { tag: '16', name: 'Harmonograph', blurb: 'Frequency ratios ↔ musical intervals.', route: 'HarmonographLab' },
 ];
 
 const SECTIONS: LabSection[] = [

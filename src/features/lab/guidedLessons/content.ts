@@ -354,10 +354,15 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'Noise sources differ by spectral slope ("color"). White has equal energy per Hz (bright); ' +
       'pink has equal energy per octave (balanced). The lab also covers real-world noise: hum, ' +
       'buzz, RF, ground loops — distinguished on the spectrogram.',
-    controls: names([
-      'White', 'Pink', 'Brown', 'Blue', 'Violet', 'Grey', 'Speech noise', 'HVAC', 'Traffic', 'Wind',
-      'Hum', 'Buzz', 'RF', 'Crackle', 'Static', 'Ground loop',
-    ]),
+    controls: [
+      { key: 'white', name: 'White', definition: 'Equal energy per Hz — a flat spectrum. Sounds bright/hissy because each higher octave holds twice the bandwidth.' },
+      { key: 'pink', name: 'Pink', definition: 'Equal energy per octave (−3 dB/oct). Sounds tonally balanced to the ear — the standard test noise for rooms and speakers.' },
+      { key: 'brown', name: 'Brown', definition: 'Also called red — −6 dB/oct. Deep, rumbly, ocean-like; energy concentrated in the lows.' },
+      { key: 'blue', name: 'Blue', definition: '+3 dB/oct — the mirror of pink. Energy rises with frequency; thin and hissy.' },
+      { key: 'violet', name: 'Violet', definition: '+6 dB/oct — the mirror of brown. Almost all energy in the top octaves; used in dither shaping.' },
+      { key: 'grey', name: 'Grey', definition: 'Noise shaped by an equal-loudness contour so every band sounds equally loud to the ear (psychoacoustically flat).' },
+      ...names(['Speech noise', 'HVAC', 'Traffic', 'Wind', 'Hum', 'Buzz', 'RF', 'Crackle', 'Static', 'Ground loop']),
+    ],
     commonMistakes: [
       'Expecting white noise to sound "neutral/flat" — white has equal energy per Hz, so it sounds bright/hissy; pink (equal per octave) sounds balanced.',
       'Mixing up the colors — white (flat), pink (−3), brown/red (−6), blue (+3), violet (+6 dB/oct). The spectrum settles it.',
@@ -445,7 +450,17 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'The Oscillator lab generates classic waveforms plus FM and AM synthesis, and shows why ' +
       'naïve digital saw/square alias. FM modulates frequency (rich sidebands); AM modulates ' +
       'amplitude (tremolo).',
-    controls: names(['Sine', 'Square', 'Saw', 'Triangle', 'Pulse', 'Noise', 'FM', 'AM']),
+    controls: [
+      { key: 'sine', name: 'Sine', definition: 'The pure tone — one partial, the fundamental only. Every other waveform is a stack of sines (Fourier); the sine is the building block.' },
+      { key: 'square', name: 'Square', definition: 'Odd harmonics only, amplitudes falling ∝1/n. Hollow, clarinet-like. A perfect square needs infinite harmonics — real generators band-limit it.' },
+      { key: 'saw', name: 'Saw', definition: 'ALL harmonics, amplitudes ∝1/n. The brightest classic wave — buzzy, brassy, the subtractive-synth workhorse.' },
+      { key: 'triangle', name: 'Triangle', definition: 'Odd harmonics with a steep ∝1/n² rolloff — much mellower than a square despite sharing the odd-only series.' },
+      { key: 'pulse', name: 'Pulse', definition: 'A rectangular wave with adjustable duty cycle. Duty shapes the harmonic content (nulls where n·d is an integer) — it changes timbre, not pitch.' },
+      { key: 'frequency', name: 'Frequency', definition: 'The fundamental pitch in Hz. All harmonics move with it; near Nyquist even band-limited waves run out of harmonics and thin out.' },
+      { key: 'noise', name: 'Noise', definition: 'Aperiodic signal with a continuous spectrum instead of discrete harmonics — see the Noise lab for the colors.' },
+      { key: 'fm', name: 'FM', definition: 'Frequency modulation — the modulator wobbles the carrier’s frequency, creating sidebands at fc ± n·fm (Bessel amplitudes). Rich, bell-like; pitch stays at the carrier.' },
+      { key: 'am', name: 'AM', definition: 'Amplitude modulation — the modulator rides the carrier’s level, creating one sideband pair at fc ± fm (tremolo at slow rates). Ring mod is AM with the carrier suppressed.' },
+    ],
     commonMistakes: [
       'Naïve digital waveforms alias — direct-math saw/square generate harmonics above Nyquist that fold back; band-limited generation (wavetable/BLEP) fixes it.',
       'Confusing FM and AM — FM modulates frequency → sidebands at fc ± n·fm (rich/bell-like); AM modulates amplitude → fc ± fm (tremolo).',
@@ -509,10 +524,15 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'A virtual harmonograph: damped sinusoids drive a pen to draw deterministic figures set by ' +
       'frequency ratios, phase, and damping. Driven by two oscillators, students hear the interval ' +
       'while watching the figure — simple ratios draw stable closed loops.',
-    controls: names([
-      'f₁–f₄', 'Amplitude', 'Phase', 'Damping', 'Ratio-lock', 'Lateral/Rotary', 'Draw speed',
-      'Pen persistence', 'Drive-from-oscillators',
-    ]),
+    controls: [
+      { key: 'ratio_lock', name: 'Ratio-lock', definition: 'Snaps the two frequencies to a simple integer ratio — 2:1 octave, 3:2 fifth, 4:3 fourth, 5:4 major third. Simple ratios draw stable closed figures; a near-miss slowly precesses, and that drift IS beating.' },
+      { key: 'frequencies', name: 'Frequencies (f₁–f₄)', definition: 'The pendulum frequencies. Their RATIO sets the pattern — the interval made visible. Changing frequency changes the figure; changing amplitude only changes its size.' },
+      { key: 'amplitude', name: 'Amplitude', definition: 'Pendulum swing size — scales the figure. It does not change the pattern (a classic confusion with frequency).' },
+      { key: 'phase', name: 'Phase', definition: 'The starting angle of each pendulum. Same ratio, different phase → a rotated/different figure (line vs ellipse vs circle in the 2-pendulum Lissajous case).' },
+      { key: 'damping', name: 'Damping', definition: 'The decay envelope e^(−dt) that spirals the figure inward. None = it never resolves; too much = it dies before drawing. The decay is what creates the classic spiral look.' },
+      { key: 'mode', name: 'Lateral / Rotary', definition: 'Lateral drives X and Y from separate pendulums (the Lissajous case). Rotary sums two circular motions — flower-petal figures whose petal count follows the ratio.' },
+      { key: 'drive_from_oscillators', name: 'Drive from oscillators', definition: 'Links the figure to two real tones so you HEAR the interval while watching it — a consonant ratio yields both a stable figure and a consonant sound.' },
+    ],
     commonMistakes: [
       'Thinking the figure is random art — every figure is deterministic; simple integer ratios draw stable closed figures.',
       'Expecting complex/irrational ratios to close — only simple ratios (2:1, 3:2, 4:3) close cleanly; near-but-inexact ratios drift/precess, and that drift is beating.',

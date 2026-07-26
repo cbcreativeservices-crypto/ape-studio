@@ -125,6 +125,15 @@ export type RootStackParamList = {
    *  centerpiece (additive synthesis · spectrum · distortion), with
    *  Learn/Explore/Practice/Test modes. Opened from the EarLab landing menu. */
   HarmonicLab: undefined;
+  /** Lab 14 "Oscillator" (v4 §7, T1) — classic waveforms as real band-limited
+   *  additive audio + analytic waveform/harmonic displays. LabShell-based. */
+  OscillatorLab: undefined;
+  /** Lab 11 "Noise" (v4 §7, T1) — the five native noise colors (real audio) +
+   *  the idealized slope chart. LabShell-based. */
+  NoiseLab: undefined;
+  /** Lab 16 "Harmonograph" (v4 §7, T1) — ratio-locked interval figures with
+   *  real additive interval audio. LabShell-based. */
+  HarmonographLab: undefined;
 };
 
 declare global {

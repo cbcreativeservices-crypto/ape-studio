@@ -32,6 +32,9 @@ import { FrequencyCounterScreen } from '../screens/tools/FrequencyCounterScreen'
 import { DspDebugScreen } from '../screens/tools/DspDebugScreen';
 import { EarLabScreen } from '../screens/lab/EarLabScreen';
 import { HarmonicLabScreen } from '../screens/lab/HarmonicLabScreen';
+import { OscillatorLabScreen } from '../screens/lab/OscillatorLabScreen';
+import { NoiseLabScreen } from '../screens/lab/NoiseLabScreen';
+import { HarmonographLabScreen } from '../screens/lab/HarmonographLabScreen';
 import { LandingScreen } from '../screens/landing/LandingScreen';
 import { PublicGlossaryScreen } from '../screens/landing/PublicGlossaryScreen';
 import { PaywallScreen } from '../screens/commercial/PaywallScreen';
@@ -85,6 +88,9 @@ export function RootNavigator() {
           hidden like the other tool screens. */}
       <Stack.Screen name="EarLab" component={EarLabScreen} />
       <Stack.Screen name="HarmonicLab" component={HarmonicLabScreen} />
+      <Stack.Screen name="OscillatorLab" component={OscillatorLabScreen} />
+      <Stack.Screen name="NoiseLab" component={NoiseLabScreen} />
+      <Stack.Screen name="HarmonographLab" component={HarmonographLabScreen} />
       {/* CM2 (commercialMode): pre-auth Landing + anonymous glossary. Only
           reached when the flag is ON (Splash routes there); registering them
           unconditionally changes nothing with the flag OFF. */}
