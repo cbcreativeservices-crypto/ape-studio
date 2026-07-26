@@ -665,10 +665,16 @@ export function CourseSelectionScreen() {
   const load = useCallback(async () => {
     setError(null);
     warmCardArt(); // prefetch card art up front
-    // CM2 (commercialMode): the carousel seeds from the public catalog —
-    // [Audio Tools] [Glossary] [9 courses by order]. No enrollment queries
-    // (progress/dashboard wiring lands in CM6).
-    if (commercialMode) {
+    // A GUEST (no auth session) OR commercialMode seeds the carousel from the
+    // PUBLIC catalog — [Audio Tools] [Glossary] [Lab] + free topics + courses —
+    // with NO user/enrollment/progress queries. Those would throw 'user_not_found'
+    // for a guest, which used to blank the whole Home with a "complete registration"
+    // error (fix 2026-07-26: Guest Mode landed on the academy path). Keyed on the
+    // real session, NOT entitlement, since returning authed users also default to
+    // the mock 'anonymous' entitlement.
+    const { data: sessData } = await supabase.auth.getSession();
+    const isGuest = !sessData.session;
+    if (commercialMode || isGuest) {
       // v2.13: catalog from public_courses/public_course_topics (seed fallback).
       const catalog = await getPublicCatalog();
       // Skip Pro Audio Safety (order 1) — the green free card already covers it.
