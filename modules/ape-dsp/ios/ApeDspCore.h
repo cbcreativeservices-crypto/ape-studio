@@ -10,6 +10,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ApeDspCore : NSObject
 
+/// The engine capability version JS gates features on — reads the C++
+/// apedsp::kEngineVersion (EngineHub.hpp) so every iOS surface (getInfo,
+/// frame) reports the same value as the core. Never hardcode it in Swift.
++ (uint32_t)engineVersion;
+
 /// Spin up the analysis thread (drains the ring every ~50 ms). Idempotent.
 - (void)start;
 /// Stop the analysis thread and mark not-running. Idempotent.
@@ -68,6 +73,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)genSetLevelDb:(double)db;
 - (void)genSetSweepStart:(double)startHz end:(double)endHz seconds:(double)seconds repeat:(BOOL)repeat;
 - (void)genSetClickBpm:(double)bpm;
+/// ADDITIVE (HV-2): flat layout [f0, a1..a12, p1..p12] — 25 numbers. f0 in Hz,
+/// amps relative 0..1, phases in DEGREES. Same ordering crosses every bridge
+/// verbatim; the core validates/clamps and ramps toward the new targets
+/// (slope-limited — a full-scale amp swing takes ~8 ms, smaller changes
+/// finish faster), so this is safe to call at UI rate. Short arrays are
+/// ignored.
+- (void)genSetAdditive:(NSArray<NSNumber *> *)values;
 - (void)genUnlockCap;
 - (void)genRelockCap;
 - (void)genStart;

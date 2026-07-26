@@ -10,6 +10,8 @@ import { DarkTheme, NavigationContainer, type Theme } from '@react-navigation/na
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { EntitlementProvider } from './src/features/commercial/EntitlementProvider';
+import { AudioOutputGate } from './src/features/audio/AudioOutputGate';
+import { AudioBorderFrame } from './src/features/audio/AudioBorderFrame';
 import { LowLightDim } from './src/features/settings/LowLightLayer';
 import { colors, fontAssets } from './src/theme/tokens';
 
@@ -40,14 +42,22 @@ export default function App() {
       {/* Commercial entitlement context (CM1) — inert while commercialMode is
           OFF; no consumers yet, so app behavior is unchanged. */}
       <EntitlementProvider>
-        {/* Navigator + the global low-light dim wash (the toggle lives on the
-            Profile screen). pointer-transparent, so it never blocks touches. */}
-        <View style={{ flex: 1 }}>
-          <NavigationContainer theme={navTheme}>
-            <RootNavigator />
-          </NavigationContainer>
-          <LowLightDim />
-        </View>
+        {/* Global audio-output gate (owner request 2026-07-25): the app is
+            silent by default; this provider owns the enable popups and wires the
+            login / foreground-idle auto-re-mute. Mounted once at the root. */}
+        <AudioOutputGate>
+          {/* Navigator + the global low-light dim wash (the toggle lives on the
+              Profile screen). pointer-transparent, so it never blocks touches. */}
+          <View style={{ flex: 1 }}>
+            <NavigationContainer theme={navTheme}>
+              <RootNavigator />
+            </NavigationContainer>
+            <LowLightDim />
+            {/* Persistent thin red frame whenever audio output is enabled — a
+                global "the app can sound" indicator on every screen. */}
+            <AudioBorderFrame />
+          </View>
+        </AudioOutputGate>
       </EntitlementProvider>
     </SafeAreaProvider>
   );

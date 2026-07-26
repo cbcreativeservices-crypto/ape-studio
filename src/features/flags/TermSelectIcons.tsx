@@ -161,12 +161,17 @@ export function TermSelectIcons({
   id,
   bookmarkCtx,
   hideKnown = false,
+  hideBookmark = false,
 }: {
   id: string;
   bookmarkCtx: string;
   /** Bookmark/custom lists only need the bookmark + custom toggles — hide the
    *  ✓/✗ known–unknown pair (user request 2026-07-25). */
   hideKnown?: boolean;
+  /** Hide the bookmark toggle too — for contexts where bookmarking isn't valid
+   *  (e.g. the Enrollments custom-list popup), leaving only the custom-list
+   *  icon (user request 2026-07-25). */
+  hideBookmark?: boolean;
 }) {
   const bookmarked = useBookmarks(bookmarkCtx);
   const starred = useTermList('starred');
@@ -176,14 +181,16 @@ export function TermSelectIcons({
   return (
     <View style={styles.row}>
       {hint ? <HintBubble text={hint} /> : null}
-      <IconToggle
-        renderGlyph={(c) => <BookmarkIcon color={c} filled={bookmarked.has(id)} />}
-        on={bookmarked.has(id)}
-        onColor="#b45bff"
-        label={bookmarked.has(id) ? 'Remove bookmark' : 'Bookmark term'}
-        onPress={() => toggleBookmark(bookmarkCtx, id)}
-        onLongPress={() => showHint(bookmarked.has(id) ? 'Removes from Bookmarks' : 'Adds to Bookmarks')}
-      />
+      {hideBookmark ? null : (
+        <IconToggle
+          renderGlyph={(c) => <BookmarkIcon color={c} filled={bookmarked.has(id)} />}
+          on={bookmarked.has(id)}
+          onColor="#b45bff"
+          label={bookmarked.has(id) ? 'Remove bookmark' : 'Bookmark term'}
+          onPress={() => toggleBookmark(bookmarkCtx, id)}
+          onLongPress={() => showHint(bookmarked.has(id) ? 'Removes from Bookmarks' : 'Adds to Bookmarks')}
+        />
+      )}
       <IconToggle
         renderGlyph={(c) => (
           <DeckIcon color={c} size={17} fill={starred.has(id) ? `${c}33` : 'none'} />

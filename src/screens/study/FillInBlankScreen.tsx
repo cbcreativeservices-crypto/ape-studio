@@ -15,6 +15,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, PanResponder, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AnswerCell, type AnswerCellState } from '../../components/AnswerCell';
 import { GlassButton } from '../../components/GlassButton';
@@ -32,10 +33,12 @@ import {
 } from '../../features/study/api';
 import { StudySession } from '../../features/study/sync';
 import { saveLocalMethodStates } from '../../features/study/localProgress';
-import { usePaceSettings } from '../../features/study/paceStore';
+import { incBrainOutput, resetBrainOutput, setRunning, usePaceSettings, useRunning } from '../../features/study/paceStore';
+import { setLastStudyLocation } from '../../features/study/lastStudyLocation';
 import { recordPaceSession } from '../../features/study/paceRecords';
 import { PaceTimerBar } from '../../features/study/PaceTimerBar';
 import { PaceTimerModal } from '../../features/study/PaceTimerModal';
+import { registerTrialAnswer, useTimeTrial } from '../../features/study/timeTrial';
 import { StudyHeader } from './StudyHeader';
 import type { StudyStackParamList } from '../../navigation/types';
 
@@ -64,6 +67,14 @@ function blankOut(term: string, sentence: string): { pre: string[] } {
 
 export function FillInBlankScreen({ navigation, route }: Props) {
   const { achievementId, topicName } = route.params;
+
+  // Remember this exact method+topic so the Enrollments "CONTINUE LEARNING"
+  // banner can resume here (re-records on every focus = true last-visited).
+  useFocusEffect(
+    useCallback(() => {
+      setLastStudyLocation({ kind: 'method', route: 'FillInBlank', achievementId, topicName });
+    }, [achievementId, topicName]),
+  );
   const insets = useSafeAreaInsets();
 
   const [items, setItems] = useState<GlossaryItem[] | null>(null);
@@ -75,11 +86,18 @@ export function FillInBlankScreen({ navigation, route }: Props) {
   const session = useRef<StudySession | null>(null);
 
   // Pace timer (practice aid — device-local settings, never blocks study).
-  const { settings: pace } = usePaceSettings('fill_in_blank');
+  const { settings: pace, setEnabled, setPreset } = usePaceSettings('fill_in_blank');
+  const running = useRunning('fill_in_blank');
+  // Time trial (opt-in 15:00 challenge) — the readout switches to its HUD while live.
+  const trial = useTimeTrial('fill_in_blank');
   const [timerOpen, setTimerOpen] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const startRef = useRef<number | null>(null);
+  const elapsedRef = useRef(0);
   const recordedRef = useRef(false);
+  // Baseline for the RESET button: the answered count at the last reset, so the
+  // readout's session counters zero without touching earned study progress.
+  const answeredBaseRef = useRef(0);
 
   useEffect(() => {
     let alive = true;
@@ -112,26 +130,45 @@ export function FillInBlankScreen({ navigation, route }: Props) {
     if (Object.keys(states).length) void saveLocalMethodStates(achievementId, 'fill_in_blank', states);
   }, [states, achievementId]);
 
-  // Pace clock: start when the timer is enabled, tick ~1s while on, reset off.
+  // Pace clock: present while ENABLED; only ticks while also RUNNING. When
+  // enabled-but-paused the clock HOLDS (elapsed kept); disabling resets to 0.
   useEffect(() => {
     if (!pace.enabled) {
       startRef.current = null;
+      elapsedRef.current = 0;
       recordedRef.current = false;
       setElapsed(0);
+      resetBrainOutput('fill_in_blank'); // fresh pace session → zero the brain-output tally
       return;
     }
-    if (startRef.current == null) startRef.current = Date.now();
+    if (!running) return; // paused → hold the clock where it is
+    startRef.current = Date.now() - elapsedRef.current * 1000; // resume from held time
     const id = setInterval(() => {
-      if (startRef.current != null) setElapsed((Date.now() - startRef.current) / 1000);
+      if (startRef.current != null) {
+        const e = (Date.now() - startRef.current) / 1000;
+        elapsedRef.current = e;
+        setElapsed(e);
+      }
     }, 1000);
     return () => clearInterval(id);
-  }, [pace.enabled]);
+  }, [pace.enabled, running]);
 
   // answered = distinct items with at least one attempt (progress through M).
   const answered = useMemo(
     () => Object.values(states).filter((s) => (s.attempts ?? 0) > 0).length,
     [states],
   );
+
+  // Reset zeroes the readout's elapsed + answered session counters (a fresh
+  // pace window) — earned study progress (states) is untouched.
+  const handlePaceReset = useCallback(() => {
+    answeredBaseRef.current = answered;
+    startRef.current = Date.now();
+    elapsedRef.current = 0;
+    recordedRef.current = false;
+    setElapsed(0);
+    resetBrainOutput('fill_in_blank');
+  }, [answered]);
 
   // STOPWATCH: on completing all items, log the run once (encouraging records).
   useEffect(() => {
@@ -193,6 +230,8 @@ export function FillInBlankScreen({ navigation, route }: Props) {
       if (!question || picked) return;
       const correct = opt === question.item.term;
       setPicked(opt);
+      registerTrialAnswer('fill_in_blank', correct); // time trial: only correct advances pace
+      if (correct) incBrainOutput('fill_in_blank'); // one brain output per correct answer press
       session.current?.addEvent({ item: question.item.id, kind: 'answer', correct });
       setStates((prev) => ({
         ...prev,
@@ -278,6 +317,7 @@ export function FillInBlankScreen({ navigation, route }: Props) {
           title="FILL IN THE BLANK"
           subtitle={`Topic · ${topicName}`}
           onOpenTimer={() => setTimerOpen(true)}
+          hideTimerButton={!!(pace.enabled || trial.active || trial.result)}
         />
         {/* LED + compact item count (Booth 2026-07-08: count lives up here,
             never floating over the answer grid). */}
@@ -292,13 +332,19 @@ export function FillInBlankScreen({ navigation, route }: Props) {
           <FsButton onPress={() => setFullscreen(true)} />
         </View>
 
-        {pace.enabled ? (
+        {pace.enabled || trial.active || trial.result ? (
           <PaceTimerBar
+            method="fill_in_blank"
             preset={pace.preset}
-            answered={answered}
+            answered={Math.max(0, answered - answeredBaseRef.current)}
             total={items.length}
             elapsed={elapsed}
-            onOpenSettings={() => setTimerOpen(true)}
+            enabled={pace.enabled}
+            onReset={handlePaceReset}
+            running={running}
+            onToggleRunning={() => setRunning('fill_in_blank', !running)}
+            onRemove={() => setEnabled(false)}
+            onPresetChange={setPreset}
           />
         ) : null}
 
@@ -315,10 +361,10 @@ export function FillInBlankScreen({ navigation, route }: Props) {
             bottom, same as Matching — swipe ‹ › still works too. */}
         <View style={styles.footer}>
           <View style={{ flex: 1 }}>
-            <GlassButton label="‹ PREV" tint="steel" onPress={() => goTo(-1)} disabled={!!picked} />
+            <GlassButton label="‹ PREV" tint="gold" onPress={() => goTo(-1)} disabled={!!picked} />
           </View>
           <View style={{ flex: 1 }}>
-            <GlassButton label="NEXT ›" tint="gold" onPress={() => goTo(1)} disabled={!!picked} />
+            <GlassButton label="NEXT ›" tint="green" onPress={() => goTo(1)} disabled={!!picked} />
           </View>
         </View>
       </View>
@@ -329,6 +375,18 @@ export function FillInBlankScreen({ navigation, route }: Props) {
           picked answer's feedback is showing. */}
       <StudyFsOverlay
         visible={fullscreen}
+        topSlot={
+          pace.enabled || trial.active || trial.result ? (
+            <PaceTimerBar
+              method="fill_in_blank"
+              preset={pace.preset}
+              answered={Math.max(0, answered - answeredBaseRef.current)}
+              total={items.length}
+              elapsed={elapsed}
+              variant="fullscreen"
+            />
+          ) : null
+        }
         onClose={() => setFullscreen(false)}
         onShakePrev={() => goTo(-1)}
         onSwipePrev={() => {
@@ -342,7 +400,7 @@ export function FillInBlankScreen({ navigation, route }: Props) {
         {questionBody}
       </StudyFsOverlay>
 
-      <PaceTimerModal visible={timerOpen} onClose={() => setTimerOpen(false)} method="fill_in_blank" />
+      <PaceTimerModal visible={timerOpen} onClose={() => setTimerOpen(false)} method="fill_in_blank" topicId={achievementId} />
     </View>
   );
 }

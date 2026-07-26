@@ -4,7 +4,7 @@
 // live natively (Oboe + the shared C++ core via ApeDspJni.cpp); this class does
 // permission handling, the Expo DSL, and Map/ByteArray marshalling.
 //
-// Frame dictionaries mirror the iOS ApeDspCore keys EXACTLY (engineVersion 2).
+// Frame dictionaries mirror the iOS ApeDspCore keys EXACTLY (engineVersion 3).
 package expo.modules.apedsp
 
 import android.Manifest
@@ -33,6 +33,9 @@ class ApeDspModule : Module() {
   }
 
   // ---- JNI (symbols in ApeDspJni.cpp) ----
+  // apedsp::kEngineVersion (EngineHub.hpp) — the ONE source of truth for the
+  // engine capability version JS gates features on; never hardcode it here.
+  private external fun nativeEngineVersion(): Int
   private external fun nativeCreate(): Long
   private external fun nativeDestroy(h: Long)
   private external fun nativeStartCapture(h: Long, unprocessedSupported: Boolean): DoubleArray
@@ -57,6 +60,8 @@ class ApeDspModule : Module() {
   private external fun nativeGenSetLevelDb(h: Long, db: Double)
   private external fun nativeGenSetSweep(h: Long, s0: Double, s1: Double, secs: Double, repeat: Boolean)
   private external fun nativeGenSetClickBpm(h: Long, bpm: Double)
+  // ADDITIVE (HV-2): flat [f0, a1..a12, p1..p12] — 25 doubles (Hz, 0..1, degrees).
+  private external fun nativeGenSetAdditive(h: Long, vals: DoubleArray)
   private external fun nativeGenUnlockCap(h: Long)
   private external fun nativeGenRelockCap(h: Long)
   private external fun nativeGenStatus(h: Long): DoubleArray
@@ -130,7 +135,7 @@ class ApeDspModule : Module() {
         "rmsDb" to m[3], "peakDb" to m[9], "peakHoldDb" to m[10],
         "droppedFrames" to m[15], "running" to (m[16] == 1.0), "captureStalled" to (m[17] == 1.0),
         "processedInput" to !measurementMode, "bluetoothInput" to false, "interrupted" to false,
-        "engineVersion" to 2,
+        "engineVersion" to nativeEngineVersion(),
       )
     }
 
@@ -241,7 +246,12 @@ class ApeDspModule : Module() {
     }
     Function("genSet") { params: Map<String, Any?> ->
       if (handle == 0L) return@Function
-      (params["mode"] as? Number)?.let { nativeGenSetMode(handle, it.toInt()) }
+      // ORDER MATTERS: every target key ("frequency", "levelDb", "sweep",
+      // "additive", …) is marshaled BEFORE "mode". setMode() arms the core's
+      // retrigger, and the RT render callback can land between two native
+      // calls — mode-first would let one buffer render the PREVIOUS targets.
+      // Targets-first means the retrigger always fires with the new state in
+      // place. Same ordering in ApeDspModule.swift — keep them in sync.
       (params["frequency"] as? Number)?.let { nativeGenSetFrequency(handle, it.toDouble()) }
       (params["levelDb"] as? Number)?.let { nativeGenSetLevelDb(handle, it.toDouble()) }
       (params["clickBpm"] as? Number)?.let { nativeGenSetClickBpm(handle, it.toDouble()) }
@@ -253,6 +263,17 @@ class ApeDspModule : Module() {
           nativeGenSetSweep(handle, s0, s1, secs, (sw["repeat"] as? Boolean) ?: true)
         }
       }
+      // ADDITIVE (HV-2): flat [f0, a1..a12, p1..p12] — 25 numbers (Hz, 0..1,
+      // degrees). Same ordering as iOS/JS. Drop the call if any element is
+      // non-numeric (sweep-style all-or-nothing guard — Boolean is not Number
+      // here, and the Swift bridge rejects CFBoolean to match); the core
+      // ignores short arrays. NOTE: "frequency" retunes the SINE path only —
+      // retuning the additive f0 means resending the full additive array.
+      (params["additive"] as? List<*>)?.let { list ->
+        val vals = list.mapNotNull { (it as? Number)?.toDouble() }
+        if (vals.size == list.size) nativeGenSetAdditive(handle, vals.toDoubleArray())
+      }
+      (params["mode"] as? Number)?.let { nativeGenSetMode(handle, it.toInt()) }
     }
     Function("genUnlockCap") { if (handle != 0L) nativeGenUnlockCap(handle) }
     Function("genRelockCap") { if (handle != 0L) nativeGenRelockCap(handle) }
@@ -260,7 +281,9 @@ class ApeDspModule : Module() {
   }
 
   private fun infoMap(): Map<String, Any?> = mapOf(
-    "engineVersion" to 2,
+    // v1 = Spike-0; v2 = engine build 2026-07-23; v3 = additive generator
+    // (HV-2). Read from apedsp::kEngineVersion via JNI — never hardcoded.
+    "engineVersion" to nativeEngineVersion(),
     "sampleRate" to sampleRate,
     "ioBufferDuration" to (if (sampleRate > 0) framesPerBurst / sampleRate else 0.0),
     "measurementMode" to measurementMode,
@@ -274,10 +297,13 @@ class ApeDspModule : Module() {
   )
 
   private fun genStatusMap(): Map<String, Any?> {
-    val g = if (handle != 0L) nativeGenStatus(handle) else DoubleArray(5)
+    // 6 fixed slots (see nativeGenStatus). additiveNorm (HV-2): 1 = not
+    // attenuating; <1 = the additive peak bound is pulling levels down.
+    val g = if (handle != 0L) nativeGenStatus(handle) else DoubleArray(6)
     return mapOf(
       "running" to (g[0] == 1.0), "capUnlocked" to (g[1] == 1.0),
       "effectiveLevelDb" to g[2], "defaultLevelDb" to g[3], "capDb" to g[4],
+      "additiveNorm" to g[5],
     )
   }
 

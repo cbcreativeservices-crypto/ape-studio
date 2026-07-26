@@ -27,6 +27,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ApeDsp, GEN_MODES, type GenModeName, type GenStatus } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
+import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
+import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { EngineGate } from './EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
@@ -99,6 +101,7 @@ function Chip({ label, selected, onPress }: { label: string; selected: boolean; 
 export function SignalGenScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
   const tool = toolByKey('signalgen');
+  const { requestAudioOutput } = useAudioOutputGate();
 
   // Engine gate — computed ONCE (native availability cannot change mid-session).
   // 'idle' = engine build present, generator usable; 'absent'/'spike' render
@@ -147,10 +150,15 @@ export function SignalGenScreen({ navigation }: Props) {
   );
 
   // Poll genStatus at 2 Hz while running — effectiveLevelDb is the honest
-  // output level (the native cap may differ from the requested level).
+  // output level (the native cap may differ from the requested level). While
+  // the generator is actively sounding we also refresh the audio-output idle
+  // timer, so a legitimately-running tone is never muted out from under it.
   useEffect(() => {
     if (!running) return;
-    const t = setInterval(() => setStatus(ApeDsp.genStatus()), STATUS_POLL_MS);
+    const t = setInterval(() => {
+      setStatus(ApeDsp.genStatus());
+      noteAudioActivity();
+    }, STATUS_POLL_MS);
     return () => clearInterval(t);
   }, [running]);
 
@@ -218,11 +226,18 @@ export function SignalGenScreen({ navigation }: Props) {
 
   // Explicit user START only (spec §18) — nothing sounds until this press.
   const onStart = async () => {
+    // AUDIO-OUTPUT GATE (owner request 2026-07-25): the generator is real sound
+    // output and must stay silent unless output is enabled. Runs the enable flow
+    // when muted; a decline leaves the generator stopped. (The Q4 safety cap is
+    // independent and still applies once running.)
+    const ok = await requestAudioOutput();
+    if (!ok) return;
     setGenError('');
     try {
       const s = await ApeDsp.genStart();
       setStatus(s);
       setRunning(true);
+      noteAudioActivity();
     } catch (e) {
       setGenError(e instanceof Error ? e.message : String(e));
       setRunning(false);

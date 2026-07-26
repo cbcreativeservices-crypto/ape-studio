@@ -45,6 +45,10 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
   float *_scratch;
 }
 
++ (uint32_t)engineVersion {
+  return apedsp::kEngineVersion;
+}
+
 - (instancetype)init {
   if (self = [super init]) {
     _ring = new apedsp::SpscRing(kRingCapacity);
@@ -160,7 +164,7 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
     @"droppedFrames" : @(f.droppedFrames),
     @"running" : @(running),
     @"captureStalled" : @(stalled),
-    @"engineVersion" : @2,
+    @"engineVersion" : @(apedsp::kEngineVersion),  // 3 = additive generator (HV-2)
   };
 }
 
@@ -302,6 +306,16 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
 - (void)genSetClickBpm:(double)bpm {
   _gen->setClickBpm(bpm);
 }
+// ADDITIVE (HV-2): flat [f0, a1..a12, p1..p12] — 25 doubles (Hz, 0..1, degrees).
+// Copy out of the NSArray and forward; the core NaN-proofs/clamps and ignores
+// short arrays (count < 25). NOTE: genSetFrequency does NOT retune the additive
+// f0 — JS resends the full additive array to retune (phase-continuous in core).
+- (void)genSetAdditive:(NSArray<NSNumber *> *)values {
+  std::vector<double> v;
+  v.reserve(values.count);
+  for (NSNumber *n in values) v.push_back(n.doubleValue);
+  _gen->setAdditive(v.data(), static_cast<uint32_t>(v.size()));
+}
 - (void)genUnlockCap {
   _gen->unlockCap();
 }
@@ -321,6 +335,9 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
     @"effectiveLevelDb" : @(_gen->effectiveLevelDb()),
     @"defaultLevelDb" : @(apedsp::genlevel::kDefaultDb),
     @"capDb" : @(apedsp::genlevel::kCapDb),
+    // HV-2: additive normalization gain (1 = not attenuating; <1 = the
+    // 1/max(1, Σaₙ) peak bound is pulling levels down) — honest UI display.
+    @"additiveNorm" : @(_gen->additiveNorm()),
   };
 }
 - (void)genRender:(float *)buffer frames:(uint32_t)frames {

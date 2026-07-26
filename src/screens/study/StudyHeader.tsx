@@ -7,6 +7,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { MethodIcon, type MethodKey } from '../../components/MethodIcon';
+import { TimerIcon } from '../../components/TimerIcon';
 import { colors, fonts } from '../../theme/tokens';
 
 export function StudyHeader({
@@ -14,6 +15,7 @@ export function StudyHeader({
   title,
   subtitle,
   onOpenTimer,
+  hideTimerButton,
 }: {
   method: MethodKey;
   title: string;
@@ -22,6 +24,10 @@ export function StudyHeader({
   /** When provided (the 3 paced study screens), show a pace-timer button to the
    *  LEFT of RETURN that opens the pace-timer settings popup. */
   onOpenTimer?: () => void;
+  /** When true, suppress the top pace-timer button — the in-screen pace
+   *  CONTAINER (readout) is already showing, so the top icon would be a
+   *  redundant second entry point (2026-07-25). */
+  hideTimerButton?: boolean;
 }) {
   const navigation = useNavigation();
   return (
@@ -45,7 +51,7 @@ export function StudyHeader({
       {/* Right cluster: optional pace-timer button, then the always-visible
           RETURN control (Booth 2026-07-18). */}
       <View style={styles.rightCluster}>
-        {onOpenTimer ? (
+        {onOpenTimer && !hideTimerButton ? (
           <Pressable
             onPress={onOpenTimer}
             hitSlop={8}
@@ -53,7 +59,7 @@ export function StudyHeader({
             accessibilityRole="button"
             accessibilityLabel="Pace timer"
           >
-            <Text style={styles.timerGlyph}>⏱</Text>
+            <TimerIcon color={colors.blue} size={17} />
           </Pressable>
         ) : null}
         <Pressable

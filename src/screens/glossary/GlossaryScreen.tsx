@@ -29,6 +29,7 @@ import { SpeakButton, stopAllSpeech } from '../../components/SpeakButton';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { getBookmarks, listBookmarkContexts, toggleBookmark, toggleTermList, useBookmarks, useTermList } from '../../features/flags/flaggedStore';
 import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
+import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
 import { COPY } from '../../lib/copy';
 import { useCoachMark } from '../../lib/coachMark';
 import { sendFeedback } from '../../lib/feedback';
@@ -456,6 +457,10 @@ export function GlossaryScreen({ route, navigation }: Props) {
   const searchRef = useRef<TextInput>(null);
   const [filter, setFilter] = useState<Filter>('all');
   const [topicPickerOpen, setTopicPickerOpen] = useState(false);
+  // Member gate for the topic filter (user request 2026-07-25): free/lapsed/
+  // anonymous commercial users may VIEW the topic list but not activate a topic;
+  // tapping a locked row raises this brief membership hint.
+  const [topicGate, setTopicGate] = useState(false);
   const [cardView, setCardView] = useState(false); // list (default) ↔ card view
   // TTS reads the OFFICIAL definition by default (ADV); BEG = plain English.
   const [ttsBeg, setTtsBeg] = useState(false);
@@ -736,10 +741,14 @@ export function GlossaryScreen({ route, navigation }: Props) {
     }
     return [...byName.values()].sort((a, b) => a.name.localeCompare(b.name));
   }, [topics, entries]);
-  // Free (non-academy) commercial users see the topic filter list VEILED: the
-  // names are enciphered and the rows don't select — they see the curtain, not
-  // the contents (Booth 2026-07-11). Academy + institutional users use it normally.
-  const topicsLocked = commercialMode && !caps.allTopics;
+  // Free / lapsed / anonymous commercial users get the topic filter as VIEW-ONLY
+  // (user request 2026-07-25): the A–Z list stays fully readable, but the rows
+  // don't ACTIVATE the filter — each carries a MEMBERS lock and, on tap, a brief
+  // membership hint. Only SELECTING a topic is gated; viewing is fine. Gating
+  // applies in commercial mode only (flag OFF = today's institutional app, no
+  // gate — and note the __DEV__ bypass in EntitlementProvider forces academy
+  // caps, so this reads false on dev builds). Academy + institutional select normally.
+  const topicLinksLocked = commercialMode && !caps.allTopics;
 
   const filterLabel =
     filter === 'all'
@@ -798,6 +807,32 @@ export function GlossaryScreen({ route, navigation }: Props) {
   // Members of the SELECTED bookmark context (single bookmark popup). Reacts to
   // both the ctx selection (bmBookmarks is useBookmarks(bmCtx)) and edits.
   const bmRows = useMemo(() => entries.filter((e) => bmBookmarks.has(e.id)), [entries, bmBookmarks]);
+
+  // Every SELECTABLE bookmark list for the OTHER LISTS switcher (user request
+  // 2026-07-25): the canonical set — the Glossary plus every topic (each topic
+  // id is a bookmark context TermSelectIcons writes to) — UNIONed with any other
+  // context that currently holds bookmarks. Empty lists show a 0 count so they
+  // stay selectable; the previous build listed ONLY non-empty contexts, so an
+  // empty list could never be switched to. Order: Glossary first, topics A–Z by
+  // name, then any remaining non-empty contexts. The selected list is excluded
+  // (it's shown up top).
+  const bmSwitcherRows = useMemo(() => {
+    const counts = new Map(bmContexts.map((b) => [b.ctx, b.count]));
+    const ordered: string[] = [
+      'glossary',
+      ...[...topicsById.keys()].sort((a, b) => ctxName(a).localeCompare(ctxName(b))),
+      ...bmContexts.map((b) => b.ctx),
+    ];
+    const seen = new Set<string>();
+    const rows: { ctx: string; count: number }[] = [];
+    for (const ctx of ordered) {
+      if (ctx === bmCtx || seen.has(ctx)) continue;
+      seen.add(ctx);
+      rows.push({ ctx, count: counts.get(ctx) ?? 0 });
+    }
+    return rows;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bmContexts, topicsById, bmCtx]);
 
   // Tapping a term in the overlay opens it in the popup (the popup overlay
   // renders in both list and card mode) and closes the overlay.
@@ -1430,21 +1465,40 @@ export function GlossaryScreen({ route, navigation }: Props) {
         ) : null}
 
         {filter === 'topic' && topicPickerOpen && (
-          topicsLocked ? (
-            // Locked (free) list: a tap ANYWHERE closes it immediately; the list
-            // only moves when swiped (Booth 2026-07-11). Rows are inert Views so
-            // taps bubble to the closing Pressable; swipes go to the ScrollView.
-            <Pressable style={styles.topicOverlay} onPress={() => setTopicPickerOpen(false)}>
-              <Text style={styles.topicOverlayTitle}>🔒 TOPIC FILTER · ACADEMY MODE</Text>
+          topicLinksLocked ? (
+            // View-only for non-members (user request 2026-07-25): the topic list
+            // stays FULLY readable, but the rows don't ACTIVATE the filter — each
+            // shows a MEMBERS lock and, on tap, raises a brief membership hint
+            // (viewing is fine; only selecting a topic is gated). A ✕ closes it,
+            // since a row tap no longer selects/closes.
+            <View style={styles.topicOverlay}>
+              <View style={styles.topicLockedHeader}>
+                <Text style={styles.topicOverlayTitle}>SELECT A TOPIC · A–Z</Text>
+                <Pressable
+                  onPress={() => setTopicPickerOpen(false)}
+                  hitSlop={12}
+                  accessibilityRole="button"
+                  accessibilityLabel="Close topic list"
+                >
+                  <Text style={styles.cardPopupCloseText}>✕</Text>
+                </Pressable>
+              </View>
               <Text style={styles.topicLockHint}>{COPY.upgradePhrase}</Text>
               <ScrollView keyboardShouldPersistTaps="handled" {...NO_TOUCH_DELAY}>
                 {topicsAZ.map((t) => (
-                  <View key={t.id} style={styles.topicRow}>
-                    <Text style={[styles.topicRowText, styles.topicRowVeiled]}>{veilText(t.name)}</Text>
-                  </View>
+                  <Pressable
+                    key={t.id}
+                    style={styles.topicRow}
+                    onPress={() => setTopicGate(true)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`${t.name} — active membership required to filter`}
+                  >
+                    <Text style={styles.topicRowText}>{t.name}</Text>
+                    <Text style={styles.topicMembersTag}>🔒 MEMBERS</Text>
+                  </Pressable>
                 ))}
               </ScrollView>
-            </Pressable>
+            </View>
           ) : (
             <View style={styles.topicOverlay}>
               <Text style={styles.topicOverlayTitle}>SELECT A TOPIC · A–Z</Text>
@@ -1574,27 +1628,27 @@ export function GlossaryScreen({ route, navigation }: Props) {
                 <Text style={styles.tlEmpty}>No bookmarks in this list yet.</Text>
               )}
 
-              {/* OTHER LISTS — every other context that has bookmarks; tap to
-                  switch the terms shown above. */}
-              {bmContexts.some((b) => b.ctx !== bmCtx) ? (
+              {/* OTHER LISTS — EVERY selectable list (Glossary + all topics),
+                  even empty ones, plus any other non-empty context; tap to switch
+                  the terms shown above. Empty lists read count 0 (user request
+                  2026-07-25). */}
+              {bmSwitcherRows.length > 0 ? (
                 <View style={styles.bmOtherWrap}>
                   <Text style={styles.bmOtherLabel}>OTHER LISTS</Text>
-                  {bmContexts
-                    .filter((b) => b.ctx !== bmCtx)
-                    .map((b) => (
-                      <Pressable
-                        key={b.ctx}
-                        style={styles.tlRow}
-                        onPress={() => switchBmCtx(b.ctx)}
-                        accessibilityRole="button"
-                        accessibilityLabel={`Switch to ${ctxName(b.ctx)}`}
-                      >
-                        <Text style={[styles.tlItem, { color: '#b45bff', flex: 1 }]} numberOfLines={1}>
-                          {ctxName(b.ctx)} ›
-                        </Text>
-                        <Text style={styles.tlCount}>{b.count}</Text>
-                      </Pressable>
-                    ))}
+                  {bmSwitcherRows.map((b) => (
+                    <Pressable
+                      key={b.ctx}
+                      style={styles.tlRow}
+                      onPress={() => switchBmCtx(b.ctx)}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Switch to ${ctxName(b.ctx)}, ${b.count} bookmark${b.count === 1 ? '' : 's'}`}
+                    >
+                      <Text style={[styles.tlItem, { color: '#b45bff', flex: 1 }]} numberOfLines={1}>
+                        {ctxName(b.ctx)} ›
+                      </Text>
+                      <Text style={styles.tlCount}>{b.count}</Text>
+                    </Pressable>
+                  ))}
                 </View>
               ) : null}
             </ScrollView>
@@ -1605,6 +1659,21 @@ export function GlossaryScreen({ route, navigation }: Props) {
         </View>
         <LowLightDim />
       </Modal>
+
+      {/* Topic-filter member gate (user request 2026-07-25) — a brief hint that
+          selecting a topic needs active membership; the optional EXPLORE button
+          routes to the paywall (user-initiated, never automatic). */}
+      <PrePaywallPrompt
+        visible={topicGate}
+        onClose={() => setTopicGate(false)}
+        title="Members only"
+        lines={['Filtering the glossary by topic is an active-membership feature.', COPY.upgradePhrase]}
+        primaryLabel="EXPLORE MEMBERSHIP?"
+        onPrimary={() => {
+          setTopicGate(false);
+          (navigation as any).navigate('Paywall');
+        }}
+      />
 
       {/* Glossary intro placeholder (Booth 2026-07-18). */}
       <ScreenIntroOverlay introKey="glossary" />
@@ -1683,6 +1752,22 @@ const styles = StyleSheet.create({
   },
   topicRowActive: { backgroundColor: '#1d1607' },
   topicRowText: { flexShrink: 1, fontFamily: fonts.barlowMedium, fontSize: 15, color: colors.textSecondary },
+  // View-only topic overlay header: title + ✕ (rows no longer close it).
+  topicLockedHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderBottomWidth: 1,
+    borderBottomColor: colors.hairlineDim,
+    paddingRight: 12,
+  },
+  // Small "MEMBERS" lock tag on each non-selectable topic row (view-only mode).
+  topicMembersTag: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 10.5,
+    letterSpacing: 1,
+    color: colors.amberLabel,
+  },
   // Veiled topic row for free users — enciphered + blurred, unreadable.
   topicRowVeiled: {
     fontFamily: fonts.mono,

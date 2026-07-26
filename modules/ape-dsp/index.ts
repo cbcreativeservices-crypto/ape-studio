@@ -4,6 +4,8 @@
  * weighted meters (Z/A/C × Fast/Slow), Leq logging, FFT → octave bands with
  * the Q2 honest-gray-out flags, fine spectrum for the spectrogram, YIN pitch
  * with confidence, waveform envelope, and the Q4-capped signal generator.
+ * ENGINE v3 (2026-07-25, HV-2): additive generator mode — 12 harmonics of a
+ * fundamental, band-limited and peak-normalized inside the same Q4 cap chain.
  *
  * Pull-based frames (spike bridge rules): poll at ≤30 Hz from the UI.
  * Scalars/small arrays ride the dictionary bridge; spectrum + waveform ride
@@ -126,6 +128,7 @@ export const GEN_MODES = {
   impulse: 9,
   click: 10,
   burst: 11,
+  additive: 12, // engineVersion ≥ 3 — 12-harmonic additive (HV-2)
 } as const;
 export type GenModeName = keyof typeof GEN_MODES;
 
@@ -135,6 +138,15 @@ export type GenParams = {
   levelDb?: number;
   clickBpm?: number;
   sweep?: { startHz: number; endHz: number; seconds: number; repeat?: boolean };
+  /** Additive mode params (engineVersion ≥ 3): the flat 25-number layout
+   *  [f0, a1..a12, p1..p12] shared byte-for-byte with both native bridges —
+   *  f0 in Hz (floored to 1 native-side), amps relative 0..1 (clamped),
+   *  phases in DEGREES 0..360 (wrapped). The native setter is
+   *  all-or-nothing (< 25 numbers dropped); harmonics at/above Nyquist are
+   *  silently omitted from synthesis (band-limited by construction).
+   *  NOTE: `frequency` retunes the SINE path only — retuning the additive
+   *  f0 means resending this whole array (phase-continuous in the core). */
+  additive?: number[];
 };
 
 export type GenStatus = {
@@ -143,6 +155,10 @@ export type GenStatus = {
   effectiveLevelDb: number;
   defaultLevelDb: number; // −20 (Q4)
   capDb: number; // −12 (Q4)
+  /** engineVersion ≥ 3 only: current additive normalization factor
+   *  (1/max(1, Σaₙ)) — 1 = not attenuating, <1 = the norm is pulling the
+   *  harmonic sum down to keep the peak inside the Q4 cap chain. */
+  additiveNorm?: number;
 };
 
 /** RT60 guided-capture states (spec §13). */
@@ -215,8 +231,11 @@ export const ApeDsp = {
   isAvailable(): boolean {
     return native != null;
   },
-  /** 0 = module absent · 1 = Spike-0 build (no engine) · 2 = engine build.
-   *  Callers gate the engine surface on ≥2 and degrade honestly below. */
+  /** 0 = module absent · 1 = Spike-0 build (no engine) · 2 = engine build ·
+   *  3 = engine + additive generator (HV-2). The value is READ from the
+   *  native constant (DspInfo.engineVersion — never hardcoded here beyond
+   *  feature-gating comparisons). Callers gate the engine surface on ≥2,
+   *  the additive surface on ≥3, and degrade honestly below. */
   engineVersion(): number {
     if (!native) return 0;
     if (cachedEngineVersion != null) return cachedEngineVersion;
@@ -299,6 +318,15 @@ export const ApeDsp = {
   },
   genSet(params: GenParams): void {
     if (this.engineVersion() >= 2) native?.genSet(params);
+  },
+  /** Additive generator params (engineVersion ≥ 3): `values` is the flat
+   *  25-number [f0, a1..a12, p1..p12] array (see GenParams.additive for
+   *  units/layout). Rides the same genSet funnel both bridges marshal under
+   *  the "additive" key. No-op below v3 — an engine-v2 dev client predates
+   *  the mode, so callers feature-gate their UI on engineVersion() ≥ 3 and
+   *  fall back to the sine-only behavior. */
+  genSetAdditive(values: number[]): void {
+    if (this.engineVersion() >= 3) native?.genSet({ additive: values });
   },
   genUnlockCap(): void {
     if (this.engineVersion() >= 2) native?.genUnlockCap();

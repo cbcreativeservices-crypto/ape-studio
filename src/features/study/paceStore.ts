@@ -1,6 +1,7 @@
 /**
  * paceStore — device-local settings for the study "pace timer" practice aid,
- * one record per study method (Fill-in-Blank, Matching, Scenarios).
+ * one record per study method (Fill-in-Blank, Matching, Scenarios, Flashcards,
+ * Ear Training).
  *
  * The RECORDS (best/avg/sessions) live in the backend (see paceRecords.ts).
  * ONLY the per-method settings — is the timer on, which pace, which mode — are
@@ -16,8 +17,13 @@ import { useCallback } from 'react';
 import { useSyncExternalStore } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-/** The three study methods that carry a pace timer. */
-export type PaceMethodKey = 'fill_in_blank' | 'matching' | 'scenarios';
+/** The study methods that carry a pace timer. */
+export type PaceMethodKey =
+  | 'fill_in_blank'
+  | 'matching'
+  | 'scenarios'
+  | 'flashcards'
+  | 'ear_training';
 
 /**
  * A pace preset. Pace = a MULTIPLE of quiz time-per-question (20s/q).
@@ -141,6 +147,152 @@ export function usePaceSettings(method: PaceMethodKey): {
   return { settings, setEnabled, setPreset };
 }
 
+/**
+ * RUNNING state — is the timer actively COUNTING right now.
+ *
+ * This is intentionally separate from `enabled` (above):
+ *   • `enabled`  = the timer is ADDED/present (the readout is shown at all).
+ *   • `running`  = the readout is visible AND the clock is ticking.
+ *
+ * A timer can be enabled-but-paused: the readout stays on screen while the clock
+ * holds. Running is a session-only concern (no persistence), so it uses the same
+ * module-var + listeners + hook shape as the settings store above, minus the
+ * AsyncStorage hydration. Default = true (a freshly-added timer starts running).
+ */
+const runningCache = new Map<PaceMethodKey, boolean>();
+const runningListeners = new Map<PaceMethodKey, Set<() => void>>();
+
+function getRunning(m: PaceMethodKey): boolean {
+  return runningCache.get(m) ?? true;
+}
+
+/** Imperatively set a method's running state (also drives useRunning subscribers). */
+export function setRunning(m: PaceMethodKey, running: boolean): void {
+  runningCache.set(m, running);
+  runningListeners.get(m)?.forEach((l) => l());
+}
+
+/** Subscribe to a method's running (ticking) state. Default true. */
+export function useRunning(method: PaceMethodKey): boolean {
+  return useSyncExternalStore(
+    (cb) => {
+      let set = runningListeners.get(method);
+      if (!set) {
+        set = new Set();
+        runningListeners.set(method, set);
+      }
+      set.add(cb);
+      return () => {
+        set?.delete(cb);
+      };
+    },
+    () => getRunning(method),
+    () => getRunning(method),
+  );
+}
+
+/**
+ * BRAIN OUTPUTS — a per-method session tally of INDIVIDUAL correct-answer
+ * presses (user request 2026-07-25). Each correct press counts as one "brain
+ * output"; in Matching each correct PAIR match increments once (not the whole
+ * board). Drives the readout's BrainoutputsPM metric (outputs per minute).
+ *
+ * Session-only (no persistence), same module-var + listeners + hook shape as
+ * the running store above. Default = 0.
+ */
+const brainCache = new Map<PaceMethodKey, number>();
+const brainListeners = new Map<PaceMethodKey, Set<() => void>>();
+
+function getBrainOutputs(m: PaceMethodKey): number {
+  return brainCache.get(m) ?? 0;
+}
+
+function emitBrain(m: PaceMethodKey): void {
+  brainListeners.get(m)?.forEach((l) => l());
+}
+
+/** Increment a method's correct-press tally by one (per correct answer / pair). */
+export function incBrainOutput(m: PaceMethodKey): void {
+  brainCache.set(m, getBrainOutputs(m) + 1);
+  emitBrain(m);
+}
+
+/** Zero a method's tally — call wherever the pace session's elapsed is reset. */
+export function resetBrainOutput(m: PaceMethodKey): void {
+  brainCache.set(m, 0);
+  emitBrain(m);
+}
+
+/** Subscribe to a method's correct-press tally. Default 0. */
+export function useBrainOutputs(method: PaceMethodKey): number {
+  return useSyncExternalStore(
+    (cb) => {
+      let set = brainListeners.get(method);
+      if (!set) {
+        set = new Set();
+        brainListeners.set(method, set);
+      }
+      set.add(cb);
+      return () => {
+        set?.delete(cb);
+      };
+    },
+    () => getBrainOutputs(method),
+    () => getBrainOutputs(method),
+  );
+}
+
+/**
+ * AUTO TRACK — a per-method SILENT background-tracking mode (owner request
+ * 2026-07-25). When on, the readout collapses to a minimal "AUTO ●" chip: no
+ * countdown, no ahead/behind, no pace pressure. The elapsed clock + brain-output
+ * counter keep running underneath; turning it OFF logs the session to records.
+ *
+ * Session-only (no persistence), same module-var + listeners + hook shape as the
+ * running store above. Default = false.
+ */
+const autoTrackCache = new Map<PaceMethodKey, boolean>();
+const autoTrackListeners = new Map<PaceMethodKey, Set<() => void>>();
+
+function getAutoTrack(m: PaceMethodKey): boolean {
+  return autoTrackCache.get(m) ?? false;
+}
+
+/** Imperatively set a method's auto-track state (drives useAutoTrack subscribers). */
+export function setAutoTrack(m: PaceMethodKey, on: boolean): void {
+  autoTrackCache.set(m, on);
+  autoTrackListeners.get(m)?.forEach((l) => l());
+}
+
+/** Subscribe to a method's auto-track (silent background) state. Default false. */
+export function useAutoTrack(method: PaceMethodKey): boolean {
+  return useSyncExternalStore(
+    (cb) => {
+      let set = autoTrackListeners.get(method);
+      if (!set) {
+        set = new Set();
+        autoTrackListeners.set(method, set);
+      }
+      set.add(cb);
+      return () => {
+        set?.delete(cb);
+      };
+    },
+    () => getAutoTrack(method),
+    () => getAutoTrack(method),
+  );
+}
+
+/**
+ * Quantize an offset (in seconds) to the nearest whole STEP (default 5s), so the
+ * readout's signed offset — and the marker driven from it — moves in discrete
+ * 5-second steps (up as the learner gets ahead, down as they fall behind)
+ * instead of sliding continuously. Sign is preserved by the round.
+ */
+export function quantizeOffset(seconds: number, step = 5): number {
+  return Math.round(seconds / step) * step;
+}
+
 export type PaceStatus = 'ahead' | 'onpace' | 'behind' | 'overtime';
 
 export type PaceMathResult = {
@@ -156,10 +308,20 @@ export type PaceMathResult = {
 /**
  * Countdown/paced math. At answered K of M with elapsed T seconds and a target
  * of secPerQ seconds/question:
- *   expected = K × secPerQ ; offset = expected − T (+ = ahead, − = behind).
- * Status: ahead if offset > +5s, behind if offset < −5s, else on-pace; but if
- * T has passed the total budget we surface a friendly OVERTIME state instead
- * (never a hard stop). Marker = clamp(offset / (secPerQ×2), −1, +1).
+ *   offsetSeconds = K × secPerQ − T  (banked time: + = genuinely ahead).
+ *
+ * GRACE (user 2026-07-25): the question currently in progress gets its FULL lap
+ * before it can count against you — the timer does not begin "falling behind"
+ * until the first (and each) user-set pace interval expires. So the deadline for
+ * the question being worked on is (K + 1) × secPerQ, and BEHIND only triggers
+ * once the elapsed time blows past that deadline.
+ *
+ * Status: AHEAD if you've banked > 5s, BEHIND only once the current lap's
+ * deadline is passed by > 5s, else ON PACE; if T passes the total budget we
+ * surface a friendly OVERTIME state (never a hard stop).
+ *
+ * Marker: centered through the current lap (on-time), moves RIGHT once time is
+ * banked (answered early), moves LEFT only after the lap deadline is blown.
  */
 export function paceMath({
   secPerQ,
@@ -174,13 +336,22 @@ export function paceMath({
 }): PaceMathResult {
   const totalBudget = total * secPerQ;
   const expected = answered * secPerQ;
-  const offsetSeconds = expected - elapsed;
-  const markerPos = Math.max(-1, Math.min(1, offsetSeconds / (secPerQ * 2)));
+  const offsetSeconds = expected - elapsed; // banked time: + = genuinely ahead
+  // Deadline of the question in progress — its lap is grace, not a penalty.
+  const graceRemaining = (answered + 1) * secPerQ - elapsed;
+
+  // Marker: right when time is banked, left only after the lap deadline blows,
+  // centered (0) while still inside the current lap.
+  let markerOffset: number;
+  if (offsetSeconds > 0) markerOffset = offsetSeconds; // answered early → right
+  else if (graceRemaining < 0) markerOffset = graceRemaining; // lap blown → left
+  else markerOffset = 0; // still inside the current lap → center
+  const markerPos = Math.max(-1, Math.min(1, markerOffset / (secPerQ * 2)));
 
   let status: PaceStatus;
   if (elapsed > totalBudget && totalBudget > 0) status = 'overtime';
   else if (offsetSeconds > 5) status = 'ahead';
-  else if (offsetSeconds < -5) status = 'behind';
+  else if (graceRemaining < -5) status = 'behind';
   else status = 'onpace';
 
   return { status, offsetSeconds, markerPos, totalBudget };

@@ -19,6 +19,7 @@ import Svg, { Circle, Ellipse, Path } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { GlassButton } from '../../components/GlassButton';
 import { LedMeterWell, segmentsForPct } from '../../components/LedMeter';
@@ -55,6 +56,12 @@ import { IntroSheet, ScreenIntroOverlay } from '../../features/intro/ScreenIntro
 import { INTRO_STORAGE_PREFIX } from '../../features/intro/screenIntros';
 import { StudySession } from '../../features/study/sync';
 import { saveLocalMethodStates } from '../../features/study/localProgress';
+import { ResetIcon } from '../../components/ResetIcon';
+import { incBrainOutput, resetBrainOutput, setRunning, usePaceSettings, useRunning } from '../../features/study/paceStore';
+import { setLastStudyLocation } from '../../features/study/lastStudyLocation';
+import { PaceTimerBar } from '../../features/study/PaceTimerBar';
+import { PaceTimerModal } from '../../features/study/PaceTimerModal';
+import { registerTrialAnswer, useTimeTrial } from '../../features/study/timeTrial';
 import { StudyHeader } from './StudyHeader';
 import type { StudyStackParamList } from '../../navigation/types';
 
@@ -254,19 +261,6 @@ function FullscreenIcon({ color }: { color: string }) {
   );
 }
 
-/** Reset/replay glyph (user request 2026-07-24) — a counterclockwise circular
- *  arrow (the "undo/reset" symbol) for the RESET DECK button. */
-function ResetIcon({ color }: { color: string }) {
-  return (
-    <Svg width={19} height={19} viewBox="0 0 24 24">
-      <Path
-        d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"
-        fill={color}
-      />
-    </Svg>
-  );
-}
-
 /** Shuffle glyph — two crossing arrows (replaces the SHUFFLE text). */
 function ShuffleIcon({ color }: { color: string }) {
   return (
@@ -302,6 +296,14 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   const { achievementId, topicName } = route.params;
   const insets = useSafeAreaInsets();
   const flaggedMode = achievementId === FLAGGED_TOPIC_ID;
+
+  // Remember this exact method+topic so the Enrollments "CONTINUE LEARNING"
+  // banner can resume here (re-records on every focus = true last-visited).
+  useFocusEffect(
+    useCallback(() => {
+      setLastStudyLocation({ kind: 'method', route: 'Flashcards', achievementId, topicName });
+    }, [achievementId, topicName]),
+  );
 
   const [items, setItems] = useState<GlossaryItem[] | null>(null);
   const [states, setStates] = useState<ItemStates>({});
@@ -373,6 +375,52 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   const coach = useCoachMark('ape:coach:flashcards', 5);
 
   const session = useRef<StudySession | null>(null);
+
+  // Pace timer (practice aid — device-local settings, never blocks study).
+  // answered = a plain per-visit advance counter (bumped when moving to another
+  // card); total = the current deck length; elapsed = a ~1s count-up.
+  const { settings: pace, setEnabled, setPreset } = usePaceSettings('flashcards');
+  const running = useRunning('flashcards');
+  // Time trial (opt-in 15:00 challenge) — the readout switches to its HUD while
+  // live. Flashcards have no graded answer; marking a card KNOWN (below) is the
+  // affirmative "I've got this" signal that advances the trial's correct count.
+  const trial = useTimeTrial('flashcards');
+  const [timerOpen, setTimerOpen] = useState(false);
+  const [paceAnswered, setPaceAnswered] = useState(0);
+  const [elapsed, setElapsed] = useState(0);
+  const startRef = useRef<number | null>(null);
+  const elapsedRef = useRef(0);
+
+  // Pace clock: present while ENABLED; only ticks while also RUNNING. When
+  // enabled-but-paused the clock HOLDS (elapsed kept); disabling resets to 0.
+  useEffect(() => {
+    if (!pace.enabled) {
+      startRef.current = null;
+      elapsedRef.current = 0;
+      setElapsed(0);
+      resetBrainOutput('flashcards'); // fresh pace session → zero the brain-output tally
+      return;
+    }
+    if (!running) return; // paused → hold the clock where it is
+    startRef.current = Date.now() - elapsedRef.current * 1000; // resume from held time
+    const id = setInterval(() => {
+      if (startRef.current != null) {
+        const e = (Date.now() - startRef.current) / 1000;
+        elapsedRef.current = e;
+        setElapsed(e);
+      }
+    }, 1000);
+    return () => clearInterval(id);
+  }, [pace.enabled, running]);
+
+  // Reset zeroes the readout's elapsed + answered session counters.
+  const handlePaceReset = useCallback(() => {
+    setPaceAnswered(0);
+    startRef.current = Date.now();
+    elapsedRef.current = 0;
+    setElapsed(0);
+    resetBrainOutput('flashcards');
+  }, []);
 
   const persistHidden = useCallback(
     (next: Set<string>) => {
@@ -776,6 +824,8 @@ export function FlashcardsScreen({ navigation, route }: Props) {
       setIdx((i) => (i + dir + deck.length) % deck.length);
       setLevel(0);
       setRevealedThisVisit(new Set());
+      // Pace: each move to another card counts as one item advanced.
+      setPaceAnswered((n) => n + 1);
       // T2 trigger: after ~5 swipes, offer the "Customize Your Deck" tutorial.
       swipeCount.current += 1;
       if (
@@ -942,6 +992,10 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     } else {
       next.add(card.id);
       setInTermList('known', card.id, true);
+      // Time trial: marking a card known is the flashcard "correct" signal — it
+      // advances the trial's correct-per-minute pace (1.5s dwell guards it).
+      registerTrialAnswer('flashcards', true);
+      incBrainOutput('flashcards'); // one brain output per card marked KNOWN (correct press)
       if (!states[card.id]?.known) {
         session.current?.addEvent({ item: card.id, kind: 'known', value: true });
         setStates((prev) => ({ ...prev, [card.id]: { ...prev[card.id], known: true } }));
@@ -1036,7 +1090,13 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   return (
     <View style={[styles.root, { paddingTop: insets.top }]} {...pan.panHandlers}>
       <View style={styles.body}>
-        <StudyHeader method="flashcards" title="FLASHCARDS" subtitle={`Topic · ${topicName}`} />
+        <StudyHeader
+          method="flashcards"
+          title="FLASHCARDS"
+          subtitle={`Topic · ${topicName}`}
+          onOpenTimer={() => setTimerOpen(true)}
+          hideTimerButton={!!(pace.enabled || trial.active || trial.result)}
+        />
 
         <View style={styles.ledRow}>
           <View style={{ flex: 1 }}>
@@ -1047,6 +1107,22 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             {deck.length === 0 ? 0 : Math.min(idx, deck.length - 1) + 1} / {deck.length}
           </Text>
         </View>
+
+        {pace.enabled || trial.active || trial.result ? (
+          <PaceTimerBar
+            method="flashcards"
+            preset={pace.preset}
+            answered={paceAnswered}
+            total={deck.length}
+            elapsed={elapsed}
+            enabled={pace.enabled}
+            onReset={handlePaceReset}
+            running={running}
+            onToggleRunning={() => setRunning('flashcards', !running)}
+            onRemove={() => setEnabled(false)}
+            onPresetChange={setPreset}
+          />
+        ) : null}
 
         {/* Filter rows (Booth 2026-07-08):
             row 1 — ALL · A–Z · SHUFFLE · RESET DECK
@@ -1383,6 +1459,18 @@ export function FlashcardsScreen({ navigation, route }: Props) {
           >
             <Text style={styles.fsCloseText}>✕</Text>
           </Pressable>
+          {/* Thin, border-less pace strip pinned to the very top — elapsed +
+              signed offset + marker only. Same gate as the in-screen readout. */}
+          {pace.enabled || trial.active || trial.result ? (
+            <PaceTimerBar
+              method="flashcards"
+              preset={pace.preset}
+              answered={paceAnswered}
+              total={deck.length}
+              elapsed={elapsed}
+              variant="fullscreen"
+            />
+          ) : null}
           {/* In Study Sheet mode tapping must NOT flip (term + sections are all
               shown at once); swipe still changes card. */}
           <Pressable onPress={studyMode ? undefined : onTap} style={styles.fsBody}>
@@ -1545,6 +1633,8 @@ export function FlashcardsScreen({ navigation, route }: Props) {
       {/* T1 on entry; T2/T3 fire on the triggers above. */}
       <ScreenIntroOverlay introKey="flashcards" />
       {tutorial ? <IntroSheet introKey={tutorial.key} onDismiss={dismissTutorial} /> : null}
+
+      <PaceTimerModal visible={timerOpen} onClose={() => setTimerOpen(false)} method="flashcards" topicId={achievementId} />
     </View>
   );
 }

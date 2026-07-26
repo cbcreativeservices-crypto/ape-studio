@@ -32,6 +32,18 @@
 
 namespace apedsp {
 
+/// Engine capability version the module reports to JS (getInfo().engineVersion).
+/// 1 = Spike-0 (rms/peak only); 2 = engine build 2026-07-23; 3 = additive
+/// generator (HV-2 Build 1, GenMode::Additive). JS feature-gates additive UI
+/// on >= 3 and falls back to sine-only on older installed builds.
+/// This constant is the ONE source of truth: every bridge surface reads it —
+/// iOS via ApeDspCore.mm (@(apedsp::kEngineVersion) in frame()) and the
+/// +[ApeDspCore engineVersion] accessor Swift's getInfo() uses; Android via
+/// the nativeEngineVersion() JNI getter (ApeDspJni.cpp) that ApeDspModule.kt
+/// calls for getInfo()/getFrame(). Bumping it here bumps every platform;
+/// nothing hardcodes the value downstream.
+constexpr uint32_t kEngineVersion = 3;
+
 struct EngineConfig {
   uint32_t fftSize = 4096;      // ≤16384 (Q5 ruling)
   int fraction = 3;             // 1 or 3 (octave / 1/3-octave)
@@ -42,7 +54,7 @@ struct EngineConfig {
 };
 
 struct MeterFrame {
-  uint32_t version = 2;  // engine build — v1 was the spike (rms/peak only)
+  uint32_t version = kEngineVersion;  // engine build — v1 was the spike (rms/peak only)
   uint64_t sequence = 0;
   uint32_t settingsEpoch = 0;
   // Weighted RMS in dBFS, Fast (125 ms) and Slow (1 s) ballistics.

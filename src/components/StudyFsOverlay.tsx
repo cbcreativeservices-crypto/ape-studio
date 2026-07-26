@@ -20,6 +20,7 @@ export function StudyFsOverlay({
   onSwipePrev,
   onSwipeNext,
   guideKey,
+  topSlot,
   children,
 }: {
   visible: boolean;
@@ -32,6 +33,9 @@ export function StudyFsOverlay({
   onSwipeNext?: () => void;
   /** AsyncStorage key holding how many times the guide has shown (max 2). */
   guideKey: string;
+  /** Optional thin content pinned to the VERY TOP (e.g. the fullscreen pace
+   *  strip). Renders above the centered body, border-less. */
+  topSlot?: ReactNode;
   children: ReactNode;
 }) {
   const [showGuide, setShowGuide] = useState(false);
@@ -77,6 +81,7 @@ export function StudyFsOverlay({
         <Pressable style={styles.close} onPress={onClose} hitSlop={16} accessibilityRole="button" accessibilityLabel="Close full screen">
           <Text style={styles.closeText}>✕</Text>
         </Pressable>
+        {topSlot ? <View style={styles.topSlot}>{topSlot}</View> : null}
         <View style={styles.body}>{children}</View>
         {showGuide ? (
           <View style={styles.guideBackdrop}>
@@ -110,6 +115,9 @@ export function FsButton({ onPress }: { onPress: () => void }) {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#0a0a0b' },
+  // Very top, above the centered body. paddingTop clears the status bar; no
+  // border/background so it blends seamlessly into the view below.
+  topSlot: { paddingTop: 40 },
   close: { position: 'absolute', top: 44, right: 16, zIndex: 2, padding: 8 },
   closeText: { fontFamily: fonts.oswaldSemiBold, fontSize: 24, color: '#c8c8c8' },
   body: { flex: 1, alignItems: 'stretch', justifyContent: 'center', paddingHorizontal: 20, paddingTop: 40 },

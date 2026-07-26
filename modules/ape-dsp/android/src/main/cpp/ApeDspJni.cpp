@@ -17,6 +17,7 @@
 #include <chrono>
 #include <cstdint>
 #include <memory>
+#include <mutex>
 #include <thread>
 #include <vector>
 
@@ -111,12 +112,29 @@ class NativeEngine {
   // Returns false if the output stream failed to open (so the UI doesn't show
   // a silent "running" generator — review 2026-07-23).
   bool genStart() {
+    std::lock_guard<std::mutex> lk(outStreamMu_);
     const bool ok = outStream_ ? true : openOutput();
     if (ok) gen_.start();
     return ok;
   }
   void genStop() {
+    // gen_.stop() only requests the 10 ms fade-out — the render callback must
+    // keep running long enough to actually render it, so the stream close is
+    // DEFERRED ~150 ms (iOS parity: ApeDspModule.swift genStop does the same
+    // via asyncAfter). Closing synchronously truncated the fade and popped on
+    // every stop. Blocking here is safe: this runs on the bridge thread
+    // (Expo AsyncFunction / OnDestroy), never the RT callback. If a genStart
+    // lands during the wait (calls are serialized by outStreamMu_ +
+    // JS awaiting genStop-before-start is not guaranteed), the generator is
+    // running again — keep the stream.
     gen_.stop();
+    // Wait whenever an output stream exists — not just when the generator was
+    // still flagged running: a second genStop inside the first one's window
+    // (STOP then blur) sees running()==false but the fade may still be
+    // rendering, and closing early would truncate it all the same.
+    if (outStream_ != nullptr) std::this_thread::sleep_for(std::chrono::milliseconds(150));
+    std::lock_guard<std::mutex> lk(outStreamMu_);
+    if (gen_.running()) return;  // restarted during the wait — stream stays up
     if (outStream_) {
       outStream_->requestStop();
       outStream_->close();
@@ -248,6 +266,9 @@ class NativeEngine {
 
   std::shared_ptr<oboe::AudioStream> inStream_;
   std::shared_ptr<oboe::AudioStream> outStream_;
+  // Serializes output-stream open/close across genStart and genStop's
+  // deferred close (never touched from the RT callback).
+  std::mutex outStreamMu_;
   InputCallback inputCb_{};
   OutputCallback outputCb_{};
 
@@ -268,6 +289,14 @@ class NativeEngine {
 static inline NativeEngine* eng(jlong h) { return reinterpret_cast<NativeEngine*>(h); }
 
 extern "C" {
+
+// apedsp::kEngineVersion (EngineHub.hpp) — the one source of truth for the
+// engine capability version. Kotlin reads THIS for getInfo()/getFrame() so a
+// core bump can never skew the platforms (no handle needed — it's a constant).
+JNIEXPORT jint JNICALL
+Java_expo_modules_apedsp_ApeDspModule_nativeEngineVersion(JNIEnv*, jobject) {
+  return static_cast<jint>(apedsp::kEngineVersion);
+}
 
 JNIEXPORT jlong JNICALL
 Java_expo_modules_apedsp_ApeDspModule_nativeCreate(JNIEnv*, jobject) {
@@ -450,6 +479,21 @@ JNIEXPORT void JNICALL
 Java_expo_modules_apedsp_ApeDspModule_nativeGenSetClickBpm(JNIEnv*, jobject, jlong h, jdouble bpm) {
   eng(h)->gen_.setClickBpm(bpm);
 }
+// ADDITIVE (HV-2): flat [f0, a1..a12, p1..p12] — 25 doubles (Hz, 0..1, degrees).
+// Same ordering as iOS/JS. Copy semantics per the existing convention (region
+// copy, no pinning); the core NaN-proofs/clamps and ignores short arrays
+// (count < 25). NOTE: nativeGenSetFrequency does NOT retune the additive f0 —
+// JS resends the full additive array to retune (phase-continuous in core).
+JNIEXPORT void JNICALL
+Java_expo_modules_apedsp_ApeDspModule_nativeGenSetAdditive(JNIEnv* env, jobject, jlong h,
+                                                           jdoubleArray vals) {
+  if (vals == nullptr) return;
+  const jsize n = env->GetArrayLength(vals);
+  if (n < 1) return;
+  std::vector<double> buf(static_cast<size_t>(n));
+  env->GetDoubleArrayRegion(vals, 0, n, buf.data());
+  eng(h)->gen_.setAdditive(buf.data(), static_cast<uint32_t>(n));
+}
 JNIEXPORT void JNICALL
 Java_expo_modules_apedsp_ApeDspModule_nativeGenUnlockCap(JNIEnv*, jobject, jlong h) {
   eng(h)->gen_.unlockCap();
@@ -458,13 +502,16 @@ JNIEXPORT void JNICALL
 Java_expo_modules_apedsp_ApeDspModule_nativeGenRelockCap(JNIEnv*, jobject, jlong h) {
   eng(h)->gen_.relockCap();
 }
+// 6 slots, fixed order (see Kotlin genStatusMap): [running, capUnlocked,
+// effectiveLevelDb, defaultLevelDb, capDb, additiveNorm]. additiveNorm (HV-2):
+// 1 = not attenuating; <1 = the 1/max(1, Σaₙ) peak bound is pulling levels down.
 JNIEXPORT jdoubleArray JNICALL
 Java_expo_modules_apedsp_ApeDspModule_nativeGenStatus(JNIEnv* env, jobject, jlong h) {
-  double v[5] = {eng(h)->gen_.running() ? 1.0 : 0.0, eng(h)->gen_.capUnlocked() ? 1.0 : 0.0,
+  double v[6] = {eng(h)->gen_.running() ? 1.0 : 0.0, eng(h)->gen_.capUnlocked() ? 1.0 : 0.0,
                  eng(h)->gen_.effectiveLevelDb(), apedsp::genlevel::kDefaultDb,
-                 apedsp::genlevel::kCapDb};
-  jdoubleArray a = env->NewDoubleArray(5);
-  env->SetDoubleArrayRegion(a, 0, 5, v);
+                 apedsp::genlevel::kCapDb, eng(h)->gen_.additiveNorm()};
+  jdoubleArray a = env->NewDoubleArray(6);
+  env->SetDoubleArrayRegion(a, 0, 6, v);
   return a;
 }
 

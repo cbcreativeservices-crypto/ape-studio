@@ -35,7 +35,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { StudyStackParamList } from '../../navigation/types';
-import Svg, { Circle, Rect } from 'react-native-svg';
+import Svg, { Circle, Rect, Defs, LinearGradient as SvgLinearGradient, Stop, Line } from 'react-native-svg';
 import { AppHeader } from '../../components/AppHeader';
 import { DeckIcon } from '../../components/DeckIcon';
 import { ElevatedFrame } from '../../components/ElevatedFrame';
@@ -58,6 +58,7 @@ import {
 import { isFreeEnrollGs, useEnrollment } from '../../features/enrollment/enrollmentStore';
 import { gateReadout, pctColor } from '../../features/dashboard/gates';
 import { fetchGlossaryItemsByIds, fetchTopicItems, studyDisplayPct } from '../../features/study/api';
+import { setLastStudyLocation } from '../../features/study/lastStudyLocation';
 import {
   FLAGGED_TOPIC_ID,
   FLAGGED_TOPIC_NAME,
@@ -83,6 +84,73 @@ const METHOD_ORDER: { key: MethodKey; label: string }[] = [
   { key: 'matching', label: 'MATCHING' },
   { key: 'scenarios', label: 'SCENARIOS' },
 ];
+
+// LA-2A-inspired panel textures (owner request 2026-07-25). Pure react-native-svg
+// gradients + fine vertical striations — NO image assets. Both fill their
+// container absolutely BEHIND the content; the parent ElevatedFrame already
+// clips to its rounded corners (own overflow:hidden wrapper as a second clip).
+// viewBox 0..100 with preserveAspectRatio="none" stretches to any panel size.
+const BLACK_STRIA = [8, 20, 33, 47, 61, 74, 88];
+const METAL_STRIA = [5, 12, 20, 28, 36, 44, 52, 60, 68, 76, 84, 92];
+
+/** BLACK FACE — the LA-2A near-black matte control panel with a subtle vertical
+ *  brushed grain (for the study-method panels; existing light-on-black content
+ *  stays legible). */
+function BlackFaceBg() {
+  return (
+    <View pointerEvents="none" style={styles.textureFill}>
+      <Svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <Defs>
+          <SvgLinearGradient id="apeBlackFace" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0" stopColor="#0b0b0c" />
+            <Stop offset="0.5" stopColor="#17171a" />
+            <Stop offset="1" stopColor="#0b0b0c" />
+          </SvgLinearGradient>
+        </Defs>
+        <Rect x="0" y="0" width="100" height="100" fill="url(#apeBlackFace)" />
+        {BLACK_STRIA.map((x, i) => (
+          <Line key={i} x1={x} y1="0" x2={x} y2="100" stroke="rgba(255,255,255,0.03)" strokeWidth={0.5} />
+        ))}
+      </Svg>
+    </View>
+  );
+}
+
+/** BRUSHED METAL — the LA-2A brushed-aluminum chassis (for the quiz panel). A
+ *  MID-tone metallic vertical gradient with a lighter top edge, a darker bottom,
+ *  and fine vertical striations alternating light/dark. Mid-tone keeps the quiz's
+ *  dark engraved title + dark LED boxes legible. */
+function BrushedMetalBg() {
+  return (
+    <View pointerEvents="none" style={styles.textureFill}>
+      <Svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <Defs>
+          <SvgLinearGradient id="apeBrushedMetal" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0" stopColor="#a9adb3" />
+            <Stop offset="0.5" stopColor="#d4d7db" />
+            <Stop offset="1" stopColor="#b2b6bb" />
+          </SvgLinearGradient>
+        </Defs>
+        <Rect x="0" y="0" width="100" height="100" fill="url(#apeBrushedMetal)" />
+        {/* light-silver top-edge highlight + slightly darker bottom — the LA-2A /
+            1176 brushed-aluminum look; quiz text is dark so it reads well on it. */}
+        <Rect x="0" y="0" width="100" height="2.5" fill="rgba(255,255,255,0.4)" />
+        <Rect x="0" y="97" width="100" height="3" fill="rgba(0,0,0,0.14)" />
+        {METAL_STRIA.map((x, i) => (
+          <Line
+            key={i}
+            x1={x}
+            y1="0"
+            x2={x}
+            y2="100"
+            stroke={i % 2 === 0 ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.11)'}
+            strokeWidth={0.5}
+          />
+        ))}
+      </Svg>
+    </View>
+  );
+}
 
 /** Panel mounting screw (Booth 2026-07-10) — BLACK phillips head. `angle`
  *  rotates the slots: mostly cardinal, a few a hair off-true like a real rack
@@ -284,6 +352,15 @@ export function DashboardScreen() {
   useFocusEffect(
     useCallback(() => {
       scrollRef.current?.scrollTo({ y: 0, animated: false });
+    }, []),
+  );
+
+  // Record that the learner last sat on the Dashboard, so the Enrollments
+  // "CONTINUE LEARNING" banner returns here (not into a method) when they left
+  // from the dashboard.
+  useFocusEffect(
+    useCallback(() => {
+      setLastStudyLocation({ kind: 'dashboard' });
     }, []),
   );
 
@@ -810,6 +887,10 @@ export function DashboardScreen() {
               {/* All method panels share the SAME gray coat again (user request
                   2026-07-23) — the Flashcards charcoal special-case was reverted. */}
               <ElevatedFrame depressed={complete} contentStyle={styles.methodInner}>
+                {/* LA-2A BLACK-FACE panel texture behind the content (owner
+                    request 2026-07-25): near-black matte face + faint vertical
+                    brushed grain. Existing light-on-black content is unchanged. */}
+                <BlackFaceBg />
                 {/* Layout (Booth 2026-07-09e): a flex LEFT column (title row +
                     a PARTIAL-width LED meter) with a SQUARE action button on the
                     right. The LED no longer spans the full container width. */}
@@ -910,6 +991,11 @@ export function DashboardScreen() {
             No static amber accent — the animated quizPulseBorder is the only
             amber cue, so the scenarios→quiz seam matches every method frame. */}
         <ElevatedFrame depressed={false} chrome contentStyle={styles.methodInner}>
+          {/* LA-2A BRUSHED-METAL chassis texture behind the quiz content (owner
+              request 2026-07-25): mid-tone brushed aluminum. The quiz title is
+              already near-black (#0d0d0d) and every status readout sits in its
+              own dark LED box, so it stays legible on the metal — no scrim. */}
+          <BrushedMetalBg />
           {quizState === 'locked' && (
             <Animated.View pointerEvents="none" style={[styles.quizPulseBorder, { opacity: pulseOpacity }]} />
           )}
@@ -1075,6 +1161,10 @@ export function DashboardScreen() {
                       <TermSelectIcons
                         id={item.id}
                         bookmarkCtx={termsSource === 'flagged' ? 'glossary' : (topicIdForTerms ?? 'glossary')}
+                        // The custom-list ('flagged') popup shows ONLY the custom
+                        // icon (no bookmark / ✓ / ✗); topic-term popups keep them.
+                        hideBookmark={termsSource === 'flagged'}
+                        hideKnown={termsSource === 'flagged'}
                       />
                     </View>
                   )}
@@ -1337,6 +1427,10 @@ const styles = StyleSheet.create({
   // minHeight; the 58px content row centers, so icon/title/LED/button still
   // share top+bottom edges (Booth 2026-07-11 #4/#5).
   methodInner: { paddingVertical: 7, paddingHorizontal: 8, minHeight: 86, justifyContent: 'center' },
+  // LA-2A texture layer (BlackFaceBg / BrushedMetalBg): absolutely fills the
+  // panel behind its content. overflow:hidden + matching radius is a second clip
+  // on top of the parent ElevatedFrame's own rounded-corner clip.
+  textureFill: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: 2, overflow: 'hidden' },
   // Custom List panel — deck icon · count line · STUDY switch, aligned like a
   // method row so it seats flush in the rack.
   customRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 4 },

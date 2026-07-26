@@ -115,6 +115,10 @@ export type RootStackParamList = {
   Rt60Live: undefined;
   /** Spike-0 dev-only debug screen (ape-dsp proof) — __DEV__ entry on ToolsHub. */
   DspDebug: undefined;
+  /** Ear Training & Critical Listening Lab (Phase 1 SHELL) — pinned Home card +
+   *  Learn/Explore/Practice/Test mode tabs; the Explore harmonics view mounts in
+   *  a later step. Its own card/route (NOT a ToolsHub tile). */
+  EarLab: undefined;
 };
 
 declare global {

@@ -15,7 +15,8 @@
  * drag uses an estimated row height (no gesture lib).
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Modal, PanResponder, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Animated, Modal, PanResponder, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { HoldToActivate } from '../../components/HoldToActivate';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { colors, fonts } from '../../theme/tokens';
@@ -34,6 +35,7 @@ import {
   isFreeEnrollGs,
   moveTopic,
   removeTopic,
+  resetEnrollment,
   setActiveMany,
   toggleActive,
   toggleTopic,
@@ -61,6 +63,7 @@ import {
 import { FLAGGED_TOPIC_ID, setCustomOnDashboard, useCustomOnDashboard, useTermList } from '../../features/flags/flaggedStore';
 import { TermSelectIcons } from '../../features/flags/TermSelectIcons';
 import { fetchGlossaryItemsByIds } from '../../features/study/api';
+import { useLastStudyLocation } from '../../features/study/lastStudyLocation';
 
 const GREEN = '#37e05f';
 const BLUE = '#7fbfff';
@@ -328,6 +331,25 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
       screen: 'Study',
       params: { screen: 'Dashboard', params: focusGs != null ? { focusGs } : undefined },
     });
+
+  // CONTINUE LEARNING banner: resume the EXACT last spot. If the learner last
+  // sat inside a study METHOD screen, jump straight there with its topic;
+  // otherwise (last on the Dashboard, or nothing recorded) fall back to the
+  // Dashboard resume behavior.
+  const lastLoc = useLastStudyLocation();
+  const resumeLastOrDashboard = () => {
+    if (lastLoc?.kind === 'method') {
+      navigation.navigate('Main', {
+        screen: 'Study',
+        params: {
+          screen: lastLoc.route,
+          params: { achievementId: lastLoc.achievementId, topicName: lastLoc.topicName },
+        },
+      });
+    } else {
+      goStudy(resume?.gs);
+    }
+  };
 
   // Whether the user's "My Custom List" rides the Dashboard as a current topic.
   const customOnDash = useCustomOnDashboard();
@@ -750,7 +772,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
         <View style={styles.topBlock}>
         {/* Slim "Continue Learning" banner — notification height. */}
         {resume ? (
-          <Pressable style={styles.continueBar} onPress={() => goStudy(resume.gs)} accessibilityRole="button" accessibilityLabel={`Continue ${nameFor(resume.gs)}`}>
+          <Pressable style={styles.continueBar} onPress={resumeLastOrDashboard} accessibilityRole="button" accessibilityLabel={`Continue ${nameFor(resume.gs)}`}>
             <View style={{ flex: 1 }}>
               <Text style={styles.continueEyebrow}>CONTINUE LEARNING · {resume.pct}%</Text>
               <Text style={styles.continueName} numberOfLines={1}>
@@ -970,6 +992,9 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                   </Pressable>
                   <Text style={[styles.cardName, !e.active && styles.dim]} numberOfLines={2}>
                     {nameFor(e.gs)}
+                    {/* Completed (100%) → amber SPECIALIST after the name (user
+                        request 2026-07-25). */}
+                    {pct >= 100 ? <Text style={styles.specialistTag}>  SPECIALIST</Text> : null}
                   </Text>
                 </View>
                 {/* Row 2 — subject on the left; ACTIVE + Study dropped BELOW the
@@ -1195,6 +1220,24 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
         {/* Bottom actions: return to top + global expand/collapse of every
             enrollment-list container (user request 2026-07-24). */}
         <View style={styles.bottomActions}>
+          {/* Bottom-left: 5s hold → confirm → reset the enrollment list to the
+              new-user default. Progress is kept; topics re-add from Browse & Add
+              below (user request 2026-07-25). */}
+          <HoldToActivate
+            label="✕ CLEAR LIST"
+            holdingLabel="HOLD TO CLEAR"
+            tint="#e0342f"
+            onComplete={() =>
+              Alert.alert(
+                'Clear enrollment list?',
+                'This resets your enrollment list to the new-user default. Your progress is kept — you can add any topic back from the Browse & Add lists below.',
+                [
+                  { text: 'Cancel', style: 'cancel' },
+                  { text: 'Clear list', style: 'destructive', onPress: () => resetEnrollment() },
+                ],
+              )
+            }
+          />
           <Pressable
             style={styles.bottomBtn}
             onPress={() => scrollRef.current?.scrollTo({ y: 0, animated: true })}
@@ -1282,7 +1325,9 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                     <Text style={styles.clItem} numberOfLines={1}>
                       {r.term}
                     </Text>
-                    <TermSelectIcons id={r.id} bookmarkCtx="glossary" />
+                    {/* Enrollments can't bookmark terms — show ONLY the custom-list
+                        icon (no bookmark, no ✓/✗) (user request 2026-07-25). */}
+                    <TermSelectIcons id={r.id} bookmarkCtx="glossary" hideBookmark hideKnown />
                   </View>
                 ))
               ) : (
@@ -1451,6 +1496,8 @@ const styles = StyleSheet.create({
   lockCaption: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.2, color: GREEN, marginRight: 3, textAlign: 'right' },
   cardTop: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   cardName: { flex: 1, fontFamily: fonts.oswaldMedium, fontSize: 16, letterSpacing: 0.2, color: colors.textPrimary },
+  // "SPECIALIST" badge appended to a completed topic's name — amber.
+  specialistTag: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.amberDeep },
   handle: { paddingHorizontal: 4, paddingVertical: 2 },
   handleIcon: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, color: colors.textSub },
   // flexShrink so a long subject truncates instead of pushing the deck/study

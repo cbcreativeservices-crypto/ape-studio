@@ -1,7 +1,8 @@
 /**
  * S4 — Matching (study; RE-LOCKED June 10).
  *
- * Locked behavior: 2 columns (left terms, right definitions) · tap-to-pair,
+ * Locked behavior: 2 columns (left definitions (read), right terms (shuffled
+ * options)) · tap-to-pair,
  * 1.5px borders, visual feedback · [Prev]/[Next] + swipe L/R · auto-advance
  * 300ms after the board's last confirmed pair · media top · LED (server pct) ·
  * 100% → manual back only · bottom nav visible.
@@ -11,8 +12,9 @@
  * answer{correct:true}; wrong pick → red flash on both + answer{correct:false}.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, PanResponder, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, LayoutAnimation, PanResponder, Platform, ScrollView, StyleSheet, Text, UIManager, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AnswerCell, type AnswerCellState } from '../../components/AnswerCell';
 import { GlassButton } from '../../components/GlassButton';
@@ -30,10 +32,12 @@ import {
 } from '../../features/study/api';
 import { StudySession } from '../../features/study/sync';
 import { saveLocalMethodStates } from '../../features/study/localProgress';
-import { usePaceSettings } from '../../features/study/paceStore';
+import { incBrainOutput, resetBrainOutput, setRunning, usePaceSettings, useRunning } from '../../features/study/paceStore';
+import { setLastStudyLocation } from '../../features/study/lastStudyLocation';
 import { recordPaceSession } from '../../features/study/paceRecords';
 import { PaceTimerBar } from '../../features/study/PaceTimerBar';
 import { PaceTimerModal } from '../../features/study/PaceTimerModal';
+import { registerTrialAnswer, useTimeTrial } from '../../features/study/timeTrial';
 import { StudyHeader } from './StudyHeader';
 import type { StudyStackParamList } from '../../navigation/types';
 
@@ -43,6 +47,18 @@ const PAIRS_PER_BOARD = 4;
 const CORRECT_FLASH_MS = 550; // green flash on a right pair before it locks
 const ADVANCE_MS = 750; // board-complete pause (lets the last green flash show)
 const WRONG_FLASH_MS = 650; // red flash on a wrong pair
+
+// Android needs this opt-in for LayoutAnimation (no-op / undefined on Fabric).
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+// Quick collapse when a matched pair is removed: the leaving cells fade while the
+// remaining cards slide UP into place (user request 2026-07-25).
+const CARD_COLLAPSE_ANIM: Parameters<typeof LayoutAnimation.configureNext>[0] = {
+  duration: 360, // 2× slower than the original 180ms (user request 2026-07-25)
+  update: { type: LayoutAnimation.Types.easeInEaseOut },
+  delete: { type: LayoutAnimation.Types.easeInEaseOut, property: LayoutAnimation.Properties.opacity },
+};
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -55,6 +71,14 @@ function shuffle<T>(arr: T[]): T[] {
 
 export function MatchingScreen({ navigation, route }: Props) {
   const { achievementId, topicName } = route.params;
+
+  // Remember this exact method+topic so the Enrollments "CONTINUE LEARNING"
+  // banner can resume here (re-records on every focus = true last-visited).
+  useFocusEffect(
+    useCallback(() => {
+      setLastStudyLocation({ kind: 'method', route: 'Matching', achievementId, topicName });
+    }, [achievementId, topicName]),
+  );
   const insets = useSafeAreaInsets();
 
   const [items, setItems] = useState<GlossaryItem[] | null>(null);
@@ -69,10 +93,14 @@ export function MatchingScreen({ navigation, route }: Props) {
   const session = useRef<StudySession | null>(null);
 
   // Pace timer (practice aid — device-local settings, never blocks study).
-  const { settings: pace } = usePaceSettings('matching');
+  const { settings: pace, setEnabled, setPreset } = usePaceSettings('matching');
+  const running = useRunning('matching');
+  // Time trial (opt-in 15:00 challenge) — the readout switches to its HUD while live.
+  const trial = useTimeTrial('matching');
   const [timerOpen, setTimerOpen] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const startRef = useRef<number | null>(null);
+  const elapsedRef = useRef(0);
   const recordedRef = useRef(false);
 
   useEffect(() => {
@@ -110,20 +138,28 @@ export function MatchingScreen({ navigation, route }: Props) {
     if (Object.keys(states).length) void saveLocalMethodStates(achievementId, 'matching', states);
   }, [states, achievementId]);
 
-  // Pace clock: start when the timer is enabled, tick ~1s while on, reset off.
+  // Pace clock: present while ENABLED; only ticks while also RUNNING. When
+  // enabled-but-paused the clock HOLDS (elapsed kept); disabling resets to 0.
   useEffect(() => {
     if (!pace.enabled) {
       startRef.current = null;
+      elapsedRef.current = 0;
       recordedRef.current = false;
       setElapsed(0);
+      resetBrainOutput('matching'); // fresh pace session → zero the brain-output tally
       return;
     }
-    if (startRef.current == null) startRef.current = Date.now();
+    if (!running) return; // paused → hold the clock where it is
+    startRef.current = Date.now() - elapsedRef.current * 1000; // resume from held time
     const id = setInterval(() => {
-      if (startRef.current != null) setElapsed((Date.now() - startRef.current) / 1000);
+      if (startRef.current != null) {
+        const e = (Date.now() - startRef.current) / 1000;
+        elapsedRef.current = e;
+        setElapsed(e);
+      }
     }, 1000);
     return () => clearInterval(id);
-  }, [pace.enabled]);
+  }, [pace.enabled, running]);
 
   // answered = distinct items with at least one attempt (a confirmed pair).
   const answered = useMemo(
@@ -154,13 +190,15 @@ export function MatchingScreen({ navigation, route }: Props) {
   }, [items]);
 
   const board = boards[boardIdx] ?? null;
-  // Right column: shuffled; each definition shows exactly ONE sentence per
-  // board visit, and that sentence never contains its own term/abbreviation
-  // (Booth 2026-07-16 — a leaked term made pairs trivially solvable).
-  const rightOrder = useMemo(
-    () => (board ? shuffle(board).map((it) => ({ it, text: matchingSentence(it.term, it.definition) })) : []),
+  // Left column (read): each definition shows exactly ONE sentence per board
+  // visit, and that sentence never contains its own term/abbreviation (Booth
+  // 2026-07-16 — a leaked term made pairs trivially solvable).
+  const leftPrompts = useMemo(
+    () => (board ? board.map((it) => ({ it, text: matchingSentence(it.term, it.definition) })) : []),
     [board],
   );
+  // Right column: shuffled term options — the answer for each left definition.
+  const rightOrder = useMemo(() => (board ? shuffle(board) : []), [board]);
 
   const goBoard = useCallback(
     // silent = a SWIPE-BYPASS: no touch(), so skipped boards never keep the
@@ -205,6 +243,8 @@ export function MatchingScreen({ navigation, route }: Props) {
     (rightId: string) => {
       if (!board || !selectedLeft || locked.has(rightId) || wrongPair) return;
       const correct = rightId === selectedLeft;
+      registerTrialAnswer('matching', correct); // time trial: only correct advances pace
+      if (correct) incBrainOutput('matching'); // one brain output per correct PAIR match (not per board)
       session.current?.addEvent({ item: selectedLeft, kind: 'answer', correct });
       const answeredId = selectedLeft;
       setStates((prev) => ({
@@ -220,8 +260,11 @@ export function MatchingScreen({ navigation, route }: Props) {
         const next = new Set(locked).add(selectedLeft);
         setLocked(next);
         setSelectedLeft(null);
-        setCorrectFlash(answeredId); // green flash, then it settles to locked/dimmed
-        setTimeout(() => setCorrectFlash((c) => (c === answeredId ? null : c)), CORRECT_FLASH_MS);
+        setCorrectFlash(answeredId); // green flash, then the pair animates out
+        setTimeout(() => {
+          LayoutAnimation.configureNext(CARD_COLLAPSE_ANIM); // slide the rest up
+          setCorrectFlash((c) => (c === answeredId ? null : c));
+        }, CORRECT_FLASH_MS);
         if (next.size === board.length) {
           setTimeout(() => goBoardRef.current(1), ADVANCE_MS);
         }
@@ -278,33 +321,40 @@ export function MatchingScreen({ navigation, route }: Props) {
   );
   const columnsBody = (
     <>
-      <View style={styles.column}>
-        {board.map((it) => (
-          <AnswerCell
-            key={it.id}
-            label={it.term}
-            state={leftState(it.id)}
-            fontSize={18}
-            borderWidth={1.5}
-            minHeight={52}
-            onPress={() => pickLeft(it.id)}
-          />
-        ))}
-      </View>
       {/* No line cap on the cells (Booth 2026-07-16) — long sentences were
           cropping; each cell grows past minHeight to fit its full text. */}
+      {/* A matched pair shows its green flash, then is REMOVED from both columns
+          (user request 2026-07-25): keep it while it's flashing, drop it once
+          settled so the remaining cards collapse UP and stay pinned to the top. */}
       <View style={styles.column}>
-        {rightOrder.map(({ it, text }) => (
-          <AnswerCell
-            key={it.id}
-            label={text}
-            state={rightState(it.id)}
-            fontSize={17}
-            borderWidth={1.5}
-            minHeight={52}
-            onPress={() => pickRight(it.id)}
-          />
-        ))}
+        {leftPrompts
+          .filter(({ it }) => !locked.has(it.id) || correctFlash === it.id)
+          .map(({ it, text }) => (
+            <AnswerCell
+              key={it.id}
+              label={text}
+              state={leftState(it.id)}
+              fontSize={17}
+              borderWidth={1.5}
+              minHeight={52}
+              onPress={() => pickLeft(it.id)}
+            />
+          ))}
+      </View>
+      <View style={styles.column}>
+        {rightOrder
+          .filter((it) => !locked.has(it.id) || correctFlash === it.id)
+          .map((it) => (
+            <AnswerCell
+              key={it.id}
+              label={it.term}
+              state={rightState(it.id)}
+              fontSize={18}
+              borderWidth={1.5}
+              minHeight={52}
+              onPress={() => pickRight(it.id)}
+            />
+          ))}
       </View>
     </>
   );
@@ -317,6 +367,7 @@ export function MatchingScreen({ navigation, route }: Props) {
           title="MATCHING · PAIR EACH"
           subtitle={`Topic · ${topicName}`}
           onOpenTimer={() => setTimerOpen(true)}
+          hideTimerButton={!!(pace.enabled || trial.active || trial.result)}
         />
         <View style={styles.ledRow}>
           <View style={{ flex: 1 }}>
@@ -329,13 +380,19 @@ export function MatchingScreen({ navigation, route }: Props) {
           <FsButton onPress={() => setFullscreen(true)} />
         </View>
 
-        {pace.enabled ? (
+        {pace.enabled || trial.active || trial.result ? (
           <PaceTimerBar
+            method="matching"
             preset={pace.preset}
             answered={answered}
             total={items.length}
             elapsed={elapsed}
+            enabled={pace.enabled}
             onOpenSettings={() => setTimerOpen(true)}
+            running={running}
+            onToggleRunning={() => setRunning('matching', !running)}
+            onRemove={() => setEnabled(false)}
+            onPresetChange={setPreset}
           />
         ) : null}
 
@@ -358,10 +415,10 @@ export function MatchingScreen({ navigation, route }: Props) {
           at the bottom just above the bottom nav — never scrolls away. */}
       <View style={styles.footer}>
         <View style={{ flex: 1 }}>
-          <GlassButton label="‹ PREV" tint="steel" onPress={() => goBoard(-1)} />
+          <GlassButton label="‹ PREV" tint="gold" onPress={() => goBoard(-1)} />
         </View>
         <View style={{ flex: 1 }}>
-          <GlassButton label="NEXT ›" tint="gold" onPress={() => goBoard(1)} />
+          <GlassButton label="NEXT ›" tint="green" onPress={() => goBoard(1)} />
         </View>
       </View>
 
@@ -370,6 +427,18 @@ export function MatchingScreen({ navigation, route }: Props) {
           silent bypass as the swipe strip. */}
       <StudyFsOverlay
         visible={fullscreen}
+        topSlot={
+          pace.enabled || trial.active || trial.result ? (
+            <PaceTimerBar
+              method="matching"
+              preset={pace.preset}
+              answered={answered}
+              total={items.length}
+              elapsed={elapsed}
+              variant="fullscreen"
+            />
+          ) : null
+        }
         onClose={() => setFullscreen(false)}
         onShakePrev={() => goBoard(-1)}
         onSwipePrev={() => goBoard(-1, { silent: true })}
@@ -380,7 +449,7 @@ export function MatchingScreen({ navigation, route }: Props) {
         <View style={styles.columns}>{columnsBody}</View>
       </StudyFsOverlay>
 
-      <PaceTimerModal visible={timerOpen} onClose={() => setTimerOpen(false)} method="matching" />
+      <PaceTimerModal visible={timerOpen} onClose={() => setTimerOpen(false)} method="matching" topicId={achievementId} />
     </View>
   );
 }
@@ -392,8 +461,8 @@ const styles = StyleSheet.create({
   scroll: { padding: 16, gap: 16 },
   sideBars: { flexDirection: 'row', gap: 12, marginBottom: -8 },
   sideBar: { flex: 1, height: 3, borderRadius: 2 },
-  sideBarLeft: { backgroundColor: 'rgba(255,198,77,0.28)' }, // terms side — faint amber
-  sideBarRight: { backgroundColor: 'rgba(91,176,255,0.28)' }, // definitions side — faint blue
+  sideBarLeft: { backgroundColor: 'rgba(255,198,77,0.28)' }, // definitions side — faint amber
+  sideBarRight: { backgroundColor: 'rgba(91,176,255,0.28)' }, // terms side — faint blue
   // A little breathing room between the delineation bars / prompt above and
   // the answer cell columns below (user request 2026-07-17).
   columns: { flexDirection: 'row', gap: 12, marginTop: 10 },

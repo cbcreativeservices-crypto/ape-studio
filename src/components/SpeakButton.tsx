@@ -10,6 +10,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Platform, Pressable, StyleSheet } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import * as Speech from 'expo-speech';
+import { useAudioOutputGate } from '../features/audio/AudioOutputGate';
+import { noteAudioActivity } from '../features/audio/audioOutputStore';
 
 // Single global owner: whichever button is speaking registered its resetter.
 let activeReset: (() => void) | null = null;
@@ -32,6 +34,7 @@ export function SpeakButton({
 }) {
   const [playing, setPlaying] = useState(false);
   const mine = useRef(false); // is the global utterance this button's?
+  const { requestAudioOutput } = useAudioOutputGate();
 
   useEffect(
     () => () => {
@@ -46,15 +49,20 @@ export function SpeakButton({
     setPlaying(false);
   };
 
-  const onPress = () => {
+  const onPress = async () => {
     if (playing) {
       stopAllSpeech();
       return;
     }
+    // AUDIO-OUTPUT GATE (owner request 2026-07-25): TTS is app-emitted sound and
+    // must be silent unless output is enabled. Runs the enable flow when muted.
+    const ok = await requestAudioOutput();
+    if (!ok) return;
     stopAllSpeech(); // cancel whichever term was speaking
     mine.current = true;
     setPlaying(true);
     activeReset = reset;
+    noteAudioActivity();
     Speech.speak(text, {
       language: 'en-US', // device's default ENGLISH voice, regardless of locale
       onDone: () => {

@@ -4,9 +4,20 @@
 // enforced HERE, in the native output path, in one place).
 //
 // RT-SAFE render: called from the audio output callback — no locks, no
-// allocation; parameters are read from atomics once per render call. 10 ms
-// raised-cosine fades on start/stop/mode changes prevent clicks (spec Tool 6
-// dev notes). Pure C++17, header-only.
+// allocation; parameters are read from atomics once per render call. A 10 ms
+// LINEAR envelope fades starts and stops; a retrigger on a RUNNING generator
+// (in-place mode switch, sweep reprogram) dips that envelope to zero, applies
+// the per-trigger reset at the bottom, and fades back up — so mode changes
+// are click-free whether or not the tone is sounding (spec Tool 6 dev notes).
+// Pure C++17, header-only.
+//
+// HV-2 Build 1 (2026-07-25): ADDITIVE mode — 12 harmonics of f0, each with a
+// relative amp (0..1) and phase offset (degrees). Band-limited by
+// construction (harmonics at/above Nyquist silently omitted), normalized so
+// the summed output can never pierce the Q4 cap chain, and click-free via
+// slope-limited linear ramps on amp/gain (≤8 ms for a full 0→1 swing —
+// smaller changes finish proportionally faster) and a slewed phase offset.
+// See the GenMode::Additive block below for the full design notes.
 #pragma once
 
 #include <atomic>
@@ -19,6 +30,21 @@ namespace genlevel {
 constexpr double kDefaultDb = -20.0;  // Q4 default
 constexpr double kCapDb = -12.0;      // Q4 hard cap (unlock required above)
 }  // namespace genlevel
+
+namespace genadd {
+constexpr uint32_t kHarmonics = 12;  // fixed HV-2 model size (matches JS MODEL_HARMONICS)
+// Slope-limited linear ramps (amps, gain, phase slew): a FULL 0→1 amp swing
+// takes ~8 ms; smaller changes finish proportionally faster (the rate is
+// fixed, not the duration — the click-free guarantee is the bounded slope).
+constexpr double kRampSec = 0.008;
+// Phase-offset slew cap: a slewing harmonic may be detuned by at most this
+// fraction of its OWN frequency. The fixed-rate slew alone is a constant
+// 1/(2·kRampSec) = 62.5 Hz instantaneous offset — fine at 1 kHz+, but at a
+// low fundamental (60–100 Hz is in range) it exceeds the harmonic's own
+// frequency and reads as a chirp, not a "tiny detune". Large flips at low
+// frequencies therefore slew slower but proportionally gentle.
+constexpr double kPhaseSlewDetune = 0.05;
+}  // namespace genadd
 
 enum class GenMode : int {
   Off = 0,
@@ -33,6 +59,7 @@ enum class GenMode : int {
   Impulse = 9,
   Click = 10,
   Burst = 11,
+  Additive = 12,  // HV-2: 12-harmonic additive synth (never renumber)
 };
 
 class Generator {
@@ -62,6 +89,32 @@ class Generator {
     retrigger_.store(true);
   }
   void setClickBpm(double bpm) { clickBpm_.store(bpm < 20 ? 20 : (bpm > 300 ? 300 : bpm)); }
+  /// ADDITIVE (HV-2): flat layout [f0, a1..a12, p1..p12] — 25 doubles. The
+  /// SAME ordering crosses every bridge (JSI/JNI) verbatim; amps are relative
+  /// 0..1, phases in degrees. These are TARGETS only: the render thread ramps
+  /// toward them (slope-limited, ≤8 ms for a full swing), so this is safe to
+  /// call at UI rate. NaN-proofed in
+  /// the setSweep style (the !(x>=k) form also rejects NaN). Does NOT
+  /// retrigger — a running additive tone glides to the new parameters.
+  void setAdditive(const double* vals, uint32_t count) {
+    if (vals == nullptr || count < 1 + 2 * genadd::kHarmonics) return;
+    const double f0 = vals[0];
+    additiveF0_.store(!(f0 >= 1.0) ? 1.0 : f0);
+    for (uint32_t h = 0; h < genadd::kHarmonics; ++h) {
+      double a = vals[1 + h];
+      a = !(a > 0.0) ? 0.0 : (a > 1.0 ? 1.0 : a);  // NaN → 0, clamp 0..1
+      addAmpT_[h].store(a);
+      double deg = vals[1 + genadd::kHarmonics + h];
+      if (!(deg > -1.0e9 && deg < 1.0e9)) deg = 0.0;  // NaN/inf → 0
+      double rad = deg * (kPi / 180.0);
+      rad -= std::floor(rad / (2.0 * kPi)) * (2.0 * kPi);  // wrap [0, 2π)
+      addPhaseT_[h].store(rad);
+    }
+  }
+  /// Current additive normalization gain (1 = not attenuating; <1 = the
+  /// 1/max(1, Σaₙ) peak bound is pulling levels down). Published from the
+  /// render path for honest genStatus display.
+  double additiveNorm() const { return addNormPub_.load(std::memory_order_relaxed); }
   /// Q4 tap-through confirm — session-scoped unlock above the −12 dBFS cap.
   void unlockCap() { capUnlocked_.store(true); }
   void relockCap() { capUnlocked_.store(false); }
@@ -86,33 +139,80 @@ class Generator {
   // ---- Render (audio thread): fill n mono samples ----
   void render(float* out, uint32_t n) {
     const double fs = fs_.load();
-    const auto mode = static_cast<GenMode>(mode_.load());
-    const bool wantRun = running_.load() && mode != GenMode::Off && fs > 0;
+    const auto modeTarget = static_cast<GenMode>(mode_.load());
+    const bool wantRun = running_.load() && modeTarget != GenMode::Off && fs > 0;
     if (retrigger_.exchange(false)) {
-      sweepPhase01_ = 0.0;
-      clickTimer_ = 0.0;
-      burstTimer_ = 0.0;
-      impulseDone_ = false;
+      // A retrigger while AUDIBLE (in-place mode switch — HV-2 Build 3's solo
+      // ↔ model retune idiom — sweep reprogram, stop→start overlap) must not
+      // step the output: resetting the phase accumulators / snapping ramps
+      // under a non-zero envelope is an instantaneous jump (worst case ~2×
+      // amp — an audible pop even at −20 dBFS). Defer it: dip the 10 ms env
+      // to 0, apply the reset at the bottom, fade back up. While silent,
+      // apply immediately — the original start behavior, byte-identical.
+      if (env_ > 0.0) trigPending_ = true;
+      else applyTrigger(modeTarget);
+    } else if (!trigPending_ && modeCur_ != modeTarget) {
+      // Defensive: every setMode() sets retrigger_, but never adopt a new
+      // mode without the same dip discipline.
+      if (env_ > 0.0) trigPending_ = true;
+      else applyTrigger(modeTarget);
     }
-    const double amp = std::pow(10.0, effectiveLevelDb() / 20.0);
+    const double ampTarget = std::pow(10.0, effectiveLevelDb() / 20.0);
     // One atomic load per render call (review 2026-07-23).
     const double fadeStep = 1.0 / static_cast<double>(fadeSamples_.load(std::memory_order_relaxed));
+    // HV-2: level (gain) changes glide instead of stepping — slope-limited at
+    // the kRampSec full-scale rate — same Q4 cap chain as before, only the
+    // capped TARGET is ramped. While silent there is nothing to glide from,
+    // so snap.
+    const double rampSamples = fs * genadd::kRampSec;
+    const double gainStep = 1.0 / (rampSamples < 1.0 ? 1.0 : rampSamples);
+    if (env_ <= 0.0) ampCur_ = ampTarget;
+    // Prepare when EITHER side of a pending switch is additive: targets must
+    // be hoisted before a mid-block applyTrigger adopts the mode.
+    if ((modeCur_ == GenMode::Additive || modeTarget == GenMode::Additive) && fs > 0)
+      additivePrepare(fs);
     for (uint32_t i = 0; i < n; ++i) {
-      // Fade envelope toward the run target (click-free start/stop, Q4-safe).
-      const double target = wantRun ? 1.0 : 0.0;
+      // Fade envelope toward the run target (click-free start/stop, Q4-safe);
+      // a pending trigger holds the target at 0 until the reset has landed.
+      const double target = (wantRun && !trigPending_) ? 1.0 : 0.0;
       if (env_ < target)
         env_ = env_ + fadeStep > target ? target : env_ + fadeStep;
       else if (env_ > target)
         env_ = env_ - fadeStep < target ? target : env_ - fadeStep;
+      if (trigPending_ && env_ <= 0.0) applyTrigger(modeTarget);
       if (env_ <= 0.0 && !wantRun) {
         out[i] = 0.0f;
         continue;
       }
-      out[i] = static_cast<float>(amp * env_ * sample(mode, fs));
+      ampCur_ = ramp(ampCur_, ampTarget, gainStep);
+      out[i] = static_cast<float>(ampCur_ * env_ * sample(modeCur_, fs));
     }
   }
 
  private:
+  // Per-trigger reset (render thread): deterministic generator state for the
+  // (possibly new) mode. Only ever called with env_ at 0 — silent, or at the
+  // bottom of the retrigger dip — so nothing here can step audible output.
+  void applyTrigger(GenMode m) {
+    modeCur_ = m;
+    sweepPhase01_ = 0.0;
+    clickTimer_ = 0.0;
+    burstTimer_ = 0.0;
+    impulseDone_ = false;
+    // Additive: deterministic start (phase accumulators from 0) and snap the
+    // ramps straight to their targets — the env fade covers the (re)start.
+    // aT_/pT_ are fresh whenever m is Additive (additivePrepare hoists before
+    // a mid-block trigger can adopt the mode); addSnap_ re-snaps from the
+    // freshest targets on the next prepare regardless.
+    for (uint32_t h = 0; h < genadd::kHarmonics; ++h) {
+      addPhase_[h] = 0.0;
+      aCur_[h] = aT_[h];
+      pCur_[h] = pT_[h];
+    }
+    addSnap_ = true;
+    trigPending_ = false;
+  }
+
   // One raw sample of the selected signal at unit level.
   double sample(GenMode mode, double fs) {
     switch (mode) {
@@ -174,10 +274,117 @@ class Generator {
         stepSine(freq_.load(), fs);  // keep phase moving for continuity
         return 0.0;
       }
+      case GenMode::Additive:
+        return additiveSample(fs);
       case GenMode::Off:
       default:
         return 0.0;
     }
+  }
+
+  // ---- ADDITIVE (HV-2) ----------------------------------------------------
+  // Hoist the additive atomics ONCE per render call (idiom: one atomic read
+  // per render) and refresh the ramp steps; publishes the current norm for
+  // honest genStatus display. Called from render(), audio thread only.
+  void additivePrepare(double fs) {
+    addF0R_ = additiveF0_.load();
+    for (uint32_t h = 0; h < genadd::kHarmonics; ++h) {
+      aT_[h] = addAmpT_[h].load();
+      pT_[h] = addPhaseT_[h].load();
+    }
+    const double rampSamples = fs * genadd::kRampSec;
+    ampStep_ = 1.0 / (rampSamples < 1.0 ? 1.0 : rampSamples);
+    // Fixed-rate CEILING for the phase slew (180° in ~8 ms); additiveSample
+    // additionally caps each harmonic's step at kPhaseSlewDetune of its own
+    // frequency so the slew never reads as a chirp at low f0.
+    phStep_ = kPi * ampStep_;
+    if (addSnap_) {
+      addSnap_ = false;
+      for (uint32_t h = 0; h < genadd::kHarmonics; ++h) {
+        aCur_[h] = aT_[h];
+        pCur_[h] = pT_[h];
+      }
+    }
+    double sumA = 0.0;
+    for (uint32_t h = 0; h < genadd::kHarmonics; ++h) sumA += aCur_[h];
+    addNormPub_.store(1.0 / (sumA > 1.0 ? sumA : 1.0), std::memory_order_relaxed);
+  }
+
+  // One unit-level additive sample: norm × Σ aₙ·sin(2π·phaseₙ + φₙ).
+  //  * Band-limited by construction: harmonics at/above Nyquist are silently
+  //    omitted from the sum. Their accumulators keep stepping (Burst idiom,
+  //    "keep phase moving") so the set stays coherent if f0 drops back down.
+  //  * Phase-continuous retune: each accumulator steps by n·f0/fs exactly like
+  //    stepSine, so f0 changes never reset phase.
+  //  * norm is DERIVED each sample from the RAMPING amps — 1/max(1, Σ aCur) —
+  //    not ramped independently. That makes it smooth by construction (the
+  //    amps are piecewise-linear) AND keeps |sample| ≤ 1 even mid-transition;
+  //    an independently ramped norm can transiently exceed the bound when
+  //    amps fall while norm rises. The Σ intentionally includes Nyquist-
+  //    omitted harmonics: strictly conservative, and norm stays stable when a
+  //    retune sweeps harmonics across the Nyquist boundary.
+  //  * Amp targets ramp linearly (slope-limited: ≤8 ms for a full 0→1 swing,
+  //    proportionally faster for smaller changes); the phase OFFSET slews
+  //    shortest-path at the LESSER of that fixed rate and a kPhaseSlewDetune
+  //    (±5%) instantaneous detune of the harmonic's own frequency. The fixed
+  //    rate alone is a constant 62.5 Hz offset — >100% of H1 at a low
+  //    fundamental, i.e. a chirp; the per-harmonic cap keeps the slew a
+  //    gentle bend at any f0 (180° flips finish in ~8 ms above ~1.25 kHz,
+  //    slower but proportionally tiny below). Never a hard discontinuity.
+  //  * Unit-level contract: render() applies gain/env exactly as for sine, so
+  //    the Q4 cap chain covers this mode with no level logic here.
+  double additiveSample(double fs) {
+    const double nyq = fs * 0.5;
+    double s = 0.0, sumA = 0.0;
+    for (uint32_t h = 0; h < genadd::kHarmonics; ++h) {
+      const double fh = addF0R_ * static_cast<double>(h + 1);
+      addPhase_[h] += fh / fs;
+      if (addPhase_[h] >= 1.0) addPhase_[h] -= std::floor(addPhase_[h]);
+      aCur_[h] = ramp(aCur_[h], aT_[h], ampStep_);
+      // Per-harmonic phase slew: fixed-rate ceiling (phStep_) capped at a
+      // ±kPhaseSlewDetune instantaneous detune of THIS harmonic's frequency.
+      double phStep = genadd::kPhaseSlewDetune * 2.0 * kPi * fh / fs;
+      if (phStep > phStep_) phStep = phStep_;
+      pCur_[h] = rampPhase(pCur_[h], pT_[h], phStep);
+      sumA += aCur_[h];
+      if (fh >= nyq || aCur_[h] <= 0.0) continue;
+      s += aCur_[h] * std::sin(2.0 * kPi * addPhase_[h] + pCur_[h]);
+    }
+    return s * (1.0 / (sumA > 1.0 ? sumA : 1.0));
+  }
+
+  // Linear ramp toward target, clamped (never overshoots, no denormal tail —
+  // it lands exactly on the target).
+  static inline double ramp(double cur, double target, double step) {
+    if (cur < target) {
+      cur += step;
+      return cur > target ? target : cur;
+    }
+    if (cur > target) {
+      cur -= step;
+      return cur < target ? target : cur;
+    }
+    return cur;
+  }
+
+  // Shortest-path phase slew on the circle, state kept in [0, 2π).
+  static inline double rampPhase(double cur, double target, double step) {
+    double d = target - cur;
+    if (d > kPi)
+      d -= 2.0 * kPi;
+    else if (d < -kPi)
+      d += 2.0 * kPi;
+    if (d > step)
+      cur += step;
+    else if (d < -step)
+      cur -= step;
+    else
+      return target;
+    if (cur >= 2.0 * kPi)
+      cur -= 2.0 * kPi;
+    else if (cur < 0.0)
+      cur += 2.0 * kPi;
+    return cur;
   }
 
   inline double stepSine(double f, double fs) {
@@ -245,12 +452,39 @@ class Generator {
   std::atomic<bool> sweepRepeat_{true};
   std::atomic<double> clickBpm_{120.0};
 
+  // Additive (HV-2) control atomics — TARGETS only; render ramps toward them.
+  // Defaults: fundamental only (a1=1), phases 0, f0 1 kHz.
+  std::atomic<double> additiveF0_{1000.0};
+  std::atomic<double> addAmpT_[genadd::kHarmonics] = {{1.0}, {0.0}, {0.0}, {0.0},
+                                                     {0.0}, {0.0}, {0.0}, {0.0},
+                                                     {0.0}, {0.0}, {0.0}, {0.0}};
+  std::atomic<double> addPhaseT_[genadd::kHarmonics] = {{0.0}, {0.0}, {0.0}, {0.0},
+                                                       {0.0}, {0.0}, {0.0}, {0.0},
+                                                       {0.0}, {0.0}, {0.0}, {0.0}};
+  // Published norm (render writes, bridge reads for genStatus).
+  std::atomic<double> addNormPub_{1.0};
+
   // Fade length (bridge writes via configure, render reads — atomic).
   std::atomic<uint32_t> fadeSamples_{480};
 
   // Render-thread state (audio thread only).
   double env_ = 0.0;
+  // The mode actually RENDERED. mode_ (the atomic) is the target; adoption
+  // happens only in applyTrigger with env_ at 0, so a running mode switch
+  // keeps rendering the old waveform through the dip (click-free).
+  GenMode modeCur_ = GenMode::Off;
+  bool trigPending_ = false;  // retrigger deferred until the env dips to 0
+  double ampCur_ = 0.0;  // slope-limited gain ramp state (all modes)
   double phase_ = 0.0;
+  // Additive render-thread state.
+  double addPhase_[genadd::kHarmonics] = {};  // per-harmonic accumulators (cycles)
+  double aCur_[genadd::kHarmonics] = {};      // ramping amps
+  double pCur_[genadd::kHarmonics] = {};      // slewing phase offsets (rad)
+  double aT_[genadd::kHarmonics] = {};        // targets hoisted per render call
+  double pT_[genadd::kHarmonics] = {};
+  double addF0R_ = 1000.0;
+  double ampStep_ = 1.0 / 384.0, phStep_ = kPi / 384.0;
+  bool addSnap_ = true;
   double sweepPhase01_ = 0.0;
   double clickTimer_ = 0.0;
   double burstTimer_ = 0.0;

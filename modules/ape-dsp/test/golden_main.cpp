@@ -214,6 +214,223 @@ int main() {
          12.0, 2.5);
   }
 
+  // ---- 6b) ADDITIVE generator (HV-2 Build 1) ------------------------------
+  {
+    const uint32_t H = 12;
+    const size_t skip = static_cast<size_t>(fs * 0.1);  // fade-in + ramps settle
+    const size_t len = static_cast<size_t>(fs);         // 1 s → integer cycles
+    // Magnitude at frequency f via sin/cos correlation over an exact integer
+    // number of cycles (all test tones are integer Hz over a 1 s window, so
+    // the correlation is exactly orthogonal to every other harmonic).
+    auto magAt = [&](const std::vector<float>& x, size_t off, size_t n, double f) {
+      double sc = 0.0, ss = 0.0;
+      for (size_t i = 0; i < n; ++i) {
+        const double w = 2.0 * 3.14159265358979323846 * f * static_cast<double>(i) / fs;
+        sc += x[off + i] * std::cos(w);
+        ss += x[off + i] * std::sin(w);
+      }
+      return 2.0 * std::sqrt(sc * sc + ss * ss) / static_cast<double>(n);
+    };
+    // Marshal the HV-2 flat layout [f0, a1..a12, p1..p12].
+    auto setParams = [&](Generator& gg, double f0, const double* amps, const double* degs) {
+      double v[25];
+      v[0] = f0;
+      for (uint32_t h = 0; h < H; ++h) {
+        v[1 + h] = amps[h];
+        v[1 + H + h] = degs[h];
+      }
+      gg.setAdditive(v, 25);
+    };
+    double zeros[12] = {0};
+    double ones[12], d180[12];
+    for (int h = 0; h < 12; ++h) {
+      ones[h] = 1.0;
+      d180[h] = 180.0;
+    }
+
+    // (a) Spectral correctness: square-12 (odd harmonics at 1/n) at f0=480 Hz
+    //     (integer samples per cycle). Expected |Hn| = 0.1 · norm · aₙ with
+    //     norm = 1/Σaₙ (Σ = 1 + 1/3 + 1/5 + 1/7 + 1/9 + 1/11 ≈ 1.8782 > 1
+    //     → attenuating).
+    double sq[12] = {1, 0, 1.0 / 3, 0, 1.0 / 5, 0, 1.0 / 7, 0, 1.0 / 9, 0, 1.0 / 11, 0};
+    Generator g;
+    g.configure(fs);
+    g.setMode(GenMode::Additive);
+    setParams(g, 480.0, sq, zeros);
+    g.start();
+    std::vector<float> buf(skip + len);
+    g.render(buf.data(), (uint32_t)buf.size());
+    double sumA = 0.0, sumA2 = 0.0;
+    for (double a : sq) {
+      sumA += a;
+      sumA2 += a * a;
+    }
+    const double norm = 1.0 / sumA;
+    const double lvl = 0.1;  // default −20 dBFS
+    near("Additive square-12 |H1|", magAt(buf, skip, len, 480.0), lvl * norm, 0.002);
+    near("Additive square-12 |H3|", magAt(buf, skip, len, 1440.0), lvl * norm / 3.0, 0.002);
+    near("Additive square-12 |H5|", magAt(buf, skip, len, 2400.0), lvl * norm / 5.0, 0.002);
+    near("Additive square-12 |H11|", magAt(buf, skip, len, 5280.0), lvl * norm / 11.0, 0.002);
+    truthy("Additive square-12 even H2 absent", magAt(buf, skip, len, 960.0) < 1e-4);
+    double ms = 0.0;
+    for (size_t i = skip; i < buf.size(); ++i) ms += (double)buf[i] * buf[i];
+    ms /= (double)len;
+    near("Additive square-12 RMS (dB)", 10.0 * std::log10(ms),
+         10.0 * std::log10(lvl * norm * lvl * norm * sumA2 / 2.0), 0.05);
+
+    // (b) Normalization bound: pathological all-amps-1 set through the SAME
+    //     Q4 cap chain as sine — request 0 dBFS while LOCKED → −12 effective,
+    //     and the summed output must stay under that cap.
+    Generator gb;
+    gb.configure(fs);
+    gb.setMode(GenMode::Additive);
+    setParams(gb, 480.0, ones, zeros);
+    gb.setLevelDb(0.0);
+    near("Additive Q4 cap chain: locked effective level", gb.effectiveLevelDb(), -12.0, 1e-9);
+    gb.start();
+    std::vector<float> b2(static_cast<size_t>(fs));
+    gb.render(b2.data(), (uint32_t)b2.size());
+    double mxB = 0.0;
+    for (float v : b2) mxB = std::max(mxB, (double)std::fabs(v));
+    truthy("Additive all-ones peak ≤ −12 dBFS cap",
+           mxB <= std::pow(10.0, -12.0 / 20.0) + 1e-6);
+    truthy("Additive all-ones audible (not over-normalized)", mxB > 0.02);
+    near("Additive norm status = 1/Σaₙ (all-ones → 1/12)", gb.additiveNorm(), 1.0 / 12.0, 1e-9);
+
+    // (c) Ramp continuity: worst-case jump square→all-ones + 180° phases must
+    //     glide (~8 ms), never click, and never pierce the cap mid-ramp. A
+    //     hard swap would show a sample delta ~10× the steady maximum; the
+    //     ramps add only a small slope on top of the steadier of the two
+    //     endpoint waveshapes, so 1.5× separates cleanly.
+    std::vector<float> b3(static_cast<size_t>(fs * 0.2));
+    g.render(b3.data(), (uint32_t)b3.size());  // steady state A (square-12)
+    double steadyA = 0.0;
+    for (size_t i = 1; i < b3.size(); ++i)
+      steadyA = std::max(steadyA, (double)std::fabs(b3[i] - b3[i - 1]));
+    setParams(g, 480.0, ones, d180);
+    std::vector<float> b4(static_cast<size_t>(fs * 0.2));
+    g.render(b4.data(), (uint32_t)b4.size());  // transition + settle
+    double dmax = std::fabs((double)b4[0] - (double)b3.back());
+    double mxT = 0.0;
+    for (size_t i = 0; i < b4.size(); ++i) {
+      if (i > 0) dmax = std::max(dmax, (double)std::fabs(b4[i] - b4[i - 1]));
+      mxT = std::max(mxT, (double)std::fabs(b4[i]));
+    }
+    std::vector<float> b5(static_cast<size_t>(fs * 0.2));
+    g.render(b5.data(), (uint32_t)b5.size());  // steady state B
+    double steadyB = 0.0;
+    for (size_t i = 1; i < b5.size(); ++i)
+      steadyB = std::max(steadyB, (double)std::fabs(b5[i] - b5[i - 1]));
+    truthy("Additive param jump click-free (Δ ≤ 1.5×steady)",
+           dmax <= std::max(steadyA, steadyB) * 1.5 + 1e-6);
+    truthy("Additive norm bound holds mid-ramp (|x| ≤ −20 dBFS)", mxT <= lvl + 1e-6);
+
+    // (d) Phase handling: {a1=1, a3=1/3} with φ3=0° vs 180°. Same RMS; peaks
+    //     differ analytically: max|2s−(4/3)s³| = 0.9428 vs max|(4/3)s³| = 4/3
+    //     (s = sin), ratio √2. Fresh generators → deterministic start phase.
+    double aPair[12] = {1, 0, 1.0 / 3, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    double phB[12] = {0};
+    phB[2] = 180.0;
+    auto peakRms = [&](const double* degs, double& peak, double& rmsDb) {
+      Generator gp;
+      gp.configure(fs);
+      gp.setMode(GenMode::Additive);
+      setParams(gp, 480.0, aPair, degs);
+      gp.start();
+      std::vector<float> b(skip + len);
+      gp.render(b.data(), (uint32_t)b.size());
+      peak = 0.0;
+      double m = 0.0;
+      for (size_t i = skip; i < b.size(); ++i) {
+        peak = std::max(peak, (double)std::fabs(b[i]));
+        m += (double)b[i] * b[i];
+      }
+      rmsDb = 10.0 * std::log10(m / (double)len);
+    };
+    double pkA, rmsA, pkB, rmsB;
+    peakRms(zeros, pkA, rmsA);
+    peakRms(phB, pkB, rmsB);
+    near("Additive phase flip: RMS unchanged (dB)", rmsB - rmsA, 0.0, 0.05);
+    near("Additive phase flip: peak ratio = √2", pkB / pkA, 1.41421, 0.02);
+
+    // (e) Nyquist omission: f0 = 5 kHz, all 12 amps 1 → only n=1..4 (< 24 kHz)
+    //     synthesize; n ≥ 5 silently omitted, so NO energy at their alias
+    //     frequencies. norm stays 1/12 (conservative full-target sum — see
+    //     Generator.hpp).
+    Generator gn;
+    gn.configure(fs);
+    gn.setMode(GenMode::Additive);
+    setParams(gn, 5000.0, ones, zeros);
+    gn.start();
+    std::vector<float> bn(skip + len);
+    gn.render(bn.data(), (uint32_t)bn.size());
+    near("Additive Nyquist: H4 (20 kHz) present", magAt(bn, skip, len, 20000.0), lvl / 12.0,
+         0.0005);
+    truthy("Additive Nyquist: H5 (25 kHz) NOT aliased to 23 kHz",
+           magAt(bn, skip, len, 23000.0) < 1e-4);
+    truthy("Additive Nyquist: H6 (30 kHz) NOT aliased to 18 kHz",
+           magAt(bn, skip, len, 18000.0) < 1e-4);
+
+    // (f) RUNNING mode switch is click-free (HV-2 Build 3's in-place retune
+    //     idiom: toggleSolo genSet({mode: sine}) over a playing model, and
+    //     PLAY MODEL genSet({mode: additive}) over a running solo). The
+    //     retrigger must dip the 10 ms envelope to zero, apply the reset at
+    //     the bottom, and fade back — never step the output (the pre-fix
+    //     behavior reset the 12 phase accumulators under a full envelope:
+    //     worst-case ~2× amp single-sample jump). Bridge order matters:
+    //     targets first, then mode — matching the fixed genSet marshaling.
+    {
+      Generator gr;
+      gr.configure(fs);
+      gr.setMode(GenMode::Sine);
+      gr.setFrequency(480.0);
+      gr.start();
+      // +24 samples ≈ a quarter cycle at 480 Hz: the sine segment ends near
+      // its PEAK (~+0.1) while the 90/270° pulse model's first sample is ~0,
+      // so the pre-fix instant snap is a near-full-amplitude jump this test
+      // deterministically catches; the env dip renders it smooth.
+      std::vector<float> s1(static_cast<size_t>(fs * 0.2) + 24);
+      gr.render(s1.data(), (uint32_t)s1.size());  // fade-in + steady sine
+      double steadySine = 0.0;
+      for (size_t i = s1.size() / 2; i < s1.size(); ++i)
+        steadySine = std::max(steadySine, (double)std::fabs(s1[i] - s1[i - 1]));
+      // In-place switch to a pulse-like model (90/270° phase offsets — the
+      // finding's worst case for the old snap).
+      double pulseDeg[12] = {90, 270, 90, 270, 90, 270, 90, 270, 90, 270, 90, 270};
+      setParams(gr, 480.0, ones, pulseDeg);
+      gr.setMode(GenMode::Additive);
+      std::vector<float> s2(static_cast<size_t>(fs * 0.2));
+      gr.render(s2.data(), (uint32_t)s2.size());  // dip + fade-up + settle
+      std::vector<float> s3(static_cast<size_t>(fs * 0.2));
+      gr.render(s3.data(), (uint32_t)s3.size());  // steady additive
+      double steadyAdd = 0.0, msAdd = 0.0;
+      for (size_t i = 1; i < s3.size(); ++i)
+        steadyAdd = std::max(steadyAdd, (double)std::fabs(s3[i] - s3[i - 1]));
+      for (float v : s3) msAdd += (double)v * v;
+      const double steadyMax = std::max(steadySine, steadyAdd);
+      double dmaxSw = std::fabs((double)s2[0] - (double)s1.back());
+      for (size_t i = 1; i < s2.size(); ++i)
+        dmaxSw = std::max(dmaxSw, (double)std::fabs(s2[i] - s2[i - 1]));
+      truthy("Running sine→additive switch click-free (Δ ≤ 1.5×steady)",
+             dmaxSw <= steadyMax * 1.5 + 1e-6);
+      truthy("Running sine→additive switch: tone comes back",
+             10.0 * std::log10(msAdd / (double)s3.size()) > -40.0);
+      // And back to sine in place (the solo-over-model direction).
+      gr.setMode(GenMode::Sine);
+      std::vector<float> s4(static_cast<size_t>(fs * 0.2));
+      gr.render(s4.data(), (uint32_t)s4.size());
+      double dmaxBack = std::fabs((double)s4[0] - (double)s3.back());
+      double msBack = 0.0;
+      for (size_t i = 1; i < s4.size(); ++i)
+        dmaxBack = std::max(dmaxBack, (double)std::fabs(s4[i] - s4[i - 1]));
+      for (size_t i = s4.size() / 2; i < s4.size(); ++i) msBack += (double)s4[i] * s4[i];
+      truthy("Running additive→sine switch click-free (Δ ≤ 1.5×steady)",
+             dmaxBack <= steadyMax * 1.5 + 1e-6);
+      truthy("Running additive→sine switch: sine comes back",
+             10.0 * std::log10(msBack / (double)(s4.size() - s4.size() / 2)) > -40.0);
+    }
+  }
+
   // ---- 7) Waveform envelope + clip runs -----------------------------------
   {
     WaveEnvelope we;

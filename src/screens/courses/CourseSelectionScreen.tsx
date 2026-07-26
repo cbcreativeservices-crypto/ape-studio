@@ -52,6 +52,9 @@ import { BookIcon } from '../../components/BookIcon';
 type Card =
   | { kind: 'tools'; id: 'tools' }
   | { kind: 'glossary'; id: 'glossary' }
+  /** Ear Training & Critical Listening Lab — pinned, right of tools/glossary
+   *  (Phase 1 SHELL). Its own card/route → 'EarLab' (NOT a ToolsHub tile). */
+  | { kind: 'lab'; id: 'lab' }
   /** Free-topic taster card (Booth 2026-07-11) — gs0 / gs36, after Glossary. */
   | { kind: 'freeTopic'; id: string; gs: number; name: string; courseOrder: number }
   /** CM2/CM3: a public catalog course (commercialMode). */
@@ -201,6 +204,8 @@ function rawCardTitle(item: Card): string | null {
       return 'Measurement and Analysis Tools';
     case 'glossary':
       return 'Professional Audio Glossary';
+    case 'lab':
+      return 'Ear Training & Critical Listening Lab';
     case 'freeTopic':
     case 'public':
     case 'comingTopic':
@@ -224,6 +229,7 @@ function dotColorFor(card: Card): string {
   switch (card.kind) {
     case 'tools':
     case 'glossary':
+    case 'lab':
     case 'freeTopic':
       return colors.green; // free / included
     case 'comingTopic':
@@ -271,6 +277,7 @@ function CourseCardView({
   onOpenCourse,
   onOpenGlossary,
   onOpenTools,
+  onOpenLab,
   onOpenPublic,
   onLockedPress,
   onOpenMore,
@@ -284,6 +291,8 @@ function CourseCardView({
   onOpenCourse: (c: Extract<Card, { kind: 'course' }>) => void;
   onOpenGlossary: () => void;
   onOpenTools: () => void;
+  /** Open the Ear Training & Critical Listening Lab (Phase 1 SHELL). */
+  onOpenLab: () => void;
   /** CM6: open a public course → its commercial dashboard. */
   onOpenPublic: (order: number) => void;
   /** CM2/CM3: academy-locked tap → the upgrade surface. */
@@ -408,6 +417,32 @@ function CourseCardView({
           <Text style={styles.homeTopicSubject}>{item.topics.length} topics</Text>
           <View style={{ height: 12 }} />
           <Text style={[styles.homeTopicCta, { color: tint }]}>LOAD & STUDY ›</Text>
+        </Pressable>
+      </View>
+    );
+  }
+  // Ear Training & Critical Listening Lab (Phase 1 SHELL) — pinned card with a
+  // simple themed treatment (no external art; ear-training GREEN + a headphones
+  // motif); tap opens the Lab route. Rendered like the other self-contained
+  // pinned cards (more / homeTopic) rather than the image-backed tools/glossary.
+  if (item.kind === 'lab') {
+    return (
+      <View style={styles.cardOuter}>
+        <View style={styles.cardAbove}>
+          <Text style={[styles.cardAboveText, { color: '#5bff85' }]}>FREE INCLUDED</Text>
+          <View style={[styles.cardAboveRule, { backgroundColor: '#5bff85' }]} />
+        </View>
+        <Pressable
+          style={[styles.card, styles.labCard]}
+          onPress={onOpenLab}
+          accessibilityRole="button"
+          accessibilityLabel="Open the Ear Training and Critical Listening Lab"
+        >
+          <Text style={styles.labIcon}>🎧</Text>
+          <Text style={styles.labTitle}>Ear Training & Critical Listening Lab</Text>
+          <Text style={styles.labSub}>Hear, identify, measure, and shape sound.</Text>
+          <View style={{ height: 14 }} />
+          <Text style={styles.labCta}>OPEN LAB ›</Text>
         </Pressable>
       </View>
     );
@@ -662,6 +697,8 @@ export function CourseSelectionScreen() {
       setCards([
         { kind: 'tools', id: 'tools' },
         { kind: 'glossary', id: 'glossary' },
+        // Ear Training & Critical Listening Lab — pinned, right of tools/glossary.
+        { kind: 'lab', id: 'lab' },
         // 2 free-topic taster cards, right after Glossary (Booth 2026-07-11).
         // gs0 displays as the shortened "Pro Audio Safety".
         ...freeTopicsFrom(catalog).map((ft) => ({
@@ -732,6 +769,8 @@ export function CourseSelectionScreen() {
       setCards([
         { kind: 'tools', id: 'tools' },
         { kind: 'glossary', id: 'glossary' },
+        // Ear Training & Critical Listening Lab — pinned, right of tools/glossary.
+        { kind: 'lab', id: 'lab' },
         ...courseCards,
         ...(otherCount > 0 ? [{ kind: 'more' as const, id: 'more' as const, count: otherCount }] : []),
       ]);
@@ -856,6 +895,10 @@ export function CourseSelectionScreen() {
 
   const openTools = useCallback(() => {
     (navigation as any).navigate('ToolsHub');
+  }, [navigation]);
+
+  const openLab = useCallback(() => {
+    (navigation as any).navigate('EarLab');
   }, [navigation]);
 
   const openMore = useCallback(() => {
@@ -1064,6 +1107,7 @@ export function CourseSelectionScreen() {
             onOpenCourse={openCourse}
             onOpenGlossary={openGlossary}
             onOpenTools={openTools}
+            onOpenLab={openLab}
             onOpenPublic={openPublicCourse}
             onLockedPress={() => setUpgradeOpen(true)}
             onOpenMore={openMore}
@@ -1247,6 +1291,27 @@ const styles = StyleSheet.create({
   },
   homeTopicSubject: { fontFamily: fonts.barlowRegular, fontSize: 13, color: '#b7a7e0', textAlign: 'center' },
   homeTopicCta: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.2, color: '#c4a2ff' },
+  // Ear Training & Critical Listening Lab card (Phase 1 SHELL) — ear-training
+  // green, self-contained (no external art).
+  labCard: {
+    backgroundColor: '#0e1a12',
+    borderColor: 'rgba(55,224,95,.5)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  labIcon: { fontSize: 52, marginBottom: 4 },
+  labTitle: {
+    fontFamily: fonts.oswaldMedium,
+    fontSize: 22,
+    lineHeight: 26,
+    letterSpacing: 0.3,
+    color: '#ffffff',
+    textAlign: 'center',
+    paddingHorizontal: 8,
+  },
+  labSub: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: '#9fe6b5', textAlign: 'center', paddingHorizontal: 10 },
+  labCta: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.2, color: '#5bff85' },
   lockTint: {
     position: 'absolute',
     top: 0,

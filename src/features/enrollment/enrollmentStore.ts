@@ -167,6 +167,13 @@ export function setActiveMany(gsList: number[], active: boolean): void {
   if (changed) commit(next);
 }
 
+/** Reset the enrollment list to the NEW-USER DEFAULT (the seeded FREE topics).
+ *  User PROGRESS is stored separately and is NOT touched — cleared topics can be
+ *  re-added from the browse/add lists (user request 2026-07-25). */
+export function resetEnrollment(): void {
+  commit(FREE_ENROLL_GS.map((gs) => ({ gs, favorite: false, active: true })));
+}
+
 /** Move an entry up (-1) or down (+1) in the user's order. */
 export function moveTopic(gs: number, dir: -1 | 1): void {
   const i = list.findIndex((e) => e.gs === gs);

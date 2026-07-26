@@ -10,15 +10,17 @@
  * (paceRecords). Everything here is a practice aid — nothing blocks study.
  */
 import { useEffect, useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../theme/tokens';
 import { getPaceRecords, type PaceRecord } from './paceRecords';
 import {
   fmtClock,
-  PACE_PRESETS,
+  setRunning,
   usePaceSettings,
   type PaceMethodKey,
 } from './paceStore';
+import { MiniFader, PresetFader } from './PresetFader';
+import { startTimeTrial } from './timeTrial';
 
 const ACCENT = colors.blue; // Study-tab accent
 
@@ -39,12 +41,32 @@ export function PaceTimerModal({
   visible,
   onClose,
   method,
+  topicId,
 }: {
   visible: boolean;
   onClose: () => void;
   method: PaceMethodKey;
+  /** The topic under study — passed to the trial so a PASS credits the right
+   *  topic. Omit for pseudo-topics with no server row (crediting is a no-op). */
+  topicId?: string;
 }) {
   const { settings, setEnabled, setPreset } = usePaceSettings(method);
+  // The full-size fader popup (shared with the in-container fader button via the
+  // same PresetFader component) — opened here by tapping the mini-fader.
+  const [faderOpen, setFaderOpen] = useState(false);
+
+  const beginTimeTrial = () => {
+    startTimeTrial(method, topicId ?? '');
+    onClose();
+  };
+
+  // DONE is what ADDS the timer: finishing the popup turns the pace timer on and
+  // starts it running, then closes. (The old top on/off Switch was removed.)
+  const handleDone = () => {
+    setEnabled(true);
+    setRunning(method, true);
+    onClose();
+  };
   const [record, setRecord] = useState<PaceRecord | undefined>(undefined);
 
   // Pull fresh records whenever the modal opens (cheap; encouraging copy only).
@@ -71,12 +93,6 @@ export function PaceTimerModal({
         <View style={styles.card}>
           <View style={styles.headerRow}>
             <Text style={styles.title}>PACE TIMER</Text>
-            <Switch
-              value={settings.enabled}
-              onValueChange={setEnabled}
-              trackColor={{ true: 'rgba(47,155,255,.6)', false: '#333' }}
-              thumbColor={settings.enabled ? ACCENT : '#bbb'}
-            />
           </View>
 
           <Text style={styles.explain}>
@@ -85,29 +101,23 @@ export function PaceTimerModal({
             Stopwatch just counts up and saves your best time.
           </Text>
 
-          <ScrollView style={styles.list} contentContainerStyle={{ gap: 6 }}>
-            {PACE_PRESETS.map(({ key, label, hint }) => {
-              const active = settings.preset === key;
-              return (
-                <Pressable
-                  key={key}
-                  style={[styles.option, active && styles.optionActive]}
-                  onPress={() => setPreset(key)}
-                  accessibilityRole="radio"
-                  accessibilityState={{ selected: active }}
-                  accessibilityLabel={`${label}, ${hint}`}
-                >
-                  <View style={[styles.radio, active && styles.radioActive]}>
-                    {active ? <View style={styles.radioDot} /> : null}
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={[styles.optionLabel, active && styles.optionLabelActive]}>{label}</Text>
-                    <Text style={styles.optionHint}>{hint}</Text>
-                  </View>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
+          {/* Mini-fader: always visible without scrolling — shows the current
+              preset and, on tap, opens the SAME full-size PresetFader popup the
+              in-container fader button uses, so any pace/time preset is
+              reachable here without scrolling (replaces the old radio list). */}
+          {/* "open" label + the mini-fader, grouped in a nested container on the
+              LEFT of the card; tapping either opens the full-size fader. */}
+          <Pressable
+            style={styles.faderOpenRow}
+            onPress={() => setFaderOpen(true)}
+            accessibilityRole="button"
+            accessibilityLabel="Open the pace fader"
+          >
+            <Text style={styles.openLabel}>open</Text>
+            <View style={styles.miniHolder} pointerEvents="none">
+              <MiniFader preset={settings.preset} onPress={() => setFaderOpen(true)} />
+            </View>
+          </Pressable>
 
           {settings.preset === 'stopwatch' ? (
             <View style={styles.records}>
@@ -121,15 +131,43 @@ export function PaceTimerModal({
             </View>
           ) : null}
 
+          {/* TIME TRIAL — the official 15-minute challenge (opt-in). */}
+          <View style={styles.trial}>
+            <Text style={styles.trialHead}>TIME TRIAL</Text>
+            <Text style={styles.trialBody}>
+              Keep up with quiz pace for 15 minutes. Only correct answers count. If your average
+              pace over the 15 minutes matches or beats quiz pace, you clear this study method
+              toward unlocking the topic's quiz. Brief slow-downs are fine — catch up before time
+              runs out.
+            </Text>
+            <Pressable
+              style={styles.trialBtn}
+              onPress={beginTimeTrial}
+              accessibilityRole="button"
+              accessibilityLabel="Start 15-minute time trial"
+            >
+              <Text style={styles.trialBtnText}>START 15-MIN TIME TRIAL</Text>
+            </Pressable>
+          </View>
+
           <Pressable
             style={styles.doneBtn}
-            onPress={onClose}
+            onPress={handleDone}
             accessibilityRole="button"
-            accessibilityLabel="Done"
+            accessibilityLabel="Done — add the pace timer"
           >
             <Text style={styles.doneText}>DONE</Text>
           </Pressable>
         </View>
+
+        {/* Shared full-size fader popup — same component the container's
+            hold-press fader button opens; here it's opened by the mini-fader. */}
+        <PresetFader
+          visible={faderOpen}
+          preset={settings.preset}
+          onChange={setPreset}
+          onClose={() => setFaderOpen(false)}
+        />
       </View>
     </Modal>
   );
@@ -150,33 +188,21 @@ const styles = StyleSheet.create({
   headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.4, color: colors.textPrimary },
   explain: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 20, color: colors.textSub },
-  list: { maxHeight: 264, alignSelf: 'stretch' },
-  option: {
+
+  // "open" + mini-fader, grouped left in a nested container (user 2026-07-25).
+  faderOpenRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    paddingVertical: 9,
-    paddingHorizontal: 11,
-    borderRadius: 9,
+    alignSelf: 'center',
+    gap: 10,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#2a2a2c',
-    backgroundColor: '#141416',
+    borderColor: 'rgba(47,155,255,.3)',
+    backgroundColor: 'rgba(47,155,255,.05)',
+    padding: 8,
   },
-  optionActive: { borderColor: 'rgba(47,155,255,.7)', backgroundColor: 'rgba(47,155,255,.10)' },
-  radio: {
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    borderWidth: 1.5,
-    borderColor: '#555',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  radioActive: { borderColor: ACCENT },
-  radioDot: { width: 9, height: 9, borderRadius: 5, backgroundColor: ACCENT },
-  optionLabel: { fontFamily: fonts.oswaldMedium, fontSize: 14, color: colors.textSecondary },
-  optionLabelActive: { color: colors.textPrimary },
-  optionHint: { fontFamily: fonts.barlowCondensedRegular, fontSize: 12, color: colors.textMuted, marginTop: 1 },
+  openLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1, color: ACCENT },
+  miniHolder: { width: 200 },
   records: {
     borderRadius: 9,
     borderWidth: 1,
@@ -198,4 +224,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   doneText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.8, color: ACCENT },
+
+  // TIME TRIAL block.
+  trial: {
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: 'rgba(55,224,95,.4)',
+    backgroundColor: 'rgba(55,224,95,.07)',
+    padding: 12,
+    gap: 8,
+  },
+  trialHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.green },
+  trialBody: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 19, color: colors.textSub },
+  trialBtn: {
+    borderRadius: 8,
+    backgroundColor: 'rgba(55,224,95,.12)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(55,224,95,.7)',
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  trialBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1, color: colors.green },
 });

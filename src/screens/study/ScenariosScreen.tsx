@@ -13,7 +13,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AnswerCell, type AnswerCellState } from '../../components/AnswerCell';
 import { AudioPlayer } from '../../components/AudioPlayer';
@@ -25,10 +25,12 @@ import {
   fetchScenarioItems,
   type ScenarioItem,
 } from '../../features/study/mediaTypes';
-import { usePaceSettings } from '../../features/study/paceStore';
+import { incBrainOutput, resetBrainOutput, setRunning, usePaceSettings, useRunning } from '../../features/study/paceStore';
+import { setLastStudyLocation } from '../../features/study/lastStudyLocation';
 import { recordPaceSession } from '../../features/study/paceRecords';
 import { PaceTimerBar } from '../../features/study/PaceTimerBar';
 import { PaceTimerModal } from '../../features/study/PaceTimerModal';
+import { registerTrialAnswer, useTimeTrial } from '../../features/study/timeTrial';
 import { StudyHeader } from './StudyHeader';
 import type { StudyStackParamList } from '../../navigation/types';
 
@@ -39,9 +41,17 @@ const EXPLANATION_MS = 3000;
 type Feedback = { correct: boolean; text: string };
 
 export function ScenariosScreen({ route }: Props) {
-  const { achievementId } = route.params;
+  const { achievementId, topicName } = route.params;
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
+
+  // Remember this exact method+topic so the Enrollments "CONTINUE LEARNING"
+  // banner can resume here (re-records on every focus = true last-visited).
+  useFocusEffect(
+    useCallback(() => {
+      setLastStudyLocation({ kind: 'method', route: 'Scenarios', achievementId, topicName });
+    }, [achievementId, topicName]),
+  );
 
   const [items, setItems] = useState<ScenarioItem[] | null>(null);
   const [idx, setIdx] = useState(0);
@@ -54,30 +64,56 @@ export function ScenariosScreen({ route }: Props) {
   const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Pace timer (practice aid — device-local settings, never blocks study).
-  const { settings: pace } = usePaceSettings('scenarios');
+  const { settings: pace, setEnabled, setPreset } = usePaceSettings('scenarios');
+  const running = useRunning('scenarios');
+  // Time trial (opt-in 15:00 challenge) — the readout switches to its HUD while live.
+  const trial = useTimeTrial('scenarios');
   const [timerOpen, setTimerOpen] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const startRef = useRef<number | null>(null);
+  const elapsedRef = useRef(0);
   const recordedRef = useRef(false);
+  // Baseline for the RESET button: the answered value (idx) at the last reset,
+  // so the readout's session counters zero without disturbing study position.
+  const answeredBaseRef = useRef(0);
+
+  // Reset zeroes the readout's elapsed + answered session counters (a fresh
+  // pace measurement window) — study progress is untouched.
+  const handlePaceReset = useCallback(() => {
+    answeredBaseRef.current = idx;
+    startRef.current = Date.now();
+    elapsedRef.current = 0;
+    recordedRef.current = false;
+    setElapsed(0);
+    resetBrainOutput('scenarios');
+  }, [idx]);
 
   useState(() => {
     fetchScenarioItems(achievementId).then(setItems).catch(() => setItems([]));
   });
 
-  // Pace clock: start when the timer is enabled, tick ~1s while on, reset off.
+  // Pace clock: present while ENABLED; only ticks while also RUNNING. When
+  // enabled-but-paused the clock HOLDS (elapsed kept); disabling resets to 0.
   useEffect(() => {
     if (!pace.enabled) {
       startRef.current = null;
+      elapsedRef.current = 0;
       recordedRef.current = false;
       setElapsed(0);
+      resetBrainOutput('scenarios'); // fresh pace session → zero the brain-output tally
       return;
     }
-    if (startRef.current == null) startRef.current = Date.now();
+    if (!running) return; // paused → hold the clock where it is
+    startRef.current = Date.now() - elapsedRef.current * 1000; // resume from held time
     const id = setInterval(() => {
-      if (startRef.current != null) setElapsed((Date.now() - startRef.current) / 1000);
+      if (startRef.current != null) {
+        const e = (Date.now() - startRef.current) / 1000;
+        elapsedRef.current = e;
+        setElapsed(e);
+      }
     }, 1000);
     return () => clearInterval(id);
-  }, [pace.enabled]);
+  }, [pace.enabled, running]);
 
   // STOPWATCH: on finishing the single pass, log the run once.
   useEffect(() => {
@@ -103,6 +139,8 @@ export function ScenariosScreen({ route }: Props) {
   const judge = useCallback(
     (correct: boolean) => {
       if (!item) return;
+      registerTrialAnswer('scenarios', correct); // time trial: only correct advances pace
+      if (correct) incBrainOutput('scenarios'); // one brain output per correct scenario press
       if (!correct) setWrongIds((w) => [...w, item.id]);
       setFeedback({
         correct,
@@ -201,19 +239,25 @@ export function ScenariosScreen({ route }: Props) {
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScrollView contentContainerStyle={styles.scroll}>
-        <StudyHeader method="scenarios" title="SCENARIO" onOpenTimer={() => setTimerOpen(true)} />
+        <StudyHeader method="scenarios" title="SCENARIO" onOpenTimer={() => setTimerOpen(true)} hideTimerButton={!!(pace.enabled || trial.active || trial.result)} />
         <View style={{ alignSelf: 'stretch' }}>
           {/* LED = +1 per item ANSWERED (progress, not score) — locked */}
           <LedMeterWell filled={Math.round((idx / Math.max(1, items.length)) * 21)} />
         </View>
 
-        {pace.enabled ? (
+        {pace.enabled || trial.active || trial.result ? (
           <PaceTimerBar
+            method="scenarios"
             preset={pace.preset}
-            answered={idx}
+            answered={Math.max(0, idx - answeredBaseRef.current)}
             total={items.length}
             elapsed={elapsed}
-            onOpenSettings={() => setTimerOpen(true)}
+            enabled={pace.enabled}
+            onReset={handlePaceReset}
+            running={running}
+            onToggleRunning={() => setRunning('scenarios', !running)}
+            onRemove={() => setEnabled(false)}
+            onPresetChange={setPreset}
           />
         ) : null}
 
@@ -286,7 +330,7 @@ export function ScenariosScreen({ route }: Props) {
         </Text>
       </ScrollView>
 
-      <PaceTimerModal visible={timerOpen} onClose={() => setTimerOpen(false)} method="scenarios" />
+      <PaceTimerModal visible={timerOpen} onClose={() => setTimerOpen(false)} method="scenarios" topicId={achievementId} />
     </View>
   );
 }

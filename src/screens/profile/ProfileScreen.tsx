@@ -33,6 +33,7 @@ import {
 } from '../../features/profile/publicProfile';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { LowLightRow } from '../../features/settings/LowLightLayer';
+import { AudioOutputRow } from '../../features/audio/AudioOutputRow';
 import { DevVisualIndex } from '../../features/dev/DevVisualIndex';
 import { useTermList } from '../../features/flags/flaggedStore';
 import {
@@ -216,6 +217,10 @@ export function ProfileScreen() {
 
           {/* Low-light mode toggle at the top (user request 2026-07-18). */}
           <LowLightRow />
+
+          {/* Global audio-output mute + 5s hold-to-enable (owner request
+              2026-07-25). Muted by default; auto-re-mutes on idle/reopen/login. */}
+          <AudioOutputRow />
 
           {/* TEMPORARY dev tool (user request 2026-07-18) — visual index of every
               screen + popup. Remove before release. */}

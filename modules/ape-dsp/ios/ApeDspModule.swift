@@ -141,7 +141,13 @@ public class ApeDspModule: Module {
       }
     }
     Function("genSet") { (params: [String: Any]) -> Void in
-      if let m = params["mode"] as? Int { self.core.genSetMode(Int32(m)) }
+      // ORDER MATTERS: every target key ("frequency", "levelDb", "sweep",
+      // "additive", …) is marshaled BEFORE "mode". setMode() arms the core's
+      // retrigger, and the RT render callback can land between two native
+      // calls — mode-first would let one buffer render the PREVIOUS targets
+      // (e.g. sine→additive sounding the stale/default model for ~5–10 ms).
+      // Targets-first means the retrigger always fires with the new state in
+      // place. Same ordering in ApeDspModule.kt — keep them in sync.
       if let f = params["frequency"] as? Double { self.core.genSetFrequency(f) }
       if let l = params["levelDb"] as? Double { self.core.genSetLevelDb(l) }
       if let bpm = params["clickBpm"] as? Double { self.core.genSetClickBpm(bpm) }
@@ -150,6 +156,26 @@ public class ApeDspModule: Module {
          let secs = s["seconds"] as? Double {
         self.core.genSetSweepStart(s0, end: s1, seconds: secs, repeat: (s["repeat"] as? Bool) ?? true)
       }
+      // ADDITIVE (HV-2): flat [f0, a1..a12, p1..p12] — 25 numbers (Hz, 0..1,
+      // degrees). Same ordering on Android/JS. Drop the call if any element is
+      // non-numeric (mirrors the sweep all-or-nothing guard); the core ignores
+      // short arrays. Booleans are REJECTED explicitly: JS true/false bridge
+      // as NSNumber (CFBoolean) and would silently coerce to 1/0 here while
+      // Android's `as? Number` check drops the whole call — mirror Android's
+      // strictness so malformed payloads behave identically cross-platform.
+      // NOTE: "frequency" retunes the SINE path only — retuning the additive
+      // f0 means resending the full additive array.
+      if let arr = params["additive"] as? [Any] {
+        let boolTypeID = CFBooleanGetTypeID()
+        let vals = arr.compactMap { (v: Any) -> Double? in
+          guard let n = v as? NSNumber, CFGetTypeID(n) != boolTypeID else { return nil }
+          return n.doubleValue
+        }
+        if vals.count == arr.count {
+          self.core.genSetAdditive(vals.map { NSNumber(value: $0) })
+        }
+      }
+      if let m = params["mode"] as? Int { self.core.genSetMode(Int32(m)) }
     }
     Function("genUnlockCap") { () -> Void in
       self.core.genUnlockCap()
@@ -247,7 +273,11 @@ public class ApeDspModule: Module {
 
   private func infoDict() -> [String: Any] {
     return [
-      "engineVersion": 2,  // v1 = Spike-0 (rms/peak only); v2 = engine build 2026-07-23
+      // v1 = Spike-0; v2 = engine build 2026-07-23; v3 = additive generator
+      // (HV-2). Read from the C++ constant (apedsp::kEngineVersion via the
+      // ApeDspCore accessor) — never hardcoded, so a core bump can't skew
+      // getInfo() vs frame() vs Android.
+      "engineVersion": ApeDspCore.engineVersion(),
       "sampleRate": sampleRate,
       "ioBufferDuration": bufferDuration,
       "measurementMode": measurementMode,
