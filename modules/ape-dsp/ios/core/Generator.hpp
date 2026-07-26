@@ -211,7 +211,10 @@ class Generator {
     // applyTrigger has already synced prevHpfHz_, so the tone start is never
     // gated. A change while silent just snaps the crossfade.
     if (hpfHz != prevHpfHz_) {
-      if (env_ > 0.001 && wantRun && routeGatePhase_ == 0) routeGatePhase_ = 1;
+      // Gate ONLY a steady-state route change. A change during the onset ramp
+      // (the route layer sets the HPF right after start — a real ordering race)
+      // just snaps the crossfade, masked by the low onset env — no gate, no puff.
+      if (envSettled_ && wantRun && routeGatePhase_ == 0) routeGatePhase_ = 1;
       else hpfMix_ = hpfMixTarget;
       prevHpfHz_ = hpfHz;
     }
@@ -226,6 +229,9 @@ class Generator {
         env_ = env_ + fadeStep > target ? target : env_ + fadeStep;
       else if (env_ > target)
         env_ = env_ - fadeStep < target ? target : env_ - fadeStep;
+      // Onset complete once the env reaches full — after this a route change may
+      // gate (see the pre-loop gate trigger).
+      if (wantRun && env_ >= 0.999) envSettled_ = true;
       if (trigPending_ && env_ <= 0.0) applyTrigger(modeTarget);
       if (env_ <= 0.0 && !wantRun) {
         out[i] = 0.0f;
@@ -301,6 +307,7 @@ class Generator {
     // first audible sample) is NOT treated as a mid-tone route change.
     routeGate_ = 1.0;
     routeGatePhase_ = 0;
+    envSettled_ = false;  // block the gate until this new tone's onset completes
     prevHpfHz_ = hpfHz_.load();
     trigPending_ = false;
   }
@@ -594,6 +601,10 @@ class Generator {
   int routeGatePhase_ = 0;    // 0 idle · 1 fade-out · 2 hold · 3 fade-in
   int routeGateHoldLeft_ = 0;
   double prevHpfHz_ = 0.0;    // detects a route-driven cutoff change
+  bool envSettled_ = false;   // env has reached full since the last trigger —
+                              // gate only a STEADY-STATE route change, never one
+                              // that lands during the onset ramp (that would
+                              // duck the tone start = a soft "puff").
   double sweepPhase01_ = 0.0;
   double clickTimer_ = 0.0;
   double burstTimer_ = 0.0;

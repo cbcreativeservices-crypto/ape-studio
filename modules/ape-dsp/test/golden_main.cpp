@@ -657,6 +657,34 @@ int main() {
       for (size_t i = c.size() * 3 / 4; i < c.size(); ++i) tailPeak = std::max(tailPeak, (double)std::fabs(c[i]));
       truthy("Route gate recovers to full level after fade-in", tailPeak > 0.02);
     }
+
+    // 9e. HPF engaging DURING the onset (the route layer sets it right after
+    //     start — a real ordering race) must NOT gate: that ducks the tone start
+    //     into a soft "puff". The onset must rise straight to full with no
+    //     near-silent window.
+    {
+      Generator g;
+      g.configure(fs);
+      g.setMode(GenMode::Sine);
+      g.setFrequency(220.0);
+      g.setLevelDb(-20.0);
+      g.start();  // start FIRST (hpf still 0), then engage mid-onset:
+      std::vector<float> on(static_cast<size_t>(fs * 0.006));
+      g.render(on.data(), (uint32_t)on.size());
+      g.setHpf(150.0);
+      std::vector<float> rest(static_cast<size_t>(fs * 0.20));
+      g.render(rest.data(), (uint32_t)rest.size());
+      // No gated silent window in the 15–80 ms region after the change.
+      double minWinPeak = 1.0;
+      const size_t win = static_cast<size_t>(fs * 0.005);
+      for (size_t s = static_cast<size_t>(fs * 0.015); s + win < rest.size() && s < static_cast<size_t>(fs * 0.08);
+           s += win) {
+        double p = 0.0;
+        for (size_t i = s; i < s + win; ++i) p = std::max(p, (double)std::fabs(rest[i]));
+        minWinPeak = std::min(minWinPeak, p);
+      }
+      truthy("HPF engage during onset does NOT gate (no puff)", minWinPeak > 0.02);
+    }
   }
 
   std::printf("\n==== GOLDEN RESULT: %d passed, %d failed ====\n", g_pass, g_fail);

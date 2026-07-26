@@ -261,9 +261,11 @@ class ApeDspModule : Module() {
     // ---- Generator (Q4 caps enforced in the C++ core) ----
     AsyncFunction("genStart") { promise: Promise ->
       if (handle == 0L) { promise.reject("E_NO_ENGINE", "engine not created", null); return@AsyncFunction }
-      nativeGenStart(handle)
-      // Set the route-aware HPF for the current output route before playback.
+      // Set the route-aware HPF for the current output route BEFORE starting, so
+      // the filter is stable before the first audible sample (no onset gate/puff
+      // from a mid-onset engage). The core also guards this via envSettled_.
       refreshOutputRouteAndHpf()
+      nativeGenStart(handle)
       promise.resolve(genStatusMap())
     }
     AsyncFunction("genStop") { promise: Promise ->
