@@ -306,6 +306,11 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
 - (void)genSetClickBpm:(double)bpm {
   _gen->setClickBpm(bpm);
 }
+// Route-aware speaker-safety high-pass cutoff (Hz); 0 = bypass. The Swift route
+// layer sets this from the current OUTPUT route (speaker → 150, else 0).
+- (void)genSetHpf:(double)hz {
+  _gen->setHpf(hz);
+}
 // ADDITIVE (HV-2): flat [f0, a1..a12, p1..p12] — 25 doubles (Hz, 0..1, degrees).
 // Copy out of the NSArray and forward; the core NaN-proofs/clamps and ignores
 // short arrays (count < 25). NOTE: genSetFrequency does NOT retune the additive
@@ -338,6 +343,9 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
     // HV-2: additive normalization gain (1 = not attenuating; <1 = the
     // 1/max(1, Σaₙ) peak bound is pulling levels down) — honest UI display.
     @"additiveNorm" : @(_gen->additiveNorm()),
+    // v4: route-aware speaker-safety HPF state (0 Hz = bypassed) — honest display.
+    @"genHpfHz" : @(_gen->hpfHz()),
+    @"genHpfEngaged" : @(_gen->hpfEngaged()),
   };
 }
 - (void)genRender:(float *)buffer frames:(uint32_t)frames {

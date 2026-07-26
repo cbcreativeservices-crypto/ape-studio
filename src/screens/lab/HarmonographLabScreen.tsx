@@ -25,7 +25,7 @@ import { ApeDsp, GEN_MODES } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
-import { applySpeakerGuardToAdditive, speakerGuardDb, SPEAKER_HPF_HZ } from '../../features/audio/speakerSafety';
+import { guardAdditiveForEngine, speakerGuardDb, SPEAKER_HPF_HZ } from '../../features/audio/speakerSafety';
 import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
@@ -109,9 +109,9 @@ export function HarmonographLabScreen() {
     setGenError('');
     ApeDsp.genSet({
       mode: GEN_MODES.additive,
-      // Real per-harmonic high-pass on the interval's two tones (the lower
-      // harmonic is attenuated by |H| at its frequency) — see the note below.
-      additive: applySpeakerGuardToAdditive(intervalPayload(ratio.n1, ratio.n2)),
+      // Engine-aware per-harmonic high-pass (JS below v4, native on ≥4) — the
+      // lower harmonic is attenuated by |H| at its frequency (see note below).
+      additive: guardAdditiveForEngine(intervalPayload(ratio.n1, ratio.n2)),
       levelDb: GEN_LEVEL_DB,
     });
     try {
@@ -145,7 +145,7 @@ export function HarmonographLabScreen() {
     setRatioIdx(i);
     if (running) {
       ApeDsp.genSet({
-        additive: applySpeakerGuardToAdditive(intervalPayload(RATIOS[i].n1, RATIOS[i].n2)),
+        additive: guardAdditiveForEngine(intervalPayload(RATIOS[i].n1, RATIOS[i].n2)),
         levelDb: GEN_LEVEL_DB,
       });
       noteAudioActivity();

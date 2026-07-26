@@ -25,7 +25,7 @@ import { ApeDsp, GEN_MODES } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
-import { safeNoiseLevelDb, speakerGuardDb, SPEAKER_HPF_HZ } from '../../features/audio/speakerSafety';
+import { guardNoiseLevelForEngine, speakerGuardDb, SPEAKER_HPF_HZ } from '../../features/audio/speakerSafety';
 import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
@@ -91,7 +91,7 @@ export function NoiseLabScreen() {
     setGenError('');
     // Speaker guard: brown/pink pile energy into the sub-bass the built-in
     // speaker can't handle → attenuate by color slope (white/blue/violet safe).
-    ApeDsp.genSet({ mode: COLORS.find((c) => c.key === color)!.mode, levelDb: safeNoiseLevelDb(GEN_LEVEL_DB, color) });
+    ApeDsp.genSet({ mode: COLORS.find((c) => c.key === color)!.mode, levelDb: guardNoiseLevelForEngine(GEN_LEVEL_DB, color) });
     try {
       await ApeDsp.genStart();
       if (gen !== genRef.current) {
@@ -123,7 +123,7 @@ export function NoiseLabScreen() {
     setColor(c);
     if (running) {
       // Re-apply the per-color guard on a live switch (brown/pink are the risk).
-      ApeDsp.genSet({ mode: COLORS.find((x) => x.key === c)!.mode, levelDb: safeNoiseLevelDb(GEN_LEVEL_DB, c) });
+      ApeDsp.genSet({ mode: COLORS.find((x) => x.key === c)!.mode, levelDb: guardNoiseLevelForEngine(GEN_LEVEL_DB, c) });
       noteAudioActivity();
     }
   };

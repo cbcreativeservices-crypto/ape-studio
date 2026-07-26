@@ -25,8 +25,22 @@
  * SAFE default and discloses it (see the labs' PHONE SPEAKER OUTPUT note).
  */
 
+import { ApeDsp } from '../../../modules/ape-dsp';
+
 /** High-pass corner (Hz): −3 dB here, −12 dB/oct below. */
 export const SPEAKER_HPF_HZ = 150;
+
+/** engineVersion at which the NATIVE route-aware generator HPF takes over
+ *  (route-aware, and it can filter broadband noise the JS path can't). AT/ABOVE
+ *  this the client must NOT also apply its JS filter — that would double-filter;
+ *  below it the JS filter is the interim protection. Must match the native
+ *  EngineHub kEngineVersion for the HPF build. */
+export const NATIVE_HPF_ENGINE_VERSION = 4;
+
+/** True when the native HPF is present and owns the filtering. */
+export function nativeHpfActive(): boolean {
+  return ApeDsp.engineVersion() >= NATIVE_HPF_ENGINE_VERSION;
+}
 /** Butterworth order (2 = −12 dB/oct). Kept explicit so the native biquad and
  *  this JS response are the same filter. */
 export const SPEAKER_HPF_ORDER = 2;
@@ -95,6 +109,27 @@ export const NOISE_GUARD_DB: Record<string, number> = {
 /** A speaker-safe generator level (dBFS) for a noise color key (interim guard). */
 export function safeNoiseLevelDb(baseDb: number, colorKey: string): number {
   return baseDb + (NOISE_GUARD_DB[colorKey] ?? 0);
+}
+
+// ── Engine-aware wrappers — the labs call THESE so the client never double-
+// filters. On the native-HPF build (engineVersion ≥ 4) they pass the signal
+// through untouched (native filters, route-aware); below they apply the JS
+// filter (interim protection). The DISPLAY still uses the raw response fns
+// above unconditionally — the PHONE SPEAKER OUTPUT view always shows the filter.
+
+/** Additive payload for the current engine: raw on ≥4, JS per-harmonic HPF below. */
+export function guardAdditiveForEngine(payload: number[]): number[] {
+  return nativeHpfActive() ? payload.slice() : applySpeakerGuardToAdditive(payload);
+}
+
+/** Tone level (dBFS) for the current engine: raw base on ≥4, JS-filtered below. */
+export function guardToneLevelForEngine(baseDb: number, hz: number): number {
+  return nativeHpfActive() ? baseDb : safeToneLevelDb(baseDb, hz);
+}
+
+/** Noise level (dBFS) for the current engine: raw base on ≥4, JS-guarded below. */
+export function guardNoiseLevelForEngine(baseDb: number, colorKey: string): number {
+  return nativeHpfActive() ? baseDb : safeNoiseLevelDb(baseDb, colorKey);
 }
 
 /** True when the filter is meaningfully engaged at `f` (below ~2× the corner) —

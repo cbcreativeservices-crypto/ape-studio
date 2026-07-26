@@ -29,6 +29,9 @@ public class ApeDspModule: Module {
   private var routeName = ""
   private var inputPortType = ""
   private var inputUID: String?
+  // Current OUTPUT route + the route-aware speaker-safety high-pass cutoff.
+  private var outputRoute = "unknown"
+  private let speakerHpfHz = 150.0  // matches JS speakerSafety SPEAKER_HPF_HZ
   private var restarting = false
   private var lastError = ""
   private var stopReason = ""
@@ -242,6 +245,8 @@ public class ApeDspModule: Module {
     try engine.start()
     outEngine = engine
     outNode = node
+    // Set the route-aware HPF for the current output before the first buffer.
+    refreshOutputRouteAndHpf()
     logEvent("generator output STARTED (\(Int(sr)) Hz)")
   }
 
@@ -284,6 +289,7 @@ public class ApeDspModule: Module {
       "bluetoothInput": bluetoothInput,
       "routeName": routeName,
       "inputPortType": inputPortType,
+      "outputRoute": outputRoute,
       "running": running,
       "desiredRunning": desiredRunning,
       "lastError": lastError,
@@ -359,6 +365,18 @@ public class ApeDspModule: Module {
     // Never accept Bluetooth INPUT routes (HFP band-limits/compresses).
     let btTypes: [AVAudioSession.Port] = [.bluetoothHFP, .bluetoothLE, .bluetoothA2DP]
     bluetoothInput = inputs.contains { btTypes.contains($0.portType) }
+    refreshOutputRouteAndHpf()
+  }
+
+  /// Detect the OUTPUT route and drive the route-aware speaker-safety HPF: the
+  /// built-in speaker gets the protective high-pass (its micro-driver can't
+  /// reproduce lows and over-excurses); every other output (headphones, BT,
+  /// line-out) reproduces lows fine and gets full range (cutoff 0 = bypass).
+  private func refreshOutputRouteAndHpf() {
+    let outs = AVAudioSession.sharedInstance().currentRoute.outputs
+    outputRoute = outs.first?.portType.rawValue ?? "unknown"
+    let isSpeaker = outputRoute == AVAudioSession.Port.builtInSpeaker.rawValue
+    core.genSetHpf(isSpeaker ? speakerHpfHz : 0.0)
   }
 
   // MARK: - Recovery watchdog (Booth 2026-07-09, Spike-0 field finding)
@@ -412,7 +430,13 @@ public class ApeDspModule: Module {
     observers.append(
       nc.addObserver(forName: AVAudioSession.routeChangeNotification, object: nil, queue: .main) {
         [weak self] note in
-        guard let self, self.running, !self.restarting else { return }
+        guard let self else { return }
+        // Re-evaluate the OUTPUT route on EVERY route change — the generator can
+        // be running without capture (the labs play tones with no mic), so the
+        // speaker-safety HPF must follow speaker↔headphone transitions even when
+        // the capture-restart path below is skipped.
+        self.refreshOutputRouteAndHpf()
+        guard self.running, !self.restarting else { return }
         // iOS fires a route-change for OUR OWN session configuration
         // (.categoryChange/.override) the moment capture starts — reacting to
         // those tears down a healthy session (Spike-0 field bug: running=false,

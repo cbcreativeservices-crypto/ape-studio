@@ -479,6 +479,12 @@ JNIEXPORT void JNICALL
 Java_expo_modules_apedsp_ApeDspModule_nativeGenSetClickBpm(JNIEnv*, jobject, jlong h, jdouble bpm) {
   eng(h)->gen_.setClickBpm(bpm);
 }
+// Route-aware speaker-safety high-pass cutoff (Hz); 0 = bypass. Kotlin sets it
+// from the current OUTPUT route (built-in speaker → 150, else 0).
+JNIEXPORT void JNICALL
+Java_expo_modules_apedsp_ApeDspModule_nativeGenSetHpf(JNIEnv*, jobject, jlong h, jdouble hz) {
+  eng(h)->gen_.setHpf(hz);
+}
 // ADDITIVE (HV-2): flat [f0, a1..a12, p1..p12] — 25 doubles (Hz, 0..1, degrees).
 // Same ordering as iOS/JS. Copy semantics per the existing convention (region
 // copy, no pinning); the core NaN-proofs/clamps and ignores short arrays
@@ -502,16 +508,20 @@ JNIEXPORT void JNICALL
 Java_expo_modules_apedsp_ApeDspModule_nativeGenRelockCap(JNIEnv*, jobject, jlong h) {
   eng(h)->gen_.relockCap();
 }
-// 6 slots, fixed order (see Kotlin genStatusMap): [running, capUnlocked,
-// effectiveLevelDb, defaultLevelDb, capDb, additiveNorm]. additiveNorm (HV-2):
-// 1 = not attenuating; <1 = the 1/max(1, Σaₙ) peak bound is pulling levels down.
+// 8 slots, fixed order (see Kotlin genStatusMap): [running, capUnlocked,
+// effectiveLevelDb, defaultLevelDb, capDb, additiveNorm, genHpfHz,
+// genHpfEngaged]. additiveNorm (HV-2): 1 = not attenuating; <1 = the
+// 1/max(1, Σaₙ) peak bound is pulling levels down. v4: genHpfHz (0 = bypassed)
+// + genHpfEngaged are the route-aware speaker-safety HPF state. KEEP the writer
+// and the Kotlin index reader in lockstep — the index contract is load-bearing.
 JNIEXPORT jdoubleArray JNICALL
 Java_expo_modules_apedsp_ApeDspModule_nativeGenStatus(JNIEnv* env, jobject, jlong h) {
-  double v[6] = {eng(h)->gen_.running() ? 1.0 : 0.0, eng(h)->gen_.capUnlocked() ? 1.0 : 0.0,
+  double v[8] = {eng(h)->gen_.running() ? 1.0 : 0.0, eng(h)->gen_.capUnlocked() ? 1.0 : 0.0,
                  eng(h)->gen_.effectiveLevelDb(), apedsp::genlevel::kDefaultDb,
-                 apedsp::genlevel::kCapDb, eng(h)->gen_.additiveNorm()};
-  jdoubleArray a = env->NewDoubleArray(6);
-  env->SetDoubleArrayRegion(a, 0, 6, v);
+                 apedsp::genlevel::kCapDb, eng(h)->gen_.additiveNorm(),
+                 eng(h)->gen_.hpfHz(), eng(h)->gen_.hpfEngaged() ? 1.0 : 0.0};
+  jdoubleArray a = env->NewDoubleArray(8);
+  env->SetDoubleArrayRegion(a, 0, 8, v);
   return a;
 }
 

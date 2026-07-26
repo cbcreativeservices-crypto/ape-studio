@@ -44,6 +44,10 @@ export type DspInfo = {
   inputPortType: string;
   running: boolean;
   lastError: string;
+  /** Output audio route (engineVersion ≥ 4): e.g. "Speaker", "Headphones",
+   *  "BluetoothA2DP", "LineOut". Drives the route-aware speaker-safety HPF and
+   *  is shown to the user. "" / "unknown" on older builds. */
+  outputRoute?: string;
   /** Which code path last stopped capture (spike diagnostics). */
   stopReason: string;
   /** Rolling native lifecycle event log (spike diagnostics). */
@@ -159,6 +163,11 @@ export type GenStatus = {
    *  (1/max(1, Σaₙ)) — 1 = not attenuating, <1 = the norm is pulling the
    *  harmonic sum down to keep the peak inside the Q4 cap chain. */
   additiveNorm?: number;
+  /** engineVersion ≥ 4 only: the route-aware speaker-safety high-pass cutoff in
+   *  Hz (0 = bypassed, e.g. on headphones) and whether it's engaged. Read for
+   *  honest display; the native route layer drives the value. */
+  genHpfHz?: number;
+  genHpfEngaged?: boolean;
 };
 
 /** RT60 guided-capture states (spec §13). */

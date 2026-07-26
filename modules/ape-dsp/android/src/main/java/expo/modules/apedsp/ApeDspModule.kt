@@ -8,7 +8,10 @@
 package expo.modules.apedsp
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
+import android.media.AudioDeviceCallback
+import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.os.Build
 import androidx.core.content.ContextCompat
@@ -27,6 +30,10 @@ class ApeDspModule : Module() {
   private var sampleRate = 0.0
   private var framesPerBurst = 0.0
   private var lastError = ""
+  // Current OUTPUT route + the route-change callback that drives the route-aware
+  // speaker-safety high-pass (built-in speaker → HPF on; else full range).
+  private var outputRoute = "unknown"
+  private var deviceCallback: AudioDeviceCallback? = null
 
   companion object {
     init { System.loadLibrary("apedspjni") }
@@ -60,6 +67,7 @@ class ApeDspModule : Module() {
   private external fun nativeGenSetLevelDb(h: Long, db: Double)
   private external fun nativeGenSetSweep(h: Long, s0: Double, s1: Double, secs: Double, repeat: Boolean)
   private external fun nativeGenSetClickBpm(h: Long, bpm: Double)
+  private external fun nativeGenSetHpf(h: Long, hz: Double)
   // ADDITIVE (HV-2): flat [f0, a1..a12, p1..p12] — 25 doubles (Hz, 0..1, degrees).
   private external fun nativeGenSetAdditive(h: Long, vals: DoubleArray)
   private external fun nativeGenUnlockCap(h: Long)
@@ -77,8 +85,24 @@ class ApeDspModule : Module() {
 
     OnCreate {
       handle = nativeCreate()
+      // React to output route changes (headphone plug/unplug, BT connect) so the
+      // speaker-safety HPF follows the route even when only the generator runs.
+      val ctx = appContext.reactContext
+      val am = ctx?.getSystemService(Context.AUDIO_SERVICE) as? AudioManager
+      if (am != null) {
+        val cb = object : AudioDeviceCallback() {
+          override fun onAudioDevicesAdded(added: Array<out AudioDeviceInfo>?) { refreshOutputRouteAndHpf() }
+          override fun onAudioDevicesRemoved(removed: Array<out AudioDeviceInfo>?) { refreshOutputRouteAndHpf() }
+        }
+        deviceCallback = cb
+        am.registerAudioDeviceCallback(cb, null)
+        refreshOutputRouteAndHpf()
+      }
     }
     OnDestroy {
+      val am = appContext.reactContext?.getSystemService(Context.AUDIO_SERVICE) as? AudioManager
+      deviceCallback?.let { am?.unregisterAudioDeviceCallback(it) }
+      deviceCallback = null
       if (handle != 0L) {
         nativeStopCapture(handle)
         nativeGenStop(handle)
@@ -238,6 +262,8 @@ class ApeDspModule : Module() {
     AsyncFunction("genStart") { promise: Promise ->
       if (handle == 0L) { promise.reject("E_NO_ENGINE", "engine not created", null); return@AsyncFunction }
       nativeGenStart(handle)
+      // Set the route-aware HPF for the current output route before playback.
+      refreshOutputRouteAndHpf()
       promise.resolve(genStatusMap())
     }
     AsyncFunction("genStop") { promise: Promise ->
@@ -280,6 +306,26 @@ class ApeDspModule : Module() {
     Function("genStatus") { genStatusMap() }
   }
 
+  /** Detect the OUTPUT route and drive the route-aware speaker-safety HPF: the
+   *  built-in speaker gets the protective high-pass (its micro-driver can't
+   *  reproduce lows and over-excurses); any wired/BT/USB/line output reproduces
+   *  lows fine and gets full range (cutoff 0 = bypass). */
+  private fun refreshOutputRouteAndHpf() {
+    if (handle == 0L) return
+    val am = appContext.reactContext?.getSystemService(Context.AUDIO_SERVICE) as? AudioManager ?: return
+    val nonSpeaker = intArrayOf(
+      AudioDeviceInfo.TYPE_WIRED_HEADPHONES, AudioDeviceInfo.TYPE_WIRED_HEADSET,
+      AudioDeviceInfo.TYPE_BLUETOOTH_A2DP, AudioDeviceInfo.TYPE_BLUETOOTH_SCO,
+      AudioDeviceInfo.TYPE_USB_HEADSET, AudioDeviceInfo.TYPE_USB_DEVICE,
+      AudioDeviceInfo.TYPE_AUX_LINE, AudioDeviceInfo.TYPE_LINE_ANALOG,
+    )
+    val outs = am.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
+    val hasNonSpeaker = outs.any { nonSpeaker.contains(it.type) }
+    outputRoute = if (hasNonSpeaker) "Headphones" else "Speaker"
+    // 150 Hz matches JS speakerSafety SPEAKER_HPF_HZ.
+    nativeGenSetHpf(handle, if (hasNonSpeaker) 0.0 else 150.0)
+  }
+
   private fun infoMap(): Map<String, Any?> = mapOf(
     // v1 = Spike-0; v2 = engine build 2026-07-23; v3 = additive generator
     // (HV-2). Read from apedsp::kEngineVersion via JNI — never hardcoded.
@@ -290,6 +336,7 @@ class ApeDspModule : Module() {
     "bluetoothInput" to false,
     "routeName" to "Android input",
     "inputPortType" to (if (measurementMode) "unprocessed" else "voice-recognition"),
+    "outputRoute" to outputRoute,
     "running" to (handle != 0L && nativeCaptureRunning(handle)),
     "lastError" to lastError,
     "stopReason" to "",
@@ -297,13 +344,15 @@ class ApeDspModule : Module() {
   )
 
   private fun genStatusMap(): Map<String, Any?> {
-    // 6 fixed slots (see nativeGenStatus). additiveNorm (HV-2): 1 = not
+    // 8 fixed slots (see nativeGenStatus). additiveNorm (HV-2): 1 = not
     // attenuating; <1 = the additive peak bound is pulling levels down.
-    val g = if (handle != 0L) nativeGenStatus(handle) else DoubleArray(6)
+    // v4: genHpfHz (0 = bypassed) + genHpfEngaged (route-aware speaker HPF).
+    val g = if (handle != 0L) nativeGenStatus(handle) else DoubleArray(8)
     return mapOf(
       "running" to (g[0] == 1.0), "capUnlocked" to (g[1] == 1.0),
       "effectiveLevelDb" to g[2], "defaultLevelDb" to g[3], "capDb" to g[4],
       "additiveNorm" to g[5],
+      "genHpfHz" to g[6], "genHpfEngaged" to (g[7] == 1.0),
     )
   }
 

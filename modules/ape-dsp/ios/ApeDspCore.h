@@ -73,6 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)genSetLevelDb:(double)db;
 - (void)genSetSweepStart:(double)startHz end:(double)endHz seconds:(double)seconds repeat:(BOOL)repeat;
 - (void)genSetClickBpm:(double)bpm;
+- (void)genSetHpf:(double)hz;
 /// ADDITIVE (HV-2): flat layout [f0, a1..a12, p1..p12] — 25 numbers. f0 in Hz,
 /// amps relative 0..1, phases in DEGREES. Same ordering crosses every bridge
 /// verbatim; the core validates/clamps and ramps toward the new targets

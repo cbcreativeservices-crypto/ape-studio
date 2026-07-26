@@ -29,8 +29,8 @@ import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import {
-  safeToneLevelDb,
-  applySpeakerGuardToAdditive,
+  guardToneLevelForEngine,
+  guardAdditiveForEngine,
   speakerGuardGain,
   SPEAKER_HPF_HZ,
   LOW_FREQ_ADVISORY,
@@ -109,13 +109,13 @@ export function OscillatorLabScreen() {
       additiveReady
         ? {
             mode: GEN_MODES.additive,
-            // REAL per-harmonic high-pass: each partial is scaled by |H(n·f0)|,
-            // identical to the PHONE SPEAKER OUTPUT view — audio and display agree.
-            additive: applySpeakerGuardToAdditive(additivePayload(buildPreset(w), hz)),
+            // Engine-aware: JS per-harmonic high-pass below v4 (matches the
+            // PHONE SPEAKER OUTPUT view); raw on ≥4 (native route-aware HPF).
+            additive: guardAdditiveForEngine(additivePayload(buildPreset(w), hz)),
             levelDb: GEN_LEVEL_DB,
           }
         : // A pure sine is one frequency, so the filter is just its gain there.
-          { mode: GEN_MODES.sine, frequency: hz, levelDb: safeToneLevelDb(GEN_LEVEL_DB, hz) },
+          { mode: GEN_MODES.sine, frequency: hz, levelDb: guardToneLevelForEngine(GEN_LEVEL_DB, hz) },
     [additiveReady],
   );
 

@@ -95,7 +95,7 @@ import { ApeDsp, GEN_MODES, type EngineConfig, type GenParams } from '../../../m
 import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
-import { safeToneLevelDb, LOW_FREQ_ADVISORY } from '../../features/audio/speakerSafety';
+import { guardToneLevelForEngine, LOW_FREQ_ADVISORY } from '../../features/audio/speakerSafety';
 import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
 import { WARNING_INFO } from '../../features/tools/measure/types';
 import { EngineGate } from '../tools/EngineGate';
@@ -750,7 +750,7 @@ export function HarmonicsView({
       additivePushAtRef.current = Date.now();
       // Speaker guard: re-level for f0 (a drop to a low f0 must re-attenuate)
       // alongside the phase-continuous payload re-send.
-      ApeDsp.genSet({ levelDb: safeToneLevelDb(GEN_LEVEL_DB, f0) });
+      ApeDsp.genSet({ levelDb: guardToneLevelForEngine(GEN_LEVEL_DB, f0) });
       ApeDsp.genSetAdditive(additivePayload(model, f0));
       noteAudioActivity();
     }, wait);
@@ -787,7 +787,7 @@ export function HarmonicsView({
       ApeDsp.genSet({
         mode: GEN_MODES.sine,
         frequency: f0Ref.current,
-        levelDb: safeToneLevelDb(GEN_LEVEL_DB, guardHz),
+        levelDb: guardToneLevelForEngine(GEN_LEVEL_DB, guardHz),
         ...params,
       });
       try {
@@ -861,7 +861,7 @@ export function HarmonicsView({
     if (soloN != null) stopTone();
     // Speaker guard: retune the sine AND re-level for the new (lower) f0.
     else if (genRunning && !additiveOn)
-      ApeDsp.genSet({ frequency: hz, levelDb: safeToneLevelDb(GEN_LEVEL_DB, hz) });
+      ApeDsp.genSet({ frequency: hz, levelDb: guardToneLevelForEngine(GEN_LEVEL_DB, hz) });
   };
 
   const pickAxis = (a: AxisMode) => {
@@ -908,8 +908,8 @@ export function HarmonicsView({
       // Speaker guard: re-level for the solo frequency (n×f0 can be as low as f0).
       ApeDsp.genSet(
         additiveOn
-          ? { mode: GEN_MODES.sine, frequency: hz, levelDb: safeToneLevelDb(GEN_LEVEL_DB, hz) }
-          : { frequency: hz, levelDb: safeToneLevelDb(GEN_LEVEL_DB, hz) },
+          ? { mode: GEN_MODES.sine, frequency: hz, levelDb: guardToneLevelForEngine(GEN_LEVEL_DB, hz) }
+          : { frequency: hz, levelDb: guardToneLevelForEngine(GEN_LEVEL_DB, hz) },
       );
       setAdditiveOn(false);
       setAdditiveNorm(null);
@@ -945,7 +945,7 @@ export function HarmonicsView({
       mode: GEN_MODES.additive,
       additive: additivePayload(model, f0),
       // Speaker guard: key on the fundamental (the lowest content in the mix).
-      levelDb: safeToneLevelDb(GEN_LEVEL_DB, f0),
+      levelDb: guardToneLevelForEngine(GEN_LEVEL_DB, f0),
     };
     setSoloN(null);
     setAdditiveOn(true);
