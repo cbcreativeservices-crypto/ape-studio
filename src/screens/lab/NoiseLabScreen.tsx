@@ -25,12 +25,12 @@ import { ApeDsp, GEN_MODES } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
-import { safeNoiseLevelDb, LOW_FREQ_ADVISORY } from '../../features/audio/speakerSafety';
+import { safeNoiseLevelDb, speakerGuardDb, SPEAKER_HPF_HZ } from '../../features/audio/speakerSafety';
 import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
-import { LabShell, LabChip } from './LabShell';
+import { LabShell, LabChip, SpeakerOutputToggle } from './LabShell';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -49,6 +49,9 @@ const COLORS: { key: NoiseColor; label: string; mode: number; slope: number }[] 
 const PENDING_SOURCES =
   'Grey · Speech noise · HVAC · Traffic · Wind · Hum · Buzz · RF · Crackle · Static · Ground loop';
 
+/** Honest summary of the interim per-color level guard (see speakerSafety.ts). */
+const NOISE_GUARD_LABEL = 'brown −14 dB, pink −6 dB, white/blue/violet unchanged';
+
 const INTRO =
   'Hear the colors of noise and see the spectral slopes that define them. White is equal ' +
   'energy per Hz (bright); pink is equal energy per octave (balanced) — switching between ' +
@@ -66,6 +69,8 @@ export function NoiseLabScreen() {
   const [color, setColor] = useState<NoiseColor>('pink');
   const [running, setRunning] = useState(false);
   const [genError, setGenError] = useState('');
+  // PHONE SPEAKER OUTPUT view — show the roll-off the speaker imposes on noise.
+  const [speakerView, setSpeakerView] = useState(false);
 
   const [lessonKey, setLessonKey] = useState<string | undefined>(undefined);
   const [lessonOpen, setLessonOpen] = useState(false);
@@ -151,14 +156,31 @@ export function NoiseLabScreen() {
         ))}
       </View>
 
-      {/* SLOPE CHART — the defining mathematics, not a measurement. */}
+      {/* HONESTY CONTROL — ideal slopes vs the speaker's low-frequency roll-off. */}
+      <SpeakerOutputToggle
+        value={speakerView}
+        onChange={setSpeakerView}
+        sub={
+          speakerView
+            ? `Selected color's slope with the ${SPEAKER_HPF_HZ} Hz high-pass applied — the low end the built-in speaker can't deliver.`
+            : 'Reference (ideal) slopes. Tick to see the speaker-output roll-off.'
+        }
+      />
+
+      {/* SLOPE CHART — the defining mathematics; speaker view adds the HPF. */}
       <View style={styles.panelCard}>
-        <Text style={styles.badge}>IDEALIZED SPECTRAL SLOPES — ANALYTIC, NOT A MEASUREMENT</Text>
-        <SlopeChart selectedKey={color} />
+        <Text style={styles.badge}>
+          {speakerView
+            ? `PHONE SPEAKER OUTPUT — ${SPEAKER_HPF_HZ} Hz HPF ON ${selected.label}`
+            : 'IDEALIZED SPECTRAL SLOPES — ANALYTIC, NOT A MEASUREMENT'}
+        </Text>
+        <SlopeChart selectedKey={color} selectedSlope={selected.slope} speakerView={speakerView} />
         <Text style={styles.caption}>
-          {`${selected.label.charAt(0)}${selected.label.slice(1).toLowerCase()} = ${
-            selected.slope > 0 ? '+' : ''
-          }${selected.slope} dB per octave (anchored at 1 kHz). Equal energy per Hz sounds bright because every higher octave holds twice the bandwidth.`}
+          {speakerView
+            ? `Amber = ${selected.label.toLowerCase()} after the speaker high-pass; the ideal straight slopes stay dim behind it. Below ${SPEAKER_HPF_HZ} Hz the response rolls off at −12 dB/oct — that low energy never reaches the driver.`
+            : `${selected.label.charAt(0)}${selected.label.slice(1).toLowerCase()} = ${
+                selected.slope > 0 ? '+' : ''
+              }${selected.slope} dB per octave (anchored at 1 kHz). Equal energy per Hz sounds bright because every higher octave holds twice the bandwidth.`}
         </Text>
       </View>
 
@@ -174,7 +196,11 @@ export function NoiseLabScreen() {
           <Text style={styles.caption}>
             {`Output ${GEN_LEVEL_DB} dBFS · uncalibrated — digital output level, not dB SPL.`}
           </Text>
-          <Text style={styles.advisory}>{LOW_FREQ_ADVISORY}</Text>
+          <Text style={styles.advisory}>
+            {`Brown/pink are broadband, so this build reduces their overall LEVEL to protect the speaker ` +
+              `(${NOISE_GUARD_LABEL}); a true per-frequency high-pass on noise ships with the native engine ` +
+              `update. Tick PHONE SPEAKER OUTPUT to see the ${SPEAKER_HPF_HZ} Hz roll-off the speaker imposes.`}
+          </Text>
           {genError ? <Text style={styles.error}>{genError}</Text> : null}
         </>
       ) : null}
@@ -199,8 +225,19 @@ export function NoiseLabScreen() {
   );
 }
 
-/** The five color slopes over a 20 Hz–20 kHz log axis, selected one bright. */
-function SlopeChart({ selectedKey }: { selectedKey: NoiseColor }) {
+/** The five color slopes over a 20 Hz–20 kHz log axis, selected one bright. In
+ *  speakerView, the selected color is redrawn with the high-pass applied (a
+ *  sampled curve that rolls off below the corner) so the speaker's low-end limit
+ *  is visible; the ideal straight slopes stay dim behind it. */
+function SlopeChart({
+  selectedKey,
+  selectedSlope,
+  speakerView,
+}: {
+  selectedKey: NoiseColor;
+  selectedSlope: number;
+  speakerView: boolean;
+}) {
   const W = 320;
   const H = 150;
   const padL = 8;
@@ -210,7 +247,23 @@ function SlopeChart({ selectedKey }: { selectedKey: NoiseColor }) {
   const DB_RANGE = 38; // ±38 dB vertical
 
   const xAt = (oct: number) => padL + ((oct - OCT_LO) / (OCT_HI - OCT_LO)) * (W - padL - padR);
-  const yAt = (db: number) => H / 2 - (db / DB_RANGE) * (H / 2 - 8);
+  const yAt = (db: number) => H / 2 - (Math.max(-DB_RANGE, Math.min(DB_RANGE, db)) / DB_RANGE) * (H / 2 - 8);
+
+  // Selected color's response AFTER the speaker high-pass, sampled across the
+  // axis (guard is a curve, so a straight line won't do). slope·oct + guardDb(f).
+  const filteredPath = useMemo(() => {
+    if (!speakerView) return '';
+    const N = 64;
+    let s = '';
+    for (let i = 0; i <= N; i++) {
+      const oct = OCT_LO + (i / N) * (OCT_HI - OCT_LO);
+      const f = 1000 * Math.pow(2, oct);
+      const db = selectedSlope * oct + speakerGuardDb(f);
+      s += `${i === 0 ? 'M' : 'L'}${xAt(oct).toFixed(1)} ${yAt(db).toFixed(1)}`;
+    }
+    return s;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [speakerView, selectedSlope]);
 
   const lines = useMemo(
     () =>
@@ -235,7 +288,9 @@ function SlopeChart({ selectedKey }: { selectedKey: NoiseColor }) {
       <Line x1={padL} y1={H / 2} x2={W - padR} y2={H / 2} stroke="#22222a" strokeWidth={1} />
       <Line x1={xAt(0)} y1={4} x2={xAt(0)} y2={H - 4} stroke="#22222a" strokeWidth={1} />
       {lines.map((l) => {
-        const active = l.key === selectedKey;
+        // In speaker view every ideal slope is dim reference; the bright line is
+        // the filtered curve below. Otherwise the selected color is bright.
+        const active = !speakerView && l.key === selectedKey;
         return (
           <Path
             key={l.key}
@@ -243,9 +298,22 @@ function SlopeChart({ selectedKey }: { selectedKey: NoiseColor }) {
             stroke={active ? colors.amber : '#3a3a44'}
             strokeWidth={active ? 2.2 : 1.2}
             fill="none"
+            opacity={speakerView ? 0.5 : 1}
           />
         );
       })}
+      {filteredPath ? <Path d={filteredPath} stroke={colors.amber} strokeWidth={2.4} fill="none" /> : null}
+      {/* corner marker at the high-pass cutoff */}
+      {speakerView ? (
+        <Line
+          x1={xAt(Math.log2(SPEAKER_HPF_HZ / 1000))}
+          y1={4}
+          x2={xAt(Math.log2(SPEAKER_HPF_HZ / 1000))}
+          y2={H - 4}
+          stroke="rgba(255,198,77,.35)"
+          strokeWidth={1}
+        />
+      ) : null}
       {lines.map((l) => (
         <SvgText
           key={`t${l.key}`}

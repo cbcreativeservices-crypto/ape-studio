@@ -1,65 +1,88 @@
 /**
- * speakerSafety — low-frequency protection for the built-in phone speaker.
+ * speakerSafety — low-frequency protection for the built-in phone speaker,
+ * modeled as ONE explicit high-pass transfer function shared by everything.
  *
- * WHY: phone micro-speakers (~10–15 mm drivers) can't reproduce much below
- * ~300 Hz — fed a low tone or low-heavy noise at level, the driver tries to
- * over-EXCURSE to make bass it physically can't, which distorts and, sustained
- * at volume, can DAMAGE it. The Learning Labs deliberately generate low
- * fundamentals (Harmonic Lab down to 60 Hz; Oscillator/Harmonograph 110 Hz) and
- * low-slope noise (brown/pink) — exactly the danger zone.
+ * WHY: phone micro-speakers (~10–15 mm) can't reproduce much below ~300 Hz —
+ * fed a low tone or low-heavy noise at level they OVER-EXCURSE trying to make
+ * bass they physically can't, which distorts and, sustained at volume, can
+ * DAMAGE the driver. The Learning Labs deliberately generate low fundamentals
+ * (Harmonic Lab to 60 Hz; Oscillator/Harmonograph 110 Hz) and low-slope noise
+ * (brown/pink) — the danger zone.
  *
- * WHAT: the native generator has no high-pass (Generator.hpp), so this applies a
- * client-side low-frequency LEVEL roll-off — a tone/mixture is pulled DOWN in
- * level as its lowest significant frequency drops below the knee. Attenuating
- * level cuts driver excursion (the failure mode) proportionally at ANY device
- * volume, and — because it scales the whole signal — it preserves relative
- * timbre, so the analytic displays/measurements (which read the model, not the
- * output) stay truthful. Honesty (§1.7): the reduction is disclosed to the user,
- * not hidden.
+ * HONESTY (§1.7, and this audience is technical): we do NOT hide the filter.
+ * The SAME response `speakerGuardDb(f)` is used to (a) shape the audio, (b) drive
+ * the native generator HPF, and (c) draw the "PHONE SPEAKER OUTPUT" overlay in
+ * the readouts — so what you HEAR and what you SEE always agree, and the filter
+ * curve is shown, never implied.
  *
- * INTERIM: this is the client-side guard. The COMPLETE fix is a native output
- * high-pass on the generator bus, ideally output-route-aware (full range on
- * headphones, protected on the built-in speaker) — tracked for the next EAS
- * build. See project-learning-lab-v4 memory / docs.
+ * THE FILTER: a 2nd-order Butterworth high-pass at `SPEAKER_HPF_HZ` (−3 dB at
+ * the corner, −12 dB/octave below). |H(f)|² = r⁴ / (1 + r⁴), r = f / fc.
+ *
+ * ROUTE AWARENESS: the built-in speaker needs the filter; headphones/line-out
+ * reproduce lows fine and have no excursion risk, so the filter is BYPASSED
+ * there. Route detection is native (engine build with the route-aware HPF). On
+ * engine builds without it, the client applies the filter unconditionally as a
+ * SAFE default and discloses it (see the labs' PHONE SPEAKER OUTPUT note).
  */
 
-/** Full level at/above this fundamental (Hz); the roll-off begins below it —
- *  chosen near the built-in-speaker low-frequency limit. */
-export const SAFE_KNEE_HZ = 300;
-/** Maximum attenuation is reached at/below this frequency (Hz). */
-export const SAFE_FLOOR_HZ = 40;
-/** How far the level is pulled down at/below the floor (dB). */
-export const SAFE_MAX_ATTEN_DB = 18;
+/** High-pass corner (Hz): −3 dB here, −12 dB/oct below. */
+export const SPEAKER_HPF_HZ = 150;
+/** Butterworth order (2 = −12 dB/oct). Kept explicit so the native biquad and
+ *  this JS response are the same filter. */
+export const SPEAKER_HPF_ORDER = 2;
 
 /**
- * Attenuation (≤ 0 dB) for tonal content whose lowest significant frequency is
- * `hz`: 0 dB at/above the knee, −SAFE_MAX_ATTEN_DB at/below the floor, with
- * log-frequency interpolation between (excursion rises with falling frequency,
- * so the guard deepens toward the bottom).
+ * The high-pass magnitude response in dB at frequency `f` (Hz), for the
+ * protective filter. 0 dB well above the corner, −3 dB at the corner,
+ * −12 dB/octave asymptote below. This is THE filter — audio, native, and
+ * display all use it.
  */
-export function lowFreqGuardDb(hz: number): number {
-  if (!Number.isFinite(hz) || hz >= SAFE_KNEE_HZ) return 0;
-  if (hz <= SAFE_FLOOR_HZ) return -SAFE_MAX_ATTEN_DB;
-  const frac =
-    (Math.log2(hz) - Math.log2(SAFE_FLOOR_HZ)) /
-    (Math.log2(SAFE_KNEE_HZ) - Math.log2(SAFE_FLOOR_HZ));
-  return -(1 - frac) * SAFE_MAX_ATTEN_DB;
+export function speakerGuardDb(f: number, fc: number = SPEAKER_HPF_HZ): number {
+  if (!Number.isFinite(f) || f <= 0) return -120; // DC → fully rejected
+  const r = f / fc;
+  const r2n = Math.pow(r, 2 * SPEAKER_HPF_ORDER); // r⁴ for order 2
+  const mag2 = r2n / (1 + r2n); // |H|²
+  return 10 * Math.log10(Math.max(mag2, 1e-12));
+}
+
+/** Linear gain (0..1) of the high-pass at `f`. */
+export function speakerGuardGain(f: number, fc: number = SPEAKER_HPF_HZ): number {
+  return Math.pow(10, speakerGuardDb(f, fc) / 20);
 }
 
 /**
- * A speaker-safe generator level (dBFS) for a tone/mixture whose lowest
- * significant frequency is `hz`. Pass the fundamental for a single tone, or the
- * lowest sounding harmonic for a mixture (conservative: the fundamental is fine).
+ * A speaker-safe generator LEVEL (dBFS) for a single tone at `hz` — the filter's
+ * value at that one frequency, so a pure sine is filtered exactly (honest: a
+ * single-frequency signal filtered by H is just scaled by |H(f)|).
  */
 export function safeToneLevelDb(baseDb: number, hz: number): number {
-  return baseDb + lowFreqGuardDb(hz);
+  return baseDb + speakerGuardDb(hz);
 }
 
 /**
- * Fixed per-noise-color attenuation (dB). Broadband noise has no single
- * frequency, so it's guarded by spectral slope: the low-slope colors (pink,
- * brown) pile energy into the sub-bass the speaker can't handle; white/blue/
- * violet sit mid-to-high and are safe as-is.
+ * Apply the high-pass to an ADDITIVE payload `[f0, a1..a12, p1..p12]` (the flat
+ * layout ApeDsp.genSetAdditive takes): each harmonic n is scaled by the filter
+ * gain at its frequency n·f0. This is a REAL per-partial high-pass, identical to
+ * the displayed curve — the tonal labs' audio and their PHONE SPEAKER OUTPUT
+ * view are the same filter. Phases (p1..p12) are untouched. Returns a new array.
+ */
+export function applySpeakerGuardToAdditive(payload: number[]): number[] {
+  if (payload.length < 25) return payload.slice();
+  const f0 = payload[0];
+  const out = payload.slice();
+  for (let n = 1; n <= 12; n++) {
+    out[n] = payload[n] * speakerGuardGain(n * f0);
+  }
+  return out;
+}
+
+/**
+ * Fixed per-noise-color attenuation (dB) — the INTERIM guard for broadband
+ * noise, which can't be per-frequency filtered in JS (the samples are generated
+ * natively). The low-slope colors (pink, brown) pile energy into the sub-bass;
+ * white/blue/violet sit mid/high and are safe. The true per-frequency high-pass
+ * on noise arrives with the native route-aware HPF; until then this level cut is
+ * disclosed in the Noise lab.
  */
 export const NOISE_GUARD_DB: Record<string, number> = {
   white: 0,
@@ -69,18 +92,19 @@ export const NOISE_GUARD_DB: Record<string, number> = {
   violet: 0,
 };
 
-/** A speaker-safe generator level (dBFS) for a noise color key. */
+/** A speaker-safe generator level (dBFS) for a noise color key (interim guard). */
 export function safeNoiseLevelDb(baseDb: number, colorKey: string): number {
   return baseDb + (NOISE_GUARD_DB[colorKey] ?? 0);
 }
 
-/** True when a frequency is low enough that the guard is meaningfully engaged
- *  (useful for showing the disclosure only when it applies). */
+/** True when the filter is meaningfully engaged at `f` (below ~2× the corner) —
+ *  used to decide whether to flag the disclosure. */
 export function isGuardEngaged(hz: number): boolean {
-  return Number.isFinite(hz) && hz < SAFE_KNEE_HZ;
+  return Number.isFinite(hz) && hz < SPEAKER_HPF_HZ * 2;
 }
 
 /** Shared honest disclosure — the built-in speaker can't reproduce the lowest
- *  frequencies, and the guard attenuates them. */
+ *  frequencies, and the guard high-passes them. */
 export const LOW_FREQ_ADVISORY =
-  'Low frequencies are reduced to protect the phone speaker — use headphones for the full low end.';
+  `Low frequencies are high-passed (${SPEAKER_HPF_HZ} Hz, −12 dB/oct) to protect the phone speaker — ` +
+  `use headphones for the full low end. Toggle PHONE SPEAKER OUTPUT to see exactly what the filter does.`;

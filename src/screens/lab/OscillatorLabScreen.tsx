@@ -28,12 +28,18 @@ import { ApeDsp, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
-import { safeToneLevelDb, LOW_FREQ_ADVISORY } from '../../features/audio/speakerSafety';
+import {
+  safeToneLevelDb,
+  applySpeakerGuardToAdditive,
+  speakerGuardGain,
+  SPEAKER_HPF_HZ,
+  LOW_FREQ_ADVISORY,
+} from '../../features/audio/speakerSafety';
 import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
-import { LabShell, LabChip } from './LabShell';
+import { LabShell, LabChip, SpeakerOutputToggle } from './LabShell';
 import { additivePayload, buildPreset, effectiveAmp, synthWaveform, type PresetKey } from './harmonicModel';
 
 const GEN_LEVEL_DB = -20; // Q4 default; cap stays locked
@@ -78,24 +84,38 @@ export function OscillatorLabScreen() {
     setLessonOpen(true);
   }, []);
 
+  // PHONE SPEAKER OUTPUT view — show the signal AFTER the protective high-pass.
+  const [speakerView, setSpeakerView] = useState(false);
+
   // The analytic model behind both displays AND the additive audio payload.
   const model = useMemo(() => buildPreset(wave), [wave]);
-  const waveformPts = useMemo(() => synthWaveform(model, 240, 2), [model]);
-  const amps = useMemo(() => model.map(effectiveAmp), [model]);
+  // Displayed model: filtered by the SAME speaker high-pass the audio uses when
+  // PHONE SPEAKER OUTPUT is on, so what you see and hear can't disagree.
+  const shownModel = useMemo(
+    () => (speakerView ? model.map((h, i) => ({ ...h, amp: h.amp * speakerGuardGain((i + 1) * f0) })) : model),
+    [model, speakerView, f0],
+  );
+  const waveformPts = useMemo(() => synthWaveform(shownModel, 240, 2), [shownModel]);
+  const amps = useMemo(() => shownModel.map(effectiveAmp), [shownModel]);
+  // The filter's gain per harmonic — drawn as the overlay curve in speaker view.
+  const guardCurve = useMemo(() => Array.from({ length: 12 }, (_, i) => speakerGuardGain((i + 1) * f0)), [f0]);
 
   // -- Tone lifecycle (generation-counter stale guard, one tone owner) -------
   const genRef = useRef(0);
 
   /** Params for the CURRENT wave: additive recipe on v3, sine on v2. */
   const paramsFor = useCallback(
-    (w: PresetKey, hz: number): GenParams => {
-      // Speaker guard: attenuate as the fundamental drops into the range the
-      // built-in speaker can't reproduce (keyed on hz — the lowest content).
-      const levelDb = safeToneLevelDb(GEN_LEVEL_DB, hz);
-      return additiveReady
-        ? { mode: GEN_MODES.additive, additive: additivePayload(buildPreset(w), hz), levelDb }
-        : { mode: GEN_MODES.sine, frequency: hz, levelDb };
-    },
+    (w: PresetKey, hz: number): GenParams =>
+      additiveReady
+        ? {
+            mode: GEN_MODES.additive,
+            // REAL per-harmonic high-pass: each partial is scaled by |H(n·f0)|,
+            // identical to the PHONE SPEAKER OUTPUT view — audio and display agree.
+            additive: applySpeakerGuardToAdditive(additivePayload(buildPreset(w), hz)),
+            levelDb: GEN_LEVEL_DB,
+          }
+        : // A pure sine is one frequency, so the filter is just its gain there.
+          { mode: GEN_MODES.sine, frequency: hz, levelDb: safeToneLevelDb(GEN_LEVEL_DB, hz) },
     [additiveReady],
   );
 
@@ -191,21 +211,40 @@ export function OscillatorLabScreen() {
         ))}
       </View>
 
-      {/* WAVEFORM STRIP — drawn FROM THE MODEL (analytic, badged). */}
+      {/* HONESTY CONTROL — reference (ideal) vs the filtered speaker output. */}
+      <SpeakerOutputToggle
+        value={speakerView}
+        onChange={setSpeakerView}
+        sub={
+          speakerView
+            ? `Showing the signal AFTER the ${SPEAKER_HPF_HZ} Hz high-pass — what actually reaches the built-in speaker.`
+            : 'Reference (ideal) view. Audio is high-passed for speaker safety — tick to see the speaker output.'
+        }
+      />
+
+      {/* WAVEFORM STRIP — drawn FROM THE (possibly filtered) MODEL. */}
       <View style={styles.panelCard}>
-        <Text style={styles.badge}>ANALYTIC MODEL — NOT A MEASUREMENT</Text>
+        <Text style={styles.badge}>
+          {speakerView ? `PHONE SPEAKER OUTPUT — ${SPEAKER_HPF_HZ} Hz HPF APPLIED` : 'ANALYTIC MODEL — NOT A MEASUREMENT'}
+        </Text>
         <WaveformStrip points={waveformPts} />
         <Text style={styles.caption}>
-          Two cycles of the ideal 12-harmonic recipe — the same series the additive engine renders.
+          {speakerView
+            ? 'Two cycles of the waveform after the speaker high-pass — low partials removed, so the shape flattens toward its upper harmonics.'
+            : 'Two cycles of the ideal 12-harmonic recipe — the same series the additive engine renders.'}
         </Text>
       </View>
 
-      {/* HARMONIC BARS — the recipe as levels (analytic). */}
+      {/* HARMONIC BARS — the recipe as levels; filter curve overlaid in speaker view. */}
       <View style={styles.panelCard}>
-        <Text style={styles.badge}>HARMONIC RECIPE — ANALYTIC</Text>
-        <HarmonicBars amps={amps} />
+        <Text style={styles.badge}>
+          {speakerView ? `HARMONIC RECIPE AFTER ${SPEAKER_HPF_HZ} Hz HPF` : 'HARMONIC RECIPE — ANALYTIC'}
+        </Text>
+        <HarmonicBars amps={amps} overlay={speakerView ? guardCurve : undefined} />
         <Text style={styles.caption}>
-          H1–H12 relative amplitudes. Square/triangle = odd only; saw = all; pulse nulls follow its duty cycle.
+          {speakerView
+            ? `H1–H12 after the high-pass (amber line = the filter's gain at each harmonic's frequency, n × ${f0} Hz).`
+            : 'H1–H12 relative amplitudes. Square/triangle = odd only; saw = all; pulse nulls follow its duty cycle.'}
         </Text>
       </View>
 
@@ -270,12 +309,21 @@ function WaveformStrip({ points }: { points: number[] }) {
   );
 }
 
-/** The 12-harmonic recipe as amber bars (relative amplitude, linear). */
-function HarmonicBars({ amps }: { amps: number[] }) {
+/** The 12-harmonic recipe as amber bars (relative amplitude, linear). When
+ *  `overlay` is given (0..1 gain per harmonic) the filter response is drawn as a
+ *  line across the bars — the honest picture of what the high-pass does. */
+function HarmonicBars({ amps, overlay }: { amps: number[]; overlay?: number[] }) {
   const W = 320;
   const H = 110;
   const pad = 6;
   const bw = (W - pad * 2) / 12;
+  const cx = (i: number) => pad + i * bw + bw / 2;
+  const overlayPath =
+    overlay && overlay.length
+      ? overlay
+          .map((g, i) => `${i === 0 ? 'M' : 'L'}${cx(i).toFixed(1)} ${(H - g * (H - 10)).toFixed(1)}`)
+          .join(' ')
+      : '';
   return (
     <Svg width="100%" height={H + 14} viewBox={`0 0 ${W} ${H + 14}`}>
       <Rect x={0} y={0} width={W} height={H} fill="#0c0c0f" />
@@ -293,6 +341,10 @@ function HarmonicBars({ amps }: { amps: number[] }) {
           />
         );
       })}
+      {overlayPath ? <Path d={overlayPath} stroke={colors.amber} strokeWidth={1.4} fill="none" opacity={0.9} /> : null}
+      {overlay?.map((g, i) => (
+        <Rect key={`d${i}`} x={cx(i) - 1.4} y={H - g * (H - 10) - 1.4} width={2.8} height={2.8} fill={colors.amber} />
+      ))}
       {amps.map((_, i) => (
         <SvgText
           key={`l${i}`}

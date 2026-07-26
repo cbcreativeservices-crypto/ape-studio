@@ -60,6 +60,38 @@ export function LabChip({
   );
 }
 
+/** PHONE SPEAKER OUTPUT tickbox — flips a readout between the reference (ideal)
+ *  view and the speaker-output view (the signal after the low-frequency
+ *  protective high-pass). The honesty control (§1.7): the filter is shown, never
+ *  hidden. `sub` is an optional one-liner shown under the label. */
+export function SpeakerOutputToggle({
+  value,
+  onChange,
+  sub,
+}: {
+  value: boolean;
+  onChange: (v: boolean) => void;
+  sub?: string;
+}) {
+  return (
+    <Pressable
+      style={styles.spkToggle}
+      onPress={() => onChange(!value)}
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked: value }}
+      accessibilityLabel="Show phone speaker output"
+    >
+      <View style={[styles.spkBox, value && styles.spkBoxOn]}>
+        {value ? <Text style={styles.spkCheck}>✓</Text> : null}
+      </View>
+      <View style={{ flex: 1 }}>
+        <Text style={[styles.spkLabel, value && styles.spkLabelOn]}>PHONE SPEAKER OUTPUT</Text>
+        {sub ? <Text style={styles.spkSub}>{sub}</Text> : null}
+      </View>
+    </Pressable>
+  );
+}
+
 export function LabShell({
   labId,
   title,
@@ -208,4 +240,31 @@ const styles = StyleSheet.create({
   chipSelected: { borderColor: 'rgba(255,198,77,.65)', backgroundColor: '#1a1409' },
   chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.8, color: colors.textSecondary },
   chipTextSelected: { color: colors.amber },
+
+  // PHONE SPEAKER OUTPUT tickbox
+  spkToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#2c2c33',
+    backgroundColor: '#131316',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+  },
+  spkBox: {
+    width: 20,
+    height: 20,
+    borderRadius: 4,
+    borderWidth: 1.5,
+    borderColor: '#3a3a44',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  spkBoxOn: { borderColor: colors.amber, backgroundColor: 'rgba(255,198,77,.15)' },
+  spkCheck: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: colors.amber, marginTop: -1 },
+  spkLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textSecondary },
+  spkLabelOn: { color: colors.amber },
+  spkSub: { fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 15, color: colors.textSub, marginTop: 1 },
 });

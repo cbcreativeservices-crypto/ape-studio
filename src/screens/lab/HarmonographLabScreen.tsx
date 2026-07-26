@@ -25,7 +25,7 @@ import { ApeDsp, GEN_MODES } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
-import { safeToneLevelDb, LOW_FREQ_ADVISORY } from '../../features/audio/speakerSafety';
+import { applySpeakerGuardToAdditive, speakerGuardDb, SPEAKER_HPF_HZ } from '../../features/audio/speakerSafety';
 import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
@@ -109,9 +109,10 @@ export function HarmonographLabScreen() {
     setGenError('');
     ApeDsp.genSet({
       mode: GEN_MODES.additive,
-      additive: intervalPayload(ratio.n1, ratio.n2),
-      // Speaker guard: key on the LOWEST sounding harmonic of the interval.
-      levelDb: safeToneLevelDb(GEN_LEVEL_DB, Math.min(ratio.n1, ratio.n2) * BASE_F0),
+      // Real per-harmonic high-pass on the interval's two tones (the lower
+      // harmonic is attenuated by |H| at its frequency) — see the note below.
+      additive: applySpeakerGuardToAdditive(intervalPayload(ratio.n1, ratio.n2)),
+      levelDb: GEN_LEVEL_DB,
     });
     try {
       await ApeDsp.genStart();
@@ -144,8 +145,8 @@ export function HarmonographLabScreen() {
     setRatioIdx(i);
     if (running) {
       ApeDsp.genSet({
-        additive: intervalPayload(RATIOS[i].n1, RATIOS[i].n2),
-        levelDb: safeToneLevelDb(GEN_LEVEL_DB, Math.min(RATIOS[i].n1, RATIOS[i].n2) * BASE_F0),
+        additive: applySpeakerGuardToAdditive(intervalPayload(RATIOS[i].n1, RATIOS[i].n2)),
+        levelDb: GEN_LEVEL_DB,
       });
       noteAudioActivity();
     }
@@ -260,7 +261,11 @@ export function HarmonographLabScreen() {
               <Text style={styles.caption}>
                 {`Harmonics ${ratio.n2} and ${ratio.n1} of ${BASE_F0} Hz through the additive engine — an exact ${ratio.label} ratio. Output ${GEN_LEVEL_DB} dBFS · uncalibrated.`}
               </Text>
-              <Text style={styles.advisory}>{LOW_FREQ_ADVISORY}</Text>
+              <Text style={styles.advisory}>
+                {`Speaker high-pass (${SPEAKER_HPF_HZ} Hz): the ${hz2} Hz tone is attenuated ${speakerGuardDb(hz2).toFixed(1)} dB` +
+                  `${ratio.n1 !== ratio.n2 ? `, the ${hz1} Hz tone ${speakerGuardDb(hz1).toFixed(1)} dB` : ''}. ` +
+                  `Use headphones for the full interval.`}
+              </Text>
               {genError ? <Text style={styles.error}>{genError}</Text> : null}
             </>
           ) : (
