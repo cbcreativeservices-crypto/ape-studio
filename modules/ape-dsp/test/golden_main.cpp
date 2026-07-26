@@ -645,6 +645,17 @@ int main() {
       g.render(c.data(), (uint32_t)c.size());
       const double jumpBC = std::fabs((double)c[0] - (double)b.back());
       truthy("Route HPF engage click-free (boundary step <= 2x steady)", jumpBC <= steadyRaw * 2.0 + 1e-6);
+
+      // 9d. The route-change GATE actually mutes: a mid-tone change must drop the
+      //     output to ~silence during the hold window (masking the switch), then
+      //     recover to full level. (b was rendered right after setHpf(0).)
+      double holdPeak = 0.0;  // 12–28 ms after the change → inside fade-out+hold
+      for (size_t i = static_cast<size_t>(fs * 0.012); i < static_cast<size_t>(fs * 0.028); ++i)
+        holdPeak = std::max(holdPeak, (double)std::fabs(b[i]));
+      truthy("Route gate mutes during the switch (hold peak < 0.005)", holdPeak < 0.005);
+      double tailPeak = 0.0;  // end of c → fully recovered
+      for (size_t i = c.size() * 3 / 4; i < c.size(); ++i) tailPeak = std::max(tailPeak, (double)std::fabs(c[i]));
+      truthy("Route gate recovers to full level after fade-in", tailPeak > 0.02);
     }
   }
 

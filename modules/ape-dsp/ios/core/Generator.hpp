@@ -206,6 +206,18 @@ class Generator {
     // ~40 ms linear raw↔filtered crossfade (route on/off), fixed-rate like the
     // amp/gain ramps.
     const double hpfMixStep = 1.0 / (fs * 0.040 < 1.0 ? 1.0 : fs * 0.040);
+    // Route-change gate: fire ONLY on a mid-tone, audible cutoff change (env up
+    // + running). At start hpfHz is set before the first audible sample and
+    // applyTrigger has already synced prevHpfHz_, so the tone start is never
+    // gated. A change while silent just snaps the crossfade.
+    if (hpfHz != prevHpfHz_) {
+      if (env_ > 0.001 && wantRun && routeGatePhase_ == 0) routeGatePhase_ = 1;
+      else hpfMix_ = hpfMixTarget;
+      prevHpfHz_ = hpfHz;
+    }
+    const double gateOutStep = 1.0 / (fs * 0.004 < 1.0 ? 1.0 : fs * 0.004);  // ~4 ms mute
+    const double gateInStep = 1.0 / (fs * 0.120 < 1.0 ? 1.0 : fs * 0.120);   // ~120 ms rolloff back
+    const int gateHoldSamples = static_cast<int>(fs * 0.030);                 // ~30 ms silent hold
     for (uint32_t i = 0; i < n; ++i) {
       // Fade envelope toward the run target (click-free start/stop, Q4-safe);
       // a pending trigger holds the target at 0 until the reset has landed.
@@ -233,7 +245,26 @@ class Generator {
                       : (hpfMix_ - hpfMixStep < hpfMixTarget ? hpfMixTarget : hpfMix_ - hpfMixStep);
         s = s * (1.0 - hpfMix_) + filtered * hpfMix_;
       }
-      out[i] = static_cast<float>(ampCur_ * env_ * s);
+      // Route-change gate envelope: fast out → silent hold (snap the HPF here,
+      // masked) → slow fade in.
+      if (routeGatePhase_ == 1) {
+        routeGate_ -= gateOutStep;
+        if (routeGate_ <= 0.0) {
+          routeGate_ = 0.0;
+          hpfMix_ = hpfMixTarget;  // swap the filter while silent — inaudible
+          routeGateHoldLeft_ = gateHoldSamples;
+          routeGatePhase_ = 2;
+        }
+      } else if (routeGatePhase_ == 2) {
+        if (--routeGateHoldLeft_ <= 0) routeGatePhase_ = 3;
+      } else if (routeGatePhase_ == 3) {
+        routeGate_ += gateInStep;
+        if (routeGate_ >= 1.0) {
+          routeGate_ = 1.0;
+          routeGatePhase_ = 0;
+        }
+      }
+      out[i] = static_cast<float>(ampCur_ * env_ * routeGate_ * s);
     }
   }
 
@@ -265,6 +296,12 @@ class Generator {
     // route changes, not for the start of a fresh tone.
     hpf_.reset();
     hpfMix_ = (hpfHz_.load() > 0.0) ? 1.0 : 0.0;
+    // Open the route gate and sync the change detector: a fresh tone starts at
+    // full level with the correct filter, and its initial hpfHz (set before the
+    // first audible sample) is NOT treated as a mid-tone route change.
+    routeGate_ = 1.0;
+    routeGatePhase_ = 0;
+    prevHpfHz_ = hpfHz_.load();
     trigPending_ = false;
   }
 
@@ -548,6 +585,15 @@ class Generator {
   double hpfDesignedHz_ = 0.0;
   double hpfDesignedFs_ = 0.0;
   double hpfMix_ = 0.0;  // raw↔filtered crossfade (0 = bypassed, 1 = filtered)
+  // Route-change GATE: a mid-tone cutoff change (headphone plug/unplug) mutes
+  // the output fast, holds silent while the HPF swaps + the OS route settles,
+  // then fades back in slowly — masking the filter transition AND the hardware
+  // route-switch transient (a crossfade alone can't hide the latter). Idle
+  // (phase 0, gate 1.0) it is a no-op.
+  double routeGate_ = 1.0;    // output multiplier
+  int routeGatePhase_ = 0;    // 0 idle · 1 fade-out · 2 hold · 3 fade-in
+  int routeGateHoldLeft_ = 0;
+  double prevHpfHz_ = 0.0;    // detects a route-driven cutoff change
   double sweepPhase01_ = 0.0;
   double clickTimer_ = 0.0;
   double burstTimer_ = 0.0;
