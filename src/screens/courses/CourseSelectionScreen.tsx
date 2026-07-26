@@ -133,6 +133,7 @@ const COMING_TOPICS = [
 const CARD_IMAGE: Record<string, string> = {
   tools: 'free_tools.webp',
   glossary: 'free_glossary.webp',
+  lab: 'AudioLab.webp',
   // Institutional courses → their commercial-card equivalents.
   SAFE: 'free_safety.webp',
   MUSI190: 'course_intro-to-audio.webp',
@@ -428,24 +429,34 @@ function CourseCardView({
   // motif); tap opens the Lab route. Rendered like the other self-contained
   // pinned cards (more / homeTopic) rather than the image-backed tools/glossary.
   if (item.kind === 'lab') {
+    // Image-backed card (AudioLab.webp in course-cards) matching tools/glossary:
+    // art + legibility scrim + title + green OPEN LAB key (user request 2026-07-26).
+    const labUrl = cardImageUrl('lab');
     return (
       <View style={styles.cardOuter}>
         <View style={styles.cardAbove}>
           <Text style={[styles.cardAboveText, { color: '#5bff85' }]}>FREE INCLUDED</Text>
           <View style={[styles.cardAboveRule, { backgroundColor: '#5bff85' }]} />
         </View>
-        <Pressable
-          style={[styles.card, styles.labCard]}
-          onPress={onOpenLab}
-          accessibilityRole="button"
-          accessibilityLabel="Open the Ear Training and Critical Listening Lab"
+        <ImageBackground
+          source={labUrl ? { uri: labUrl } : undefined}
+          style={[styles.card, { borderColor: 'rgba(55,224,95,.6)' }]}
+          imageStyle={styles.cardImg}
         >
-          <Text style={styles.labIcon}>🎧</Text>
-          <Text style={styles.labTitle}>Ear Training & Critical Listening Lab</Text>
-          <Text style={styles.labSub}>Hear, identify, measure, and shape sound.</Text>
-          <View style={{ height: 14 }} />
-          <Text style={styles.labCta}>OPEN LAB ›</Text>
-        </Pressable>
+          <LinearGradient
+            colors={['rgba(8,8,10,0.55)', 'rgba(8,8,10,0)', 'rgba(8,8,10,0.45)', 'rgba(8,8,10,0.95)']}
+            locations={[0, 0.3, 0.58, 1]}
+            style={StyleSheet.absoluteFill}
+          />
+          <View>
+            <Text style={styles.cardTitle}>Ear Training & Critical Listening Lab</Text>
+          </View>
+          <View style={{ alignItems: 'center' }}>
+            <View style={{ width: CARD_BTN_W }}>
+              <GlassButton label="OPEN LAB" tint="green" height={50} onPress={onOpenLab} />
+            </View>
+          </View>
+        </ImageBackground>
       </View>
     );
   }
