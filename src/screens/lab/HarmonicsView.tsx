@@ -98,6 +98,7 @@ import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
 import { WARNING_INFO } from '../../features/tools/measure/types';
 import { EngineGate } from '../tools/EngineGate';
+import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
 import { colors, fonts } from '../../theme/tokens';
 import {
   additivePayload,
@@ -305,14 +306,28 @@ const trim = (s: string) => (s.includes('.') ? s.replace(/\.?0+$/, '') : s);
 const hzShort = (hz: number) => (hz >= 1000 ? `${trim((hz / 1000).toFixed(1))}k` : `${hz}`);
 const fmtDb = (v: number | null) => (v != null && Number.isFinite(v) ? v.toFixed(1) : '—');
 
-function Chip({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
+function Chip({
+  label,
+  selected,
+  onPress,
+  onLongPress,
+}: {
+  label: string;
+  selected: boolean;
+  onPress: () => void;
+  /** Long-press → open this control's Guided Lesson (v4 MASTER §5). Optional so
+   *  utility chips can opt out; when set, the hint below the controls applies. */
+  onLongPress?: () => void;
+}) {
   return (
     <Pressable
       style={[styles.chip, selected && styles.chipSelected]}
       onPress={onPress}
+      onLongPress={onLongPress}
+      delayLongPress={350}
       accessibilityRole="button"
       accessibilityState={{ selected }}
-      accessibilityLabel={label}
+      accessibilityLabel={onLongPress ? `${label} — long-press for its guided lesson` : label}
     >
       <Text style={[styles.chipText, selected && styles.chipTextSelected]}>{label}</Text>
     </Pressable>
@@ -410,6 +425,14 @@ export function HarmonicsView({
   const [snapA, setSnapA] = useState<HarmonicSet | null>(null);
   const [abOn, setAbOn] = useState(false);
   const [thdOpen, setThdOpen] = useState(false);
+  // Guided Lesson sheet (v4 MASTER §5) — long-press a labeled control (or tap
+  // ⓘ GUIDED LESSON) opens the Harmonic lab's lesson focused on that control.
+  const [lessonKey, setLessonKey] = useState<string | undefined>(undefined);
+  const [lessonOpen, setLessonOpen] = useState(false);
+  const openLesson = useCallback((key?: string) => {
+    setLessonKey(key);
+    setLessonOpen(true);
+  }, []);
   /** Solo-audible harmonic (a REAL sine at n×f0 via the shared tone path). */
   const [soloN, setSoloN] = useState<number | null>(null);
   const [f0, setF0] = useState(DEFAULT_F0);
@@ -1448,9 +1471,9 @@ export function HarmonicsView({
           {/* HIGHLIGHT + OVERLAY toggles. */}
           <Text style={styles.sectionHead}>GROUPS & OVERLAYS</Text>
           <View style={styles.chipRow}>
-            <Chip label="ODD/EVEN" selected={oddEvenHl} onPress={() => setOddEvenHl((v) => !v)} />
-            <Chip label="ENVELOPE" selected={showEnvelope} onPress={() => setShowEnvelope((v) => !v)} />
-            <Chip label="SPACING" selected={showSpacing} onPress={() => setShowSpacing((v) => !v)} />
+            <Chip label="ODD/EVEN" selected={oddEvenHl} onPress={() => setOddEvenHl((v) => !v)} onLongPress={() => openLesson('wave_shape')} />
+            <Chip label="ENVELOPE" selected={showEnvelope} onPress={() => setShowEnvelope((v) => !v)} onLongPress={() => openLesson('amplitude')} />
+            <Chip label="SPACING" selected={showSpacing} onPress={() => setShowSpacing((v) => !v)} onLongPress={() => openLesson('frequency')} />
           </View>
           {oddEvenHl ? (
             <View style={styles.legendRow}>
@@ -1478,10 +1501,10 @@ export function HarmonicsView({
           {/* GROUP ACTIONS — solo = mute the complement (H1 counts as odd);
               pressing the active solo unsolos. */}
           <View style={styles.chipRow}>
-            <Chip label="SOLO ODD" selected={groupState.solo === 'odd'} onPress={() => soloGroup('odd')} />
-            <Chip label="SOLO EVEN" selected={groupState.solo === 'even'} onPress={() => soloGroup('even')} />
-            <Chip label="MUTE ODD" selected={groupState.oddAllMuted} onPress={() => muteGroup('odd')} />
-            <Chip label="MUTE EVEN" selected={groupState.evenAllMuted} onPress={() => muteGroup('even')} />
+            <Chip label="SOLO ODD" selected={groupState.solo === 'odd'} onPress={() => soloGroup('odd')} onLongPress={() => openLesson('add_remove_harmonics')} />
+            <Chip label="SOLO EVEN" selected={groupState.solo === 'even'} onPress={() => soloGroup('even')} onLongPress={() => openLesson('add_remove_harmonics')} />
+            <Chip label="MUTE ODD" selected={groupState.oddAllMuted} onPress={() => muteGroup('odd')} onLongPress={() => openLesson('add_remove_harmonics')} />
+            <Chip label="MUTE EVEN" selected={groupState.evenAllMuted} onPress={() => muteGroup('even')} onLongPress={() => openLesson('add_remove_harmonics')} />
             <Chip label="NORMALIZE" selected={false} onPress={normalizeModel} />
             <Chip label="RESTORE" selected={false} onPress={() => pickPreset(presetRef.current)} />
           </View>
@@ -1566,11 +1589,26 @@ export function HarmonicsView({
         </Modal>
       ) : null}
 
+      {/* GUIDED LESSON sheet — opened by the ⓘ entry or a control long-press. */}
+      <GuidedLessonSheet
+        visible={lessonOpen}
+        lesson={getLabLesson('harmonic')}
+        controlKey={lessonKey}
+        onClose={() => setLessonOpen(false)}
+      />
+
       {/* CONTROLS. */}
+      {/* GUIDED LESSON entry — tap opens the lab lesson; long-press any labeled
+          control below opens it focused on that control (v4 MASTER §5). */}
+      <View style={styles.chipRow}>
+        <Chip label="ⓘ GUIDED LESSON" selected={lessonOpen} onPress={() => openLesson()} />
+      </View>
+      <Text style={styles.caption}>Long-press a labeled control for its guided lesson.</Text>
+
       <Text style={styles.sectionHead}>FUNDAMENTAL</Text>
       <View style={styles.chipRow}>
         {F0_PRESETS.map((hz) => (
-          <Chip key={hz} label={`${hz} Hz`} selected={f0 === hz} onPress={() => pickF0(hz)} />
+          <Chip key={hz} label={`${hz} Hz`} selected={f0 === hz} onPress={() => pickF0(hz)} onLongPress={() => openLesson('frequency')} />
         ))}
       </View>
 
@@ -1579,7 +1617,7 @@ export function HarmonicsView({
           <Text style={styles.sectionHead}>PRESETS — SIMPLIFIED INSTRUCTIONAL MODELS</Text>
           <View style={styles.chipRow}>
             {PRESETS.map((p) => (
-              <Chip key={p.key} label={p.label} selected={preset === p.key} onPress={() => pickPreset(p.key)} />
+              <Chip key={p.key} label={p.label} selected={preset === p.key} onPress={() => pickPreset(p.key)} onLongPress={() => openLesson('wave_shape')} />
             ))}
           </View>
           <Text style={styles.caption}>

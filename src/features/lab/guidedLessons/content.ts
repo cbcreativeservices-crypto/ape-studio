@@ -411,10 +411,14 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'The Harmonic lab builds and dissects waveforms by their partials. Sine = fundamental only; ' +
       'square = odd harmonics; saw = all; triangle = odd (steeper rolloff). The FFT/harmonic ' +
       'analyzer shows the content the oscilloscope shape cannot.',
-    controls: names([
-      'Sine', 'Square', 'Sawtooth', 'Triangle', 'Pulse', 'PWM', 'Complex',
-      'Frequency', 'Amplitude', 'Duty cycle', 'Wave shape', 'Add harmonics', 'Remove harmonics',
-    ]),
+    controls: [
+      { key: 'wave_shape', name: 'Wave shape / Preset', definition: 'The chosen waveform — sine (fundamental only), square (odd harmonics), sawtooth (all harmonics), triangle (odd, steep rolloff), pulse/PWM. Each carries a characteristic harmonic series.' },
+      { key: 'frequency', name: 'Frequency (fundamental)', definition: 'The fundamental pitch in Hz. Every harmonic is an integer multiple of it (2f, 3f, 4f…), so moving the fundamental shifts the whole series up or down together.' },
+      { key: 'amplitude', name: 'Amplitude', definition: 'Overall level. Raising it scales every partial equally — it does NOT add harmonics (a common confusion).' },
+      { key: 'duty_cycle', name: 'Duty cycle (PWM)', definition: 'The high/low ratio of a pulse wave. It changes timbre and nulls specific harmonics (amplitude ∝ sin(nπd)/(nπ)) but does NOT change the pitch.' },
+      { key: 'add_remove_harmonics', name: 'Add / Remove harmonics', definition: 'Toggle or drag individual partials to build a waveform from its Fourier components — e.g. stack the odd harmonics one at a time to approach a square.' },
+      { key: 'harmonic_phase', name: 'Harmonic phase', definition: 'The phase of each partial. Changing phases redraws the waveform shape dramatically, yet a steady tone sounds nearly identical (the ear’s phase-deafness).' },
+    ],
     commonMistakes: [
       'Not knowing which wave has which harmonics — sine = fundamental; square = odd (∝1/n); saw = all (∝1/n); triangle = odd (∝1/n²).',
       'Reading the oscilloscope for spectrum — the scope shows the time-domain shape; harmonic content is on the FFT/analyzer.',
