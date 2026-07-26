@@ -27,6 +27,7 @@ import { ApeDsp } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { EngineGate } from '../tools/EngineGate';
 import { HarmonicsView } from './HarmonicsView';
+import { GuidedLessonBody, getLabLesson } from '../../features/lab/guidedLessons';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import type { RootStackParamList } from '../../navigation/types';
@@ -133,9 +134,12 @@ export function HarmonicLabScreen({ navigation }: Props) {
         {mode === 'learn' ? (
           <View style={styles.panel}>
             <Text style={styles.caption}>
-              The app identifies the sound and explains what to hear and observe.
+              What this lab teaches — definitions, common mistakes, pro tips, and the formula.
             </Text>
-            <DevPlaceholder text="Lessons in development" />
+            {/* Guided-Lesson content from the typed registry (v4 MASTER §5).
+                Authored from the approved companion specs — see
+                src/features/lab/guidedLessons/content.ts. */}
+            <GuidedLessonBody lesson={getLabLesson('harmonic')} />
           </View>
         ) : null}
 

@@ -1,0 +1,539 @@
+/**
+ * Guided-Lesson content — all 16 audio labs (v4 MASTER §7).
+ *
+ * Authored verbatim-in-spirit from the two Booth-approved companion specs:
+ *   • docs/APE_LAB_CONTROLS_AND_COMMON_MISTAKES_5LABS_2026_07_26_v1_DRAFT.md
+ *     (Flanger·Phaser·Gate·Limiter·Stereo — full per-control ranges/defaults)
+ *   • docs/APE_LAB_COMMON_MISTAKES_11LABS_2026_07_26_v1_DRAFT.md
+ *     (the other 11 labs — per-lab mistakes/tips/formula + control lists)
+ *
+ * Standard signal-processing fundamentals (high confidence). Ranges/defaults are
+ * the companions' industry-conventional proposals — confirm/override per house
+ * style; they are not locked engine values. NOTHING here is invented requirement.
+ */
+import type { LabId, LabLesson } from './types';
+
+/** Convenience: name-only controls (labs whose per-control prose isn't authored
+ *  yet — they inherit the lab-level lesson). */
+const names = (list: string[]) => list.map((name) => ({ key: name.toLowerCase().replace(/[^a-z0-9]+/g, '_'), name }));
+
+export const LAB_LESSONS: Record<LabId, LabLesson> = {
+  // ─────────────────────────────────────────────────────────── LAB 1 · EQ ──
+  eq: {
+    id: 'eq',
+    num: 1,
+    name: 'Equalizer',
+    tier: 'T1',
+    tagline: 'Shape the balance of frequencies.',
+    whatItIs:
+      'An equalizer boosts or cuts chosen frequency bands to shape tone — from broad ' +
+      'musical moves to surgical notches. Filter type (shelf / bell / pass) decides which ' +
+      'part of the band is affected; Q sets how wide.',
+    controls: names([
+      'Graphic', 'Parametric', 'Shelving', 'High-pass', 'Low-pass', 'Band-pass', 'Notch', 'Tilt', 'Dynamic EQ',
+    ]),
+    commonMistakes: [
+      'Boost-sweep to FIND, then forgetting to CUT — the narrow-boost sweep is diagnostic only; the fix is usually a cut.',
+      'Boosting when you should cut — subtractive EQ preserves headroom and avoids piling up phase problems.',
+      'Narrow Q for tonal shaping — surgical Q is for notches/hum; musical moves need wide Q, or they ring.',
+      'Forgetting minimum-phase EQ shifts phase — heavy EQ on multi-mic sources combs.',
+      'Not high-passing non-bass sources — subsonic rumble eats headroom and muddies the mix.',
+      'EQ’ing in solo — a track shaped alone often clashes or vanishes in the mix; judge in context.',
+      'Chasing a flat analyzer — "flat" is not the goal; the meter informs, ears decide.',
+      'Static cut for sibilance — a fixed high cut dulls everything; sibilance is dynamic → use a de-esser.',
+      'One wide cut for hum — hum is 50/60 Hz PLUS harmonics; notch the harmonic series, not one band.',
+      'Recipe EQ — "3 kHz presence / 250 Hz mud" by rote without listening; every source differs.',
+    ],
+    proTips: [
+      'Cut first to clean up, then boost sparingly to flatter — level-match before/after, since boosts trick the ear into "better".',
+      'Teach Q with pink noise: the same +6 dB boost at Q=0.7 vs Q=8 — hear "tone" vs "ring".',
+    ],
+    formula: 'Q ≈ Fc / bandwidth. Filter slope = 6/12/18/24 dB per octave (1/2/3/4-pole). Shelf vs bell vs pass = which part of the band is affected.',
+  },
+
+  // ──────────────────────────────────────────────────────── LAB 2 · Delay ──
+  delay: {
+    id: 'delay',
+    num: 2,
+    name: 'Delay',
+    tier: 'T2',
+    tagline: 'Discrete repeats in time.',
+    whatItIs:
+      'A delay records the signal and plays it back one or more times after a set interval. ' +
+      'Feedback sets how many repeats; filtering makes them recede. Distinct from reverb — ' +
+      'delay makes separable echoes, not a diffuse wash.',
+    controls: names([
+      'Delay time', 'Feedback', 'Wet/Dry', 'Ping-pong', 'Stereo width', 'Filtering', 'Modulation', 'Sync BPM',
+    ]),
+    commonMistakes: [
+      'Feedback too high → runaway/self-oscillation — finding that threshold is the lesson; don’t trip it by accident.',
+      'Delay time fighting the tempo — un-synced repeats smear the groove; sync to note values or tap tempo.',
+      '"Slapback" set too long — true slapback ≈ 60–150 ms, single repeat, low feedback; longer becomes a distinct echo.',
+      'Wet too loud on a lead vocal — buries intelligibility; delays usually sit behind the dry.',
+      'Unfiltered repeats — full-range feedback stacks harsh clutter; roll off highs (often lows) so repeats recede.',
+      'Wide/ping-pong delay that cancels in mono — always mono-check.',
+      'Confusing delay with reverb — discrete repeats vs a diffuse wash; different tools, different purpose.',
+    ],
+    proTips: [
+      'Start 1/8-dotted synced, feedback ~25%, wet low, highs rolled off — instantly musical.',
+      'Use Freeze / Peak-Hold to let students predict the next echo before it lands.',
+    ],
+    formula: 'Delay for a note (ms) = (60000 / BPM) × note-fraction. Quarter-note ms = 60000 / BPM.',
+  },
+
+  // ─────────────────────────────────────────────────────── LAB 3 · Reverb ──
+  reverb: {
+    id: 'reverb',
+    num: 3,
+    name: 'Reverb',
+    tier: 'T3',
+    tagline: 'The sound of a space.',
+    whatItIs:
+      'Reverb simulates the dense field of reflections in a room — early reflections give ' +
+      'spatial cues, the late tail gives size and decay. Pre-delay separates the dry source ' +
+      'from the wash; damping shapes the tail’s tone.',
+    controls: names([
+      'Room size', 'Pre-delay', 'Decay', 'Diffusion', 'Early reflections', 'Late reflections',
+      'HF damping', 'LF damping', 'Density', 'Mix',
+    ]),
+    commonMistakes: [
+      'Too much reverb — washes the mix, pushes sources back, kills clarity; less is usually more.',
+      'No pre-delay → source glued to the tail — a little pre-delay (~10–40 ms) keeps vocals upfront.',
+      'Muddy tail (no HPF / LF damping) — high-pass the reverb return and add LF damping.',
+      'Confusing room size with decay time — a large room can decay quickly and a small room slowly; separate controls.',
+      'Decay fighting the tempo/space — long tails on fast, busy material turn to mush.',
+      'One reverb on everything — kills depth; varied pre-delay/decay build front-to-back layering.',
+      'Reverb before fixing source problems — it amplifies sibilance/boxiness already present.',
+      'Sending sub/bass to reverb — rumbly, unstable tail; high-pass the send.',
+    ],
+    proTips: [
+      'Compare hall vs plate on the same vocal to hear diffusion/density differences.',
+      'Duck the reverb under the dry vocal phrase, let it bloom in the gaps.',
+    ],
+    formula: 'RT60 = time to decay 60 dB. Sabine: RT60 = 0.161·V / A (V = volume m³, A = total absorption in sabins) — links to the Wave-Physics Absorption module.',
+  },
+
+  // ─────────────────────────────────────────────────────── LAB 4 · Chorus ──
+  chorus: {
+    id: 'chorus',
+    num: 4,
+    name: 'Chorus',
+    tier: 'T2',
+    tagline: 'Why "wide" sounds wide.',
+    whatItIs:
+      'Chorus mixes the dry signal with detuned, LFO-modulated delayed copies (~15–35 ms), ' +
+      'so multiple slightly out-of-tune "voices" beat against each other for a thick, wide tone.',
+    controls: names(['Depth', 'Rate', 'Delay', 'Voices', 'Stereo width', 'Feedback', 'Mix']),
+    commonMistakes: [
+      'Rate/Depth too high → seasick, out-of-tune warble; excess modulation reads as detuning, not lushness.',
+      'Confusing chorus with flanger/vibrato — chorus = longer delay + detuned voices; short delay + feedback = flanger; 100% wet = vibrato.',
+      '100% wet kills the effect — chorus needs the dry voice to beat against the detuned copies.',
+      'Wide stereo chorus that thins/cancels in mono — mono-check.',
+      'Using it purely as a width tool — it widens but adds phasey comb filtering; verify mono.',
+      'Chorusing the bass — modulated pitch/comb on lows is unstable and muddy; keep bass dry/mono.',
+    ],
+    proTips: [
+      '2–3 voices, gentle depth, delay ~20 ms, mix ~30–40% = classic lush without detune artifacts.',
+      'Show the Lissajous while widening so students see the stereo decorrelation.',
+    ],
+    formula: 'Chorus = dry + LFO-modulated, slightly pitch-shifted delayed copies (~15–35 ms). Beating between detuned voices = the "wide/thick" perception; summing exposes comb filtering (worst in mono).',
+  },
+
+  // ────────────────────────────────────────────────────── LAB 5 · Flanger ──
+  flanger: {
+    id: 'flanger',
+    num: 5,
+    name: 'Flanger',
+    tier: 'T2',
+    tagline: 'Sweeping comb-filter notches.',
+    whatItIs:
+      'A flanger sums a short, LFO-modulated delay (~0.1–10 ms) with the dry signal, producing ' +
+      'evenly-spaced (harmonic) comb notches that sweep as the delay time modulates. Feedback ' +
+      'deepens the notches. Evenly-spaced sweeping notches are its signature vs the phaser.',
+    controls: [
+      { key: 'rate', name: 'Rate (LFO speed)', range: '0.05–10 Hz · default ~0.2 Hz', definition: 'How fast the notches sweep up/down the spectrum. Slow = classic jet sweep.' },
+      { key: 'depth', name: 'Depth (sweep range)', range: '0–100% · default ~50%', definition: 'How far the delay time is modulated → how far the notches travel.' },
+      { key: 'manual', name: 'Manual / Delay time (center)', range: '0.1–10 ms · default ~2 ms', definition: 'The base delay the LFO modulates around; sets notch spacing (spacing = 1/delay).' },
+      { key: 'feedback', name: 'Feedback / Regeneration', range: '−95…+95% · default ~40%', definition: 'Feeds output back to input; deepens notches. Negative feedback shifts the notch pattern and gives the hollow "through-a-tube" tone.' },
+      { key: 'mix', name: 'Mix (Wet/Dry)', range: '0–100% · default 50%', definition: 'Comb notches are deepest at 50% (equal dry+wet).' },
+      { key: 'lfo_wave', name: 'LFO Waveform', range: 'Triangle (default) / Sine / Log', definition: 'Shape of the sweep motion.' },
+      { key: 'stereo_offset', name: 'Stereo width / LFO phase offset', range: '0–180° · default 90°', definition: 'Offsets the L vs R LFO for a stereo sweep.' },
+      { key: 'tzf', name: 'Through-Zero (TZF)', range: 'on/off · default off', definition: 'A second delay line lets the notch pass through 0 ms for the dramatic "reverse jet" flange.', advanced: true },
+    ],
+    commonMistakes: [
+      'Calling it a flanger when it’s really a chorus — delay too long (>~10–15 ms) with little feedback stops the sweeping comb; keep the delay short and add feedback.',
+      'Running 100% wet — with a single delay line, full-wet removes the dry reference the comb needs; classic flange lives near 50%.',
+      'Too much feedback — high regeneration rings metallically and fatigues fast.',
+      'Rate too fast — a fast LFO turns the sweep into a warble; the educational "moving notches" are clearest slow.',
+      'Testing on a pure sine — a sine has energy at one frequency, so the comb reveals nothing; use pink noise or a rich source.',
+      'Ignoring mono — heavy stereo flanging can partially cancel when summed to mono; mono-check.',
+    ],
+    proTips: [
+      'Start dry=wet, feedback ~40%, rate slow, then sweep Manual to hear notch spacing change.',
+      'Negative feedback + short delay = the hollow, resonant "jet"; positive feedback = brighter, more present comb.',
+    ],
+    formula: 'Comb notches at f = (2k−1) / (2·τ), k = 1,2,3…, where τ = delay time. Notch spacing = 1/τ; as τ modulates, every notch sweeps together (evenly-spaced, harmonic).',
+  },
+
+  // ─────────────────────────────────────────────────────── LAB 6 · Phaser ──
+  phaser: {
+    id: 'phaser',
+    num: 6,
+    name: 'Phaser',
+    tier: 'T2',
+    tagline: 'Uneven notches from all-pass phase.',
+    whatItIs:
+      'A phaser cascades all-pass filter stages (each shifts phase without changing magnitude) ' +
+      'and sums with the dry signal. Cancellation notches appear where the phase hits 180°, ' +
+      'unevenly spaced and fewer (≈ one per two stages) — the defining contrast with the flanger.',
+    controls: [
+      { key: 'rate', name: 'Rate (LFO speed)', range: '0.05–10 Hz · default ~0.3 Hz', definition: 'Sweeps the all-pass corner frequencies (moves the notches).' },
+      { key: 'depth', name: 'Depth', range: '0–100% · default ~60%', definition: 'Modulation range of the sweep.' },
+      { key: 'stages', name: 'Stages / Poles', range: '2 / 4 / 6 / 8 / 12 · default 4', definition: 'More stages = more notches = thicker. Notch count ≈ stages ÷ 2.' },
+      { key: 'feedback', name: 'Feedback / Resonance', range: '0–95% · default ~30%', definition: 'Sharpens and deepens the notches.' },
+      { key: 'center', name: 'Center Frequency / Manual', range: '~100 Hz–8 kHz · default ~1 kHz', definition: 'Base frequency the sweep centers on.' },
+      { key: 'mix', name: 'Mix (Wet/Dry)', range: '0–100% · default 50%', definition: 'Notches deepest near 50%.' },
+      { key: 'lfo_wave', name: 'LFO Waveform', range: 'Sine (default) / Triangle', definition: 'Shape of the sweep motion.' },
+      { key: 'stereo_offset', name: 'Stereo spread / LFO phase offset', range: '0–180° · default 90°', definition: 'L/R offset for stereo motion.' },
+    ],
+    commonMistakes: [
+      'Expecting flanger-style even notches — phaser notches are unevenly spaced and fewer; that is the defining difference.',
+      'Too many stages on a busy source — 8–12 stages on a full mix smears into mud; fewer reads as more musical.',
+      '100% wet — kills the dry reference the notches depend on.',
+      'Cranking resonance — excess feedback whistles/rings and fatigues.',
+      'Thinking a phaser is a delay — all-pass stages change phase, not time; there is no echo.',
+      'Testing on a sine — needs broadband material to reveal the notches.',
+    ],
+    proTips: [
+      '4 stages = subtle vintage vibe; 8+ = lush, obvious sweep.',
+      'Sweep Manual with the LFO OFF first, so students see notches as a position before adding motion.',
+    ],
+    formula: 'A first-order all-pass has |H(f)| = 1 at every frequency but phase from 0° to −180°. Two cascaded stages create one 180° cancellation notch on sum; notch count ≈ stages ÷ 2 (uneven spacing).',
+  },
+
+  // ────────────────────────────────────────────────── LAB 7 · Compression ──
+  compression: {
+    id: 'compression',
+    num: 7,
+    name: 'Compression',
+    tier: 'T3',
+    tagline: 'Control and glue dynamics.',
+    whatItIs:
+      'A compressor reduces gain above a threshold by a set ratio, shrinking dynamic range. ' +
+      'Attack/Release set how fast it reacts and recovers; makeup gain restores level. Used ' +
+      'for control, punch, and glue.',
+    controls: names(['Threshold', 'Ratio', 'Attack', 'Release', 'Knee', 'Lookahead', 'Makeup gain', 'Sidechain']),
+    commonMistakes: [
+      'Attack too fast → transients killed — clamps the initial hit; to preserve transients, slow the attack so the transient passes first.',
+      'Release too fast → distortion/pumping (worst on bass); too slow → never recovers, over-compresses.',
+      'Ratio / GR too high — squashes the life out; 2–4:1 for glue, higher only for control.',
+      'Makeup-gain "louder = better" bias — level-match bypass vs active to judge honestly.',
+      'Watching the GR meter instead of listening — a big number isn’t the goal.',
+      'Ignoring the knee — hard knee = obvious/controlling, soft knee = transparent.',
+      'No sidechain HPF on the bus → bass pumps the whole mix; filter the detector.',
+      'Stacking compressor → limiter to death — multiple squashers destroy dynamics.',
+    ],
+    proTips: [
+      'Dial threshold for ~3–6 dB GR on peaks, then attack for punch and release for the groove; makeup last, then A/B level-matched.',
+      'Fast attack + slow release "glues"; slow attack + fast release "punches".',
+    ],
+    formula: 'Above threshold, gain reduction = (input − threshold) × (1 − 1/ratio). Attack/Release = envelope-detector time constants; Knee softens the ratio around the threshold.',
+  },
+
+  // ───────────────────────────────────────────────────────── LAB 8 · Gate ──
+  gate: {
+    id: 'gate',
+    num: 8,
+    name: 'Gate',
+    tier: 'T2',
+    tagline: 'Silence below a threshold.',
+    whatItIs:
+      'A noise gate (downward expander) attenuates signal below a threshold and passes signal ' +
+      'above it — for removing bleed/noise between notes, tightening drums, and controlling ambience.',
+    controls: [
+      { key: 'threshold', name: 'Threshold', range: '−80…0 dB · default ~−40 dB', definition: 'Level the signal must exceed to open the gate.' },
+      { key: 'attack', name: 'Attack', range: '0.01–100 ms · default ~1 ms', definition: 'Time to open once threshold is crossed. Fast preserves transients.' },
+      { key: 'hold', name: 'Hold', range: '0–500 ms · default ~10 ms', definition: 'Minimum open time after the signal drops below threshold, before release — the primary anti-chatter control.' },
+      { key: 'release', name: 'Release', range: '5 ms–2 s · default ~100 ms', definition: 'Time to close after the signal falls below threshold. Too fast = chatter; too slow = bleed.' },
+      { key: 'range', name: 'Range / Depth (Floor)', range: '−∞…−6 dB · default ~−40 dB', definition: 'How much attenuation when "closed". A partial range is gentler and more natural (expander-like).' },
+      { key: 'hysteresis', name: 'Hysteresis', range: '0–25 dB · default ~3 dB', definition: 'Separate open vs close thresholds to stop chatter near the threshold.' },
+      { key: 'lookahead', name: 'Lookahead', range: '0–5 ms · default 0', definition: 'Delays the audio so the gate can open before a transient, preserving the attack.', advanced: true },
+      { key: 'sidechain', name: 'Sidechain / Key input', definition: 'External trigger source (e.g. gate a pad from the kick).' },
+      { key: 'key_filter', name: 'Key filter (HPF/LPF on detector)', definition: 'Band-limits the detector so only the intended band opens the gate.' },
+      { key: 'sc_listen', name: 'Sidechain Listen / Monitor', definition: 'Audition the (filtered) detector signal to tune it.' },
+    ],
+    commonMistakes: [
+      'Threshold too high — chops off note tails, word endings, cymbal/reverb decays; choppy and unnatural.',
+      'Threshold too low — bleed and noise sail through; the gate does nothing useful.',
+      'Release too fast → chatter/stutter — the gate flickers near threshold; fix with Hold, slower Release, or Hysteresis.',
+      'Attack too slow on percussion — opens after the transient; soft, dull hits. Use a fast attack (or lookahead).',
+      'Range at −∞ — full silence between hits is abrupt and exposes the gating; a moderate floor is usually more natural.',
+      'No key filter → false triggering — gating a tom off the whole kit lets snare/hat open it; filter the sidechain.',
+      'Gating the life out of a source — over-gating strips natural room/ambience and sustain.',
+    ],
+    proTips: [
+      'Set Threshold first with the Release exaggerated so you can hear it work, then dial Hold/Release/Hysteresis to remove chatter, then relax Range.',
+      'On toms/snare: fast attack + short hold + medium release + key-filtered sidechain is the reliable start.',
+    ],
+    formula: 'A gate is downward expansion below threshold: below it, gain is reduced toward the Range floor; above it, gain = 0 dB (open). Attack/Hold/Release smooth the gain envelope.',
+  },
+
+  // ────────────────────────────────────────────────────── LAB 9 · Limiter ──
+  limiter: {
+    id: 'limiter',
+    num: 9,
+    name: 'Limiter',
+    tier: 'T3',
+    tagline: 'A hard ceiling on peaks.',
+    whatItIs:
+      'A brickwall/peak limiter is effectively a compressor with infinite ratio and a fixed ' +
+      'ceiling — output never exceeds the set level. Used at the end of a chain for peak control ' +
+      'and loudness; true-peak mode guards inter-sample peaks.',
+    controls: [
+      { key: 'ceiling', name: 'Ceiling (Output ceiling)', range: '−12…0 dBTP · default −1.0 dBTP', definition: 'Absolute maximum output. −1.0 dBTP is safe for streaming/lossy encodes.' },
+      { key: 'drive', name: 'Threshold / Input Gain (Drive)', range: '0…+24 dB drive · default 0', definition: 'How hard you push into the limiter → how much gain reduction/loudness.' },
+      { key: 'release', name: 'Release', range: '1 ms–1 s · default ~100 ms / Auto', definition: 'Recovery time. Too fast → distortion/pumping (esp. bass); too slow → dulls dynamics.' },
+      { key: 'attack', name: 'Attack', range: '0–5 ms · near-instant', definition: 'A hair of attack lets transient "punch" through before catching it.', advanced: true },
+      { key: 'lookahead', name: 'Lookahead', range: '0–5 ms · default ~1.5 ms', definition: 'Delays audio so peaks are caught before they occur → no overshoot without audible distortion.' },
+      { key: 'true_peak', name: 'True-Peak / ISP mode', range: 'on/off · default on', definition: 'Oversampled detection to catch inter-sample peaks that exceed the ceiling after D/A or lossy encode.' },
+      { key: 'character', name: 'Character / Style', range: 'Transparent … Aggressive', definition: 'Algorithm flavor.', advanced: true },
+      { key: 'dither', name: 'Dither', range: 'off / TPDF / shaped', definition: 'Apply when the limiter is the last step before bit-depth reduction.', advanced: true },
+    ],
+    commonMistakes: [
+      'Pushing for loudness → squashing — flattens dynamics, kills punch, adds distortion (the loudness-war trap). A few dB GR is plenty.',
+      'Ignoring inter-sample peaks — 0 dBFS looks safe but clips on D/A and after MP3/AAC; set ~−1.0 dBTP and enable True-Peak.',
+      'Release too fast — causes distortion and pumping, most audibly on bass.',
+      'No lookahead — fast transients overshoot and clip.',
+      'Using the limiter as a compressor — a limiter catches peaks; a compressor shapes dynamics. Reaching for the limiter to "compress" over-squashes.',
+      'Limiting too early in the chain — a brickwall belongs at/near the end of the master chain.',
+      'Forgetting dither on the final 24→16-bit export step.',
+    ],
+    proTips: [
+      'Gain-stage INTO the limiter with the input/drive; leave the ceiling fixed at −1.0 dBTP and judge by GR + ears, not the number.',
+      'Compare Attack 0 vs a hair of attack to hear transient punch return.',
+    ],
+    formula: 'Limiter ≈ compressor with ratio → ∞. True-peak estimation needs ≥4× oversampling to reconstruct inter-sample peaks. Ceiling is a hard cap: out ≤ ceiling always.',
+  },
+
+  // ─────────────────────────────────────────────────── LAB 10 · Distortion ──
+  distortion: {
+    id: 'distortion',
+    num: 10,
+    name: 'Distortion',
+    tier: 'T2',
+    tagline: 'Add harmonics with nonlinearity.',
+    whatItIs:
+      'Distortion/saturation reshapes the waveform through a nonlinearity, generating new ' +
+      'harmonics. Symmetric shaping adds odd harmonics (hollow/harsh); asymmetric adds even ' +
+      '(warm). Aliasing is both a hazard and a teaching target here.',
+    controls: names(['Tube', 'Tape', 'Hard clip', 'Soft clip', 'Saturation', 'Bit crush', 'Sample reduction']),
+    commonMistakes: [
+      'No oversampling → aliasing — nonlinearity creates harmonics above Nyquist that fold back as inharmonic harshness. Oversample — but aliasing is also a teaching target, so make oversampling a toggle.',
+      'Confusing loudness with distortion — drive raises level; level-match to judge character, not "more".',
+      'Too much drive — a touch adds harmonics/glue; excess buries clarity and intelligibility.',
+      'Not distinguishing odd vs even harmonics — symmetric (hard) clip → odd (hollow/harsh); asymmetric (tube) → even (warm).',
+      'Bit-crush vs sample-reduction confusion — bit reduction = quantization noise; sample-rate reduction = aliasing/downsampling. Different mechanisms.',
+      'Distorting the full range — often better to band-limit (drive the mids, keep lows/highs clean) to avoid fizz/mud.',
+      'DC offset from asymmetric shaping — builds up → click/headroom loss; HPF after the shaper.',
+    ],
+    proTips: [
+      'A/B hard-clip vs tube on a sine and read the FFT: odd-only vs odd+even harmonic stacks.',
+      'Push a high sine with oversampling OFF to show aliasing (inharmonic partials), then ON to remove it.',
+    ],
+    formula: 'A nonlinearity y = f(x) expands a sine into a harmonic series; symmetric f → odd, asymmetric f → even. Any harmonic above fs/2 aliases to fs − f. THD = harmonic energy ÷ fundamental energy.',
+  },
+
+  // ──────────────────────────────────────────────────────── LAB 11 · Noise ──
+  noise: {
+    id: 'noise',
+    num: 11,
+    name: 'Noise',
+    tier: 'T1',
+    tagline: 'Colors, floor, and masking.',
+    whatItIs:
+      'Noise sources differ by spectral slope ("color"). White has equal energy per Hz (bright); ' +
+      'pink has equal energy per octave (balanced). The lab also covers real-world noise: hum, ' +
+      'buzz, RF, ground loops — distinguished on the spectrogram.',
+    controls: names([
+      'White', 'Pink', 'Brown', 'Blue', 'Violet', 'Grey', 'Speech noise', 'HVAC', 'Traffic', 'Wind',
+      'Hum', 'Buzz', 'RF', 'Crackle', 'Static', 'Ground loop',
+    ]),
+    commonMistakes: [
+      'Expecting white noise to sound "neutral/flat" — white has equal energy per Hz, so it sounds bright/hissy; pink (equal per octave) sounds balanced.',
+      'Mixing up the colors — white (flat), pink (−3), brown/red (−6), blue (+3), violet (+6 dB/oct). The spectrum settles it.',
+      'Judging level across colors by loudness — equal-RMS noises of different colors sound very different.',
+      'Not reasoning about the noise floor / SNR — calling a signal "clean" without checking how far it sits above the floor.',
+      'Misreading hum vs buzz vs ground loop — hum = tonal 50/60 Hz + low harmonics; buzz = richer/spikier; ground loop = wiring-loop hum. The spectrogram distinguishes them.',
+      'Forgetting masking — a noise can be inaudible when masked by louder nearby content; SNR alone doesn’t predict audibility.',
+    ],
+    proTips: [
+      'Put white and pink side-by-side on the spectrum and let students hear both — the "why does white sound brighter?" moment.',
+      'Use the spectrogram to identify a mystery noise (hum vs buzz vs RF) as a challenge.',
+    ],
+    formula: 'Color = spectral slope (dB/octave); pink ∝ 1/f power. SNR (dB) = 20·log₁₀(signal/noise). Masking threshold rises with masker level within the critical band.',
+  },
+
+  // ──────────────────────────────────────────────────────── LAB 12 · Phase ──
+  phase: {
+    id: 'phase',
+    num: 12,
+    name: 'Phase',
+    tier: 'T2',
+    tagline: 'Polarity vs phase, made intuitive.',
+    whatItIs:
+      'This lab separates polarity (flip the whole waveform, 180° at all frequencies) from ' +
+      'phase (a frequency-dependent time/angle shift), and shows how each affects mono ' +
+      'compatibility on the correlation meter and Lissajous.',
+    controls: names(['Delay one channel', 'Invert polarity', 'Rotate phase', 'Stereo width']),
+    commonMistakes: [
+      'Confusing polarity with phase — polarity flips the whole waveform (the "Ø" button); phase is a frequency-dependent shift. Not interchangeable.',
+      'Assuming a polarity flip always fixes cancellation — it fixes a simple inversion; time-delay comb filtering needs time alignment.',
+      'Not checking mono — content that’s wide/phasey in stereo can cancel in mono.',
+      'Misreading the Lissajous/correlation — vertical line = mono/in-phase (+1); horizontal = anti-phase (−1, cancels); a ball = wide/decorrelated.',
+      'Treating any negative correlation as "bad" — some width uses controlled decorrelation; sustained −1 on key elements is the real problem.',
+      'Delaying one channel for width without mono-checking — introduces comb filtering.',
+    ],
+    proTips: [
+      'Sum two identical signals, flip polarity on one → silence (pure cancellation); then delay one → comb, showing polarity ≠ phase.',
+      'Keep the correlation meter on screen for every width move.',
+    ],
+    formula: 'Polarity invert = ×(−1) (broadband 180°). A time delay τ gives φ(f) = −2πfτ (phase grows with frequency → comb notches). Correlation = normalized cross-correlation of L/R (+1 / 0 / −1).',
+  },
+
+  // ────────────────────────────────────────────────────── LAB 13 · Harmonic ──
+  harmonic: {
+    id: 'harmonic',
+    num: 13,
+    name: 'Harmonic',
+    tier: 'T1',
+    tagline: 'Build tone from partials.',
+    whatItIs:
+      'The Harmonic lab builds and dissects waveforms by their partials. Sine = fundamental only; ' +
+      'square = odd harmonics; saw = all; triangle = odd (steeper rolloff). The FFT/harmonic ' +
+      'analyzer shows the content the oscilloscope shape cannot.',
+    controls: names([
+      'Sine', 'Square', 'Sawtooth', 'Triangle', 'Pulse', 'PWM', 'Complex',
+      'Frequency', 'Amplitude', 'Duty cycle', 'Wave shape', 'Add harmonics', 'Remove harmonics',
+    ]),
+    commonMistakes: [
+      'Not knowing which wave has which harmonics — sine = fundamental; square = odd (∝1/n); saw = all (∝1/n); triangle = odd (∝1/n²).',
+      'Reading the oscilloscope for spectrum — the scope shows the time-domain shape; harmonic content is on the FFT/analyzer.',
+      'Expecting duty cycle to change pitch — PWM changes timbre/harmonic content (and nulls certain harmonics), not the fundamental.',
+      'Thinking a real square/saw is "perfect" — ideal versions need infinite harmonics; band-limited/naïve digital ones differ and can alias.',
+      'Amplitude vs harmonic-amplitude confusion — overall level up ≠ "adding harmonics".',
+      'Ignoring harmonic phase — same amplitudes, different phases → very different waveform shape but nearly identical steady-tone sound (the ear’s phase-deafness).',
+    ],
+    proTips: [
+      'Build a square by adding odd harmonics one at a time (1st, 3rd, 5th…) and watch the scope approach a square — Fourier synthesis made visible.',
+      'Sweep PWM duty and watch harmonics null and reappear on the analyzer.',
+    ],
+    formula: 'Fourier series: square = Σ odd n, amplitude 1/n · saw = Σ all n, 1/n · triangle = Σ odd n, 1/n². Pulse (duty d): harmonic amplitude ∝ sin(nπd)/(nπ) → nulls where n·d is an integer.',
+  },
+
+  // ─────────────────────────────────────────────────── LAB 14 · Oscillator ──
+  oscillator: {
+    id: 'oscillator',
+    num: 14,
+    name: 'Oscillator',
+    tier: 'T1',
+    tagline: 'Waveforms, FM, AM, aliasing.',
+    whatItIs:
+      'The Oscillator lab generates classic waveforms plus FM and AM synthesis, and shows why ' +
+      'naïve digital saw/square alias. FM modulates frequency (rich sidebands); AM modulates ' +
+      'amplitude (tremolo).',
+    controls: names(['Sine', 'Square', 'Saw', 'Triangle', 'Pulse', 'Noise', 'FM', 'AM']),
+    commonMistakes: [
+      'Naïve digital waveforms alias — direct-math saw/square generate harmonics above Nyquist that fold back; band-limited generation (wavetable/BLEP) fixes it.',
+      'Confusing FM and AM — FM modulates frequency → sidebands at fc ± n·fm (rich/bell-like); AM modulates amplitude → fc ± fm (tremolo).',
+      'AM vs ring modulation — AM keeps the carrier; ring mod (balanced) suppresses it, leaving only sidebands (metallic).',
+      'Expecting FM depth to change pitch — increasing the modulation index changes timbre/richness; perceived pitch stays at the carrier.',
+      'Fundamental set near Nyquist — even band-limited oscillators run out of harmonics up high → thin/dull tone.',
+      'DC offset from pulse/asymmetric waves — clicks/headroom loss; center it or HPF.',
+    ],
+    proTips: [
+      'Sweep a saw’s pitch upward with band-limiting OFF to hear aliasing descend against the rising tone, then ON to fix it.',
+      'Compare FM vs AM at the same rate/depth on the FFT to see sideband structure differences.',
+    ],
+    formula: 'AM: carrier + sidebands at fc ± fm. FM: components at fc ± n·fm with Bessel-function amplitudes (index β = Δf/fm). Aliased component of f > fs/2 appears at fs − f.',
+  },
+
+  // ───────────────────────────────────────────────────────── LAB 15 · Stereo ──
+  stereo: {
+    id: 'stereo',
+    num: 15,
+    name: 'Stereo Imaging',
+    tier: 'T2',
+    tagline: 'Place and widen — keep mono safe.',
+    whatItIs:
+      'Stereo imaging places and shapes sound in the stereo field — pan, width, and Mid/Side ' +
+      'balance — with a constant eye on mono compatibility (what survives when L and R sum).',
+    controls: [
+      { key: 'pan', name: 'Pan / Balance', range: 'L100…C…R100 · default C', definition: 'Places the source (or shifts the center) left/right.' },
+      { key: 'width', name: 'Width', range: '0% (mono)…100%…200% · default 100%', definition: 'Narrows or widens the field by scaling the Side component vs the Mid.' },
+      { key: 'mid', name: 'Mid gain (M)', range: '±12 dB · default 0', definition: 'Level of the center/mono component (vocals, kick, snare, bass usually live here).' },
+      { key: 'side', name: 'Side gain (S)', range: '±12 dB · default 0', definition: 'Level of the difference/stereo component. Raising S widens.' },
+      { key: 'mono_fold', name: 'Mono-fold / Mono button', definition: 'Sums to mono to check compatibility — the single most important check in this lab.' },
+      { key: 'bass_mono', name: 'Bass-Mono / Mono-maker', range: 'off…300 Hz · default ~120 Hz', definition: 'Collapses everything below the crossover to mono (vinyl/PA/phase safety).' },
+      { key: 'multiband_width', name: 'Frequency-dependent (multiband) width', definition: 'Per-band width — keep lows mono, widen highs.', advanced: true },
+      { key: 'rotation', name: 'Rotation / Image balance', definition: 'Rotates the stereo image.', advanced: true },
+      { key: 'haas', name: 'Haas / L-R micro-delay', range: '0–30 ms', definition: 'Widens via arrival-time difference — powerful but the biggest mono-compatibility risk.', advanced: true },
+    ],
+    commonMistakes: [
+      'Over-widening → phase cancellation/mono collapse — huge on headphones, hollow or silent in mono; check mono-fold + correlation.',
+      'Widening the bass — wide lows are phasey and unstable; keep everything below ~100–150 Hz mono.',
+      'Confusing "louder" with "wider" — boosting Side raises level; level-match before judging width.',
+      'Haas/delay widening abuse — large L/R delays comb-filter in mono and smear localization; use tiny amounts.',
+      'Ignoring the correlation meter — sustained negative correlation = out-of-phase content that will cancel.',
+      'No center anchor — panning everything wide loses the phantom center (lead vocal, kick, snare, bass usually belong centered).',
+      'Using width to "fix" a dull or cluttered mix — width doesn’t fix arrangement or EQ problems.',
+    ],
+    proTips: [
+      'Workflow: set Bass-Mono first, then Width, then mono-check and read correlation, then level-match A/B.',
+      'Teach with pink noise + a centered vocal: widen and watch the vocal stay put while the sides balloon, then hit mono and hear the sides fold.',
+    ],
+    formula: 'M/S encode: M = (L + R)/√2, S = (L − R)/√2. Decode: L = (M + S)/√2, R = (M − S)/√2. Width = scaling S relative to M. Correlation = normalized cross-correlation of L and R (+1 / 0 / −1).',
+  },
+
+  // ───────────────────────────────────────────────── LAB 16 · Harmonograph ──
+  harmonograph: {
+    id: 'harmonograph',
+    num: 16,
+    name: 'Harmonograph',
+    tier: 'T1',
+    tagline: 'See musical intervals as figures.',
+    whatItIs:
+      'A virtual harmonograph: damped sinusoids drive a pen to draw deterministic figures set by ' +
+      'frequency ratios, phase, and damping. Driven by two oscillators, students hear the interval ' +
+      'while watching the figure — simple ratios draw stable closed loops.',
+    controls: names([
+      'f₁–f₄', 'Amplitude', 'Phase', 'Damping', 'Ratio-lock', 'Lateral/Rotary', 'Draw speed',
+      'Pen persistence', 'Drive-from-oscillators',
+    ]),
+    commonMistakes: [
+      'Thinking the figure is random art — every figure is deterministic; simple integer ratios draw stable closed figures.',
+      'Expecting complex/irrational ratios to close — only simple ratios (2:1, 3:2, 4:3) close cleanly; near-but-inexact ratios drift/precess, and that drift is beating.',
+      'Confusing amplitude with frequency — amplitude changes figure size; frequency changes the pattern.',
+      'Ignoring phase — same ratio, different phase → a rotated/different figure (line vs ellipse vs circle in the 2-pendulum case).',
+      'Damping extremes — none = it never resolves; too much = it dies before drawing. The decay envelope creates the spiral look.',
+      'Viewing it silently — the payoff is driving it from two oscillators: a consonant ratio yields a stable figure AND a consonant sound.',
+    ],
+    proTips: [
+      'Ratio-lock to 2:1, 3:2, 4:3, 5:4 and hear each interval as the figure snaps to a stable shape — intervals made visible + audible.',
+      'Detune slightly off a locked ratio and watch the figure slowly precess = seeing beats.',
+    ],
+    formula: 'x(t) = A₁sin(f₁t+φ₁)e^(−d₁t) + A₂sin(f₂t+φ₂)e^(−d₂t) (similarly y). Ratio f₁:f₂ = musical interval; the undamped 2-pendulum case = a Lissajous figure; a small detune Δ makes the figure precess at a rate ∝ Δ.',
+  },
+};
+
+/** Lab lessons in spec order (1..16) — for menus/indexes. */
+export const LAB_LESSON_LIST: LabLesson[] = Object.values(LAB_LESSONS).sort((a, b) => a.num - b.num);
+
+/** Look up a lab lesson by id. */
+export function getLabLesson(id: LabId): LabLesson {
+  return LAB_LESSONS[id];
+}
+
+/** Look up a single control lesson within a lab (undefined if not authored). */
+export function getControlLesson(id: LabId, controlKey: string) {
+  return LAB_LESSONS[id].controls.find((c) => c.key === controlKey);
+}

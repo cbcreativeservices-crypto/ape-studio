@@ -1,0 +1,8 @@
+/**
+ * Guided Lessons — the typed content layer + reusable renderer behind every
+ * lab's Guided-Lesson stack (v4 MASTER §5). Author content in content.ts;
+ * render it anywhere with GuidedLessonBody (inline) or GuidedLessonSheet (modal).
+ */
+export type { LabId, LabTier, ControlLesson, LabLesson } from './types';
+export { LAB_LESSONS, LAB_LESSON_LIST, getLabLesson, getControlLesson } from './content';
+export { GuidedLessonBody, GuidedLessonSheet } from './GuidedLessonSheet';
