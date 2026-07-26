@@ -245,4 +245,65 @@ tick; stopwatch records once on completion). No hard stop on overtime.
 - Glossary bookmark popup redesign (glossary list default + other lists below) and
   `TermSelectIcons` `hideKnown` (✓/✗ hidden in bookmark/custom list popups) + confirm-on-close.
 
+## Addendum — big session (owner, 2026-07-25 → 26): Ear Lab, additive engine, audio-mute, pace-timer suite
+
+All committed+pushed at **HEAD `7ab920e`** on `audio-tools-engine` (49 files, +8554/−357);
+tsc 0 / Android+iOS bundles 200 / native goldens **82/82**. Client-only except the noted
+Supabase migrations (backend was FROZEN; owner explicitly green-lit each — dev, no live users).
+
+### Backend migrations DEPLOYED (prod `yjgolswjggmlpeowvtxr`)
+- **P1 quiz** `p1_quiz_30q_pass28_drop_partial` — 30 questions, pass ≥ 28, partial-unlock path retired.
+- **Time-trial crediting** (3 migrations): `p3_time_trial_credit` (adds `student_method_progress.trial_passed`
+  + `credit_time_trial(achievement,method)` RPC, authenticated-only, mirrors `record_study_progress`
+  guards); `p3_time_trial_gate_honor` (`start_quiz_attempt` counts a method done when `trial_passed`);
+  `p3_time_trial_snapshot_honor` (`build_study_snapshot.gate_pass` honors it so the HUD matches).
+- (P2 delete-account RPC + P3 pace records recorded above.)
+
+### Pace-timer suite — evolved well past the original P3 spec (owner iterations)
+Grace period (in-progress question gets a full lap before "behind"); marker steps in 5s intervals;
+GREEN on-pace/ahead, AMBER only when behind; pace advances on CORRECT answers only; `BrainoutputsPM`
+= individual correct-press rate (per-pair in Matching); centered multiplier tag on the scale;
+console-fader preset picker (tap, not hold); AUTO TRACK silent background mode (saves to records);
+separate running/added state (start-stop flip + reset + remove); TimerIcon (custom, always blue);
+thin border-less **fullscreen** readout (long-press = reset). **TIME TRIAL** = official 15-min
+challenge: average ≥ quiz pace, correct-only, a pass credits ONE study method (the crediting is the
+backend work above). Continue-Learning banner deep-links to the exact last method screen.
+
+### Global AUDIO-OUTPUT MUTE — safety/product policy (owner, 2026-07-25)
+App is **SILENT BY DEFAULT**. No app-emitted sound until a deliberate **5-second hold** enables it;
+**auto-re-mutes** on relaunch, login, and 10 minutes idle. Any sound attempt fronts a two-step gate
+(explain → hold-to-enable). Covers ALL app audio incl. in-app TTS ("ADA" cues) and the tone generator.
+When armed: a persistent thin **red screen frame** (every screen) + the Profile row reads red.
+Disclosed limit: OS assistive tech (VoiceOver/TalkBack) is OS-controlled and cannot be app-muted.
+
+### EAR TRAINING & CRITICAL LISTENING LAB — new learning environment
+Its own pinned **home card + route** — the **7-tool audio dashboard stays FROZEN** (spec §), so the
+Lab is NOT a hub tile. Full owner spec of record: `docs/APE_HARMONICS_WATERFALL_LAB_SPEC_2026_07_25.md`
+(Harmonic Visualizer + 3-D Waterfall Decay Analyzer). Phasing: **P1 shell** (modes Learn/Explore/
+Practice/Test, audio-gate on entry) ✅ · **HarmonicsView** RX-style (log axis + LIN, piano-key gutter
+with note/cents, RX heat colormap, hi-res) analytic + live-mic ✅ · **HV-1** interactive analytic lab
+(draggable stems, identity cards, phase lab, 9 presets, odd/even, THD, A/B, solo audio) ✅ · **HV-2**
+NATIVE additive synthesis ✅. **Parked** (owner): the 3-D Waterfall (spec banked) until the harmonic
+visualizer is finished. NEXT: HV-3 (learning modes wired to sound), then Waterfall.
+
+Integrity rulings reaffirmed for the Lab (§1.7 no-fake-meters extended): ANALYTIC vs LIVE always
+labeled ("ANALYTIC MODEL — NOT A MEASUREMENT"; live = "dBFS · UNCALIBRATED"); **THD+N is never
+fabricated** in the analytic model (shown as "live measurement required"); waveform presets are
+labeled "simplified instructional models" (no claim of reproducing real tubes/transformers/speakers);
+no auto-playing audio.
+
+### ape-dsp engine — additive synthesis (native)
+New GenMode **12 "additive"**: 12 phase-continuous harmonics, per-harmonic amp/phase, no-clip
+`norm = 1/max(1, Σaₙ)` through the SAME Q4 level-cap chain as sine, ~8 ms slope-limited ramps.
+Identical contract across C++/iOS/Android/TS (flat `[f0, a1..a12, p1..p12]`, Hz/0..1/degrees);
+`engineVersion` **2 → 3** (constant-driven). v3 → `PLAY MODEL` plays the live 12-harmonic mixture;
+v2 installs fall back to sine + honest note. Golden suite **82/82** (17 new additive vectors: spectral
+correctness, all-ones clip bound under the cap, ramp continuity, phase/crest, Nyquist omission).
+
+### Device builds (2026-07-26, from `7ab920e`) — owner upgraded EAS plan
+Both **v3 dev clients** built: Android (build 118fd704) + iOS (build 6834bea7, provisioned iPhone
+UDID 00008130-…001C; iPad still unregistered → needs `eas device:create` + rebuild). Dev clients load
+JS + Supabase keys from Metro at runtime (sidesteps the old standalone "supabaseUrl required" crash).
+**On-device validation is the open item** — the HV-2 mixture audio and everything else awaits a real pass.
+
 *End of decisions log.*
