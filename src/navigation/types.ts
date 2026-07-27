@@ -158,6 +158,11 @@ export type RootStackParamList = {
   /** EXPANSION lab (owner 2026-07-26) — pitch correction on the cents grid:
    *  correction amount + retune speed on a generator melody (no mic). */
   AutotuneLab: undefined;
+  /** WAVE-2 expansion labs (owner 2026-07-26) — audio needs engineVersion ≥ 7
+   *  (visuals + lessons work on any build, gated honestly). */
+  FmLab: undefined;
+  BinauralLab: undefined;
+  ModularLab: undefined;
 };
 
 declare global {

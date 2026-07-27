@@ -651,6 +651,112 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     ],
     formula: 'Error(cents) = 1200·log₂(f/f_target). Correction target = f_sung shifted by amount × error. Retune: f(t) approaches the target exponentially with time constant τ (retune speed). 100 cents = 1 semitone.',
   },
+
+  // ─────────────────────────────────── EXPANSION · FM Synth Lab (2026-07-26) ──
+  fm: {
+    id: 'fm',
+    num: 20,
+    name: 'FM Synth',
+    tier: 'T2',
+    tagline: 'Two sine waves, infinite timbres.',
+    whatItIs:
+      'FM synthesis modulates the PHASE of one sine (the carrier) with another (the ' +
+      'modulator). That simple act sprays energy into sidebands at carrier ± k×modulator, ' +
+      'with amplitudes given by Bessel functions of the modulation index. Ratio sets WHERE ' +
+      'the sidebands land (harmonic vs inharmonic); index sets HOW MANY are audible ' +
+      '(brightness). Put an envelope on the index and brightness moves over time — the ' +
+      'classic FM bell and electric piano.',
+    controls: [
+      { key: 'carrier', name: 'Carrier frequency', definition: 'The base oscillator being modulated — the perceived pitch anchor (for harmonic ratios).', range: '110–880 Hz in this lab' },
+      { key: 'ratio', name: 'Modulator ratio', definition: 'Modulator frequency = ratio × carrier. INTEGER ratios put sidebands on a harmonic series (pitched, brassy/organ-like); NON-INTEGER ratios land them between harmonics (inharmonic — bells, metallic).', range: '0.5–8 · default 2' },
+      { key: 'index', name: 'Modulation index (I)', definition: 'Peak phase deviation in radians. I=0 is a pure sine; raising I activates more sideband pairs (≈ I+1 audible pairs) — the brightness control of FM.', range: '0–8 in this lab' },
+      { key: 'index_env', name: 'Index envelope', definition: 'An exponential decay on the index per strike: bright attack fading to pure tone — the classic FM pluck/bell behavior. SUSTAIN holds the index static.' },
+    ],
+    commonMistakes: [
+      'Thinking FM adds harmonics like distortion — FM places sidebands SYMMETRICALLY around the carrier at ±k·fm; the spectrum is a Bessel pattern, not a rolloff.',
+      'Expecting louder sidebands with higher index everywhere — Bessel amplitudes OSCILLATE: a given sideband can get quieter as the index rises (and the carrier itself can vanish, J₀=0 near I≈2.4).',
+      'Using a non-integer ratio and wondering why the pitch is unclear — inharmonic sidebands don’t form a harmonic series, so the ear loses the fundamental (that IS the bell sound).',
+      'Cranking index at high ratios — Carson bandwidth ≈ 2·fm·(I+1) can cross Nyquist and alias (digital FM is not band-limited by construction).',
+      'Confusing FM with vibrato — vibrato is SLOW frequency modulation (a few Hz, hear the wobble); audio-rate modulation is heard as TIMBRE, not pitch movement.',
+      'Ignoring the index envelope — static-index FM sounds like an organ; the movement of brightness over time is what makes FM instruments live.',
+    ],
+    proTips: [
+      'Hold ratio 2 and step the index 0→1→2→4→8 while watching the sideband graph — you can SEE brightness being added pair by pair.',
+      'A/B ratio 2 vs ratio 1.41 at the same index: same bandwidth, harmonic vs bell — placement, not amount, decides the character.',
+    ],
+    formula: 'y(t) = sin(2π·fc·t + I·sin(2π·fm·t)), fm = ratio·fc. Sideband amplitude at fc±k·fm = J_k(I) (Bessel). Carson bandwidth ≈ 2·fm·(I+1).',
+  },
+
+  // ────────────────────────────── EXPANSION · Binaural Panner Lab (2026-07-26) ──
+  binaural: {
+    id: 'binaural',
+    num: 21,
+    name: 'Binaural Panner',
+    tier: 'T2',
+    tagline: 'Two ears, one 3-D world.',
+    whatItIs:
+      'Your brain locates sound with TWO ear signals: the interaural time difference (ITD — ' +
+      'the far ear hears later, up to ~0.7 ms) and the interaural level difference (ILD — the ' +
+      'head shadows high frequencies at the far ear). This lab synthesizes those cues ' +
+      'directly: place up to three sources around your head and hear them localize in a ' +
+      'binaural HEADPHONE mix. It uses a simplified spherical-head model — real ears also use ' +
+      'pinna/HRTF spectral cues (which this model deliberately does not fake).',
+    controls: [
+      { key: 'azimuth', name: 'Azimuth', definition: 'The source’s angle around your head: 0° = front, ±90° = hard side, ±180° = behind. Drives ITD (delay) and ILD/shadow (level + tone) together, as physics does.', range: '−180°..+180°' },
+      { key: 'distance', name: 'Distance', definition: 'Inverse-distance level (−6 dB per doubling, re 1 m). Distance perception also uses reflections/air absorption — not modeled here (stated).', range: '0.5–4 m' },
+      { key: 'source_type', name: 'Source type', definition: 'Sine, white or pink noise per object. Noise localizes much more strongly than a pure tone — broadband content feeds BOTH cues at every frequency.' },
+      { key: 'objects', name: 'Sound objects (up to 3)', definition: 'Independent sources mixed to one binaural bus. The bus is peak-bounded (norm shown when attenuating).' },
+    ],
+    commonMistakes: [
+      'Listening on speakers — binaural cues require HEADPHONES; on speakers the two channels mix in the air (crosstalk) and the illusion collapses.',
+      'Expecting elevation — this model does azimuth + distance only; up/down cues come from pinna filtering (HRTF), which a time/level model cannot produce.',
+      'Testing with a low sine and hearing nothing move — ITD phase cues get ambiguous and ILD nearly vanishes at low frequencies; use noise or a higher tone to hear the effect clearly.',
+      'Front/back confusion — time and level are (nearly) symmetric front-to-back; without personal HRTF cues the brain guesses. The gentle rear darkening here is a hint, not a solution.',
+      'Confusing binaural with stereo panning — pan pots change LEVEL only; binaural adds the TIME and SHADOW cues your ears actually use.',
+      'Assuming this is an HRTF renderer — it is deliberately a simplified physics model (badged); measured-HRTF localization is sharper, especially outside the front arc.',
+    ],
+    proTips: [
+      'Drag a pink-noise source in a slow circle with your eyes closed — notice the side positions snap hard while front/back stays vague. That boundary IS the limit of time/level cues.',
+      'Park one source at −90° and A/B sine 250 Hz vs pink noise: the noise images sharply, the low sine barely moves — cue strength is frequency-dependent.',
+    ],
+    formula: 'ITD (Woodworth sphere) = (r/c)·(θ + sin θ), r ≈ 8.75 cm → max ≈ 0.66 ms. ILD grows with sin θ (to ~8 dB here) + head-shadow low-pass on the far ear. Distance: gain ∝ 1/d.',
+  },
+
+  // ─────────────────────────────── EXPANSION · Modular Synth Lab (2026-07-26) ──
+  modular: {
+    id: 'modular',
+    num: 22,
+    name: 'Modular Synth',
+    tier: 'T2',
+    tagline: 'Signal flow IS the instrument.',
+    whatItIs:
+      'The canonical subtractive voice: an oscillator (VCO) makes a bright wave, a filter ' +
+      '(VCF) sculpts its harmonics, an amplifier (VCA) shapes its loudness — and the MOD ' +
+      'sources (envelope, LFO, sequencer) automate those controls over time. Every classic ' +
+      'synth sound is a ROUTING decision: what modulates what. The patch diagram in this lab ' +
+      'is the actual signal flow of the audio you hear.',
+    controls: [
+      { key: 'vco', name: 'VCO (oscillator)', definition: 'The tone source: saw (every harmonic, 1/n), square (odd harmonics), triangle (odd, 1/n² — mellow), sine (fundamental only — nothing for the filter to remove!).' },
+      { key: 'vcf', name: 'VCF (filter)', definition: 'A resonant low-pass: cutoff sets how many harmonics survive; resonance boosts right at the cutoff, giving the honk/squelch. Subtractive synthesis = start bright, carve away.', range: 'cutoff 60 Hz–14 kHz · resonance 0–1' },
+      { key: 'envelope', name: 'ADSR envelope', definition: 'Attack·Decay·Sustain·Release — the loudness contour of each note (always on the VCA). Routed to the filter (env→cutoff) it makes each note open bright and close dark: the classic synth pluck.' },
+      { key: 'lfo', name: 'LFO', definition: 'A low-frequency oscillator too slow to hear as a tone — it WIGGLES a destination instead: pitch = vibrato, cutoff = wah/wobble, amp = tremolo. One modulator, three different classic effects.', range: '0.05–30 Hz' },
+      { key: 'sequencer', name: 'Step sequencer', definition: '8 steps of semitone offsets; each active step retunes the VCO and retriggers the envelope. A rest step releases. Rate sets the tempo — the melody is a control signal too.' },
+    ],
+    commonMistakes: [
+      'Filtering a sine and hearing nothing change — the filter can only REMOVE harmonics; a sine has none above the fundamental. Subtractive synthesis needs a bright source.',
+      'Confusing the VCA envelope with the filter envelope — one shapes LOUDNESS, the other BRIGHTNESS; the classic pluck needs env→cutoff, not just a fast amp decay.',
+      'LFO destination mix-ups — the SAME LFO is vibrato on pitch, wobble on cutoff, tremolo on amp; if the effect sounds wrong, check the routing before the rate.',
+      'LFO rate into audio range — past ~20 Hz modulation stops sounding like movement and starts creating sidebands (that’s FM territory, a different lab).',
+      'Resonance masking the real cutoff — high resonance rings at the cutoff so hard it reads as "the sound"; set it to 0 first, place the cutoff, then add resonance.',
+      'Sequencer without envelope retrigger — steps that only retune (no new envelope) smear into a glide; the per-step retrigger is what articulates notes.',
+      'Ignoring gain staging into the output stage — a full-resonance peak drives the saturating output stage harder (audible grit); that is analog-style behavior, not a bug.',
+    ],
+    proTips: [
+      'Build the classic bass in order: saw → cutoff ~800 Hz → resonance up → env→cutoff positive with fast decay → sequencer on. Listen after EACH patch step — that is the whole synthesis lesson.',
+      'Set LFO depth to max and switch destinations pitch → cutoff → amp at the same rate: one control signal, three famous effects.',
+    ],
+    formula: 'Signal: VCO → VCF → VCA → out. Modulation: ADSR → VCA (always) and optionally → cutoff; LFO → pitch | cutoff | amp; SEQ → pitch + envelope retrigger. f(step) = f₀·2^(semis/12).',
+  },
 };
 
 /** Lab lessons in spec order (1..16) — for menus/indexes. */

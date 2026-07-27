@@ -30,6 +30,9 @@ export type LabRoute =
   | 'HarmonographLab'
   | 'BassLab'
   | 'AutotuneLab'
+  | 'FmLab'
+  | 'BinauralLab'
+  | 'ModularLab'
   | 'EqLab'
   | 'DelayLab'
   | 'ReverbLab'
@@ -97,6 +100,16 @@ const READY_TERMS_HARMONOGRAPH = [
 // 'Semitone', 'Autotune' etc. are NOT glossary terms today — nothing to link).
 const READY_TERMS_BASS = ['Wavelength', 'Standing wave', 'Antinode', 'Resonance'];
 const READY_TERMS_AUTOTUNE = ['Pitch Correction', 'Pitch', 'Cents'];
+// Wave-2 expansion labs (2026-07-26). DB-verified 2026-07-26; 'Low-Pass Filter'
+// stays with EqLab (READY is one-profile-per-term); HRTF links to Binaural
+// because its lesson teaches exactly what an HRTF is (and that our model isn't
+// one). 'Carrier'/'Modulator'/'Sideband'/'Binaural'/'ITD'/'ILD' not in DB.
+const READY_TERMS_FM = ['FM Synthesis', 'Frequency modulation'];
+const READY_TERMS_BINAURAL = ['Sound Localization', 'Spatial Audio', 'Head-related transfer function'];
+const READY_TERMS_MODULAR = [
+  'Synthesizer', 'Synthesis', 'Subtractive Synthesis', 'VCO', 'VCF', 'LFO', 'ADSR',
+  'Envelope', 'Sequencer', 'Step Sequencer', 'cutoff frequency', 'Patch', 'Tremolo', 'Vibrato',
+];
 
 // Effect labs LIVE (2026-07-26, the 12 FxLab screens over the v6 effects path).
 // DB-verified terms only; each is genuinely taught by its lab's controls +
@@ -138,6 +151,15 @@ const READY: Record<string, LearningProfile> = Object.fromEntries([
   ),
   ...READY_TERMS_AUTOTUNE.map(
     (t) => [normTerm(t), { lab: 'autotune', actions: launch('AutotuneLab') } as LearningProfile] as const,
+  ),
+  ...READY_TERMS_FM.map(
+    (t) => [normTerm(t), { lab: 'fm', actions: launch('FmLab') } as LearningProfile] as const,
+  ),
+  ...READY_TERMS_BINAURAL.map(
+    (t) => [normTerm(t), { lab: 'binaural', actions: launch('BinauralLab') } as LearningProfile] as const,
+  ),
+  ...READY_TERMS_MODULAR.map(
+    (t) => [normTerm(t), { lab: 'modular', actions: launch('ModularLab') } as LearningProfile] as const,
   ),
 ]);
 

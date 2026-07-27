@@ -35,7 +35,10 @@ export type LabId =
   | 'harmonograph'
   | 'chain' // Signal Chain Builder (Pillar B capstone, §8)
   | 'bass' // Bass Guitar Lab — string division / harmonics / intervals
-  | 'autotune'; // Autotune Lab — pitch correction on the cents grid
+  | 'autotune' // Autotune Lab — pitch correction on the cents grid
+  | 'fm' // FM Synth Lab — carrier + modulator, ratio, index, sidebands
+  | 'binaural' // Binaural Panner Lab — ITD/ILD localization (simplified model)
+  | 'modular'; // Modular Synth Lab — VCO→VCF→VCA + LFO/ENV/SEQ signal flow
 
 /** Native-engine feasibility tier (v4 MASTER §12) — informational. */
 export type LabTier = 'T1' | 'T2' | 'T3';
