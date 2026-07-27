@@ -800,6 +800,195 @@ int main() {
     }());
   }
 
+  // ---- 12) Effects path — Delay, Mod, Dynamics, Distortion, Reverb, Stereo
+  {
+    // Helper: sine gain (dB) through a stereo effect, after settle.
+    auto fxSineGainDb = [&](auto& fxNode, double f, double amp) {
+      const size_t settle = static_cast<size_t>(fs * 0.3), meas = static_cast<size_t>(fs * 0.3);
+      const double w = 2.0 * 3.14159265358979323846 * f / fs;
+      std::vector<float> L(settle + meas), R(settle + meas);
+      for (size_t i = 0; i < L.size(); ++i) L[i] = R[i] = (float)(amp * std::sin(w * i));
+      fxNode.processStereo(L.data(), R.data(), (uint32_t)L.size());
+      double so = 0.0;
+      for (size_t i = settle; i < L.size(); ++i) so += (double)L[i] * L[i];
+      const double si = amp * amp * 0.5 * (double)meas;
+      return 10.0 * std::log10((so + 1e-30) / (si + 1e-30));
+    };
+    auto magIn = [&](const std::vector<float>& b, size_t skip, size_t len, double f) {
+      double re = 0.0, im = 0.0;
+      const double w = 2.0 * 3.14159265358979323846 * f / fs;
+      for (size_t i = 0; i < len; ++i) { re += b[skip + i] * std::cos(w * i); im -= b[skip + i] * std::sin(w * i); }
+      return 2.0 * std::sqrt(re * re + im * im) / len;
+    };
+
+    // 12a. DELAY — impulse: echo lands at T; second echo ≈ feedback ratio.
+    {
+      DelayEffect d;
+      d.setParam(1, 100.0);  // 100 ms
+      d.setParam(2, 0.5);
+      d.setParam(3, 1.0);    // full wet: taps only
+      d.setParam(5, 20000.0);
+      d.configure(fs);
+      d.setEnabled(true);
+      std::vector<float> L(static_cast<size_t>(fs * 0.35), 0.0f), R(L.size(), 0.0f);
+      L[0] = R[0] = 1.0f;
+      d.processStereo(L.data(), R.data(), (uint32_t)L.size());
+      auto peakNear = [&](double tSec) {
+        const size_t c = static_cast<size_t>(tSec * fs);
+        double p = 0.0;
+        for (size_t i = c - 200; i < c + 200 && i < L.size(); ++i) p = std::max(p, (double)std::fabs(L[i]));
+        return p;
+      };
+      const double t1 = peakNear(0.100), t2 = peakNear(0.200);
+      truthy("Delay: echo at 100 ms", t1 > 0.5);
+      near("Delay: 2nd echo / 1st = feedback", t2 / (t1 + 1e-12), 0.5, 0.12);
+    }
+    // 12b. FLANGER comb — static (depth 0) 2 ms delay at 50% mix: notch at
+    //      250 Hz ((2k−1)/2τ), flat at 500 Hz.
+    {
+      ModEffect m;
+      m.configure(fs);
+      m.setEnabled(true);
+      m.setParam(1, 1.0);  // flanger
+      m.setParam(3, 0.0);  // depth 0 = static comb
+      m.setParam(6, 2.0);  // 2 ms
+      m.setParam(5, 0.5);
+      truthy("Flanger comb: notch at 250 Hz (<= -20 dB)", fxSineGainDb(m, 250.0, 0.3) < -20.0);
+      ModEffect m2;
+      m2.configure(fs);
+      m2.setEnabled(true);
+      m2.setParam(1, 1.0); m2.setParam(3, 0.0); m2.setParam(6, 2.0); m2.setParam(5, 0.5);
+      near("Flanger comb: flat at 500 Hz", fxSineGainDb(m2, 500.0, 0.3), 0.0, 1.0);
+    }
+    // 12c. PHASER — static 4-stage: some frequency is deeply notched, nothing
+    //      wildly boosted (uneven sparse notches — the defining signature).
+    {
+      double minG = 100.0, maxG = -100.0;
+      for (int k = 0; k < 40; ++k) {
+        ModEffect p;
+        p.configure(fs);
+        p.setEnabled(true);
+        p.setParam(1, 2.0); p.setParam(3, 0.0); p.setParam(7, 1000.0);
+        p.setParam(8, 4.0); p.setParam(5, 0.5); p.setParam(4, 0.0);
+        const double f = 100.0 * std::pow(10000.0 / 100.0, k / 39.0);
+        const double g = fxSineGainDb(p, f, 0.3);
+        minG = std::min(minG, g);
+        maxG = std::max(maxG, g);
+      }
+      truthy("Phaser: a deep notch exists (<= -10 dB)", minG < -10.0);
+      truthy("Phaser: no runaway boost (<= +3.5 dB)", maxG < 3.5);
+    }
+    // 12d. COMPRESSOR — −6 dBFS sine over a −20 threshold at 4:1 → ~10.5 dB GR.
+    {
+      DynamicsEffect c(DynamicsEffect::Compressor);
+      c.configure(fs);
+      c.setEnabled(true);
+      c.setParam(1, -20.0); c.setParam(2, 4.0); c.setParam(3, 5.0); c.setParam(4, 100.0);
+      near("Compressor: 4:1 over 14 dB → ~10.5 dB GR", fxSineGainDb(c, 1000.0, 0.5), -10.5, 1.2);
+      near("Compressor: grDb readout matches", c.grDb(), 10.5, 1.2);
+    }
+    // 12e. GATE — closed under threshold attenuates toward the range floor;
+    //      open above passes at unity.
+    {
+      DynamicsEffect gq(DynamicsEffect::GateMode);
+      gq.configure(fs);
+      gq.setEnabled(true);
+      gq.setParam(1, -30.0); gq.setParam(6, -40.0); gq.setParam(4, 60.0);
+      truthy("Gate: closed under threshold (<= -30 dB)", fxSineGainDb(gq, 1000.0, 0.003) < -30.0);
+      DynamicsEffect go(DynamicsEffect::GateMode);
+      go.configure(fs);
+      go.setEnabled(true);
+      go.setParam(1, -30.0); go.setParam(6, -40.0);
+      near("Gate: open above threshold (unity)", fxSineGainDb(go, 1000.0, 0.5), 0.0, 1.0);
+    }
+    // 12f. LIMITER — 0 dBFS sine against a −12 ceiling → output ~−12 dBFS.
+    {
+      DynamicsEffect lim(DynamicsEffect::LimiterMode);
+      lim.configure(fs);
+      lim.setEnabled(true);
+      lim.setParam(8, -12.0); lim.setParam(4, 200.0);
+      near("Limiter: 0 dBFS held to -12 ceiling", fxSineGainDb(lim, 1000.0, 1.0), -12.0, 1.2);
+    }
+    // 12g. DISTORTION — symmetric hard clip → odd harmonics only; asymmetric
+    //      tube → even harmonics appear (the core lesson).
+    {
+      auto renderDist = [&](int type) {
+        DistortionEffect dd;
+        dd.configure(fs);
+        dd.setEnabled(true);
+        dd.setParam(1, (double)type); dd.setParam(2, 12.0); dd.setParam(3, 1.0); dd.setParam(4, 0.0);
+        const double w = 2.0 * 3.14159265358979323846 * 480.0 / fs;
+        std::vector<float> L(static_cast<size_t>(fs * 0.5)), R(L.size());
+        for (size_t i = 0; i < L.size(); ++i) L[i] = R[i] = (float)(0.5 * std::sin(w * i));
+        dd.processStereo(L.data(), R.data(), (uint32_t)L.size());
+        return L;
+      };
+      const size_t skip = static_cast<size_t>(fs * 0.2);
+      auto hard = renderDist(0);
+      const size_t len = hard.size() - skip;
+      truthy("Distortion hard: H3 present", magIn(hard, skip, len, 1440.0) > 0.01);
+      truthy("Distortion hard: H2 absent (odd only)", magIn(hard, skip, len, 960.0) < 0.005);
+      auto tube = renderDist(2);
+      truthy("Distortion tube: H2 present (asymmetric → even)", magIn(tube, skip, len, 960.0) > 0.01);
+    }
+    // 12h. REVERB — impulse grows a decaying tail; late < early (RT60 0.5 s).
+    {
+      ReverbEffect rv;
+      rv.setParam(1, 0.5); rv.setParam(2, 0.0); rv.setParam(4, 1.0);
+      rv.configure(fs);
+      rv.setEnabled(true);
+      std::vector<float> L(static_cast<size_t>(fs * 0.8), 0.0f), R(L.size(), 0.0f);
+      L[0] = R[0] = 1.0f;
+      rv.processStereo(L.data(), R.data(), (uint32_t)L.size());
+      auto energy = [&](double a, double b) {
+        double e = 0.0;
+        for (size_t i = (size_t)(a * fs); i < (size_t)(b * fs) && i < L.size(); ++i) e += (double)L[i] * L[i];
+        return e;
+      };
+      const double early = energy(0.05, 0.15), late = energy(0.4, 0.5);
+      truthy("Reverb: tail exists (early energy > 0)", early > 1e-7);
+      truthy("Reverb: tail decays (late < early)", late < early);
+    }
+    // 12i. STEREO — width 0 collapses to mono; polarity invert flips R vs L.
+    {
+      StereoEffect st;
+      st.configure(fs);
+      st.setEnabled(true);
+      st.setParam(1, 0.0);  // width 0 = mono
+      std::vector<float> L(512), R(512);
+      for (size_t i = 0; i < L.size(); ++i) {
+        L[i] = (float)std::sin(0.05 * i);
+        R[i] = (float)std::sin(0.11 * i);
+      }
+      st.processStereo(L.data(), R.data(), (uint32_t)L.size());
+      bool mono = true;
+      for (size_t i = 0; i < L.size(); ++i)
+        if (std::fabs(L[i] - R[i]) > 1e-5f) { mono = false; break; }
+      truthy("Stereo: width 0 collapses to mono (L == R)", mono);
+      StereoEffect si;
+      si.configure(fs);
+      si.setEnabled(true);
+      si.setParam(4, 1.0);  // invert R
+      std::vector<float> L2(512), R2(512);
+      for (size_t i = 0; i < L2.size(); ++i) L2[i] = R2[i] = (float)(0.5 * std::sin(0.05 * i));
+      si.processStereo(L2.data(), R2.data(), (uint32_t)L2.size());
+      bool anti = true;
+      for (size_t i = 8; i < L2.size(); ++i)
+        if (std::fabs(L2[i] + R2[i]) > 1e-4f) { anti = false; break; }
+      truthy("Stereo: R-polarity invert → L = -R (cancels in mono)", anti);
+    }
+    // 12j. CHAIN — scalar dispatch + reset.
+    {
+      EffectChain ch;
+      ch.configure(fs);
+      truthy("Chain: idle by default", !ch.anyActive());
+      ch.set(fx::Eq, 0, 1.0);
+      truthy("Chain: fxSet enables a node", ch.anyActive());
+      ch.reset();
+      truthy("Chain: reset disables everything", !ch.anyActive());
+    }
+  }
+
   std::printf("\n==== GOLDEN RESULT: %d passed, %d failed ====\n", g_pass, g_fail);
   return g_fail == 0 ? 0 : 1;
 }
