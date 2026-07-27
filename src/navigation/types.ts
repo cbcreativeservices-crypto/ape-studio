@@ -152,6 +152,12 @@ export type RootStackParamList = {
   /** Pillar B CAPSTONE (v4 §8) — the Signal Chain Builder: the full effect
    *  chain as one instrument; scenario presets teach the interactions. */
   SignalChainLab: undefined;
+  /** EXPANSION lab (owner 2026-07-26) — 4-string fretted bass: string division,
+   *  wavelength, natural harmonics, fraction ↔ interval. LabShell-based. */
+  BassLab: undefined;
+  /** EXPANSION lab (owner 2026-07-26) — pitch correction on the cents grid:
+   *  correction amount + retune speed on a generator melody (no mic). */
+  AutotuneLab: undefined;
 };
 
 declare global {

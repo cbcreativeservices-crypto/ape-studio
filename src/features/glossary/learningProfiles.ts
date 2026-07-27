@@ -28,6 +28,8 @@ export type LabRoute =
   | 'OscillatorLab'
   | 'NoiseLab'
   | 'HarmonographLab'
+  | 'BassLab'
+  | 'AutotuneLab'
   | 'EqLab'
   | 'DelayLab'
   | 'ReverbLab'
@@ -91,6 +93,10 @@ const READY_TERMS_NOISE = ['Noise', 'White Noise', 'Pink Noise'];
 const READY_TERMS_HARMONOGRAPH = [
   'Interval', 'Octave', 'Unison', 'Consonance', 'Dissonance', 'Beat Frequency',
 ];
+// Expansion labs LIVE (2026-07-26, wave 1). DB-verified terms only ('Node',
+// 'Semitone', 'Autotune' etc. are NOT glossary terms today — nothing to link).
+const READY_TERMS_BASS = ['Wavelength', 'Standing wave', 'Antinode', 'Resonance'];
+const READY_TERMS_AUTOTUNE = ['Pitch Correction', 'Pitch', 'Cents'];
 
 // Effect labs LIVE (2026-07-26, the 12 FxLab screens over the v6 effects path).
 // DB-verified terms only; each is genuinely taught by its lab's controls +
@@ -126,6 +132,12 @@ const READY: Record<string, LearningProfile> = Object.fromEntries([
   ),
   ...READY_TERMS_HARMONOGRAPH.map(
     (t) => [normTerm(t), { lab: 'harmonograph', actions: launch('HarmonographLab') } as LearningProfile] as const,
+  ),
+  ...READY_TERMS_BASS.map(
+    (t) => [normTerm(t), { lab: 'bass', actions: launch('BassLab') } as LearningProfile] as const,
+  ),
+  ...READY_TERMS_AUTOTUNE.map(
+    (t) => [normTerm(t), { lab: 'autotune', actions: launch('AutotuneLab') } as LearningProfile] as const,
   ),
 ]);
 

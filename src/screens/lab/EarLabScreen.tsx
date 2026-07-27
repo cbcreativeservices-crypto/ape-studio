@@ -62,8 +62,24 @@ const AUDIO_LABS: LabEntry[] = [
   { tag: '16', name: 'Harmonograph', blurb: 'Frequency ratios ↔ musical intervals.', route: 'HarmonographLab' },
 ];
 
+// EXPANSION labs (owner request 2026-07-26): Bass + Autotune are LIVE (wave 1,
+// JS over the existing engine); Binaural / Modular Synth / FM Synth need
+// net-new native DSP (wave 2) → honest "In development" until then (§1.7).
+const EXPANSION_LABS: LabEntry[] = [
+  { tag: '17', name: 'Bass Guitar', blurb: 'String division, wavelength, harmonics, fret fractions ↔ intervals.', route: 'BassLab' },
+  { tag: '18', name: 'Autotune', blurb: 'Pitch correction on the cents grid — amount, retune speed.', route: 'AutotuneLab' },
+  { tag: '19', name: 'Binaural Panner', blurb: 'Move up to 3 sound objects around your head — binaural headphone mix.' },
+  { tag: '20', name: 'Modular Synth', blurb: 'VCO · VCF · VCA · LFO · envelope · sequencer — signal flow and patching.' },
+  { tag: '21', name: 'FM Synth', blurb: 'Carrier + modulator: ratio, index, and sidebands.' },
+];
+
 const SECTIONS: LabSection[] = [
   { title: 'THE 16 AUDIO LEARNING LABS', entries: AUDIO_LABS },
+  {
+    title: 'EXPANSION LABS',
+    note: 'Instruments and studio tools as physics lessons.',
+    entries: EXPANSION_LABS,
+  },
   {
     title: 'SIGNAL CHAIN BUILDER',
     note: 'The capstone — assemble a full chain and see per-module and cumulative effect.',

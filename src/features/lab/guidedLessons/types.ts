@@ -14,7 +14,8 @@
  * house style — they are not locked engine values).
  */
 
-/** Stable lab identifiers — the 16 audio labs (v4 MASTER §7). */
+/** Stable lab identifiers — the 16 audio labs (v4 MASTER §7) + capstone +
+ *  the expansion labs (owner request 2026-07-26). */
 export type LabId =
   | 'eq'
   | 'delay'
@@ -32,7 +33,9 @@ export type LabId =
   | 'oscillator'
   | 'stereo'
   | 'harmonograph'
-  | 'chain'; // Signal Chain Builder (Pillar B capstone, §8)
+  | 'chain' // Signal Chain Builder (Pillar B capstone, §8)
+  | 'bass' // Bass Guitar Lab — string division / harmonics / intervals
+  | 'autotune'; // Autotune Lab — pitch correction on the cents grid
 
 /** Native-engine feasibility tier (v4 MASTER §12) — informational. */
 export type LabTier = 'T1' | 'T2' | 'T3';

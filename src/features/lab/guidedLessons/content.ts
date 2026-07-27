@@ -583,6 +583,74 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     ],
     formula: 'Canonical chain: Source → EQ → Comp → Gate → Distortion → Modulation → Delay → Reverb → Stereo → Limiter → Output. Each stage’s output is the next stage’s input — that composition IS the lesson.',
   },
+
+  // ─────────────────────────────── EXPANSION · Bass Guitar Lab (2026-07-26) ──
+  bass: {
+    id: 'bass',
+    num: 18,
+    name: 'Bass Guitar',
+    tier: 'T1',
+    tagline: 'Strings make fractions audible.',
+    whatItIs:
+      'A vibrating string is physics you can touch: fretting shortens the vibrating length, ' +
+      'and pitch rises in exact proportion. Halve the string (12th fret) and the frequency ' +
+      'doubles — an octave. The simple fractions ARE the consonant intervals: ≈2/3 of the ' +
+      'string (7th fret) is a perfect fifth (3:2), ≈3/4 (5th fret) a perfect fourth (4:3). ' +
+      'Touching (not pressing) a node point instead forces a natural harmonic — only the ' +
+      'modes with a node there survive.',
+    controls: [
+      { key: 'string', name: 'String (E · A · D · G)', definition: 'Standard bass tuning — E1 41.2 Hz, A1 55 Hz, D2 73.4 Hz, G2 98 Hz. Same physics on each string; only the open frequency (mass/tension/length) differs.' },
+      { key: 'fret', name: 'Fret', definition: 'Fret n leaves 2^(−n/12) of the string vibrating — each fret multiplies the frequency by the same ratio (≈1.0595), which is WHY frets get closer together toward the bridge.', range: '0–12 · open string default' },
+      { key: 'harmonic_node', name: 'Harmonic node (½ · ⅓ · ¼ · ⅕)', definition: 'Touch lightly at 1/n of the length: every mode without a node there is damped, leaving harmonics n, 2n, 3n… You hear n× the open-string frequency.' },
+      { key: 'pluck_tone', name: 'Pluck tone', definition: 'The played tone is an additive model of a plucked string (harmonic amplitudes ≈ 1/n). Real strings vary with pluck position and pickup — this is the idealized teaching model.' },
+    ],
+    commonMistakes: [
+      'Thinking frets are evenly spaced — each fret is the same RATIO (2^(1/12)), not the same distance; equal ratios make shrinking spacings.',
+      'Confusing the 7th-fret FRETTED note with the 7th-fret HARMONIC — fretting ≈2/3 length gives a fifth UP; touching the 1/3 node gives harmonic 3 = an octave PLUS a fifth.',
+      'Expecting the harmonic at the fret line — node points (1/3, 1/4, 1/5) only APPROXIMATELY align with frets 7/5/4; the node is a fraction of the string, not a fret.',
+      'Forgetting the string’s wavelength is fixed by its length (λ = 2L for the fundamental) — the SOUND wavelength in air is a different number (λ = c/f).',
+      'Assuming louder = lower — low bass notes need MORE energy to hear at equal loudness; small speakers can’t reproduce E1’s 41 Hz fundamental at all (you hear its harmonics).',
+      'Treating intervals as arbitrary — the consonant intervals are the SIMPLE fractions of a string; that is the physical basis Pythagoras measured.',
+    ],
+    proTips: [
+      'Play open E, then the 12th-fret octave, then the 12th-fret harmonic — same pitch two ways: half the LENGTH or half the MODES.',
+      'Walk the harmonic series up one string (½ → ⅓ → ¼ → ⅕) and name each interval — it is the same series the Harmonic Lab draws.',
+    ],
+    formula: 'f = f₀ · 2^(n/12) (fret n) · vibrating length = L · 2^(−n/12). Fundamental on a string: f₀ = v/2L (λ = 2L). Harmonic at node 1/n: f = n·f₀. 3:2 = perfect fifth, 4:3 = perfect fourth, 2:1 = octave.',
+  },
+
+  // ──────────────────────────────── EXPANSION · Autotune Lab (2026-07-26) ──
+  autotune: {
+    id: 'autotune',
+    num: 19,
+    name: 'Autotune',
+    tier: 'T1',
+    tagline: 'Pull pitch onto the grid.',
+    whatItIs:
+      'Pitch correction measures a note’s pitch, finds the nearest target on a scale grid, ' +
+      'and retunes the note toward it. Two controls do most of the work: CORRECTION AMOUNT ' +
+      '(how far toward the grid the note is pulled) and RETUNE SPEED (how fast it gets ' +
+      'there). Slow speed preserves natural glides and vibrato; instant speed snaps every ' +
+      'note — the deliberate robotic "hard-tune" effect.',
+    controls: [
+      { key: 'correction', name: 'Correction amount', definition: 'Scales how far the pitch is pulled toward the grid target: 0% leaves it untouched, 100% lands exactly on pitch. Partial correction keeps some human character.', range: '0–100% · default 100%' },
+      { key: 'retune_speed', name: 'Retune speed', definition: 'The time constant of the pull. Fast (≈25 ms) = audible snap/robotic; slow (≈400 ms) = a natural-sounding glide that can leave short notes under-corrected.', range: '≈25–400 ms' },
+      { key: 'cents_grid', name: 'Cents grid', definition: 'The vertical target lines — one per semitone (100 cents apart). A note’s error is read in cents from the nearest line; ±5–10 cents reads as "in tune" to most ears.' },
+    ],
+    commonMistakes: [
+      'Retune speed too fast on everything — instant snap flattens vibrato and phrasing into the robotic effect even when you didn’t want it.',
+      'Retune speed too slow on short notes — the note ends before the correction arrives, so fast passages stay out of tune.',
+      'Correcting to the wrong grid — chromatic mode pulls to the nearest of ALL 12 semitones; a note bent between scale tones can be "corrected" to a note not in the song’s key.',
+      'Thinking correction is free — the further a note is pulled (deep cents error, 100% amount), the more audible the artifact; correction polishes, it does not replace singing in tune.',
+      'Confusing cents with Hz — a cent is 1/100 of a semitone, a RATIO (about 0.06%); the same 20-cent error is a different Hz offset at every pitch.',
+      'Using the robotic snap by accident — hard-tune is a produced EFFECT (a creative choice), not transparent correction.',
+    ],
+    proTips: [
+      'A/B the same off-pitch phrase at 0% → 50% → 100% correction, then fast vs slow retune — hear "polish" become "effect".',
+      'Watch the graph while you listen: the corrected trace bending onto the gridline IS what you hear; the gap that remains at 50% is the remaining cents error.',
+    ],
+    formula: 'Error(cents) = 1200·log₂(f/f_target). Correction target = f_sung shifted by amount × error. Retune: f(t) approaches the target exponentially with time constant τ (retune speed). 100 cents = 1 semitone.',
+  },
 };
 
 /** Lab lessons in spec order (1..16) — for menus/indexes. */
