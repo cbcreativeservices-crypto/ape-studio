@@ -33,6 +33,7 @@ import { EngineGate } from './EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { toolByKey } from './toolsData';
+import { useToolHelp, HelpHead } from '../../features/lab/guidedLessons';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SignalGen'>;
@@ -101,6 +102,7 @@ function Chip({ label, selected, onPress }: { label: string; selected: boolean; 
 export function SignalGenScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
   const tool = toolByKey('signalgen');
+  const { help, sheet } = useToolHelp('signalgen');
   const { requestAudioOutput } = useAudioOutputGate();
 
   // Engine gate — computed ONCE (native availability cannot change mid-session).
@@ -276,7 +278,7 @@ export function SignalGenScreen({ navigation }: Props) {
         ) : (
           <>
             {/* SIGNAL selection (spec Tool 6 required controls). */}
-            <Text style={styles.sectionHead}>SIGNAL</Text>
+            <HelpHead title="SIGNAL" onHelp={() => help('signal')} style={styles.sectionHead} />
             <View style={styles.chipRow}>
               {SIGNALS.map((s) => (
                 <Chip key={s.key} label={s.label} selected={mode === s.key} onPress={() => pickMode(s.key)} />
@@ -286,7 +288,7 @@ export function SignalGenScreen({ navigation }: Props) {
             {/* FREQUENCY — applies to sine/burst. */}
             {showFreq ? (
               <>
-                <Text style={styles.sectionHead}>FREQUENCY</Text>
+                <HelpHead title="FREQUENCY" onHelp={() => help('frequency')} style={styles.sectionHead} />
                 <View style={styles.card}>
                   <View style={styles.stepperRow}>
                     <Pressable
@@ -320,7 +322,7 @@ export function SignalGenScreen({ navigation }: Props) {
             {/* SWEEP controls (spec Tool 6: start · end · duration · repeat). */}
             {isSweep ? (
               <>
-                <Text style={styles.sectionHead}>SWEEP</Text>
+                <HelpHead title="SWEEP" onHelp={() => help('sweep')} style={styles.sectionHead} />
                 <View style={styles.card}>
                   <Text style={styles.sweepSummary}>
                     {fmtHz(sweepStart)} → {fmtHz(sweepEnd)} · {sweepSec} s · {sweepRepeat ? 'repeating' : 'single pass'}
@@ -351,7 +353,7 @@ export function SignalGenScreen({ navigation }: Props) {
             {/* CLICK tempo (spec Tool 6: configurable BPM). */}
             {isClick ? (
               <>
-                <Text style={styles.sectionHead}>CLICK TEMPO</Text>
+                <HelpHead title="CLICK TEMPO" onHelp={() => help('click_tempo')} style={styles.sectionHead} />
                 <View style={styles.card}>
                   <View style={styles.chipRow}>
                     {CLICK_BPM_PRESETS.map((b) => (
@@ -363,7 +365,7 @@ export function SignalGenScreen({ navigation }: Props) {
             ) : null}
 
             {/* OUTPUT LEVEL — the Q4 safety stepper. */}
-            <Text style={styles.sectionHead}>OUTPUT LEVEL</Text>
+            <HelpHead title="OUTPUT LEVEL" onHelp={() => help('output_level')} style={styles.sectionHead} />
             <View style={styles.card}>
               <View style={styles.stepperRow}>
                 <Pressable
@@ -425,7 +427,7 @@ export function SignalGenScreen({ navigation }: Props) {
             />
 
             {/* Required warnings (spec Tool 6) — fixed, always visible. */}
-            <Text style={styles.sectionHead}>SAFETY</Text>
+            <HelpHead title="SAFETY" onHelp={() => help('safety')} style={styles.sectionHead} />
             {WARNINGS.map((w) => (
               <Text key={w} style={styles.warn}>
                 {'⚠ '}
@@ -435,6 +437,7 @@ export function SignalGenScreen({ navigation }: Props) {
           </>
         )}
       </ScrollView>
+      {sheet}
     </View>
   );
 }

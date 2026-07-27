@@ -36,6 +36,7 @@ import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO } from '../../features/tools/measure/types';
 import { colors, fonts } from '../../theme/tokens';
 import { EngineGate } from './EngineGate';
+import { useToolHelp, HelpHead } from '../../features/lab/guidedLessons';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SpectrogramLive'>;
@@ -168,6 +169,7 @@ const SpectrogramGrid = memo(function SpectrogramGrid({
 });
 
 export function SpectrogramScreen({ navigation }: Props) {
+  const { help, sheet } = useToolHelp('spectrogram');
   const insets = useSafeAreaInsets();
 
   // Ref-stable config (house pattern): useDspEngine's start() closes over the
@@ -378,7 +380,7 @@ export function SpectrogramScreen({ navigation }: Props) {
 
             {/* Controls (spec §12): dynamic range · freeze · save snapshot. */}
             <View style={styles.ctrlRow}>
-              <Text style={styles.ctrlLabel}>DYN RANGE</Text>
+              <HelpHead title="DYN RANGE" onHelp={() => help('db_range')} style={styles.ctrlLabel} />
               {DYN_RANGES.map((r) => (
                 <Chip
                   key={r}
@@ -443,6 +445,7 @@ export function SpectrogramScreen({ navigation }: Props) {
           time and frequency detail; noise floor may appear as low-level background energy.
         </Text>
       </ScrollView>
+      {sheet}
     </View>
   );
 }

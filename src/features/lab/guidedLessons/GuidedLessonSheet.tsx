@@ -15,7 +15,7 @@ import { useEffect, useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
-import type { LabLesson } from './types';
+import type { LessonContent } from './types';
 
 /** A titled block of bullet lines. */
 function BulletBlock({ title, items, accent }: { title: string; items: string[]; accent?: boolean }) {
@@ -46,7 +46,7 @@ export function GuidedLessonBody({
   controlKey,
   compact = false,
 }: {
-  lesson: LabLesson;
+  lesson: LessonContent;
   controlKey?: string;
   compact?: boolean;
 }) {
@@ -130,7 +130,7 @@ export function GuidedLessonSheet({
   onClose,
 }: {
   visible: boolean;
-  lesson: LabLesson;
+  lesson: LessonContent;
   controlKey?: string;
   onClose: () => void;
 }) {

@@ -30,6 +30,7 @@ import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO } from '../../features/tools/measure/types';
 import { colors, fonts } from '../../theme/tokens';
 import { EngineGate } from './EngineGate';
+import { useToolHelp, HelpHead } from '../../features/lab/guidedLessons';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Rta'>;
@@ -220,6 +221,7 @@ function BandsPanel({ bands, fraction, alpha }: { bands: BandsFrame | null; frac
 }
 
 export function RtaScreen({ navigation }: Props) {
+  const { help, sheet } = useToolHelp('rta');
   const insets = useSafeAreaInsets();
 
   // Ref-stable config object: useDspEngine's start() closes over the object we
@@ -373,12 +375,12 @@ export function RtaScreen({ navigation }: Props) {
 
             {/* Controls (spec §10): banding · averaging · peak hold · save. */}
             <View style={styles.ctrlRow}>
-              <Text style={styles.ctrlLabel}>BANDING</Text>
+              <HelpHead title="BANDING" onHelp={() => help('banding')} style={styles.ctrlLabel} />
               <Chip label="1/1 OCT" active={fraction === 1} onPress={() => applyBanding(1)} />
               <Chip label="1/3 OCT" active={fraction === 3} onPress={() => applyBanding(3)} />
             </View>
             <View style={styles.ctrlRow}>
-              <Text style={styles.ctrlLabel}>AVERAGING</Text>
+              <HelpHead title="AVERAGING" onHelp={() => help('averaging')} style={styles.ctrlLabel} />
               {AVG_CHOICES.map((c) => (
                 <Chip key={c.label} label={c.label} active={alpha === c.alpha} onPress={() => applyAlpha(c.alpha)} />
               ))}
@@ -429,6 +431,7 @@ export function RtaScreen({ navigation }: Props) {
           strongly affects the result.
         </Text>
       </ScrollView>
+      {sheet}
     </View>
   );
 }

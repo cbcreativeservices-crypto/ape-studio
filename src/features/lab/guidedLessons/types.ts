@@ -61,6 +61,19 @@ export type ControlLesson = {
   advanced?: boolean;
 };
 
+/** The renderable content the GuidedLessonSheet actually uses — shared by lab
+ *  lessons AND the measurement tools' control help (which are not LabIds). A
+ *  LabLesson satisfies this structurally. */
+export type LessonContent = {
+  name: string;
+  tagline?: string;
+  whatItIs: string;
+  controls: ControlLesson[];
+  commonMistakes: string[];
+  proTips: string[];
+  formula: string;
+};
+
 /** A full lab lesson: the lab-level stack + its controls. */
 export type LabLesson = {
   id: LabId;

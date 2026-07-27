@@ -30,6 +30,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { EngineGate } from './EngineGate';
 import { MIC_LIMITS, toolByKey } from './toolsData';
 import type { MeterFrame } from '../../../modules/ape-dsp';
+import { useToolHelp, HelpHead } from '../../features/lab/guidedLessons';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SplMeter'>;
@@ -72,6 +73,7 @@ function Chip({ label, selected, onPress }: { label: string; selected: boolean; 
 }
 
 export function SplMeterScreen({ navigation }: Props) {
+  const { help, sheet } = useToolHelp('spl');
   const insets = useSafeAreaInsets();
   const tool = toolByKey('spl');
   const { state, frames, start, stop, lastError, resetPeakHold, resetLeq } = useDspEngine(
@@ -201,7 +203,7 @@ export function SplMeterScreen({ navigation }: Props) {
             {/* Weighting × response selection (spec §9 required controls). */}
             <View style={styles.chipsRow}>
               <View style={styles.chipGroup}>
-                <Text style={styles.chipGroupLabel}>WEIGHTING</Text>
+                <HelpHead title="WEIGHTING" onHelp={() => help('weighting')} style={styles.chipGroupLabel} />
                 <View style={styles.chipSet}>
                   {WEIGHTINGS.map((w) => (
                     <Chip key={w} label={w} selected={weighting === w} onPress={() => setWeighting(w)} />
@@ -209,7 +211,7 @@ export function SplMeterScreen({ navigation }: Props) {
                 </View>
               </View>
               <View style={styles.chipGroup}>
-                <Text style={styles.chipGroupLabel}>RESPONSE</Text>
+                <HelpHead title="RESPONSE" onHelp={() => help('response')} style={styles.chipGroupLabel} />
                 <View style={styles.chipSet}>
                   {RESPONSES.map((r) => (
                     <Chip key={r} label={r.toUpperCase()} selected={response === r} onPress={() => setResponse(r)} />
@@ -233,7 +235,7 @@ export function SplMeterScreen({ navigation }: Props) {
                 matched against the user's reference meter. */}
             <View style={styles.calCard}>
               <View style={styles.calHeadRow}>
-                <Text style={styles.sectionHead}>CALIBRATION</Text>
+                <HelpHead title="CALIBRATION" onHelp={() => help('calibration')} style={styles.sectionHead} />
                 <Text style={[styles.calStatus, offset != null && styles.calStatusOn]}>
                   {offset != null ? `FIELD-CALIBRATED · +${offset.toFixed(1)} dB` : 'UNCALIBRATED'}
                 </Text>
@@ -415,6 +417,7 @@ export function SplMeterScreen({ navigation }: Props) {
           </Text>
         </View>
       </ScrollView>
+      {sheet}
     </View>
   );
 }
