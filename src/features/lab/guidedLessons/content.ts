@@ -29,9 +29,12 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'An equalizer boosts or cuts chosen frequency bands to shape tone — from broad ' +
       'musical moves to surgical notches. Filter type (shelf / bell / pass) decides which ' +
       'part of the band is affected; Q sets how wide.',
-    controls: names([
-      'Graphic', 'Parametric', 'Shelving', 'High-pass', 'Low-pass', 'Band-pass', 'Notch', 'Tilt', 'Dynamic EQ',
-    ]),
+    controls: [
+      { key: 'filter_type', name: 'Filter type', definition: 'Chooses the SHAPE of the move: a bell boosts/cuts around a center; shelves lift or lower everything past a corner; high-pass/low-pass remove one whole end.' },
+      { key: 'frequency', name: 'Frequency', definition: 'WHERE on the spectrum the band sits — the center of a bell, or the corner of a shelf/pass filter. This is the part of the sound you’re affecting.', range: '~20 Hz – 20 kHz' },
+      { key: 'gain', name: 'Gain', definition: 'How much you boost (+) or cut (−) the band, in dB. Cutting is usually cleaner than boosting — it preserves headroom.', range: '−12 … +12 dB' },
+      { key: 'q', name: 'Q (bandwidth)', definition: 'How WIDE the band is. Low Q = a broad, musical move; high Q = a narrow, surgical notch. Q = center frequency ÷ bandwidth.', range: '0.7 wide … 8 narrow' },
+    ],
     commonMistakes: [
       'Boost-sweep to FIND, then forgetting to CUT — the narrow-boost sweep is diagnostic only; the fix is usually a cut.',
       'Boosting when you should cut — subtractive EQ preserves headroom and avoids piling up phase problems.',
@@ -62,9 +65,13 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'A delay records the signal and plays it back one or more times after a set interval. ' +
       'Feedback sets how many repeats; filtering makes them recede. Distinct from reverb — ' +
       'delay makes separable echoes, not a diffuse wash.',
-    controls: names([
-      'Delay time', 'Feedback', 'Wet/Dry', 'Ping-pong', 'Stereo width', 'Filtering', 'Modulation', 'Sync BPM',
-    ]),
+    controls: [
+      { key: 'delay_time', name: 'Delay time', definition: 'The gap between repeats. Short (≈60–150 ms) = slapback; longer, tempo-matched values (a quarter-note) lock the echoes to the groove.', range: '~1 ms – 2 s' },
+      { key: 'feedback', name: 'Feedback', definition: 'How much of each echo is fed back to make the NEXT one — sets how many repeats you get. Near 100% runs away into self-oscillation.', range: '0 – ~100%' },
+      { key: 'wet_dry', name: 'Wet / Dry', definition: 'The balance of dry signal vs echoes. Low keeps the delay behind the source; 100% wet is echoes only.' },
+      { key: 'ping_pong', name: 'Ping-pong', definition: 'Bounces the repeats left↔right across the stereo image. Always mono-check — hard-panned repeats can thin out in mono.' },
+      { key: 'filtering', name: 'Repeat damping', definition: 'Rolls the highs (and often lows) off each repeat, so echoes recede into the background instead of stacking into harsh clutter.' },
+    ],
     commonMistakes: [
       'Feedback too high → runaway/self-oscillation — finding that threshold is the lesson; don’t trip it by accident.',
       'Delay time fighting the tempo — un-synced repeats smear the groove; sync to note values or tap tempo.',
@@ -92,10 +99,12 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'Reverb simulates the dense field of reflections in a room — early reflections give ' +
       'spatial cues, the late tail gives size and decay. Pre-delay separates the dry source ' +
       'from the wash; damping shapes the tail’s tone.',
-    controls: names([
-      'Room size', 'Pre-delay', 'Decay', 'Diffusion', 'Early reflections', 'Late reflections',
-      'HF damping', 'LF damping', 'Density', 'Mix',
-    ]),
+    controls: [
+      { key: 'decay', name: 'RT60 (decay time)', definition: 'How long the tail takes to fade 60 dB — short = a small room, long = a hall or cavern. It’s a TIME, not an amount of reverb.', range: '0.4 s booth … 6 s cavern' },
+      { key: 'pre_delay', name: 'Pre-delay', definition: 'The short pause before the wash arrives after the dry sound — it keeps the source clear and hints at room size. 0 glues the tail to the source.', range: '0 – 60 ms' },
+      { key: 'hf_damping', name: 'HF damping', definition: 'How fast the highs fade within the tail. More damping = a darker, softer room (soft surfaces); less = a bright, live space.' },
+      { key: 'mix', name: 'Mix', definition: 'Dry vs reverb balance. A little sits the source in a space; too much pushes it far away and washes out clarity.' },
+    ],
     commonMistakes: [
       'Too much reverb — washes the mix, pushes sources back, kills clarity; less is usually more.',
       'No pre-delay → source glued to the tail — a little pre-delay (~10–40 ms) keeps vocals upfront.',
@@ -123,7 +132,12 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     whatItIs:
       'Chorus mixes the dry signal with detuned, LFO-modulated delayed copies (~15–35 ms), ' +
       'so multiple slightly out-of-tune "voices" beat against each other for a thick, wide tone.',
-    controls: names(['Depth', 'Rate', 'Delay', 'Voices', 'Stereo width', 'Feedback', 'Mix']),
+    controls: [
+      { key: 'rate', name: 'Rate', definition: 'How fast the pitch/delay wobbles — the LFO speed. Slow = a gentle shimmer; fast = a seasick warble.', range: '~0.1 – 3 Hz' },
+      { key: 'depth', name: 'Depth', definition: 'How far the wobble swings — the amount of detune/movement. More depth = a thicker, more obvious effect.' },
+      { key: 'delay', name: 'Voice delay', definition: 'The base delay of the doubled voice (≈15–35 ms) — long enough to sound like a second player, not the tight comb of a flanger.', range: '15 – 35 ms' },
+      { key: 'mix', name: 'Mix', definition: 'Dry vs the wobbling copy. Around 50% is classic chorus; 100% wet removes the dry voice entirely and becomes vibrato.' },
+    ],
     commonMistakes: [
       'Rate/Depth too high → seasick, out-of-tune warble; excess modulation reads as detuning, not lushness.',
       'Confusing chorus with flanger/vibrato — chorus = longer delay + detuned voices; short delay + feedback = flanger; 100% wet = vibrato.',
@@ -222,7 +236,13 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'A compressor reduces gain above a threshold by a set ratio, shrinking dynamic range. ' +
       'Attack/Release set how fast it reacts and recovers; makeup gain restores level. Used ' +
       'for control, punch, and glue.',
-    controls: names(['Threshold', 'Ratio', 'Attack', 'Release', 'Knee', 'Lookahead', 'Makeup gain', 'Sidechain']),
+    controls: [
+      { key: 'threshold', name: 'Threshold', definition: 'The level above which the compressor works. Only signal louder than this gets turned down — lower it to compress more of the signal.', range: '−40 … −10 dBFS' },
+      { key: 'ratio', name: 'Ratio', definition: 'How hard it squeezes above the threshold: 2:1 is gentle glue, 8:1+ acts like a limiter. For every N dB in, 1 dB comes out.', range: '2:1 … 20:1' },
+      { key: 'attack', name: 'Attack', definition: 'How fast it clamps down once the sound crosses the threshold. Fast tames transients; slow lets the initial punch through first.', range: '0.5 – 100 ms' },
+      { key: 'release', name: 'Release', definition: 'How fast the gain returns after the level drops back. Too fast pumps; too slow keeps the level held down too long.', range: '30 – 500 ms' },
+      { key: 'makeup_gain', name: 'Makeup gain', definition: 'Turns the whole signal back up after compression lowered it — so the compressed track sits as loud (or louder) than before.' },
+    ],
     commonMistakes: [
       'Attack too fast → transients killed — clamps the initial hit; to preserve transients, slow the attack so the transient passes first.',
       'Release too fast → distortion/pumping (worst on bass); too slow → never recovers, over-compresses.',
@@ -326,7 +346,12 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'Distortion/saturation reshapes the waveform through a nonlinearity, generating new ' +
       'harmonics. Symmetric shaping adds odd harmonics (hollow/harsh); asymmetric adds even ' +
       '(warm). Aliasing is both a hazard and a teaching target here.',
-    controls: names(['Tube', 'Tape', 'Hard clip', 'Soft clip', 'Saturation', 'Bit crush', 'Sample reduction']),
+    controls: [
+      { key: 'hard_clip', name: 'Type (clip shape)', definition: 'The shaping curve. Symmetric clipping (hard/soft) chops top and bottom the SAME → odd harmonics; the tube’s asymmetry adds EVEN harmonics — the “warm” signature.' },
+      { key: 'saturation', name: 'Drive', definition: 'How hard you push the signal into the shaper. More drive = more of the wave reshaped = more harmonics and grit.', range: '+6 … +36 dB' },
+      { key: 'oversampling', name: 'Oversampling', definition: 'Processes at a higher internal rate so aliasing artifacts land above hearing, then filters them out. OFF lets you HEAR the aliasing distortion creates.' },
+      { key: 'mix', name: 'Mix', definition: 'Blends the distorted signal with the clean dry — parallel (≈50%) keeps clarity while adding grit underneath.' },
+    ],
     commonMistakes: [
       'No oversampling → aliasing — nonlinearity creates harmonics above Nyquist that fold back as inharmonic harshness. Oversample — but aliasing is also a teaching target, so make oversampling a toggle.',
       'Confusing loudness with distortion — drive raises level; level-match to judge character, not "more".',
@@ -389,7 +414,11 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'This lab separates polarity (flip the whole waveform, 180° at all frequencies) from ' +
       'phase (a frequency-dependent time/angle shift), and shows how each affects mono ' +
       'compatibility on the correlation meter and Lissajous.',
-    controls: names(['Delay one channel', 'Invert polarity', 'Rotate phase', 'Stereo width']),
+    controls: [
+      { key: 'invert_polarity', name: 'Polarity (invert)', definition: 'Flips the whole waveform upside-down — 180° at EVERY frequency. Against its original it cancels completely in mono.' },
+      { key: 'delay_one_channel', name: 'Delay one channel', definition: 'Delays one channel by a few ms — a frequency-dependent PHASE shift (not a simple flip). In mono this combs, and no polarity flip can fix it.', range: '0 – 10 ms' },
+      { key: 'mono_fold', name: 'Mono-fold', definition: 'Sums L+R to mono — the acid test. Anything out of phase cancels or combs here, which is exactly what a mono listener hears.' },
+    ],
     commonMistakes: [
       'Confusing polarity with phase — polarity flips the whole waveform (the "Ø" button); phase is a frequency-dependent shift. Not interchangeable.',
       'Assuming a polarity flip always fixes cancellation — it fixes a simple inversion; time-delay comb filtering needs time alignment.',

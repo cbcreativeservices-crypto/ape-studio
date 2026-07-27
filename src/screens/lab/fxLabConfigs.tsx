@@ -61,7 +61,7 @@ const eqConfig: FxLabConfig = {
   sources: [SRC_PINK, srcSine(440), SRC_WHITE],
   params: [
     {
-      label: 'FILTER TYPE', paramId: EQ_TYPE, lessonKey: 'parametric',
+      label: 'FILTER TYPE', paramId: EQ_TYPE, lessonKey: 'filter_type',
       choices: [
         { label: 'PEAK (BELL)', value: EQ_BAND_TYPES.peak },
         { label: 'LOW SHELF', value: EQ_BAND_TYPES.lowShelf },
@@ -72,17 +72,17 @@ const eqConfig: FxLabConfig = {
       initial: EQ_BAND_TYPES.peak,
     },
     {
-      label: 'FREQUENCY', paramId: EQ_FREQ, lessonKey: 'parametric',
+      label: 'FREQUENCY', paramId: EQ_FREQ, lessonKey: 'frequency',
       choices: [100, 250, 500, 1000, 2000, 4000, 8000].map((f) => ({ label: f >= 1000 ? `${f / 1000}k` : `${f}`, value: f })),
       initial: 1000,
     },
     {
-      label: 'GAIN', paramId: EQ_GAIN, lessonKey: 'parametric',
+      label: 'GAIN', paramId: EQ_GAIN, lessonKey: 'gain',
       choices: [-12, -6, 0, 6, 12].map((g) => ({ label: `${g > 0 ? '+' : ''}${g} dB`, value: g })),
       initial: 6,
     },
     {
-      label: 'Q (BANDWIDTH)', paramId: EQ_Q, lessonKey: 'parametric',
+      label: 'Q (BANDWIDTH)', paramId: EQ_Q, lessonKey: 'q',
       choices: [
         { label: '0.7 WIDE', value: 0.7 },
         { label: '1.4', value: 1.4 },
@@ -636,7 +636,7 @@ const distConfig: FxLabConfig = {
       initial: 12,
     },
     {
-      label: 'OVERSAMPLING', paramId: P.oversample,
+      label: 'OVERSAMPLING', paramId: P.oversample, lessonKey: 'oversampling',
       choices: [
         { label: 'ON (CLEAN)', value: 1 },
         { label: 'OFF — HEAR ALIASING', value: 0 },
@@ -644,7 +644,7 @@ const distConfig: FxLabConfig = {
       initial: 1,
     },
     {
-      label: 'MIX', paramId: P.distMix,
+      label: 'MIX', paramId: P.distMix, lessonKey: 'mix',
       choices: [
         { label: '100%', value: 1 },
         { label: '50% PARALLEL', value: 0.5 },
@@ -699,7 +699,7 @@ const phaseConfig: FxLabConfig = {
       initial: 0,
     },
     {
-      label: 'MONO-FOLD', paramId: P.monoFold, lessonKey: 'rotate_phase',
+      label: 'MONO-FOLD', paramId: P.monoFold, lessonKey: 'mono_fold',
       choices: [
         { label: 'STEREO', value: 0 },
         { label: 'MONO (L+R)', value: 1 },
