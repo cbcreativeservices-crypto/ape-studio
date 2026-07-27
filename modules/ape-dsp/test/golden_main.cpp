@@ -11,11 +11,13 @@
 #include <vector>
 
 #include "../ios/core/Ballistics.hpp"
+#include "../ios/core/Binaural.hpp"
 #include "../ios/core/Biquad.hpp"
 #include "../ios/core/Effects.hpp"
 #include "../ios/core/EngineHub.hpp"
 #include "../ios/core/Fft.hpp"
 #include "../ios/core/Generator.hpp"
+#include "../ios/core/Modular.hpp"
 #include "../ios/core/OctaveBands.hpp"
 #include "../ios/core/Pitch.hpp"
 #include "../ios/core/Rt60.hpp"
@@ -986,6 +988,362 @@ int main() {
       truthy("Chain: fxSet enables a node", ch.anyActive());
       ch.reset();
       truthy("Chain: reset disables everything", !ch.anyActive());
+    }
+  }
+
+  // ---- 13) FM voice (wave-2, engineVersion 7) -----------------------------
+  {
+    // Same integer-cycle correlation as the additive tests: every frequency
+    // below is a multiple of 500 Hz and windows are multiples of 0.25 s, so
+    // the correlation is exactly orthogonal to every other component.
+    auto magAt = [&](const std::vector<float>& x, size_t off, size_t n, double f) {
+      double sc = 0.0, ss = 0.0;
+      for (size_t i = 0; i < n; ++i) {
+        const double w = 2.0 * 3.14159265358979323846 * f * static_cast<double>(i) / fs;
+        sc += x[off + i] * std::cos(w);
+        ss += x[off + i] * std::sin(w);
+      }
+      return 2.0 * std::sqrt(sc * sc + ss * ss) / static_cast<double>(n);
+    };
+    const size_t skip = static_cast<size_t>(fs * 0.1);  // fade-in settles (index snaps at trigger)
+    const size_t len = static_cast<size_t>(fs);         // 1 s
+    const double lvl = 0.1;                             // default −20 dBFS
+
+    // (a) Index 0 → a pure carrier (FM off is a sine, byte-honest).
+    {
+      Generator g;
+      g.configure(fs);
+      g.setMode(GenMode::Fm);
+      g.setFrequency(2500.0);
+      g.setFm(0.2, 0.0, 0.0);
+      g.start();
+      std::vector<float> b(skip + len);
+      g.render(b.data(), (uint32_t)b.size());
+      near("FM I=0: pure carrier |fc|", magAt(b, skip, len, 2500.0), lvl, 0.003);
+      truthy("FM I=0: no sideband at fc+fm", magAt(b, skip, len, 3000.0) < 1e-3);
+      truthy("FM I=0: no sideband at fc-fm", magAt(b, skip, len, 2000.0) < 1e-3);
+    }
+
+    // (b) I=1, fc=2500, ratio=0.2 (fm=500): sideband amplitudes are the exact
+    //     Bessel values J_k(1) — THE canonical FM identity (Chowning).
+    //     J0(1)=0.7652 · J1(1)=0.4401 · J2(1)=0.1149. All sidebands stay far
+    //     from DC/Nyquist so no fold-back interferes at this fm.
+    {
+      Generator g;
+      g.configure(fs);
+      g.setMode(GenMode::Fm);
+      g.setFrequency(2500.0);
+      g.setFm(0.2, 1.0, 0.0);
+      g.start();
+      std::vector<float> b(skip + len);
+      g.render(b.data(), (uint32_t)b.size());
+      near("FM I=1: carrier J0", magAt(b, skip, len, 2500.0), lvl * 0.7652, 0.004);
+      near("FM I=1: upper J1 (fc+fm)", magAt(b, skip, len, 3000.0), lvl * 0.4401, 0.004);
+      near("FM I=1: lower J1 (fc-fm)", magAt(b, skip, len, 2000.0), lvl * 0.4401, 0.004);
+      near("FM I=1: upper J2 (fc+2fm)", magAt(b, skip, len, 3500.0), lvl * 0.1149, 0.004);
+      near("FM I=1: lower J2 (fc-2fm)", magAt(b, skip, len, 1500.0), lvl * 0.1149, 0.004);
+    }
+
+    // (c) Index DECAY (the bell/pluck envelope): I(t)=6·e^(−t/0.25). Early the
+    //     energy is spread into sidebands (carrier well below full); by 1.5 s
+    //     the index has decayed (I≈0.015) → essentially a pure carrier again.
+    {
+      Generator g;
+      g.configure(fs);
+      g.setMode(GenMode::Fm);
+      g.setFrequency(2500.0);
+      g.setFm(0.2, 6.0, 0.25);
+      g.start();
+      std::vector<float> b(static_cast<size_t>(fs * 2.0));
+      g.render(b.data(), (uint32_t)b.size());
+      const size_t early = static_cast<size_t>(fs * 0.1);
+      const size_t late = static_cast<size_t>(fs * 1.5);
+      const size_t win = static_cast<size_t>(fs * 0.25);
+      truthy("FM decay: carrier suppressed early (energy in sidebands)",
+             magAt(b, early, win, 2500.0) < 0.06);
+      near("FM decay: pure carrier after decay", magAt(b, late, win, 2500.0), lvl, 0.004);
+      truthy("FM decay: sidebands gone after decay", magAt(b, late, win, 3000.0) < 1.5e-3);
+    }
+  }
+
+  // ---- 14) Binaural panner bus (wave-2, engineVersion 7) ------------------
+  {
+    // Phase-aware correlation: returns {mag, phase} at f over an integer-cycle
+    // window (all test tones divide the window length).
+    struct MP { double mag, ph; };
+    auto probe = [&](const std::vector<float>& x, size_t off, size_t n, double f) -> MP {
+      double sc = 0.0, ss = 0.0;
+      for (size_t i = 0; i < n; ++i) {
+        const double w = 2.0 * 3.14159265358979323846 * f * static_cast<double>(i) / fs;
+        sc += x[off + i] * std::cos(w);
+        ss += x[off + i] * std::sin(w);
+      }
+      return {2.0 * std::sqrt(sc * sc + ss * ss) / static_cast<double>(n), std::atan2(sc, ss)};
+    };
+    auto renderBus = [&](BinauralBus& bus, double secs) {
+      const size_t n = static_cast<size_t>(fs * secs);
+      std::vector<float> L(n, 0.0f), R(n, 0.0f);
+      bus.renderAddInto(L.data(), R.data(), (uint32_t)n);
+      return std::pair<std::vector<float>, std::vector<float>>(std::move(L), std::move(R));
+    };
+    const size_t skip = static_cast<size_t>(fs * 0.3);  // fades + delay slew settle
+    const size_t len = static_cast<size_t>(fs);
+
+    // (a) CENTER (az 0): perfectly symmetric — L == R sample-exact.
+    {
+      BinauralBus bus;
+      bus.configure(fs);
+      bus.setSource(0, true, 0 /*sine*/, 500.0, -20.0, 0.0, 1.0);
+      bus.start();
+      auto [L, R] = renderBus(bus, 1.4);
+      bool same = true;
+      for (size_t i = skip; i < L.size(); ++i)
+        if (std::fabs(L[i] - R[i]) > 1e-9f) { same = false; break; }
+      truthy("Binaural az=0: L == R (symmetric)", same);
+      truthy("Binaural az=0: tone present", probe(L, skip, len, 500.0).mag > 0.02);
+    }
+
+    // (b) RIGHT (az +90): far (LEFT) ear is quieter AND later. The measured
+    //     delay includes the head-shadow one-pole's phase lag, so the window is
+    //     generous around the Woodworth 656 µs.
+    {
+      BinauralBus bus;
+      bus.configure(fs);
+      bus.setSource(0, true, 0, 500.0, -20.0, 90.0, 1.0);
+      bus.start();
+      auto [L, R] = renderBus(bus, 1.4);
+      const MP l = probe(L, skip, len, 500.0), r = probe(R, skip, len, 500.0);
+      truthy("Binaural az=+90: ILD — far (L) ear ≥6 dB down",
+             l.mag < r.mag * std::pow(10.0, -6.0 / 20.0));
+      double dph = r.ph - l.ph;  // L lags R → phase(L) < phase(R)
+      while (dph > 3.14159265358979323846) dph -= 2.0 * 3.14159265358979323846;
+      while (dph < -3.14159265358979323846) dph += 2.0 * 3.14159265358979323846;
+      const double itdUs = dph / (2.0 * 3.14159265358979323846 * 500.0) * 1e6;
+      check(itdUs > 500.0 && itdUs < 900.0, "Binaural az=+90: ITD ~Woodworth 656 us", itdUs,
+            656.0, 250.0);
+    }
+
+    // (c) LEFT (az −90) mirrors: far ear is RIGHT.
+    {
+      BinauralBus bus;
+      bus.configure(fs);
+      bus.setSource(0, true, 0, 500.0, -20.0, -90.0, 1.0);
+      bus.start();
+      auto [L, R] = renderBus(bus, 1.4);
+      truthy("Binaural az=-90: mirrored ILD — far (R) ear down",
+             probe(R, skip, len, 500.0).mag <
+                 probe(L, skip, len, 500.0).mag * std::pow(10.0, -6.0 / 20.0));
+    }
+
+    // (d) HEAD SHADOW is frequency-dependent: at az +90 the far/near ratio at
+    //     4 kHz is clearly smaller than at 500 Hz (the LPF bites HF harder).
+    {
+      BinauralBus lo, hi;
+      lo.configure(fs);
+      hi.configure(fs);
+      lo.setSource(0, true, 0, 500.0, -20.0, 90.0, 1.0);
+      hi.setSource(0, true, 0, 4000.0, -20.0, 90.0, 1.0);
+      lo.start();
+      hi.start();
+      auto [Ll, Rl] = renderBus(lo, 1.4);
+      auto [Lh, Rh] = renderBus(hi, 1.4);
+      const double ratioLo = probe(Ll, skip, len, 500.0).mag / probe(Rl, skip, len, 500.0).mag;
+      const double ratioHi = probe(Lh, skip, len, 4000.0).mag / probe(Rh, skip, len, 4000.0).mag;
+      truthy("Binaural shadow: HF far/near ratio < LF ratio", ratioHi < ratioLo * 0.7);
+    }
+
+    // (e) DISTANCE: 2 m vs 1 m = −6.02 dB (inverse distance re 1 m).
+    {
+      BinauralBus near1, far2;
+      near1.configure(fs);
+      far2.configure(fs);
+      near1.setSource(0, true, 0, 500.0, -20.0, 0.0, 1.0);
+      far2.setSource(0, true, 0, 500.0, -20.0, 0.0, 2.0);
+      near1.start();
+      far2.start();
+      auto [L1, R1] = renderBus(near1, 1.4);
+      auto [L2, R2] = renderBus(far2, 1.4);
+      near("Binaural distance: 2 m is −6 dB vs 1 m",
+           db(probe(L2, skip, len, 500.0).mag) - db(probe(L1, skip, len, 500.0).mag), -6.02, 0.3);
+    }
+
+    // (f) THREE-SOURCE MIX + Q4 bus norm: all sources audible in both ears and
+    //     the summed peak can never pierce the −12 dBFS cap.
+    {
+      BinauralBus bus;
+      bus.configure(fs);
+      bus.setSource(0, true, 0, 500.0, -12.0, -60.0, 1.0);
+      bus.setSource(1, true, 0, 1500.0, -12.0, 0.0, 1.0);
+      bus.setSource(2, true, 0, 2500.0, -12.0, 60.0, 1.0);
+      bus.start();
+      auto [L, R] = renderBus(bus, 1.4);
+      truthy("Binaural mix: src0 in L", probe(L, skip, len, 500.0).mag > 0.01);
+      truthy("Binaural mix: src2 in R", probe(R, skip, len, 2500.0).mag > 0.01);
+      truthy("Binaural mix: src1 in both", probe(L, skip, len, 1500.0).mag > 0.01 &&
+                                               probe(R, skip, len, 1500.0).mag > 0.01);
+      near("Binaural bus norm published (3 @ cap → 1/3)", bus.busNorm(), 1.0 / 3.0, 0.02);
+      float peak = 0.0f;
+      for (size_t i = skip; i < L.size(); ++i) {
+        const float a = std::fabs(L[i]), b = std::fabs(R[i]);
+        peak = a > peak ? a : peak;
+        peak = b > peak ? b : peak;
+      }
+      truthy("Binaural bus peak ≤ Q4 cap", peak <= std::pow(10.0, -12.0 / 20.0) + 1e-3);
+    }
+  }
+
+  // ---- 15) Modular synth voice (wave-2, engineVersion 7) ------------------
+  {
+    auto magAt = [&](const std::vector<float>& x, size_t off, size_t n, double f) {
+      double sc = 0.0, ss = 0.0;
+      for (size_t i = 0; i < n; ++i) {
+        const double w = 2.0 * 3.14159265358979323846 * f * static_cast<double>(i) / fs;
+        sc += x[off + i] * std::cos(w);
+        ss += x[off + i] * std::sin(w);
+      }
+      return 2.0 * std::sqrt(sc * sc + ss * ss) / static_cast<double>(n);
+    };
+    auto rmsWin = [&](const std::vector<float>& x, size_t off, size_t n) {
+      double s = 0.0;
+      for (size_t i = 0; i < n; ++i) s += (double)x[off + i] * x[off + i];
+      return std::sqrt(s / n);
+    };
+    using namespace modular;
+    // A voice with instant-ish envelope, filter wide open, drone gate — the
+    // "bare VCO" configuration every spectral test starts from. Level −20 dB
+    // keeps |y| ≈ 0.1 → tanh ≈ identity (<0.4 % H3 error at unit input 0.1)…
+    // tanh sits BEFORE the gain though, so drive is the raw VCO (±1):
+    // tanh(±1) compresses ~24 % — the saturation stage is part of the voice,
+    // so expectations below are measured against the tanh'd waveform, checked
+    // as RATIOS between harmonics (tanh preserves odd symmetry and the
+    // qualitative 1/n vs 1/n² structure the lab teaches).
+    auto mkVoice = [&](ModularVoice& v, int shp, double f0hz, double cutoffHz, double resv) {
+      v.configure(fs);
+      v.set(Shape, shp);
+      v.set(BaseFreq, f0hz);
+      v.set(Cutoff, cutoffHz);
+      v.set(Resonance, resv);
+      v.set(EnvA, 0.001);
+      v.set(EnvD, 0.001);
+      v.set(EnvS, 1.0);
+      v.set(EnvR, 0.05);
+      v.set(LfoDepth, 0.0);
+      v.set(SeqOn, 0.0);
+      v.set(LevelDb, -20.0);
+    };
+    auto renderV = [&](ModularVoice& v, double secs) {
+      const size_t n = static_cast<size_t>(fs * secs);
+      std::vector<float> L(n, 0.0f), R(n, 0.0f);
+      v.renderAddInto(L.data(), R.data(), (uint32_t)n);
+      return L;
+    };
+    const size_t skip = static_cast<size_t>(fs * 0.3);
+    const size_t len = static_cast<size_t>(fs);
+
+    // (a) SAW spectrum: every harmonic, falling ≈1/n (checked as ratios).
+    {
+      ModularVoice v;
+      mkVoice(v, 0, 250.0, 14000.0, 0.0);
+      v.start();
+      auto L = renderV(v, 1.4);
+      const double h1 = magAt(L, skip, len, 250.0);
+      const double h2 = magAt(L, skip, len, 500.0);
+      const double h3 = magAt(L, skip, len, 750.0);
+      truthy("Modular saw: fundamental present", h1 > 0.02);
+      near("Modular saw: H2/H1 ≈ 1/2", h2 / h1, 0.5, 0.1);
+      near("Modular saw: H3/H1 ≈ 1/3", h3 / h1, 1.0 / 3.0, 0.1);
+    }
+    // (b) SQUARE spectrum: odd-only, H3/H1 ≈ 1/3.
+    {
+      ModularVoice v;
+      mkVoice(v, 1, 250.0, 14000.0, 0.0);
+      v.start();
+      auto L = renderV(v, 1.4);
+      const double h1 = magAt(L, skip, len, 250.0);
+      truthy("Modular square: even H2 suppressed", magAt(L, skip, len, 500.0) < 0.05 * h1);
+      near("Modular square: H3/H1 ≈ 1/3", magAt(L, skip, len, 750.0) / h1, 1.0 / 3.0, 0.12);
+    }
+    // (c) VCF cutoff: closing the filter kills the highs (H20 of a 110 Hz saw
+    //     at 2200 Hz: open vs cutoff 500 Hz → > 12 dB drop).
+    {
+      ModularVoice open_, closed;
+      mkVoice(open_, 0, 110.0, 14000.0, 0.0);
+      mkVoice(closed, 0, 110.0, 500.0, 0.0);
+      open_.start();
+      closed.start();
+      auto Lo = renderV(open_, 1.4);
+      auto Lc = renderV(closed, 1.4);
+      const double drop = db(magAt(Lc, skip, len, 2200.0)) - db(magAt(Lo, skip, len, 2200.0));
+      truthy("Modular VCF: cutoff 500 drops H20 (2200 Hz) > 12 dB", drop < -12.0);
+    }
+    // (d) RESONANCE: boosts the harmonic nearest the cutoff (saw 55 Hz through
+    //     fc=2035 Hz — harmonic 37 sits at the peak).
+    {
+      ModularVoice flat, ringy;
+      mkVoice(flat, 0, 55.0, 2035.0, 0.0);
+      mkVoice(ringy, 0, 55.0, 2035.0, 1.0);
+      flat.start();
+      ringy.start();
+      auto Lf = renderV(flat, 1.4);
+      auto Lr = renderV(ringy, 1.4);
+      truthy("Modular VCF: resonance boosts near-cutoff harmonic",
+             magAt(Lr, skip, len, 2035.0) > magAt(Lf, skip, len, 2035.0) * 1.4);
+    }
+    // (e) ADSR attack: 0.4 s attack → early window much quieter than late.
+    {
+      ModularVoice v;
+      mkVoice(v, 3 /*sine*/, 440.0, 14000.0, 0.0);
+      v.set(EnvA, 0.4);
+      v.start();
+      auto L = renderV(v, 1.0);
+      const size_t w = static_cast<size_t>(fs * 0.1);
+      truthy("Modular ADSR: slow attack ramps up",
+             rmsWin(L, static_cast<size_t>(fs * 0.02), w) <
+                 0.5 * rmsWin(L, static_cast<size_t>(fs * 0.8), w));
+    }
+    // (f) LFO tremolo (dest amp, 4 Hz, full depth): the amplitude envelope dips
+    //     near zero every trough — peak level in a trough window ≪ in a crest.
+    {
+      ModularVoice v;
+      mkVoice(v, 3, 440.0, 14000.0, 0.0);
+      v.set(LfoRate, 4.0);
+      v.set(LfoDepth, 1.0);
+      v.set(LfoDest, 3);
+      v.start();
+      auto L = renderV(v, 2.0);
+      // Scan 50 ms windows over the settled tail for min/max peak.
+      const size_t w = static_cast<size_t>(fs * 0.05);
+      double lo = 1e9, hi = 0.0;
+      for (size_t off = skip; off + w < L.size(); off += w) {
+        double pk = 0.0;
+        for (size_t i = 0; i < w; ++i) pk = std::fabs(L[off + i]) > pk ? std::fabs(L[off + i]) : pk;
+        lo = pk < lo ? pk : lo;
+        hi = pk > hi ? pk : hi;
+      }
+      truthy("Modular LFO tremolo: deep 4 Hz amplitude modulation", lo < 0.3 * hi);
+    }
+    // (g) SEQUENCER: steps 0 and +12 at 2 steps/s — the pitch alternates
+    //     octaves window-by-window (440 then 880).
+    {
+      ModularVoice v;
+      mkVoice(v, 3, 440.0, 14000.0, 0.0);
+      v.set(SeqOn, 1.0);
+      v.set(SeqRate, 2.0);
+      for (int i = 0; i < 8; ++i) {
+        v.set(SeqStep0 + i, (i % 2) ? 12.0 : 0.0);
+        v.set(SeqGate0 + i, 1.0);
+      }
+      v.start();
+      auto L = renderV(v, 2.0);
+      // Step 0 (0..0.5 s) plays 440; step 1 (0.5..1.0 s) plays 880. Probe the
+      // middle 0.25 s of each (integer cycles at both frequencies).
+      const size_t w = static_cast<size_t>(fs * 0.25);
+      const size_t s0 = static_cast<size_t>(fs * 0.15);
+      const size_t s1 = static_cast<size_t>(fs * 0.65);
+      truthy("Modular seq: step 0 plays the base pitch",
+             magAt(L, s0, w, 440.0) > 4.0 * magAt(L, s0, w, 880.0));
+      truthy("Modular seq: step 1 plays +12 semitones",
+             magAt(L, s1, w, 880.0) > 4.0 * magAt(L, s1, w, 440.0));
     }
   }
 

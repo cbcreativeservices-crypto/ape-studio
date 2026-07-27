@@ -33,6 +33,19 @@ constexpr double kDefaultDb = -20.0;  // Q4 default
 constexpr double kCapDb = -12.0;      // Q4 hard cap (unlock required above)
 }  // namespace genlevel
 
+namespace genfm {
+// FM voice bounds (wave-2 expansion labs 2026-07-26). Index = peak phase
+// deviation in radians (Chowning convention: sidebands at fc ± k·fm with
+// amplitudes J_k(I)). Ranges keep Carson bandwidth ≈ 2·fm·(I+1) sane for the
+// lab's carrier range; extremes CAN alias (documented — the Distortion lab
+// teaches aliasing; the FM lab UI shows Carson bandwidth vs Nyquist honestly).
+constexpr double kMaxIndex = 12.0;
+constexpr double kMaxRatio = 16.0;
+// Index ramp: full 0→kMaxIndex swing in ~24 ms (slope-limited, same click-free
+// rationale as the additive amp ramps; smaller changes finish faster).
+constexpr double kIndexRampSec = 0.024;
+}  // namespace genfm
+
 namespace genadd {
 constexpr uint32_t kHarmonics = 12;  // fixed HV-2 model size (matches JS MODEL_HARMONICS)
 // Slope-limited linear ramps (amps, gain, phase slew): a FULL 0→1 amp swing
@@ -62,6 +75,7 @@ enum class GenMode : int {
   Click = 10,
   Burst = 11,
   Additive = 12,  // HV-2: 12-harmonic additive synth (never renumber)
+  Fm = 13,        // wave-2: carrier+modulator FM voice (never renumber)
 };
 
 class Generator {
@@ -91,6 +105,18 @@ class Generator {
     retrigger_.store(true);
   }
   void setClickBpm(double bpm) { clickBpm_.store(bpm < 20 ? 20 : (bpm > 300 ? 300 : bpm)); }
+  /// FM voice (wave-2): modulator = ratio × carrier (freq_); index I = peak
+  /// phase deviation (radians, Chowning) — TARGET, slope-limit-ramped on the
+  /// render thread; decaySec > 0 puts an exponential decay on the index per
+  /// trigger (the classic FM bell/pluck "brightness fades" envelope; 0 =
+  /// sustained/static index). A retrigger (genStart on a running tone) is the
+  /// STRIKE — the env dip + per-trigger reset restarts the decay click-free.
+  /// NaN-proofed (the !(x>=k) form rejects NaN); safe at UI rate.
+  void setFm(double ratio, double index, double decaySec) {
+    fmRatio_.store(!(ratio >= 0.05) ? 0.05 : (ratio > genfm::kMaxRatio ? genfm::kMaxRatio : ratio));
+    fmIndexT_.store(!(index >= 0.0) ? 0.0 : (index > genfm::kMaxIndex ? genfm::kMaxIndex : index));
+    fmDecay_.store(!(decaySec >= 0.0) ? 0.0 : decaySec);
+  }
   /// ROUTE-AWARE SPEAKER-SAFETY HIGH-PASS. The platform layer detects the
   /// output route and sets the cutoff: a positive Hz ENGAGES a 2nd-order
   /// Butterworth high-pass on the generator output (built-in speaker — protects
@@ -209,6 +235,8 @@ class Generator {
     // be hoisted before a mid-block applyTrigger adopts the mode.
     if ((modeCur_ == GenMode::Additive || modeTarget == GenMode::Additive) && fs > 0)
       additivePrepare(fs);
+    // FM hoist (same rationale — one atomic read per render call).
+    if ((modeCur_ == GenMode::Fm || modeTarget == GenMode::Fm) && fs > 0) fmPrepare(fs);
     // Speaker-safety HPF. Read the cutoff once. Design the biquad when an ACTIVE
     // cutoff first appears / changes (fixed 150 Hz in practice → designed once);
     // a 0 (bypass, e.g. headphones) KEEPS the last design and rides the crossfade
@@ -331,6 +359,12 @@ class Generator {
       pCur_[h] = pT_[h];
     }
     addSnap_ = true;
+    // FM: deterministic strike — phases from 0, index decay restarted, the
+    // ramping index snapped to its target (the env fade covers the (re)start).
+    fmPhC_ = 0.0;
+    fmPhM_ = 0.0;
+    fmDecayEnv_ = 1.0;
+    fmSnap_ = true;
     // Clean the HPF state on every (re)trigger — this only runs with env_ at 0
     // (silent), so clearing the biquad memory can't step audible output and a
     // re-engage never clicks from stale state. Snap the crossfade to the current
@@ -422,6 +456,8 @@ class Generator {
       }
       case GenMode::Additive:
         return additiveSample(fs);
+      case GenMode::Fm:
+        return fmSample(fs);
       case GenMode::Off:
       default:
         return 0.0;
@@ -497,6 +533,49 @@ class Generator {
       s += aCur_[h] * std::sin(2.0 * kPi * addPhase_[h] + pCur_[h]);
     }
     return s * (1.0 / (sumA > 1.0 ? sumA : 1.0));
+  }
+
+  // ---- FM (wave-2) ---------------------------------------------------------
+  // Hoist the FM atomics once per render call + refresh the per-sample decay
+  // multiplier and index ramp step. Audio thread only.
+  void fmPrepare(double fs) {
+    fmRatioR_ = fmRatio_.load();
+    fmIdxTR_ = fmIndexT_.load();
+    const double decay = fmDecay_.load();
+    // Per-sample exponential decay multiplier for the index envelope
+    // (e^(−1/(fs·τ)) per sample ⇒ e^(−t/τ) overall); 1.0 = sustained.
+    fmDecayMul_ = decay > 0.0 ? std::exp(-1.0 / (fs * decay)) : 1.0;
+    const double rampSamples = fs * genfm::kIndexRampSec;
+    fmIdxStep_ = genfm::kMaxIndex / (rampSamples < 1.0 ? 1.0 : rampSamples);
+    if (fmSnap_) {
+      fmSnap_ = false;
+      fmIdxCur_ = fmIdxTR_;
+    }
+  }
+
+  // One unit-level FM sample: sin(2π·φc + I(t)·sin(2π·φm)) with fm = ratio·fc
+  // (Chowning FM — sidebands at fc ± k·fm with amplitudes J_k(I)).
+  //  * Phase-continuous: both accumulators step like stepSine, so carrier or
+  //    ratio changes glide without a phase reset.
+  //  * I(t) = (ramped index target) × (per-trigger exponential decay env) —
+  //    the classic "brightness fades" bell/pluck; a retrigger is the strike.
+  //  * No internal band-limiting: Carson bandwidth ≈ 2·fm·(I+1) CAN cross
+  //    Nyquist at extreme settings — the lab UI displays that bound honestly
+  //    (aliasing is itself taught in the Distortion lab).
+  //  * Unit-level contract: render() applies gain/env exactly as for sine, so
+  //    the Q4 cap chain covers this mode (|sin| ≤ 1 by construction).
+  double fmSample(double fs) {
+    fmIdxCur_ = ramp(fmIdxCur_, fmIdxTR_, fmIdxStep_);
+    if (fmDecayMul_ < 1.0) fmDecayEnv_ *= fmDecayMul_;
+    const double I = fmIdxCur_ * fmDecayEnv_;
+    const double fc = freq_.load();
+    const double fm = fc * fmRatioR_;
+    const double y = std::sin(2.0 * kPi * fmPhC_ + I * std::sin(2.0 * kPi * fmPhM_));
+    fmPhC_ += fc / fs;
+    if (fmPhC_ >= 1.0) fmPhC_ -= std::floor(fmPhC_);
+    fmPhM_ += fm / fs;
+    if (fmPhM_ >= 1.0) fmPhM_ -= std::floor(fmPhM_);
+    return y;
   }
 
   // Linear ramp toward target, clamped (never overshoots, no denormal tail —
@@ -615,6 +694,11 @@ class Generator {
   // Published norm (render writes, bridge reads for genStatus).
   std::atomic<double> addNormPub_{1.0};
 
+  // FM voice (wave-2) control atomics — defaults: ratio 2, index 4, sustained.
+  std::atomic<double> fmRatio_{2.0};
+  std::atomic<double> fmIndexT_{4.0};
+  std::atomic<double> fmDecay_{0.0};
+
   // Fade length (bridge writes via configure, render reads — atomic).
   std::atomic<uint32_t> fadeSamples_{480};
 
@@ -636,6 +720,12 @@ class Generator {
   double addF0R_ = 1000.0;
   double ampStep_ = 1.0 / 384.0, phStep_ = kPi / 384.0;
   bool addSnap_ = true;
+  // FM render-thread state.
+  double fmPhC_ = 0.0, fmPhM_ = 0.0;  // carrier/modulator accumulators (cycles)
+  double fmIdxCur_ = 0.0;             // ramping index
+  double fmDecayEnv_ = 1.0;           // per-trigger exponential index envelope
+  double fmRatioR_ = 2.0, fmIdxTR_ = 4.0, fmDecayMul_ = 1.0, fmIdxStep_ = 1.0;
+  bool fmSnap_ = true;
   // Speaker-safety HPF render state (audio thread). Re-designed only when the
   // cutoff or sample rate changes; default coeffs are a no-op pass-through.
   Biquad hpf_;
