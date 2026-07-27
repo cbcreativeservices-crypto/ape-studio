@@ -242,6 +242,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'attack', name: 'Attack', definition: 'How fast it clamps down once the sound crosses the threshold. Fast tames transients; slow lets the initial punch through first.', range: '0.5 – 100 ms' },
       { key: 'release', name: 'Release', definition: 'How fast the gain returns after the level drops back. Too fast pumps; too slow keeps the level held down too long.', range: '30 – 500 ms' },
       { key: 'makeup_gain', name: 'Makeup gain', definition: 'Turns the whole signal back up after compression lowered it — so the compressed track sits as loud (or louder) than before.' },
+      { key: 'gain_reduction', name: 'Gain reduction (meter)', definition: 'The LIVE, measured amount the compressor is turning the signal down RIGHT NOW, in dB — this is a real reading from the engine, not a drawing. It moves only while the signal is over the threshold; more reduction = harder compression.' },
     ],
     commonMistakes: [
       'Attack too fast → transients killed — clamps the initial hit; to preserve transients, slow the attack so the transient passes first.',
@@ -281,6 +282,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'sidechain', name: 'Sidechain / Key input', definition: 'External trigger source (e.g. gate a pad from the kick).' },
       { key: 'key_filter', name: 'Key filter (HPF/LPF on detector)', definition: 'Band-limits the detector so only the intended band opens the gate.' },
       { key: 'sc_listen', name: 'Sidechain Listen / Monitor', definition: 'Audition the (filtered) detector signal to tune it.' },
+      { key: 'gain_reduction', name: 'Gain reduction (meter)', definition: 'The LIVE, measured amount the gate is pulling the signal DOWN right now, in dB — a real engine reading, not a drawing. It reads deep (toward the floor) when the gate is closed on quiet material and 0 when the gate is open.' },
     ],
     commonMistakes: [
       'Threshold too high — chops off note tails, word endings, cymbal/reverb decays; choppy and unnatural.',
@@ -318,6 +320,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'true_peak', name: 'True-Peak / ISP mode', range: 'on/off · default on', definition: 'Oversampled detection to catch inter-sample peaks that exceed the ceiling after D/A or lossy encode.' },
       { key: 'character', name: 'Character / Style', range: 'Transparent … Aggressive', definition: 'Algorithm flavor.', advanced: true },
       { key: 'dither', name: 'Dither', range: 'off / TPDF / shaped', definition: 'Apply when the limiter is the last step before bit-depth reduction.', advanced: true },
+      { key: 'gain_reduction', name: 'Gain reduction (meter)', definition: 'The LIVE, measured amount the limiter is holding the signal DOWN right now, in dB — a real engine reading, not a drawing. Constant, heavy reduction means you’re slamming the ceiling; brief flickers mean it’s just catching peaks.' },
     ],
     commonMistakes: [
       'Pushing for loudness → squashing — flattens dynamics, kills punch, adds distortion (the loudness-war trap). A few dB GR is plenty.',
@@ -593,6 +596,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'module_toggle', name: 'Module enable/bypass', definition: 'Each module can be switched in or out of the chain. A bypassed module still occupies its slot — the chain order is the canonical studio order.' },
       { key: 'chain_order', name: 'Chain order', definition: 'The fixed, canonical order. EQ before compression changes what the compressor reacts to; a limiter anywhere but last voids its ceiling guarantee.' },
       { key: 'gain_staging', name: 'Gain staging', definition: 'The level each stage hands the next. Run stages too hot and the final limiter over-works and squashes — watch the live GR meters between modules.' },
+      { key: 'gain_reduction', name: 'Gain-reduction meters', definition: 'The LIVE, measured dB each dynamics module (compressor / gate / limiter) is pulling the signal down by RIGHT NOW — real engine readings, not drawings. Comparing them across the chain shows how each stage feeds the next: a hot compressor makes the limiter work harder.' },
     ],
     commonMistakes: [
       'Not understanding EQ→comp vs comp→EQ — EQ BEFORE compression changes what the compressor reacts to (boost lows → it pumps on bass); EQ after shapes the already-compressed tone.',

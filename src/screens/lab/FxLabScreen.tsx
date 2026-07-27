@@ -20,13 +20,13 @@
  * stop disables the whole chain (fxReset) so no lab leaks effects into another.
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { ApeDsp, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
-import { GuidedLessonSheet, getLabLesson, type LabId } from '../../features/lab/guidedLessons';
+import { GuidedLessonSheet, getLabLesson, SOURCE_LESSON, type LabId, type LessonContent } from '../../features/lab/guidedLessons';
 import { GrMeter } from '../../features/lab/fxViz';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
@@ -36,6 +36,25 @@ import { LabShell, LabChip } from './LabShell';
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
 const GR_POLL_MS = 100;
+
+/** The SOURCE_LESSON control key for a generator source, from its mode. */
+function sourceKeyForGen(gen: GenParams): string {
+  switch (gen.mode) {
+    case GEN_MODES.sine: return 'sine';
+    case GEN_MODES.white: return 'white';
+    case GEN_MODES.pink: return 'pink';
+    case GEN_MODES.brown: return 'brown';
+    case GEN_MODES.blue: return 'blue';
+    case GEN_MODES.violet: return 'violet';
+    case GEN_MODES.sweepLin:
+    case GEN_MODES.sweepLog: return 'sweep';
+    case GEN_MODES.impulse:
+    case GEN_MODES.click: return 'click';
+    case GEN_MODES.burst: return 'burst';
+    case GEN_MODES.additive: return 'additive';
+    default: return 'sine';
+  }
+}
 
 export type FxParamSpec = {
   /** Section head above the chip row. */
@@ -89,12 +108,12 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
   const [genError, setGenError] = useState('');
   const [grDb, setGrDb] = useState(0);
 
-  const [lessonKey, setLessonKey] = useState<string | undefined>(undefined);
-  const [lessonOpen, setLessonOpen] = useState(false);
-  const openLesson = useCallback((key?: string) => {
-    setLessonKey(key);
-    setLessonOpen(true);
-  }, []);
+  // Help popup — one sheet, but it can show either the LAB lesson (controls,
+  // GR meter) or the shared SOURCE lesson (test signals). Track which.
+  const [help, setHelp] = useState<{ lesson: LessonContent; key?: string } | null>(null);
+  const labLesson = useMemo(() => getLabLesson(config.labId), [config.labId]);
+  const openLesson = useCallback((key?: string) => setHelp({ lesson: labLesson, key }), [labLesson]);
+  const openSourceHelp = useCallback((gen: GenParams) => setHelp({ lesson: SOURCE_LESSON, key: sourceKeyForGen(gen) }), []);
 
   // -- Audio lifecycle (generation-guarded; chain reset on every stop) -------
   const genRef = useRef(0);
@@ -186,14 +205,20 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
       {!engineReady ? <EngineGate state={gate} /> : null}
 
       <View style={styles.chipRow}>
-        <LabChip label="ⓘ GUIDED LESSON" selected={lessonOpen} onPress={() => openLesson()} />
+        <LabChip label="ⓘ GUIDED LESSON" selected={help != null} onPress={() => openLesson()} />
       </View>
-      <Text style={styles.caption}>Long-press a labeled control for its guided lesson.</Text>
+      <Text style={styles.caption}>Long-press any labeled control, source, or meter for what it does.</Text>
 
       <Text style={styles.sectionHead}>SOURCE</Text>
       <View style={styles.chipRow}>
         {config.sources.map((s, i) => (
-          <LabChip key={s.label} label={s.label} selected={sourceIdx === i} onPress={() => pickSource(i)} />
+          <LabChip
+            key={s.label}
+            label={s.label}
+            selected={sourceIdx === i}
+            onPress={() => pickSource(i)}
+            onLongPress={() => openSourceHelp(s.gen)}
+          />
         ))}
       </View>
 
@@ -219,7 +244,16 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
         <Text style={styles.badge}>{config.heroBadge}</Text>
         {config.Hero(values)}
         {config.heroCaption ? <Text style={styles.caption}>{config.heroCaption(values)}</Text> : null}
-        {config.pollGr ? <GrMeter grDb={running ? grDb : 0} label="GAIN REDUCTION — LIVE (measured)" /> : null}
+        {config.pollGr ? (
+          <Pressable
+            onLongPress={() => openLesson('gain_reduction')}
+            delayLongPress={350}
+            accessibilityRole="button"
+            accessibilityLabel="Gain reduction meter — what it shows"
+          >
+            <GrMeter grDb={running ? grDb : 0} label="GAIN REDUCTION — LIVE (measured)" />
+          </Pressable>
+        ) : null}
       </View>
 
       {engineReady ? (
@@ -248,10 +282,10 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
       {config.note ? <Text style={styles.caption}>{config.note}</Text> : null}
 
       <GuidedLessonSheet
-        visible={lessonOpen}
-        lesson={getLabLesson(config.labId)}
-        controlKey={lessonKey}
-        onClose={() => setLessonOpen(false)}
+        visible={help != null}
+        lesson={help?.lesson ?? labLesson}
+        controlKey={help?.key}
+        onClose={() => setHelp(null)}
       />
     </LabShell>
   );

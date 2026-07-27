@@ -7,3 +7,4 @@ export type { LabId, LabTier, ControlLesson, LabLesson, LessonContent } from './
 export { LAB_LESSONS, LAB_LESSON_LIST, getLabLesson, getControlLesson } from './content';
 export { GuidedLessonBody, GuidedLessonSheet } from './GuidedLessonSheet';
 export { TOOL_LESSONS, getToolLesson, useToolHelp, HelpHead, DisplayGuideButton, readoutKey, type ToolId } from './toolHelp';
+export { SOURCE_LESSON } from './sourceHelp';

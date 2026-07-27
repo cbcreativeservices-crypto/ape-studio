@@ -327,14 +327,21 @@ export function SignalChainLabScreen() {
         ))}
       </View>
 
-      {/* LIVE GR — the interaction made measurable (real engine readout). */}
+      {/* LIVE GR — the interaction made measurable (real engine readout).
+          Long-press for what the meters show. */}
       {enabled[FX.comp] || enabled[FX.gate] || enabled[FX.limiter] ? (
-        <View style={styles.panelCard}>
+        <Pressable
+          style={styles.panelCard}
+          onLongPress={() => openLesson('gain_reduction')}
+          delayLongPress={350}
+          accessibilityRole="button"
+          accessibilityLabel="Gain-reduction meters — what they show"
+        >
           <Text style={styles.badge}>GAIN REDUCTION — LIVE (measured per module)</Text>
           {enabled[FX.comp] ? <GrMeter grDb={running ? gr.comp : 0} label="COMPRESSOR" /> : null}
           {enabled[FX.gate] ? <GrMeter grDb={running ? gr.gate : 0} maxDb={70} label="GATE" /> : null}
           {enabled[FX.limiter] ? <GrMeter grDb={running ? gr.limiter : 0} label="LIMITER" /> : null}
-        </View>
+        </Pressable>
       ) : null}
 
       {engineReady ? (
