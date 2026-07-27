@@ -92,6 +92,11 @@ export function SpeakerOutputToggle({
   );
 }
 
+/** API handed to a render-prop Explore child. `setScrollLocked` lets an
+ *  interactive panel (e.g. a drag editor) disable the shell's ScrollView while a
+ *  gesture is in flight, so the drag wins over scroll. */
+export type LabShellExploreApi = { setScrollLocked: (locked: boolean) => void };
+
 export function LabShell({
   labId,
   title,
@@ -106,13 +111,19 @@ export function LabShell({
   intro: string;
   /** One-liner above the Explore panel. */
   exploreCaption: string;
-  /** The lab's interactive Explore content. */
-  children: ReactNode;
+  /** The lab's interactive Explore content. A function child receives the
+   *  shell API (scroll-lock control for drag editors); a plain node renders
+   *  as-is. */
+  children: ReactNode | ((api: LabShellExploreApi) => ReactNode);
 }) {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const { requestAudioOutput } = useAudioOutputGate();
   const [mode, setMode] = useState<LabMode>('explore');
+  // Drag editors (HarmonicsView stems) lock the ScrollView while dragging so the
+  // gesture wins over scroll. Owned here so a tab switch always frees it — a tab
+  // press can land mid-drag and unmount the editor before its release fires.
+  const [scrollLocked, setScrollLocked] = useState(false);
   const lesson = getLabLesson(labId);
 
   // Audio-output prompt on entry (owner-confirmed 2026-07-25): non-blocking.
@@ -133,7 +144,7 @@ export function LabShell({
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={styles.scroll} scrollEnabled={!scrollLocked}>
         <Text style={styles.intro}>{intro}</Text>
 
         <View style={styles.tabRow}>
@@ -143,7 +154,13 @@ export function LabShell({
               <Pressable
                 key={m.key}
                 style={[styles.tab, selected && styles.tabSelected]}
-                onPress={() => setMode(m.key)}
+                onPress={() => {
+                  // A tab press can land mid-drag (tabs stay pressable during a
+                  // PanResponder drag); switching away unmounts the editor before
+                  // its release fires, so free the scroll lock here too.
+                  setScrollLocked(false);
+                  setMode(m.key);
+                }}
                 accessibilityRole="button"
                 accessibilityState={{ selected }}
                 accessibilityLabel={`${m.label} mode`}
@@ -166,7 +183,7 @@ export function LabShell({
         {mode === 'explore' ? (
           <View style={styles.panel}>
             <Text style={styles.caption}>{exploreCaption}</Text>
-            {children}
+            {typeof children === 'function' ? children({ setScrollLocked }) : children}
           </View>
         ) : null}
 
