@@ -37,16 +37,18 @@ namespace apedsp {
 /// generator (HV-2 Build 1, GenMode::Additive); 4 = route-aware speaker-safety
 /// generator HPF + output-route reporting (genHpfHz/genHpfEngaged/outputRoute);
 /// 5 = STEREO output (2-channel; mono content L==R) + stereo dual-oscillator
-/// (hard-panned L/R for stereo lab tools like the Harmonograph).
-/// JS feature-gates additive UI on >= 3, the native HPF surface on >= 4, and
-/// stereo on >= 5, falling back gracefully on older installed builds.
+/// (hard-panned L/R for stereo lab tools like the Harmonograph); 6 = the
+/// EFFECTS-PROCESSING PATH (EffectChain: EQ/comp/gate/distortion/mod/delay/
+/// reverb/stereo/limiter between the generator and the output; fxSet/fxReset/
+/// fxGrStatus bridge). JS feature-gates additive UI on >= 3, the native HPF on
+/// >= 4, stereo on >= 5, and effects on >= 6, falling back gracefully.
 /// This constant is the ONE source of truth: every bridge surface reads it —
 /// iOS via ApeDspCore.mm (@(apedsp::kEngineVersion) in frame()) and the
 /// +[ApeDspCore engineVersion] accessor Swift's getInfo() uses; Android via
 /// the nativeEngineVersion() JNI getter (ApeDspJni.cpp) that ApeDspModule.kt
 /// calls for getInfo()/getFrame(). Bumping it here bumps every platform;
 /// nothing hardcodes the value downstream.
-constexpr uint32_t kEngineVersion = 5;
+constexpr uint32_t kEngineVersion = 6;
 
 struct EngineConfig {
   uint32_t fftSize = 4096;      // ≤16384 (Q5 ruling)

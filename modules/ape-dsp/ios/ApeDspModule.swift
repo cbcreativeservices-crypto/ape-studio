@@ -194,6 +194,16 @@ public class ApeDspModule: Module {
     Function("genStatus") { () -> [String: Any] in
       return self.core.genStatus()
     }
+    // ---- Effects chain (one scalar setter for the whole roster) ----
+    Function("fxSet") { (effectId: Int, paramId: Int, value: Double) -> Void in
+      self.core.fxSet(Int32(effectId), param: Int32(paramId), value: value)
+    }
+    Function("fxReset") { () -> Void in
+      self.core.fxReset()
+    }
+    Function("fxGrStatus") { () -> [Double] in
+      return self.core.fxGrStatus().map { $0.doubleValue }
+    }
 
     OnCreate {
       self.observeNotifications()

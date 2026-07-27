@@ -220,6 +220,9 @@ type NativeApeDsp = {
   genUnlockCap(): void;
   genRelockCap(): void;
   genStatus(): GenStatus;
+  fxSet(effectId: number, paramId: number, value: number): void;
+  fxReset(): void;
+  fxGrStatus(): number[];
 };
 
 let native: NativeApeDsp | null = null;
@@ -350,4 +353,103 @@ export const ApeDsp = {
   genStatus(): GenStatus | null {
     return this.engineVersion() >= 2 ? native!.genStatus() : null;
   },
+
+  // ---- Effects chain (engineVersion ≥ 6) ----
+  /** Route one scalar param to an effect node (see FX ids/params below).
+   *  No-op below v6 — labs feature-gate their audio on fxAvailable(). */
+  fxSet(effectId: number, paramId: number, value: number): void {
+    if (this.engineVersion() >= 6) native?.fxSet(effectId, paramId, value);
+  },
+  /** Disable every effect node (a lab's stop path — leaves nothing armed). */
+  fxReset(): void {
+    if (this.engineVersion() >= 6) native?.fxReset();
+  },
+  /** Live gain-reduction readout { comp, gate, limiter } in dB (≥0 = amount of
+   *  reduction) — REAL measured values for the labs' GR meters. */
+  fxGrStatus(): { comp: number; gate: number; limiter: number } | null {
+    if (this.engineVersion() < 6) return null;
+    const g = native!.fxGrStatus();
+    return g && g.length >= 3 ? { comp: g[0], gate: g[1], limiter: g[2] } : null;
+  },
+  /** True when the native effects path exists in this build. */
+  fxAvailable(): boolean {
+    return this.engineVersion() >= 6;
+  },
 };
+
+/** Effect node ids (must match apedsp::fx::Id — chain order is canonical). */
+export const FX = {
+  eq: 0,
+  comp: 1,
+  gate: 2,
+  dist: 3,
+  mod: 4, // chorus / flanger / phaser (param `mode`)
+  delay: 5,
+  reverb: 6,
+  stereo: 7,
+  limiter: 8,
+} as const;
+
+/** Per-effect param ids (param 0 of EVERY effect = enabled 0/1). Mirrors the
+ *  setParam routing in Effects.hpp — keep in lockstep. */
+export const FX_PARAM = {
+  enabled: 0,
+  // EQ band fields: 100 + band*10 + field
+  eqBand: (band: number, field: 'type' | 'freq' | 'q' | 'gain') =>
+    100 + band * 10 + { type: 0, freq: 1, q: 2, gain: 3 }[field],
+  // Dynamics (comp/gate/limiter)
+  thresholdDb: 1,
+  ratio: 2,
+  attackMs: 3,
+  releaseMs: 4,
+  makeupDb: 5,
+  rangeDb: 6,
+  holdMs: 7,
+  ceilingDb: 8,
+  // Distortion
+  distType: 1, // 0 hard · 1 soft · 2 tube · 3 bitcrush · 4 decimate
+  driveDb: 2,
+  distMix: 3,
+  oversample: 4,
+  bits: 5,
+  rateDiv: 6,
+  outTrimDb: 7,
+  // Mod (chorus/flanger/phaser)
+  modMode: 1, // 0 chorus · 1 flanger · 2 phaser
+  rateHz: 2,
+  depth: 3,
+  modFeedback: 4,
+  modMix: 5,
+  centerMs: 6,
+  centerHz: 7,
+  stages: 8,
+  // Delay
+  timeMs: 1,
+  delayFeedback: 2,
+  delayMix: 3,
+  pingpong: 4,
+  dampHz: 5,
+  // Reverb
+  rt60: 1,
+  preDelayMs: 2,
+  reverbDampHz: 3,
+  reverbMix: 4,
+  roomSize: 5,
+  // Stereo
+  widthPct: 1,
+  pan: 2,
+  monoFold: 3,
+  invertR: 4,
+  delayRms: 5,
+  bassMonoHz: 6,
+} as const;
+
+/** EQ band type values (EqEffect::BandType). */
+export const EQ_BAND_TYPES = {
+  off: 0,
+  peak: 1,
+  lowShelf: 2,
+  highShelf: 3,
+  lowPass: 4,
+  highPass: 5,
+} as const;

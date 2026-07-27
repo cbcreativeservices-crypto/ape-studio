@@ -23,6 +23,7 @@
 
 #include <oboe/Oboe.h>
 
+#include "Effects.hpp"
 #include "EngineHub.hpp"
 #include "Generator.hpp"
 #include "SpscRing.hpp"
@@ -105,6 +106,7 @@ class NativeEngine {
   // ---- Engine surface (accessed directly by the JNI shim) ----------------
   apedsp::EngineHub engine_;
   apedsp::Generator gen_;
+  apedsp::EffectChain chain_;
   apedsp::SpscRing* ring_ = nullptr;
   std::atomic<double> lastWriteAt_;
 
@@ -165,6 +167,8 @@ class NativeEngine {
       // ever exceeds the reserved size (it shouldn't).
       if (nf <= eng->outL_.size()) {
         eng->gen_.renderStereo(eng->outL_.data(), eng->outR_.data(), nf);
+        // Effects-processing path: source → chain → output (skipped when idle).
+        if (eng->chain_.anyActive()) eng->chain_.processStereo(eng->outL_.data(), eng->outR_.data(), nf);
         for (uint32_t i = 0; i < nf; ++i) {
           out[2 * i] = eng->outL_[i];
           out[2 * i + 1] = eng->outR_[i];
@@ -248,6 +252,7 @@ class NativeEngine {
     }
     outRate_ = static_cast<double>(outStream_->getSampleRate());
     gen_.configure(outRate_);  // generate at the ACTUAL output rate
+    chain_.configure(outRate_);  // effect buffers sized pre-start (not RT)
     if (outStream_->requestStart() != oboe::Result::OK) {
       outStream_->close();
       outStream_.reset();
@@ -510,6 +515,25 @@ JNIEXPORT void JNICALL
 Java_expo_modules_apedsp_ApeDspModule_nativeGenSetStereo(JNIEnv*, jobject, jlong h, jboolean on,
                                                          jdouble fL, jdouble fR) {
   eng(h)->gen_.setStereo(on == JNI_TRUE, fL, fR);
+}
+// ---- Effects chain (one scalar setter for the whole roster; see fx::Id) ----
+JNIEXPORT void JNICALL
+Java_expo_modules_apedsp_ApeDspModule_nativeFxSet(JNIEnv*, jobject, jlong h, jint effectId,
+                                                  jint paramId, jdouble v) {
+  eng(h)->chain_.set(effectId, paramId, v);
+}
+JNIEXPORT void JNICALL
+Java_expo_modules_apedsp_ApeDspModule_nativeFxReset(JNIEnv*, jobject, jlong h) {
+  eng(h)->chain_.reset();
+}
+// [compGr, gateGr, limiterGr] dB — live gain-reduction for honest UI meters.
+JNIEXPORT jdoubleArray JNICALL
+Java_expo_modules_apedsp_ApeDspModule_nativeFxGrStatus(JNIEnv* env, jobject, jlong h) {
+  double g[3];
+  eng(h)->chain_.grStatus(g);
+  jdoubleArray a = env->NewDoubleArray(3);
+  env->SetDoubleArrayRegion(a, 0, 3, g);
+  return a;
 }
 // ADDITIVE (HV-2): flat [f0, a1..a12, p1..p12] — 25 doubles (Hz, 0..1, degrees).
 // Same ordering as iOS/JS. Copy semantics per the existing convention (region

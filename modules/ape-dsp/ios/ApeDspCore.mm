@@ -13,6 +13,7 @@
 #include <thread>
 #include <vector>
 
+#include "core/Effects.hpp"
 #include "core/EngineHub.hpp"
 #include "core/Generator.hpp"
 #include "core/SpscRing.hpp"
@@ -39,6 +40,7 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
   apedsp::SpscRing *_ring;
   apedsp::EngineHub *_engine;
   apedsp::Generator *_gen;
+  apedsp::EffectChain *_chain;
   std::thread _analysisThread;
   std::atomic<bool> _running;
   std::atomic<double> _lastWriteAt;
@@ -54,8 +56,10 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
     _ring = new apedsp::SpscRing(kRingCapacity);
     _engine = new apedsp::EngineHub();
     _gen = new apedsp::Generator();
+    _chain = new apedsp::EffectChain();
     _engine->configureSampleRate(48000.0);
     _gen->configure(48000.0);
+    _chain->configure(48000.0);
     _scratch = new float[kScratchSize];
     _running.store(false);
     _lastWriteAt.store(0.0);
@@ -68,6 +72,7 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
   delete _ring;
   delete _engine;
   delete _gen;
+  delete _chain;
   delete[] _scratch;
 }
 
@@ -80,6 +85,7 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
   if (wasRunning && _analysisThread.joinable()) _analysisThread.join();
   _engine->configureSampleRate(sampleRate);
   _gen->configure(sampleRate);
+  _chain->configure(sampleRate);
   if (wasRunning) [self start];
 }
 
@@ -357,6 +363,22 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
 }
 - (void)genRenderStereo:(float *)left right:(float *)right frames:(uint32_t)frames {
   _gen->renderStereo(left, right, frames);
+  // Effects-processing path: source → chain → output (skipped when idle).
+  if (_chain->anyActive()) _chain->processStereo(left, right, frames);
+}
+
+// ---- Effects chain (Pillar B labs + Signal Chain Builder) ----
+- (void)fxSet:(int)effectId param:(int)paramId value:(double)v {
+  _chain->set(effectId, paramId, v);
+}
+- (void)fxReset {
+  _chain->reset();
+}
+// Live gain-reduction readout [comp, gate, limiter] (dB) — honest GR meters.
+- (NSArray<NSNumber *> *)fxGrStatus {
+  double g[3];
+  _chain->grStatus(g);
+  return @[ @(g[0]), @(g[1]), @(g[2]) ];
 }
 
 @end

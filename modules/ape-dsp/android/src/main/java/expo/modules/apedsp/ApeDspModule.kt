@@ -69,6 +69,9 @@ class ApeDspModule : Module() {
   private external fun nativeGenSetClickBpm(h: Long, bpm: Double)
   private external fun nativeGenSetHpf(h: Long, hz: Double)
   private external fun nativeGenSetStereo(h: Long, on: Boolean, fL: Double, fR: Double)
+  private external fun nativeFxSet(h: Long, effectId: Int, paramId: Int, v: Double)
+  private external fun nativeFxReset(h: Long)
+  private external fun nativeFxGrStatus(h: Long): DoubleArray
   // ADDITIVE (HV-2): flat [f0, a1..a12, p1..p12] — 25 doubles (Hz, 0..1, degrees).
   private external fun nativeGenSetAdditive(h: Long, vals: DoubleArray)
   private external fun nativeGenUnlockCap(h: Long)
@@ -314,6 +317,15 @@ class ApeDspModule : Module() {
     Function("genUnlockCap") { if (handle != 0L) nativeGenUnlockCap(handle) }
     Function("genRelockCap") { if (handle != 0L) nativeGenRelockCap(handle) }
     Function("genStatus") { genStatusMap() }
+
+    // ---- Effects chain (one scalar setter for the whole roster) ----
+    Function("fxSet") { effectId: Int, paramId: Int, value: Double ->
+      if (handle != 0L) nativeFxSet(handle, effectId, paramId, value)
+    }
+    Function("fxReset") { if (handle != 0L) nativeFxReset(handle) }
+    Function("fxGrStatus") {
+      (if (handle != 0L) nativeFxGrStatus(handle) else DoubleArray(3)).toList()
+    }
   }
 
   /** Detect the OUTPUT route and drive the route-aware speaker-safety HPF: the
