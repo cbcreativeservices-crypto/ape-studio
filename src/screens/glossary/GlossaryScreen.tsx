@@ -151,6 +151,24 @@ type TermIndex = {
 
 const normPhrase = (s: string) => s.toLowerCase().replace(/[’‘]/g, "'").replace(/\s+/g, ' ').trim();
 
+/**
+ * Search relevance rank for a term against a lowercased query (lower = better;
+ * 99 = no match, excluded). Fixes the old substring-only + A–Z ordering that
+ * buried the real match (typing "linear" listed "Converter Linearity",
+ * "differential nonlinearity"… above "Linear"). Tiers:
+ *   0 exact · 1 term starts with query · 2 a WORD in the term starts with query
+ *   · 3 substring anywhere. Callers break ties alphabetically within a tier.
+ */
+function searchRank(termLower: string, q: string): number {
+  if (termLower === q) return 0;
+  if (termLower.startsWith(q)) return 1;
+  // Word-boundary prefix: any token (split on non-alphanumerics) starting with q.
+  const words = termLower.split(/[^a-z0-9]+/);
+  for (const w of words) if (w.startsWith(q)) return 2;
+  if (termLower.includes(q)) return 3;
+  return 99;
+}
+
 function buildTermIndex(entries: Entry[]): TermIndex {
   const exact = new Map<string, string>();
   const base = new Map<string, string[]>();
@@ -913,7 +931,16 @@ export function GlossaryScreen({ route, navigation }: Props) {
         .sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0)); // newest first
     }
     const q = search.trim().toLowerCase();
-    if (q) list = list.filter((e) => e.term.toLowerCase().includes(q));
+    if (q) {
+      // Relevance ranking (not raw substring order): exact → prefix → word-prefix
+      // → substring, ties A–Z. Keeps the L-word you typed at the top instead of
+      // burying it under every term that merely contains the letters.
+      list = list
+        .map((e) => ({ e, r: searchRank(e.term.toLowerCase(), q) }))
+        .filter((x) => x.r < 99)
+        .sort((a, b) => a.r - b.r || a.e.term.localeCompare(b.e.term))
+        .map((x) => x.e);
+    }
     return list;
   }, [entries, filter, search, selCourseId, selTopicId, bookmarks, starred, recent, topics, topicIdsByName, formulaById]);
 

@@ -299,6 +299,21 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
     removeBundle(key);
     removeHomeBundle(key);
   };
+  // Whole-container remove with a confirm (user request 2026-07-26): the ✕ on a
+  // cert/program/subject header drops the WHOLE award AND its topics at once —
+  // a bulk destructive action (unlike a single topic's instant ✕), so it asks
+  // first. Mirrors the topic ✕ affordance but available even while collapsed.
+  const confirmRemoveWhole = (b: { kind: BundleKind; name: string; topics: number[] }) => {
+    const word = b.kind === 'cert' ? 'certificate' : b.kind === 'program' ? 'program' : 'subject';
+    Alert.alert(
+      `Remove ${b.name}?`,
+      `This removes the ${word} and all ${b.topics.length} of its topics from your enrollment list.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Remove', style: 'destructive', onPress: () => removeWhole(b.kind, b.name, b.topics) },
+      ],
+    );
+  };
   // Loading topics into the study deck is UNGATED (user request 2026-07-23): a
   // free user with an account can set up everything; it persists so nothing
   // breaks when they later pay. The Dashboard still only SHOWS accessible topics.
@@ -558,6 +573,10 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             {b.name}
           </Text>
           <Text style={styles.cardPct}>{bundlePct}%</Text>
+          {/* Whole-award remove (✕) available even while collapsed. */}
+          <Pressable style={styles.topicRemove} onPress={() => confirmRemoveWhole(b)} hitSlop={6} accessibilityRole="button" accessibilityLabel={`Remove ${b.name} and its topics`}>
+            <Text style={styles.topicRemoveText}>✕</Text>
+          </Pressable>
         </Pressable>
       );
     }
@@ -578,6 +597,11 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
               <HomeIcon color={onHome ? colors.amber : GRAY} filled={onHome} size={20} />
             </Pressable>
           ) : null}
+          {/* Clear whole-award ✕ remove in the header — like the topics' ✕ —
+              drops the award + all its topics (confirms first). */}
+          <Pressable style={styles.topicRemove} onPress={() => confirmRemoveWhole(b)} hitSlop={6} accessibilityRole="button" accessibilityLabel={`Remove ${b.name} and its topics`}>
+            <Text style={styles.topicRemoveText}>✕</Text>
+          </Pressable>
         </View>
         <Text style={styles.bundleMeta}>
           {b.topics.length} topics · {b.loaded ? 'Loaded on Dashboard' : 'Not loaded'}
@@ -628,11 +652,11 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
           <View style={{ flex: 1 }} />
           <Pressable
             style={styles.removeTopicsBtn}
-            onPress={() => removeWhole(b.kind, b.name, b.topics)}
+            onPress={() => confirmRemoveWhole(b)}
             accessibilityRole="button"
             accessibilityLabel={`Remove ${b.name} and its topics from the list`}
           >
-            <Text style={styles.removeTopicsText}>REMOVE TOPICS</Text>
+            <Text style={styles.removeTopicsText}>REMOVE AWARD</Text>
           </Pressable>
         </View>
       </View>

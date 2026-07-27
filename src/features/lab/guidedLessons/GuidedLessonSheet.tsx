@@ -11,6 +11,7 @@
  * Honesty: this is instructional content only — it never claims a live
  * measurement and never renders a meter.
  */
+import { useEffect, useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
@@ -34,9 +35,43 @@ function BulletBlock({ title, items, accent }: { title: string; items: string[];
 
 /** The lesson sections. When `controlKey` matches a control with authored
  *  detail, that control is featured first; the lab-level mistakes/tips/formula
- *  always follow (they apply across the lab). */
-export function GuidedLessonBody({ lesson, controlKey }: { lesson: LabLesson; controlKey?: string }) {
+ *  always follow (they apply across the lab).
+ *
+ *  `compact` (owner request 2026-07-26) is the FIRST tier for a focused control:
+ *  just the control's name + one-line "what it does to the sound/display on this
+ *  screen" — nothing else. The full stack is one "Learn more" tap away. Compact
+ *  only applies when a control is focused; the whole-lab view is always full. */
+export function GuidedLessonBody({
+  lesson,
+  controlKey,
+  compact = false,
+}: {
+  lesson: LabLesson;
+  controlKey?: string;
+  compact?: boolean;
+}) {
   const control = controlKey ? lesson.controls.find((c) => c.key === controlKey) : undefined;
+
+  // TIER 1 — the small popup: name + what-it-does, that's it.
+  if (compact && control) {
+    return (
+      <View style={styles.body}>
+        <View style={styles.block}>
+          <Text style={styles.controlName}>
+            {control.name}
+            {control.advanced ? <Text style={styles.advancedTag}>  ADVANCED</Text> : null}
+          </Text>
+          {control.definition ? (
+            <Text style={styles.paragraph}>{control.definition}</Text>
+          ) : (
+            <Text style={styles.paragraphMuted}>
+              What this control does on this screen — tap “Learn more” for the details.
+            </Text>
+          )}
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.body}>
@@ -101,8 +136,22 @@ export function GuidedLessonSheet({
 }) {
   const insets = useSafeAreaInsets();
   const control = controlKey ? lesson.controls.find((c) => c.key === controlKey) : undefined;
+  // Two-tier (owner 2026-07-26): a FOCUSED control opens COMPACT (name + what it
+  // does); "Learn more" expands to the full stack. The whole-lab entry (no
+  // control) is always full. Reset to compact each time the sheet (re)opens or
+  // the focused control changes, so every tap starts small.
+  const [expanded, setExpanded] = useState(false);
+  useEffect(() => {
+    setExpanded(false);
+  }, [visible, controlKey]);
+  const compact = !!control && !expanded;
+
   const heading = control ? control.name : lesson.name;
-  const sub = control ? `${lesson.name} · Guided Lesson` : (lesson.tagline ?? 'Guided Lesson');
+  const sub = control
+    ? compact
+      ? `${lesson.name} · what this does`
+      : `${lesson.name} · Guided Lesson`
+    : (lesson.tagline ?? 'Guided Lesson');
 
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
@@ -120,7 +169,18 @@ export function GuidedLessonSheet({
             </Pressable>
           </View>
           <ScrollView contentContainerStyle={styles.sheetScroll} showsVerticalScrollIndicator={false}>
-            <GuidedLessonBody lesson={lesson} controlKey={controlKey} />
+            <GuidedLessonBody lesson={lesson} controlKey={controlKey} compact={compact} />
+            {/* Tier-1 → tier-2 expander. Only in compact (focused-control) mode. */}
+            {compact ? (
+              <Pressable
+                style={styles.learnMore}
+                onPress={() => setExpanded(true)}
+                accessibilityRole="button"
+                accessibilityLabel="Learn more — expand the full definition"
+              >
+                <Text style={styles.learnMoreText}>LEARN MORE ⌄</Text>
+              </Pressable>
+            ) : null}
           </ScrollView>
         </View>
       </View>
@@ -144,6 +204,19 @@ const styles = StyleSheet.create({
   blockTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.textSecondary },
   blockTitleAccent: { color: colors.amber },
   paragraph: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
+  paragraphMuted: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSub, fontStyle: 'italic' },
+
+  // Tier-1 → tier-2 expander
+  learnMore: {
+    alignSelf: 'flex-start',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255,198,77,.5)',
+    backgroundColor: 'rgba(255,198,77,.08)',
+    paddingVertical: 9,
+    paddingHorizontal: 14,
+  },
+  learnMoreText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.amber },
 
   // Focused-control header
   controlName: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 0.4, color: colors.textPrimary },
