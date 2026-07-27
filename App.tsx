@@ -13,6 +13,7 @@ import { EntitlementProvider } from './src/features/commercial/EntitlementProvid
 import { AudioOutputGate } from './src/features/audio/AudioOutputGate';
 import { AudioBorderFrame } from './src/features/audio/AudioBorderFrame';
 import { MicFeedbackGuard } from './src/features/audio/MicFeedbackGuard';
+import { ShakeToMute } from './src/features/audio/ShakeToMute';
 import { LowLightDim } from './src/features/settings/LowLightLayer';
 import { useAccountLocalSync } from './src/features/account/accountLocalSync';
 import { colors, fontAssets } from './src/theme/tokens';
@@ -67,6 +68,10 @@ export default function App() {
                 the speaker whenever the mic is capturing without the physical
                 override. Renders nothing; mounted once at the root. */}
             <MicFeedbackGuard />
+            {/* Shake-to-panic-mute (owner request 2026-07-26): while audio can
+                sound, a decisive shake instantly silences everything and
+                re-locks the app to silent. Renders nothing. */}
+            <ShakeToMute />
           </View>
         </AudioOutputGate>
       </EntitlementProvider>

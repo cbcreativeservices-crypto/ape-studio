@@ -362,6 +362,19 @@ const STRING_TOP = 42;
 /** String rows drawn TAB-style: G on top … E on the bottom. */
 const ROW_TO_STRING = [3, 2, 1, 0] as const;
 
+// Instrument look behind the strings (owner request 2026-07-26): a WOOD neck
+// (the fretted region) meeting a BLUE body with a round SOUND HOLE toward the
+// bridge. Frets/inlays are lightened to metal + pearl so they read on the wood.
+const WOOD = '#3a2716'; // dark-walnut neck
+const BODY_BLUE = '#1e5290'; // blue body around the sound hole
+const SOUND_HOLE = '#08080a'; // the hole itself
+const ROSETTE = '#123f70'; // thin ring around the hole
+const FRET_METAL = '#9a9aa2';
+const NUT_BONE = '#d8d2c4';
+const INLAY = '#cfc8b8'; // mother-of-pearl marker dots
+// The neck→body seam sits just past the 12th fret (fretPos(12) = 0.5).
+const BODY_START_FRAC = 0.52;
+
 /** The tappable fretboard: 4 strings, frets 0–12 at true positions, fret
  *  markers, and the selected string's standing wave. Tap maps to the nearest
  *  string row + (fretted) nearest fret line / (harmonics) nearest node. */
@@ -440,6 +453,14 @@ function Fretboard({
   const selRow = ROW_TO_STRING.indexOf(stringIdx as 0 | 1 | 2 | 3);
   const selY = STRING_TOP + selRow * STRING_GAP;
 
+  // Instrument background geometry: wood neck on the left, blue body + sound
+  // hole toward the bridge (right). The hole is centered on the 4 strings so
+  // they cross over it ("behind the strings").
+  const bodyStart = BODY_START_FRAC * w;
+  const holeCX = bodyStart + (w - bodyStart) * 0.52;
+  const holeCY = STRING_TOP + 1.5 * STRING_GAP;
+  const holeR = Math.min(46, (w - bodyStart) * 0.42);
+
   return (
     <View onLayout={(e) => setW(Math.round(e.nativeEvent.layout.width))}>
       {w > 0 ? (
@@ -449,8 +470,16 @@ function Fretboard({
           accessibilityLabel="Fretboard — tap a string and fret"
         >
           <Svg width={w} height={FB_H}>
-            <Rect x={0} y={0} width={w} height={FB_H} fill="#0c0c0f" />
-            {/* Frets (0 = nut, heavier). */}
+            {/* Instrument body behind the strings: WOOD neck → BLUE body with a
+                round SOUND HOLE (owner request 2026-07-26). */}
+            <Rect x={0} y={0} width={w} height={FB_H} fill={WOOD} />
+            <Rect x={bodyStart} y={0} width={w - bodyStart} height={FB_H} fill={BODY_BLUE} />
+            {/* Neck→body seam. */}
+            <Line x1={bodyStart} y1={0} x2={bodyStart} y2={FB_H} stroke="#0a0a0c" strokeWidth={2} />
+            {/* Sound hole (rosette ring + dark bore) — behind the strings. */}
+            <Circle cx={holeCX} cy={holeCY} r={holeR + 3} fill="none" stroke={ROSETTE} strokeWidth={3} />
+            <Circle cx={holeCX} cy={holeCY} r={holeR} fill={SOUND_HOLE} />
+            {/* Frets (0 = nut, heavier) — metal on the wood neck. */}
             {Array.from({ length: NUM_FRETS + 1 }, (_, n) => {
               const x = fretPos(n) * w;
               return (
@@ -460,22 +489,22 @@ function Fretboard({
                   y1={STRING_TOP - 18}
                   x2={x}
                   y2={STRING_TOP + 3 * STRING_GAP + 18}
-                  stroke={n === 0 ? '#4a4a52' : '#2c2c33'}
+                  stroke={n === 0 ? NUT_BONE : FRET_METAL}
                   strokeWidth={n === 0 ? 4 : 1.5}
                 />
               );
             })}
-            {/* Fret markers (dots at 3·5·7·9, double at 12) — between-fret pos. */}
+            {/* Fret markers (pearl inlay dots at 3·5·7·9, double at 12). */}
             {[3, 5, 7, 9, 12].map((n) => {
               const x = ((fretPos(n - 1) + fretPos(n)) / 2) * w;
               const cy = STRING_TOP + 1.5 * STRING_GAP;
               return n === 12 ? (
                 <Fragment key={n}>
-                  <Circle cx={x} cy={cy - 22} r={3.5} fill="#3a3a42" />
-                  <Circle cx={x} cy={cy + 22} r={3.5} fill="#3a3a42" />
+                  <Circle cx={x} cy={cy - 22} r={3.5} fill={INLAY} />
+                  <Circle cx={x} cy={cy + 22} r={3.5} fill={INLAY} />
                 </Fragment>
               ) : (
-                <Circle key={n} cx={x} cy={cy} r={3.5} fill="#3a3a42" />
+                <Circle key={n} cx={x} cy={cy} r={3.5} fill={INLAY} />
               );
             })}
             {/* Strings (G top … E bottom); thicker toward E. */}
