@@ -82,11 +82,14 @@ export function DragSlider({
   onChange,
   label,
   readout,
+  onHelp,
 }: {
   value: number; // 0..1
   onChange: (v: number) => void;
   label: string;
   readout?: string;
+  /** When set, an ⓘ next to the label opens this control's help popup. */
+  onHelp?: () => void;
 }) {
   const [w, setW] = useState(0);
   const wRef = useRef(0);
@@ -113,7 +116,14 @@ export function DragSlider({
   return (
     <View style={{ gap: 4 }}>
       <View style={styles.sliderHead}>
-        <Text style={styles.sliderLabel}>{label}</Text>
+        <View style={styles.sliderLabelRow}>
+          <Text style={styles.sliderLabel}>{label}</Text>
+          {onHelp ? (
+            <Pressable onPress={onHelp} hitSlop={8} accessibilityRole="button" accessibilityLabel={`${label} — what it does`}>
+              <Text style={styles.sliderInfo}>ⓘ</Text>
+            </Pressable>
+          ) : null}
+        </View>
         {readout ? <Text style={styles.sliderReadout}>{readout}</Text> : null}
       </View>
       <View
@@ -208,6 +218,8 @@ const styles = StyleSheet.create({
 
   // DragSlider
   sliderHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
+  sliderLabelRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  sliderInfo: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.amber },
   sliderLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: colors.textSecondary },
   sliderReadout: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.5, color: colors.amber },
   sliderTrackWrap: { height: 30, justifyContent: 'center' },

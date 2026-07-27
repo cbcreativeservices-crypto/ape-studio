@@ -804,6 +804,18 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'pressure_graph', name: 'Pressure graph', definition: 'Pressure at one point plotted over time. It is a GRAPH — not the shape of the sound. Above the zero line = compression, below = rarefaction, zero = atmospheric.' },
       { key: 'speaker_cone', name: 'Speaker cone', definition: 'The source: electricity → motion → air. Forward strokes compress, backward strokes rarefy.' },
       { key: 'amplitude', name: 'Amplitude', definition: 'How FAR the vibration travels — bigger swings mean bigger pressure changes mean louder sound. Not the same thing as how FAST it vibrates (that is frequency).' },
+      // Playground controls (each drives every view at once).
+      { key: 'frequency', name: 'Frequency', definition: 'How FAST the air vibrates — cycles per second (Hz). More cycles = a higher pitch, and the compression bands sit closer together.', range: '55 Hz – 3.5 kHz' },
+      { key: 'waveform', name: 'Waveform', definition: 'The SHAPE of one cycle. A sine is pure; square/saw/triangle add harmonics — extra sine waves stacked on top that change the timbre.' },
+      { key: 'harmonics', name: 'Harmonic richness', definition: 'How many of those stacked overtones are kept. Fewer = purer/duller; all of them = the full bright character of the wave.' },
+      { key: 'phase', name: 'Phase', definition: 'WHERE the wave is in its cycle. On one sound alone it’s inaudible — it only matters when two copies meet (that’s the Phase lab).' },
+      { key: 'polarity', name: 'Polarity', definition: 'Flips the whole wave upside-down. Silent on its own; against a copy it cancels. A drawing change you can’t hear until two signals combine.' },
+      { key: 'noise', name: 'Noise color', definition: 'Every frequency at once (no single pitch). White = equal per Hz; pink = −3 dB/oct; brown = −6 dB/oct — progressively darker.' },
+      { key: 'sweep', name: 'Sweep', definition: 'Slides the frequency smoothly across the range so you HEAR pitch rise and SEE the spacing tighten as it climbs.' },
+      { key: 'stereo_balance', name: 'Stereo balance', definition: 'Sends more of the sound to the left or right channel — where it sits between your ears (level only, not the 3-D cues of the Binaural lab).' },
+      { key: 'delay', name: 'Delay', definition: 'Adds a spaced repeat of the sound — the simplest time effect. Longer = a distinct echo; short = it fuses with the original.' },
+      { key: 'eq', name: 'EQ (low-pass)', definition: 'Removes frequencies above a cutoff, making the sound darker. The drawn spectrum shows exactly which harmonics get taken away.' },
+      { key: 'filter_q', name: 'Filter Q', definition: 'How sharp the cutoff is. Higher Q rings and emphasizes right at the corner; lower Q rolls off gently.' },
     ],
     commonMistakes: [
       'Thinking the wavy line IS the sound — the line is a graph of pressure vs time; nothing in the air is ever shaped like it.',

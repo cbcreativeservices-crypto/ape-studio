@@ -35,6 +35,7 @@ import { guardAdditiveForEngine, guardNoiseLevelForEngine, guardToneLevelForEngi
 import { eqResponseDb } from '../../../features/lab/fxViz';
 import { EngineGate } from '../../tools/EngineGate';
 import type { EngineState } from '../../../features/tools/engine/useDspEngine';
+import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { colors, fonts } from '../../../theme/tokens';
 import { LabChip } from '../LabShell';
 import { ConceptBadge, DragSlider, LevelMeterBar, VizUnavailableCard } from './bits';
@@ -121,6 +122,15 @@ export function FoundationsPlaygroundScreen() {
   const additiveReady = engineReady && ApeDsp.engineVersion() >= 3;
   const fxReady = engineReady && ApeDsp.fxAvailable();
   const viz = useMemo(() => requireViz(), []);
+
+  // Per-control help (owner request 2026-07-26): long-press a chip / tap a
+  // slider's ⓘ → the two-tier "what it does" popup from the foundations lesson.
+  const [lessonKey, setLessonKey] = useState<string | undefined>(undefined);
+  const [lessonOpen, setLessonOpen] = useState(false);
+  const help = useCallback((key: string) => {
+    setLessonKey(key);
+    setLessonOpen(true);
+  }, []);
 
   // ── Control state ──────────────────────────────────────────────────────────
   const [source, setSource] = useState<SourceKind>('wave');
@@ -303,6 +313,7 @@ export function FoundationsPlaygroundScreen() {
                 setSource('wave');
                 setWave(wv.key);
               }}
+              onLongPress={() => help('waveform')}
             />
           ))}
         </View>
@@ -316,6 +327,7 @@ export function FoundationsPlaygroundScreen() {
                 setSource('noise');
                 setNoise(nz.key);
               }}
+              onLongPress={() => help('noise')}
             />
           ))}
           {SWEEPS.map((sw) => (
@@ -327,26 +339,28 @@ export function FoundationsPlaygroundScreen() {
                 setSource('sweep');
                 setSweepKey(sw.key);
               }}
+              onLongPress={() => help('sweep')}
             />
           ))}
         </View>
 
         {source === 'wave' ? (
           <>
-            <DragSlider value={freq01} onChange={setFreq01} label="FREQUENCY" readout={`${freq} Hz`} />
+            <DragSlider value={freq01} onChange={setFreq01} label="FREQUENCY" readout={`${freq} Hz`} onHelp={() => help('frequency')} />
             <View style={styles.chipRow}>
               {RICHNESS.map((r) => (
-                <LabChip key={r.key} label={r.label} selected={keep === r.key} onPress={() => setKeep(r.key)} />
+                <LabChip key={r.key} label={r.label} selected={keep === r.key} onPress={() => setKeep(r.key)} onLongPress={() => help('harmonics')} />
               ))}
             </View>
             <View style={styles.chipRow}>
               {PHASES.map((p) => (
-                <LabChip key={p} label={`PHASE ${p}°`} selected={phase === p} onPress={() => setPhase(p)} />
+                <LabChip key={p} label={`PHASE ${p}°`} selected={phase === p} onPress={() => setPhase(p)} onLongPress={() => help('phase')} />
               ))}
               <LabChip
                 label={inverted ? 'POLARITY −' : 'POLARITY +'}
                 selected={inverted}
                 onPress={() => setInverted((v) => !v)}
+                onLongPress={() => help('polarity')}
               />
             </View>
             <Text style={styles.caption}>
@@ -370,7 +384,7 @@ export function FoundationsPlaygroundScreen() {
           </Text>
         )}
 
-        <DragSlider value={lvl01} onChange={setLvl01} label="AMPLITUDE (LEVEL)" readout={`${levelDb} dBFS`} />
+        <DragSlider value={lvl01} onChange={setLvl01} label="AMPLITUDE (LEVEL)" readout={`${levelDb} dBFS`} onHelp={() => help('amplitude')} />
 
         {/* ── PROCESSING (v6 effects path) ───────────────────────────────── */}
         <Text style={styles.sectionHead}>PROCESSING</Text>
@@ -379,19 +393,20 @@ export function FoundationsPlaygroundScreen() {
           onChange={setBalance}
           label="STEREO BALANCE"
           readout={balance < 0.48 ? `L ${Math.round((0.5 - balance) * 200)}%` : balance > 0.52 ? `R ${Math.round((balance - 0.5) * 200)}%` : 'CENTER'}
+          onHelp={() => help('stereo_balance')}
         />
         <View style={styles.chipRow}>
           {DELAYS.map((d) => (
-            <LabChip key={d.key} label={d.label} selected={delayMs === d.key} onPress={() => setDelayMs(d.key)} />
+            <LabChip key={d.key} label={d.label} selected={delayMs === d.key} onPress={() => setDelayMs(d.key)} onLongPress={() => help('delay')} />
           ))}
         </View>
         <View style={styles.chipRow}>
           {EQ_CUTS.map((c) => (
-            <LabChip key={c.key} label={c.label} selected={eqCut === c.key} onPress={() => setEqCut(c.key)} />
+            <LabChip key={c.key} label={c.label} selected={eqCut === c.key} onPress={() => setEqCut(c.key)} onLongPress={() => help('eq')} />
           ))}
           {eqCut > 0
             ? QS.map((q) => (
-                <LabChip key={q.key} label={q.label} selected={eqQ === q.key} onPress={() => setEqQ(q.key)} />
+                <LabChip key={q.key} label={q.label} selected={eqQ === q.key} onPress={() => setEqQ(q.key)} onLongPress={() => help('filter_q')} />
               ))
             : null}
         </View>
@@ -491,6 +506,13 @@ export function FoundationsPlaygroundScreen() {
           </View>
         </View>
       </ScrollView>
+
+      <GuidedLessonSheet
+        visible={lessonOpen}
+        lesson={getLabLesson('foundations')}
+        controlKey={lessonKey}
+        onClose={() => setLessonOpen(false)}
+      />
     </View>
   );
 }

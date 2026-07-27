@@ -39,6 +39,7 @@ import type { EngineState } from '../../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { LabChip } from '../LabShell';
+import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { CheckQuestion, ConceptBadge, DragSlider, LevelMeterBar, VizUnavailableCard, type CheckSpec } from './bits';
 import { requireViz, skiaAvailable, type VizModule } from './skiaGate';
 
@@ -144,10 +145,10 @@ function useCourseTone(engineReady: boolean): ToneApi {
 // ─────────────────────────────────────────────────────────────────────────────
 // Module panels (each mounts its viz child ONLY when Skia is available)
 
-type PanelProps = { viz: VizModule | null; width: number; tone: ToneApi; focused: boolean };
+type PanelProps = { viz: VizModule | null; width: number; tone: ToneApi; focused: boolean; help: (key: string) => void };
 
 /** M1 — air particles alone, LOW/HIGH pitch chips. */
-function M1Panel({ viz, width, tone, focused }: PanelProps) {
+function M1Panel({ viz, width, tone, focused, help }: PanelProps) {
   const [f, setF] = useState(220);
   const pick = (hz: number) => {
     setF(hz);
@@ -162,9 +163,9 @@ function M1Panel({ viz, width, tone, focused }: PanelProps) {
       )}
       <ConceptBadge />
       <View style={styles.chipRow}>
-        <LabChip label="LOW · 110 Hz" selected={f === 110} onPress={() => pick(110)} />
-        <LabChip label="MID · 220 Hz" selected={f === 220} onPress={() => pick(220)} />
-        <LabChip label="HIGH · 880 Hz" selected={f === 880} onPress={() => pick(880)} />
+        <LabChip label="LOW · 110 Hz" selected={f === 110} onPress={() => pick(110)} onLongPress={() => help('frequency')} />
+        <LabChip label="MID · 220 Hz" selected={f === 220} onPress={() => pick(220)} onLongPress={() => help('frequency')} />
+        <LabChip label="HIGH · 880 Hz" selected={f === 880} onPress={() => pick(880)} onLongPress={() => help('frequency')} />
       </View>
       {tone.engineReady ? (
         <GlassButton
@@ -207,7 +208,7 @@ function M2Panel({ viz, width, tone, focused }: PanelProps) {
 }
 
 /** M3 — compression/rarefaction slider (particles + pressure, no cone). */
-function M3Panel({ viz, width, tone, focused }: PanelProps) {
+function M3Panel({ viz, width, tone, focused, help }: PanelProps) {
   const [amt, setAmt] = useState(0.55);
   const levelFor = (a: number) => -44 + a * 22; // −44 … −22 dBFS
   return (
@@ -222,6 +223,7 @@ function M3Panel({ viz, width, tone, focused }: PanelProps) {
         }}
         label="COMPRESSION STRENGTH"
         readout={amt < 0.33 ? 'gentle' : amt < 0.66 ? 'medium' : 'strong'}
+        onHelp={() => help('pressure_graph')}
       />
       <View style={styles.pressureLegend}>
         <Text style={styles.legendPlus}>+ compression — pressure ABOVE atmospheric</Text>
@@ -254,7 +256,7 @@ function M3Viz({ viz, width, amp, running }: { viz: VizModule; width: number; am
 }
 
 /** M4 — amplitude: one slider drives cone + air + graph + level + loudness. */
-function M4Panel({ viz, width, tone, focused }: PanelProps) {
+function M4Panel({ viz, width, tone, focused, help }: PanelProps) {
   const [amt, setAmt] = useState(0.5);
   const levelFor = (a: number) => -44 + a * 24; // −44 … −20 dBFS
   return (
@@ -273,6 +275,7 @@ function M4Panel({ viz, width, tone, focused }: PanelProps) {
         }}
         label="VIBRATION SIZE (AMPLITUDE)"
         readout={amt < 0.33 ? 'small → quiet' : amt < 0.66 ? 'medium' : 'large → loud'}
+        onHelp={() => help('amplitude')}
       />
       <LevelMeterBar levelDb={levelFor(amt)} minDb={-48} maxDb={-18} />
       {tone.engineReady ? (
@@ -429,6 +432,15 @@ export function FoundationsCourseScreen() {
   // (native-stack keeps it mounted under the pushed Playground).
   const focused = useIsFocused();
 
+  // Per-control help (owner request 2026-07-26) — the two-tier "what it does"
+  // popup, shared with every lab.
+  const [lessonKey, setLessonKey] = useState<string | undefined>(undefined);
+  const [lessonOpen, setLessonOpen] = useState(false);
+  const help = useCallback((key: string) => {
+    setLessonKey(key);
+    setLessonOpen(true);
+  }, []);
+
   // Resume where the student left off (device-local; freely open, not graded).
   // The restore is DROPPED if the student already navigated before AsyncStorage
   // resolved — their tap wins over the stored position.
@@ -506,7 +518,7 @@ export function FoundationsCourseScreen() {
 
         <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 24)}>
           {width > 0 ? (
-            <s.Panel viz={viz} width={width} tone={tone} focused={focused} onPlayground={openPlayground} />
+            <s.Panel viz={viz} width={width} tone={tone} focused={focused} help={help} onPlayground={openPlayground} />
           ) : null}
         </View>
 
@@ -536,6 +548,13 @@ export function FoundationsCourseScreen() {
           </View>
         </View>
       </ScrollView>
+
+      <GuidedLessonSheet
+        visible={lessonOpen}
+        lesson={getLabLesson('foundations')}
+        controlKey={lessonKey}
+        onClose={() => setLessonOpen(false)}
+      />
     </View>
   );
 }
