@@ -49,6 +49,7 @@ import {
   PhaseLabScreen,
   StereoLabScreen,
 } from '../screens/lab/fxLabConfigs';
+import { SignalChainLabScreen } from '../screens/lab/SignalChainLabScreen';
 import { LandingScreen } from '../screens/landing/LandingScreen';
 import { PublicGlossaryScreen } from '../screens/landing/PublicGlossaryScreen';
 import { PaywallScreen } from '../screens/commercial/PaywallScreen';
@@ -118,6 +119,7 @@ export function RootNavigator() {
       <Stack.Screen name="DistortionLab" component={DistortionLabScreen} />
       <Stack.Screen name="PhaseLab" component={PhaseLabScreen} />
       <Stack.Screen name="StereoLab" component={StereoLabScreen} />
+      <Stack.Screen name="SignalChainLab" component={SignalChainLabScreen} />
       {/* CM2 (commercialMode): pre-auth Landing + anonymous glossary. Only
           reached when the flag is ON (Splash routes there); registering them
           unconditionally changes nothing with the flag OFF. */}

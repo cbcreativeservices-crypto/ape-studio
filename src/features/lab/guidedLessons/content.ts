@@ -547,6 +547,42 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     ],
     formula: 'x(t) = A₁sin(f₁t+φ₁)e^(−d₁t) + A₂sin(f₂t+φ₂)e^(−d₂t) (similarly y). Ratio f₁:f₂ = musical interval; the undamped 2-pendulum case = a Lissajous figure; a small detune Δ makes the figure precess at a rate ∝ Δ.',
   },
+
+  // ──────────────────────────────── CAPSTONE · Signal Chain Builder (§8) ──
+  chain: {
+    id: 'chain',
+    num: 17,
+    name: 'Signal Chain Builder',
+    tier: 'T3',
+    tagline: 'Effects interact — order matters.',
+    whatItIs:
+      'The capstone: a full processing chain — Source → EQ → Compressor → Gate → Distortion → ' +
+      'Modulation → Delay → Reverb → Stereo → Limiter → Output. Single labs teach each effect ' +
+      'alone; the chain teaches how they INTERACT: what each module feeds the next changes what ' +
+      'the next one does.',
+    controls: [
+      { key: 'module_toggle', name: 'Module enable/bypass', definition: 'Each module can be switched in or out of the chain. A bypassed module still occupies its slot — the chain order is the canonical studio order.' },
+      { key: 'chain_order', name: 'Chain order', definition: 'The fixed, canonical order. EQ before compression changes what the compressor reacts to; a limiter anywhere but last voids its ceiling guarantee.' },
+      { key: 'gain_staging', name: 'Gain staging', definition: 'The level each stage hands the next. Run stages too hot and the final limiter over-works and squashes — watch the live GR meters between modules.' },
+    ],
+    commonMistakes: [
+      'Not understanding EQ→comp vs comp→EQ — EQ BEFORE compression changes what the compressor reacts to (boost lows → it pumps on bass); EQ after shapes the already-compressed tone.',
+      'Gate placement — gate BEFORE compression is usually right; compressing first raises the noise floor, making the gate threshold impossible to set cleanly.',
+      'Time-based FX before dynamics — compressing a reverb/delay tail pumps it; reverb/delay usually go after dynamics (or on sends).',
+      'Distortion placement blindness — before EQ (shape the new harmonics after) vs after EQ (drive specific bands); before compression it adds harmonics the comp then reacts to.',
+      'Delay→reverb vs reverb→delay — the order changes the resulting space/decay character; a deliberate choice, not random.',
+      'Gain-staging into the limiter — running each stage too hot makes the final limiter over-work and squash; watch levels between modules.',
+      'Stacking dynamics without gain-matching — cumulative squashing you can’t hear because each stage is louder.',
+      'Limiter not last — a brickwall limiter anywhere but the end voids the true-ceiling guarantee.',
+      'Judging by cumulative only — not comparing per-module vs whole-chain leads to blaming the wrong module for a problem.',
+      'Bypass ≠ remove — a bypassed module still occupies the chain order for A/B reasoning.',
+    ],
+    proTips: [
+      'Build the same idea in two orders mentally (EQ→comp vs comp→EQ) and A/B the result — the GR meter tells you what the compressor is reacting to.',
+      'Turn modules on ONE at a time and listen to what each adds — then all together. The difference between the sum and the parts is the interaction.',
+    ],
+    formula: 'Canonical chain: Source → EQ → Comp → Gate → Distortion → Modulation → Delay → Reverb → Stereo → Limiter → Output. Each stage’s output is the next stage’s input — that composition IS the lesson.',
+  },
 };
 
 /** Lab lessons in spec order (1..16) — for menus/indexes. */

@@ -149,6 +149,9 @@ export type RootStackParamList = {
   DistortionLab: undefined;
   PhaseLab: undefined;
   StereoLab: undefined;
+  /** Pillar B CAPSTONE (v4 §8) — the Signal Chain Builder: the full effect
+   *  chain as one instrument; scenario presets teach the interactions. */
+  SignalChainLab: undefined;
 };
 
 declare global {

@@ -31,7 +31,8 @@ export type LabId =
   | 'harmonic'
   | 'oscillator'
   | 'stereo'
-  | 'harmonograph';
+  | 'harmonograph'
+  | 'chain'; // Signal Chain Builder (Pillar B capstone, §8)
 
 /** Native-engine feasibility tier (v4 MASTER §12) — informational. */
 export type LabTier = 'T1' | 'T2' | 'T3';

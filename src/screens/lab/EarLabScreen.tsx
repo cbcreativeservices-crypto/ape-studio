@@ -72,6 +72,7 @@ const SECTIONS: LabSection[] = [
         tag: '⛓',
         name: 'Signal Chain Builder',
         blurb: 'Generator → EQ → Comp → Gate → FX → Reverb → Limiter → Output.',
+        route: 'SignalChainLab',
       },
     ],
   },
