@@ -357,7 +357,9 @@ class DynamicsEffect {
       case 5: makeupDb_.store(fx::clampd(v, 0.0, 24.0)); break;
       case 6: rangeDb_.store(fx::clampd(v, -80.0, 0.0)); break;
       case 7: holdMs_.store(fx::clampd(v, 0.0, 500.0)); break;
-      case 8: ceilingDb_.store(fx::clampd(v, -24.0, 0.0)); break;
+      // Wide ceiling range: lab sources play at −20 dBFS (Q4), so teaching
+      // ceilings must reach well below that to show real gain reduction.
+      case 8: ceilingDb_.store(fx::clampd(v, -60.0, 0.0)); break;
       default: break;
     }
   }

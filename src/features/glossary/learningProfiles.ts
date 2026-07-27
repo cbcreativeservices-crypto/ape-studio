@@ -23,7 +23,23 @@ import type { LabId } from '../lab/guidedLessons';
 
 /** A route to a LIVE lab screen (must be a registered RootStack route). Extend
  *  as labs ship. */
-export type LabRoute = 'HarmonicLab' | 'OscillatorLab' | 'NoiseLab' | 'HarmonographLab';
+export type LabRoute =
+  | 'HarmonicLab'
+  | 'OscillatorLab'
+  | 'NoiseLab'
+  | 'HarmonographLab'
+  | 'EqLab'
+  | 'DelayLab'
+  | 'ReverbLab'
+  | 'ChorusLab'
+  | 'FlangerLab'
+  | 'PhaserLab'
+  | 'CompressionLab'
+  | 'GateLab'
+  | 'LimiterLab'
+  | 'DistortionLab'
+  | 'PhaseLab'
+  | 'StereoLab';
 
 /** The four glossary actions (v4 MASTER §6.1). */
 export type GlossaryActionKind = 'hear_it' | 'experiment' | 'watch_it' | 'launch_lab';
@@ -76,7 +92,29 @@ const READY_TERMS_HARMONOGRAPH = [
   'Interval', 'Octave', 'Unison', 'Consonance', 'Dissonance', 'Beat Frequency',
 ];
 
+// Effect labs LIVE (2026-07-26, the 12 FxLab screens over the v6 effects path).
+// DB-verified terms only; each is genuinely taught by its lab's controls +
+// hero visual + lesson. Threshold/Attack/Release map to Compression (the
+// primary dynamics teacher). Notch/Knee etc. are lesson-only → NOT linked.
+const READY_FX: [string[], LabId, LabRoute][] = [
+  [['Graphic equalizer', 'Shelving EQ', 'High-Pass Filter', 'Low-Pass Filter', 'Q', 'Bandwidth'], 'eq', 'EqLab'],
+  [['Delay', 'Echo', 'Feedback', 'Ping-Pong Delay'], 'delay', 'DelayLab'],
+  [['RT60', 'Pre-Delay', 'Decay Time'], 'reverb', 'ReverbLab'],
+  [['Chorus'], 'chorus', 'ChorusLab'],
+  [['Flanging', 'Comb filter', 'Comb Filtering'], 'flanger', 'FlangerLab'],
+  [['Phaser', 'All-pass filter'], 'phaser', 'PhaserLab'],
+  [['Threshold', 'Ratio', 'Attack', 'Attack Time', 'Release', 'Release Time', 'Makeup Gain'], 'compression', 'CompressionLab'],
+  [['Gate', 'Noise Gate', 'Downward expansion', 'Expander'], 'gate', 'GateLab'],
+  [['Limiter', 'Limiting', 'Brickwall Limiter', 'Ceiling'], 'limiter', 'LimiterLab'],
+  [['Distortion', 'Clipping', 'Saturation', 'Overdrive', 'Aliasing'], 'distortion', 'DistortionLab'],
+  [['Phase', 'Phase cancellation', 'Phase shift', 'Mono compatibility', 'Correlation Meter', 'Mono'], 'phase', 'PhaseLab'],
+  [['Stereo', 'Stereo Width', 'Pan'], 'stereo', 'StereoLab'],
+];
+
 const READY: Record<string, LearningProfile> = Object.fromEntries([
+  ...READY_FX.flatMap(([terms, lab, route]) =>
+    terms.map((t) => [normTerm(t), { lab, actions: launch(route) } as LearningProfile] as const),
+  ),
   ...READY_TERMS_HARMONIC.map(
     (t) => [normTerm(t), { lab: 'harmonic', actions: LAUNCH_HARMONIC } as LearningProfile] as const,
   ),

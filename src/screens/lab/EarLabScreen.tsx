@@ -44,21 +44,21 @@ type LabSection = { title: string; note?: string; entries: LabEntry[] };
 // Pillar B — the 16 Audio Learning Labs (v4 MASTER §7). Only Harmonic (Lab 13)
 // is live today (the additive engine v3 path); the rest are honest placeholders.
 const AUDIO_LABS: LabEntry[] = [
-  { tag: '1', name: 'Equalizer', blurb: 'Graphic, parametric, shelves, filters, dynamic EQ.' },
-  { tag: '2', name: 'Delay', blurb: 'Echoes, slapback, tempo sync, feedback.' },
-  { tag: '3', name: 'Reverb', blurb: 'Rooms, pre-delay, decay, RT60, damping.' },
-  { tag: '4', name: 'Chorus', blurb: 'Detuned voices, width, modulation.' },
-  { tag: '5', name: 'Flanger', blurb: 'Sweeping comb-filter notches.' },
-  { tag: '6', name: 'Phaser', blurb: 'All-pass stages, phase cancellation.' },
-  { tag: '7', name: 'Compression', blurb: 'Threshold, ratio, attack/release, envelope.' },
-  { tag: '8', name: 'Gate', blurb: 'Downward expansion, chatter, sidechain.' },
-  { tag: '9', name: 'Limiter', blurb: 'Brickwall ceiling, true-peak, loudness.' },
-  { tag: '10', name: 'Distortion', blurb: 'Harmonics, clipping, saturation, aliasing.' },
+  { tag: '1', name: 'Equalizer', blurb: 'Graphic, parametric, shelves, filters, dynamic EQ.', route: 'EqLab' },
+  { tag: '2', name: 'Delay', blurb: 'Echoes, slapback, tempo sync, feedback.', route: 'DelayLab' },
+  { tag: '3', name: 'Reverb', blurb: 'Rooms, pre-delay, decay, RT60, damping.', route: 'ReverbLab' },
+  { tag: '4', name: 'Chorus', blurb: 'Detuned voices, width, modulation.', route: 'ChorusLab' },
+  { tag: '5', name: 'Flanger', blurb: 'Sweeping comb-filter notches.', route: 'FlangerLab' },
+  { tag: '6', name: 'Phaser', blurb: 'All-pass stages, phase cancellation.', route: 'PhaserLab' },
+  { tag: '7', name: 'Compression', blurb: 'Threshold, ratio, attack/release, envelope.', route: 'CompressionLab' },
+  { tag: '8', name: 'Gate', blurb: 'Downward expansion, chatter, sidechain.', route: 'GateLab' },
+  { tag: '9', name: 'Limiter', blurb: 'Brickwall ceiling, true-peak, loudness.', route: 'LimiterLab' },
+  { tag: '10', name: 'Distortion', blurb: 'Harmonics, clipping, saturation, aliasing.', route: 'DistortionLab' },
   { tag: '11', name: 'Noise', blurb: 'White → violet colors, floor, SNR, masking.', route: 'NoiseLab' },
-  { tag: '12', name: 'Phase', blurb: 'Polarity vs phase, correlation, mono.' },
+  { tag: '12', name: 'Phase', blurb: 'Polarity vs phase, correlation, mono.', route: 'PhaseLab' },
   { tag: '13', name: 'Harmonic', blurb: 'Additive synthesis, spectrum, Fourier.', route: 'HarmonicLab' },
   { tag: '14', name: 'Oscillator', blurb: 'Sine/square/saw, FM, AM, band-limiting.', route: 'OscillatorLab' },
-  { tag: '15', name: 'Stereo Imaging', blurb: 'Pan, width, Mid/Side, mono-fold.' },
+  { tag: '15', name: 'Stereo Imaging', blurb: 'Pan, width, Mid/Side, mono-fold.', route: 'StereoLab' },
   { tag: '16', name: 'Harmonograph', blurb: 'Frequency ratios ↔ musical intervals.', route: 'HarmonographLab' },
 ];
 

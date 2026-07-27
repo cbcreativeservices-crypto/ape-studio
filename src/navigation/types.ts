@@ -134,6 +134,21 @@ export type RootStackParamList = {
   /** Lab 16 "Harmonograph" (v4 §7, T1) — ratio-locked interval figures with
    *  real additive interval audio. LabShell-based. */
   HarmonographLab: undefined;
+  /** The 12 EFFECT labs (v4 §7 Labs 1–10/12/15) — FxLabScreen configs over the
+   *  native effects path (engineVersion 6): generator → EffectChain → output,
+   *  analytic teaching visuals + live GR meters. */
+  EqLab: undefined;
+  DelayLab: undefined;
+  ReverbLab: undefined;
+  ChorusLab: undefined;
+  FlangerLab: undefined;
+  PhaserLab: undefined;
+  CompressionLab: undefined;
+  GateLab: undefined;
+  LimiterLab: undefined;
+  DistortionLab: undefined;
+  PhaseLab: undefined;
+  StereoLab: undefined;
 };
 
 declare global {

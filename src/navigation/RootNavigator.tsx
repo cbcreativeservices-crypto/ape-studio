@@ -35,6 +35,20 @@ import { HarmonicLabScreen } from '../screens/lab/HarmonicLabScreen';
 import { OscillatorLabScreen } from '../screens/lab/OscillatorLabScreen';
 import { NoiseLabScreen } from '../screens/lab/NoiseLabScreen';
 import { HarmonographLabScreen } from '../screens/lab/HarmonographLabScreen';
+import {
+  EqLabScreen,
+  DelayLabScreen,
+  ReverbLabScreen,
+  ChorusLabScreen,
+  FlangerLabScreen,
+  PhaserLabScreen,
+  CompressionLabScreen,
+  GateLabScreen,
+  LimiterLabScreen,
+  DistortionLabScreen,
+  PhaseLabScreen,
+  StereoLabScreen,
+} from '../screens/lab/fxLabConfigs';
 import { LandingScreen } from '../screens/landing/LandingScreen';
 import { PublicGlossaryScreen } from '../screens/landing/PublicGlossaryScreen';
 import { PaywallScreen } from '../screens/commercial/PaywallScreen';
@@ -91,6 +105,19 @@ export function RootNavigator() {
       <Stack.Screen name="OscillatorLab" component={OscillatorLabScreen} />
       <Stack.Screen name="NoiseLab" component={NoiseLabScreen} />
       <Stack.Screen name="HarmonographLab" component={HarmonographLabScreen} />
+      {/* The 12 effect labs (native effects path, engineVersion 6). */}
+      <Stack.Screen name="EqLab" component={EqLabScreen} />
+      <Stack.Screen name="DelayLab" component={DelayLabScreen} />
+      <Stack.Screen name="ReverbLab" component={ReverbLabScreen} />
+      <Stack.Screen name="ChorusLab" component={ChorusLabScreen} />
+      <Stack.Screen name="FlangerLab" component={FlangerLabScreen} />
+      <Stack.Screen name="PhaserLab" component={PhaserLabScreen} />
+      <Stack.Screen name="CompressionLab" component={CompressionLabScreen} />
+      <Stack.Screen name="GateLab" component={GateLabScreen} />
+      <Stack.Screen name="LimiterLab" component={LimiterLabScreen} />
+      <Stack.Screen name="DistortionLab" component={DistortionLabScreen} />
+      <Stack.Screen name="PhaseLab" component={PhaseLabScreen} />
+      <Stack.Screen name="StereoLab" component={StereoLabScreen} />
       {/* CM2 (commercialMode): pre-auth Landing + anonymous glossary. Only
           reached when the flag is ON (Splash routes there); registering them
           unconditionally changes nothing with the flag OFF. */}
