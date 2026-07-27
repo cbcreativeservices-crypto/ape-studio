@@ -19,7 +19,8 @@ import { useAudioOutputEnabled } from './audioOutputStore';
 
 // Vivid warning red (brighter than the old #c90000 so it reads as a warning).
 const AUDIO_RED = '#ff2a2a';
-const THICK = 6;
+// Side-bar width. Thinned 57% from 6 px (owner request 2026-07-26): 6 × 0.43.
+const THICK = 2.58;
 // Each side bar spans 2/3 of the safe-area height, centered — i.e. shrunk by
 // 1/3, trimming 1/6 off the top and 1/6 off the bottom.
 const INSET_PCT = `${100 / 6}%`;
