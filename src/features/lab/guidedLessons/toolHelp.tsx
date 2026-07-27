@@ -121,6 +121,8 @@ export const TOOL_LESSONS: Record<ToolId, LessonContent> = {
       { key: 'response', name: 'Time response', definition: 'How fast the meter reacts: FAST (125 ms) follows quick changes; SLOW (1 s) averages for a steadier reading of continuous sound.' },
       { key: 'calibration', name: 'Calibration', definition: 'A one-time offset that aligns the phone reading to a reference meter. Until set, readings are “dBFS · uncalibrated approximate”; after, “dB SPL · field-calibrated (approximate)”.' },
       { key: 'reading', name: 'The big number (readout)', definition: 'The current weighted, time-averaged level — labeled like LAF (A-weighted, Fast) or LZS (Z, Slow). The unit says dB SPL only after calibration; otherwise dBFS · uncalibrated.' },
+      { key: 'peak', name: 'Peak (readout)', definition: 'The highest instantaneous sample level right now, in dBFS — NOT the weighted SPL number. It’s a digital-headroom indicator: it turns red at ≥ 0 dBFS, meaning the converter itself is clipping, regardless of how loud the room actually is.' },
+      { key: 'peak_hold', name: 'Peak hold (readout)', definition: 'The maximum peak seen since the last reset — it latches brief overloads your eye would miss. Also raw dBFS (converter headroom), separate from the weighted, time-averaged SPL reading above.' },
       { key: 'session_log', name: 'Session log', definition: 'Saved snapshots of the session average (Leq), the level averaged over the elapsed time — the single number that best summarizes “how loud was it overall.”' },
       { key: 'marks', name: 'What the display shows', definition: 'The eyebrow spells out the exact weighting × response in use (e.g. LAF = A-weighted, Fast); the large value is that level right now; the unit line is the honest calibration state. There is no chart — the number IS the measurement.' },
     ],
@@ -148,6 +150,9 @@ export const TOOL_LESSONS: Record<ToolId, LessonContent> = {
       { key: 'envelope', name: 'Min/max envelope', definition: 'The tall filled shape: for each ~50 ms column, how far the wave swung up (top) and down (bottom). Its overall height is loudness over time.' },
       { key: 'rms', name: 'RMS band', definition: 'The fainter inner band — the average (root-mean-square) energy of each column. It tracks perceived loudness better than the raw peaks do.' },
       { key: 'clip', name: 'Clip ticks', definition: 'Red marks in the top lane flag columns where the input hit full scale (0 dBFS) and clipped — the measurement there is invalid, not just loud.' },
+      { key: 'peak', name: 'Peak (readout)', definition: 'The highest sample level in the visible window, in dBFS. 0 dBFS is full scale, so a reading at 0 means it clipped. This is the true peak — it can sit above the smoothed envelope shape.' },
+      { key: 'clip_runs', name: 'Clip runs (readout)', definition: 'How many SEPARATE times the signal hit full scale and clipped in the window — each run is one overload event, not one sample. Anything above 0 means lower the input; the clipped moments are unreliable.' },
+      { key: 'window', name: 'Window (readout)', definition: 'How much time the display spans left→right — the visible history, in seconds. Each column summarizes ~50 ms, so this sets how many seconds of audio fit on screen at once.' },
       { key: 'marks', name: 'What the display shows', definition: 'Time runs left→right (newest at the right edge); the centre line is silence (zero pressure); distance above/below it is how hard the air was pushed/pulled. The top strip is the clip lane — red ticks there mean overload.' },
     ],
     commonMistakes: [
@@ -180,6 +185,7 @@ export const TOOL_LESSONS: Record<ToolId, LessonContent> = {
       { key: 'stability', name: 'Stability (readout)', definition: 'How steady the detected rate/pitch is over recent readings — high stability means a reliable, unwavering source.' },
       { key: 'min', name: 'Min (readout)', definition: 'The lowest frequency seen since the last reset — the bottom of the range you’ve produced.' },
       { key: 'max', name: 'Max (readout)', definition: 'The highest frequency seen since the last reset — the top of the range.' },
+      { key: 'a4', name: 'A4 reference', definition: 'The tuning anchor — what frequency the note “A above middle C” (A4) is set to. 440 Hz is the modern standard; many orchestras use 442/443, and older or period tunings sit lower. Every note name and cents reading the tuner shows is measured against this reference.' },
       { key: 'marks', name: 'What the display shows', definition: 'The big number is the current frequency (Hz) or event rate; the smaller cells around it qualify it — confidence and input level tell you HOW MUCH to trust it, status tells you the detector’s state, min/max bracket the range.' },
     ],
     commonMistakes: [

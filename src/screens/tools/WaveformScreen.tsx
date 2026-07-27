@@ -56,7 +56,7 @@ const fmtDb = (v: number | undefined | null) =>
   v != null && Number.isFinite(v) ? `${v > 0 ? '+' : ''}${v.toFixed(1)}` : '—';
 
 export function WaveformScreen({ navigation }: Props) {
-  const { helpAll, sheet } = useToolHelp('waveform');
+  const { help, helpAll, sheet } = useToolHelp('waveform');
   const insets = useSafeAreaInsets();
   const { state, frames, start, stop, lastError } = useDspEngine(
     { waveformEnabled: true },
@@ -309,24 +309,24 @@ export function WaveformScreen({ navigation }: Props) {
 
             {/* Live readouts — real meter frame only; peak NEVER clamped (F1). */}
             <View style={styles.statGrid}>
-              <View style={styles.statCell}>
+              <Pressable style={styles.statCell} onLongPress={() => help('peak')} delayLongPress={260}>
                 <Text style={styles.statLabel}>PEAK</Text>
                 <Text style={styles.statValue}>
                   {fmtDb(meter?.peakDb)}
                   <Text style={styles.statUnit}> dBFS</Text>
                 </Text>
-              </View>
-              <View style={styles.statCell}>
+              </Pressable>
+              <Pressable style={styles.statCell} onLongPress={() => help('clip_runs')} delayLongPress={260}>
                 <Text style={styles.statLabel}>CLIP RUNS</Text>
                 <Text style={styles.statValue}>{meter ? meter.clipRuns : '—'}</Text>
-              </View>
-              <View style={styles.statCell}>
+              </Pressable>
+              <Pressable style={styles.statCell} onLongPress={() => help('window')} delayLongPress={260}>
                 <Text style={styles.statLabel}>WINDOW</Text>
                 <Text style={styles.statValue}>
                   {windowSec.toFixed(1)}
                   <Text style={styles.statUnit}> s</Text>
                 </Text>
-              </View>
+              </Pressable>
             </View>
             <Text style={styles.calNote}>Levels are dBFS · uncalibrated approximate — not dB SPL.</Text>
 

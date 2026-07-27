@@ -1184,6 +1184,8 @@ export function HarmonicsView({
         <Pressable
           style={[styles.toggleTab, view === 'model' && styles.toggleTabSelected]}
           onPress={() => pickView('model')}
+          onLongPress={() => openLesson('view')}
+          delayLongPress={300}
           accessibilityRole="button"
           accessibilityState={{ selected: view === 'model' }}
           accessibilityLabel="Analytic model mode"
@@ -1195,6 +1197,8 @@ export function HarmonicsView({
         <Pressable
           style={[styles.toggleTab, view === 'live' && styles.toggleTabSelected]}
           onPress={() => pickView('live')}
+          onLongPress={() => openLesson('view')}
+          delayLongPress={300}
           accessibilityRole="button"
           accessibilityState={{ selected: view === 'live' }}
           accessibilityLabel="Real signal mode"
@@ -1207,8 +1211,8 @@ export function HarmonicsView({
 
       {/* AXIS TOGGLE — LOG (RX-style, piano gutter) vs LIN (even harmonics). */}
       <View style={styles.chipRow}>
-        <Chip label="LOG ♪" selected={axis === 'log'} onPress={() => pickAxis('log')} />
-        <Chip label="LIN" selected={axis === 'lin'} onPress={() => pickAxis('lin')} />
+        <Chip label="LOG ♪" selected={axis === 'log'} onPress={() => pickAxis('log')} onLongPress={() => openLesson('axis')} />
+        <Chip label="LIN" selected={axis === 'lin'} onPress={() => pickAxis('lin')} onLongPress={() => openLesson('axis')} />
       </View>
 
       {/* INTEGRITY BADGE — permanent (TRAINING DEMO badge idiom): the model
@@ -1486,20 +1490,20 @@ export function HarmonicsView({
                 {modelThd.db != null ? `${modelThd.db.toFixed(1)} dB` : modelThd.pct != null ? '−∞ dB' : 'H1 silent'}
               </Text>
             </Pressable>
-            <View style={styles.measureItem}>
+            <Pressable style={styles.measureItem} onLongPress={() => openLesson('crest')} delayLongPress={300}>
               <Text style={styles.measureLabel}>CREST</Text>
               <Text style={styles.measureValue}>
                 {modelCrestDb != null ? modelCrestDb.toFixed(1) : '—'}
               </Text>
               <Text style={styles.measureSub}>dB peak/RMS</Text>
-            </View>
-            <View style={styles.measureItem}>
+            </Pressable>
+            <Pressable style={styles.measureItem} onLongPress={() => openLesson('slope')} delayLongPress={300}>
               <Text style={styles.measureLabel}>SLOPE</Text>
               <Text style={styles.measureValue}>
                 {slopeInfo.slope != null ? slopeInfo.slope.toFixed(1) : '—'}
               </Text>
               <Text style={styles.measureSub}>dB/oct envelope</Text>
-            </View>
+            </Pressable>
           </View>
           <Text style={styles.thdnDim}>THD+N — live measurement required (the model has no noise)</Text>
 

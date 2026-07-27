@@ -468,6 +468,10 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'duty_cycle', name: 'Duty cycle (PWM)', definition: 'The high/low ratio of a pulse wave. It changes timbre and nulls specific harmonics (amplitude ∝ sin(nπd)/(nπ)) but does NOT change the pitch.' },
       { key: 'add_remove_harmonics', name: 'Add / Remove harmonics', definition: 'Toggle or drag individual partials to build a waveform from its Fourier components — e.g. stack the odd harmonics one at a time to approach a square.' },
       { key: 'harmonic_phase', name: 'Harmonic phase', definition: 'The phase of each partial. Changing phases redraws the waveform shape dramatically, yet a steady tone sounds nearly identical (the ear’s phase-deafness).' },
+      { key: 'view', name: 'View (MODEL / LIVE)', definition: 'Switches the display between MODEL — the analytic harmonic recipe you’re editing, drawn exactly from the math — and LIVE, the real spectrum captured from the mic. MODEL is exact and editable; LIVE is measured and labeled uncalibrated.' },
+      { key: 'axis', name: 'Axis (LOG ♪ / LIN)', definition: 'Switches the frequency axis. LOG (♪) spaces the octaves evenly, matching how we hear pitch; LIN spaces the Hz evenly, so the harmonics line up at equal intervals. Same data — only the horizontal spacing changes.' },
+      { key: 'crest', name: 'Crest factor (readout)', definition: 'The gap between the wave’s PEAK and its RMS (average) level, in dB. A pure sine is ~3 dB; spiky, peaky waves read higher. It shows how much headroom the peaks demand versus the perceived loudness. Computed from the model, not a live measurement.' },
+      { key: 'slope', name: 'Envelope slope (readout)', definition: 'How fast the harmonic levels fall off going up the series, in dB per octave. A steeper (more negative) slope sounds darker/duller; a shallow slope keeps the highs and sounds brighter. Fit to the model’s harmonic envelope.' },
     ],
     commonMistakes: [
       'Not knowing which wave has which harmonics — sine = fundamental; square = odd (∝1/n); saw = all (∝1/n); triangle = odd (∝1/n²).',
@@ -759,6 +763,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'distance', name: 'Distance', definition: 'Inverse-distance level (−6 dB per doubling, re 1 m). Distance perception also uses reflections/air absorption — not modeled here (stated).', range: '0.5–4 m' },
       { key: 'source_type', name: 'Source type', definition: 'Sine, white or pink noise per object. Noise localizes much more strongly than a pure tone — broadband content feeds BOTH cues at every frequency.' },
       { key: 'objects', name: 'Sound objects (up to 3)', definition: 'Independent sources mixed to one binaural bus. The bus is peak-bounded (norm shown when attenuating).' },
+      { key: 'tone_freq', name: 'Tone frequency', definition: 'Sets the pitch of the selected object’s sine test tone, in Hz. Localization changes with frequency: LOW tones are located mainly by ITD (timing between the ears), HIGH tones by ILD (the head shadows the far ear). Below ~800 Hz a pure tone is hard to place — switch it to noise to hear the difference.', range: 'preset steps' },
     ],
     commonMistakes: [
       'Listening on speakers — binaural cues require HEADPHONES; on speakers the two channels mix in the air (crosstalk) and the illusion collapses.',
@@ -797,6 +802,11 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'sequencer', name: 'Step sequencer', definition: '8 steps of semitone offsets; each active step retunes the VCO and retriggers the envelope. A rest step releases. Rate sets the tempo — the melody is a control signal too.' },
       { key: 'vca', name: 'VCA (amplifier)', definition: 'The output amplifier — it sets the voice’s LOUDNESS over time. The envelope (ADSR) always drives it, so the VCA is what makes a note fade in and out.' },
       { key: 'out', name: 'Output', definition: 'The end of the voice: VCO → VCF → VCA → OUT. A gentle saturation stage here adds analog-style warmth and keeps peaks in check before the sound leaves.' },
+      { key: 'patch_drone', name: 'Patch · Raw Drone', definition: 'The starting point: VCO → wide-open VCF → VCA, nothing modulating anything. An unshaped, steady tone — the blank canvas every other patch carves from by adding a routing.' },
+      { key: 'patch_bass', name: 'Patch · Acid Bass', definition: 'Envelope → cutoff with a fast decay, driven by the sequencer: every note snaps open bright and slams shut. The signature “squelch” is the FILTER envelope, not the oscillator — proof that timbre is shaped after the VCO.' },
+      { key: 'patch_wobble', name: 'Patch · Wobble', definition: 'LFO → cutoff: the filter sweeps rhythmically while the pitch holds still — movement without melody. The classic dubstep wobble is just one LFO on one destination.' },
+      { key: 'patch_vibrato', name: 'Patch · Vibrato Lead', definition: 'LFO → pitch at low depth: a gentle, singing wobble in the note itself. It’s the SAME LFO as the wobble patch, only re-routed to pitch instead of cutoff — one modulator, a different destination.' },
+      { key: 'patch_tremolo', name: 'Patch · Tremolo', definition: 'LFO → amp: the loudness pulses while pitch and tone stay put — the third classic LFO destination. Pitch → cutoff → amp are the three places one control signal can go.' },
     ],
     commonMistakes: [
       'Filtering a sine and hearing nothing change — the filter can only REMOVE harmonics; a sine has none above the fundamental. Subtractive synthesis needs a bright source.',

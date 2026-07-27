@@ -280,6 +280,7 @@ export function ModularLabScreen() {
             label={p.label}
             selected={patchKey === p.key}
             onPress={() => update(p.patch, p.key)}
+            onLongPress={() => openLesson(`patch_${p.key}`)}
           />
         ))}
       </View>

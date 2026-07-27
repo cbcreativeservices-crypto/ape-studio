@@ -322,18 +322,18 @@ export function SplMeterScreen({ navigation }: Props) {
               {/* Peak cells stay RAW dBFS always — they are digital-headroom
                   indicators; the ≥0 dBFS hot state is about the converter
                   ceiling, not acoustic level (F1). */}
-              <View style={styles.peakCell}>
+              <Pressable style={styles.peakCell} onLongPress={() => help('peak')} delayLongPress={260}>
                 <Text style={styles.cellLabel}>PEAK (dBFS)</Text>
                 <Text style={[styles.cellValue, meter != null && meter.peakDb >= 0 && styles.cellValueHot]}>
                   {meter ? fmtDb(meter.peakDb) : '—'}
                 </Text>
-              </View>
-              <View style={styles.peakCell}>
+              </Pressable>
+              <Pressable style={styles.peakCell} onLongPress={() => help('peak_hold')} delayLongPress={260}>
                 <Text style={styles.cellLabel}>PEAK HOLD (dBFS)</Text>
                 <Text style={[styles.cellValue, meter != null && meter.peakHoldDb >= 0 && styles.cellValueHot]}>
                   {meter ? fmtDb(meter.peakHoldDb) : '—'}
                 </Text>
-              </View>
+              </Pressable>
               <Pressable
                 style={styles.ctrlBtnSmall}
                 onPress={resetPeakHold}

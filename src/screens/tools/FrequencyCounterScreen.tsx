@@ -216,12 +216,16 @@ function LivePitchMode({ kind, help, helpAll }: { kind: 'sound' | 'tuner'; help:
 
       {kind === 'tuner' && (
         <View style={styles.a4Row}>
-          <Text style={styles.a4Label}>A4</Text>
+          <Pressable onLongPress={() => help('a4')} delayLongPress={260} hitSlop={8}>
+            <Text style={styles.a4Label}>A4 ⓘ</Text>
+          </Pressable>
           {A4_CHOICES.map((v) => (
             <Pressable
               key={v}
               style={[styles.a4Chip, a4 === v && styles.a4ChipOn]}
               onPress={() => setA4(v)}
+              onLongPress={() => help('a4')}
+              delayLongPress={260}
               accessibilityRole="button"
               accessibilityState={{ selected: a4 === v }}
               accessibilityLabel={`A4 ${v} hertz`}

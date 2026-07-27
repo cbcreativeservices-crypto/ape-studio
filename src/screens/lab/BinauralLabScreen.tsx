@@ -185,6 +185,7 @@ export function BinauralLabScreen() {
               label={sel.on ? 'ON' : 'OFF'}
               selected={sel.on}
               onPress={() => updateSource(selected, { on: !sel.on })}
+              onLongPress={() => openLesson('objects')}
             />
           </View>
           <View style={styles.chipRow}>
@@ -204,6 +205,7 @@ export function BinauralLabScreen() {
                     label={`${f}`}
                     selected={sel.freq === f}
                     onPress={() => updateSource(selected, { freq: f })}
+                    onLongPress={() => openLesson('tone_freq')}
                   />
                 ))
               : null}
