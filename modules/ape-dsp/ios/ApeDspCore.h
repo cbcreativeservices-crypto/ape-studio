@@ -94,6 +94,33 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)fxReset;
 - (NSArray<NSNumber *> *_Nonnull)fxGrStatus;
 
+// ---- Wave-2 expansion voices (engineVersion 7) ----
+/// FM voice targets (GenMode::Fm): modulator ratio, index (radians, ramped),
+/// index decay seconds (0 = sustained). A genStart retrigger is the strike.
+- (void)genSetFm:(double)ratio index:(double)index decay:(double)decaySec;
+/// Binaural bus source i (0..2): type 0 sine · 1 white · 2 pink; azimuth in
+/// degrees (−180..180, + = right); distance in meters (0.5–4). Safe at drag rate.
+- (void)binSetSource:(int)i
+                  on:(BOOL)on
+                type:(int)type
+                freq:(double)freqHz
+             levelDb:(double)levelDb
+                  az:(double)azDeg
+                dist:(double)dist;
+- (void)binStart;
+- (void)binStop;
+/// { running, busNorm } — busNorm < 1 = the Q4 sum bound is attenuating.
+- (NSDictionary<NSString *, id> *)binStatus;
+/// Modular voice scalar setter (modular::Param ids — keep lockstep w/ index.ts).
+- (void)modSet:(int)param value:(double)v;
+- (void)modStart;
+- (void)modStop;
+/// { running, envLevel, activeStep } — live env + sequencer step (honest UI).
+- (NSDictionary<NSString *, id> *)modStatus;
+/// TRUE while ANY output voice (generator, binaural, modular) is running —
+/// the Swift layer's teardown guard for the shared output graph.
+- (BOOL)anyOutputRunning;
+
 @end
 
 NS_ASSUME_NONNULL_END

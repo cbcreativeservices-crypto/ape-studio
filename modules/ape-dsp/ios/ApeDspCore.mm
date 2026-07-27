@@ -13,9 +13,11 @@
 #include <thread>
 #include <vector>
 
+#include "core/Binaural.hpp"
 #include "core/Effects.hpp"
 #include "core/EngineHub.hpp"
 #include "core/Generator.hpp"
+#include "core/Modular.hpp"
 #include "core/SpscRing.hpp"
 
 namespace {
@@ -41,10 +43,13 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
   apedsp::EngineHub *_engine;
   apedsp::Generator *_gen;
   apedsp::EffectChain *_chain;
+  apedsp::BinauralBus *_bin;
+  apedsp::ModularVoice *_mod;
   std::thread _analysisThread;
   std::atomic<bool> _running;
   std::atomic<double> _lastWriteAt;
   float *_scratch;
+  float *_monoAux;  // discard-R scratch for the mono render path's voice adds
 }
 
 + (uint32_t)engineVersion {
@@ -57,10 +62,15 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
     _engine = new apedsp::EngineHub();
     _gen = new apedsp::Generator();
     _chain = new apedsp::EffectChain();
+    _bin = new apedsp::BinauralBus();
+    _mod = new apedsp::ModularVoice();
     _engine->configureSampleRate(48000.0);
     _gen->configure(48000.0);
     _chain->configure(48000.0);
+    _bin->configure(48000.0);
+    _mod->configure(48000.0);
     _scratch = new float[kScratchSize];
+    _monoAux = new float[kScratchSize];
     _running.store(false);
     _lastWriteAt.store(0.0);
   }
@@ -73,7 +83,10 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
   delete _engine;
   delete _gen;
   delete _chain;
+  delete _bin;
+  delete _mod;
   delete[] _scratch;
+  delete[] _monoAux;
 }
 
 - (void)configureSampleRate:(double)sampleRate {
@@ -86,6 +99,8 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
   _engine->configureSampleRate(sampleRate);
   _gen->configure(sampleRate);
   _chain->configure(sampleRate);
+  _bin->configure(sampleRate);
+  _mod->configure(sampleRate);
   if (wasRunning) [self start];
 }
 
@@ -314,8 +329,12 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
 }
 // Route-aware speaker-safety high-pass cutoff (Hz); 0 = bypass. The Swift route
 // layer sets this from the current OUTPUT route (speaker → 150, else 0).
+// FANS OUT to every output voice (generator + binaural + modular) — one route
+// decision protects the whole output path.
 - (void)genSetHpf:(double)hz {
   _gen->setHpf(hz);
+  _bin->setHpf(hz);
+  _mod->setHpf(hz);
 }
 // Stereo dual-oscillator (hard-panned L/R) — on + the two channel frequencies.
 - (void)genSetStereo:(BOOL)on freqL:(double)fL freqR:(double)fR {
@@ -360,11 +379,19 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
 }
 - (void)genRender:(float *)buffer frames:(uint32_t)frames {
   _gen->render(buffer, frames);
+  // Modular adds mono-identically to both channels — feed it the real buffer as
+  // L and the discard scratch as R. Binaural is SKIPPED on the mono path: a
+  // mono output can't carry interaural cues (and mono out ⇒ not headphones).
+  if (frames <= kScratchSize) _mod->renderAddInto(buffer, _monoAux, frames);
 }
 - (void)genRenderStereo:(float *)left right:(float *)right frames:(uint32_t)frames {
   _gen->renderStereo(left, right, frames);
   // Effects-processing path: source → chain → output (skipped when idle).
   if (_chain->anyActive()) _chain->processStereo(left, right, frames);
+  // Wave-2 voices MIX IN after the generator path (they bypass the effect
+  // chain — the chain is the effects-lab tool for the generator source).
+  _bin->renderAddInto(left, right, frames);
+  _mod->renderAddInto(left, right, frames);
 }
 
 // ---- Effects chain (Pillar B labs + Signal Chain Builder) ----
@@ -379,6 +406,56 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
   double g[3];
   _chain->grStatus(g);
   return @[ @(g[0]), @(g[1]), @(g[2]) ];
+}
+
+// ---- Wave-2 expansion voices (engineVersion 7) ----
+
+- (void)genSetFm:(double)ratio index:(double)index decay:(double)decaySec {
+  _gen->setFm(ratio, index, decaySec);
+}
+
+- (void)binSetSource:(int)i
+                  on:(BOOL)on
+                type:(int)type
+                freq:(double)freqHz
+             levelDb:(double)levelDb
+                  az:(double)azDeg
+                dist:(double)dist {
+  _bin->setSource(static_cast<uint32_t>(i < 0 ? 0 : i), on == YES, type, freqHz, levelDb, azDeg,
+                  dist);
+}
+- (void)binStart {
+  _bin->start();
+}
+- (void)binStop {
+  _bin->stop();
+}
+- (NSDictionary<NSString *, id> *)binStatus {
+  return @{
+    @"running" : @(_bin->running()),
+    @"busNorm" : @(_bin->busNorm()),
+  };
+}
+
+- (void)modSet:(int)param value:(double)v {
+  _mod->set(param, v);
+}
+- (void)modStart {
+  _mod->start();
+}
+- (void)modStop {
+  _mod->stop();
+}
+- (NSDictionary<NSString *, id> *)modStatus {
+  return @{
+    @"running" : @(_mod->running()),
+    @"envLevel" : @(_mod->envLevel()),
+    @"activeStep" : @(_mod->activeStep()),
+  };
+}
+
+- (BOOL)anyOutputRunning {
+  return _gen->running() || _bin->running() || _mod->running();
 }
 
 @end

@@ -134,14 +134,7 @@ public class ApeDspModule: Module {
     }
     AsyncFunction("genStop") { () -> Void in
       self.core.genStop()
-      // Let the 10 ms fade finish before tearing the graph down.
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-        if let e = self.outEngine, self.coreGenIdle() {
-          e.stop()
-          self.outEngine = nil
-          self.outNode = nil
-        }
-      }
+      self.teardownOutputIfIdle()
     }
     Function("genSet") { (params: [String: Any]) -> Void in
       // ORDER MATTERS: every target key ("frequency", "levelDb", "sweep",
@@ -183,6 +176,12 @@ public class ApeDspModule: Module {
          let fL = st["fL"] as? Double, let fR = st["fR"] as? Double {
         self.core.genSetStereo((st["on"] as? Bool) ?? false, freqL: fL, freqR: fR)
       }
+      // FM voice (wave-2, engineVersion 7) — { ratio, index, decaySec }.
+      // Targets-first like the rest (before mode). Same shape on Android/JS.
+      if let fm = params["fm"] as? [String: Any],
+         let ratio = fm["ratio"] as? Double, let index = fm["index"] as? Double {
+        self.core.genSetFm(ratio, index: index, decay: (fm["decaySec"] as? Double) ?? 0.0)
+      }
       if let m = params["mode"] as? Int { self.core.genSetMode(Int32(m)) }
     }
     Function("genUnlockCap") { () -> Void in
@@ -205,6 +204,58 @@ public class ApeDspModule: Module {
       return self.core.fxGrStatus().map { $0.doubleValue }
     }
 
+    // ---- Wave-2 expansion voices (engineVersion 7). All three output voices
+    // share ONE output graph: every start ensures it; every stop tears it down
+    // only when generator + binaural + modular are ALL idle. ----
+    AsyncFunction("binStart") { (promise: Promise) in
+      do {
+        try self.startGeneratorOutput()
+        self.core.binStart()
+        promise.resolve(self.core.binStatus())
+      } catch {
+        promise.reject("E_BIN_START", "Could not start audio output: \(error.localizedDescription)")
+      }
+    }
+    AsyncFunction("binStop") { () -> Void in
+      self.core.binStop()
+      self.teardownOutputIfIdle()
+    }
+    // Source i (0..2): { on, type (0 sine·1 white·2 pink), freq, levelDb,
+    // azDeg (−180..180, + = right), dist (m) }. Ramped natively — drag-rate safe.
+    Function("binSet") { (sourceIdx: Int, params: [String: Any]) -> Void in
+      self.core.binSetSource(
+        Int32(sourceIdx),
+        on: (params["on"] as? Bool) ?? false,
+        type: Int32((params["type"] as? Int) ?? 0),
+        freq: (params["freq"] as? Double) ?? 440.0,
+        levelDb: (params["levelDb"] as? Double) ?? -20.0,
+        az: (params["azDeg"] as? Double) ?? 0.0,
+        dist: (params["dist"] as? Double) ?? 1.0)
+    }
+    Function("binStatus") { () -> [String: Any] in
+      return self.core.binStatus()
+    }
+
+    AsyncFunction("modStart") { (promise: Promise) in
+      do {
+        try self.startGeneratorOutput()
+        self.core.modStart()
+        promise.resolve(self.core.modStatus())
+      } catch {
+        promise.reject("E_MOD_START", "Could not start audio output: \(error.localizedDescription)")
+      }
+    }
+    AsyncFunction("modStop") { () -> Void in
+      self.core.modStop()
+      self.teardownOutputIfIdle()
+    }
+    Function("modSet") { (param: Int, value: Double) -> Void in
+      self.core.modSet(Int32(param), value: value)
+    }
+    Function("modStatus") { () -> [String: Any] in
+      return self.core.modStatus()
+    }
+
     OnCreate {
       self.observeNotifications()
       self.startWatchdog()
@@ -215,6 +266,8 @@ public class ApeDspModule: Module {
       self.stopWatchdog()
       self.stopCapture(reason: "module-destroy")
       self.core.genStop()
+      self.core.binStop()
+      self.core.modStop()
       self.outEngine?.stop()
       self.outEngine = nil
       self.outNode = nil
@@ -223,10 +276,20 @@ public class ApeDspModule: Module {
     }
   }
 
-  // MARK: - Generator output graph (engine build 2026-07-23)
+  // MARK: - Generator output graph (engine build 2026-07-23; shared by the
+  // wave-2 voices since engineVersion 7)
 
-  private func coreGenIdle() -> Bool {
-    return ((core.genStatus()["running"] as? Bool) ?? false) == false
+  /// Tear the shared output graph down once EVERY output voice (generator,
+  /// binaural, modular) is idle — after a delay that lets the 10 ms fades
+  /// finish. Any voice restarting during the wait keeps the graph.
+  private func teardownOutputIfIdle() {
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+      if let e = self.outEngine, !self.core.anyOutputRunning() {
+        e.stop()
+        self.outEngine = nil
+        self.outNode = nil
+      }
+    }
   }
 
   private func startGeneratorOutput() throws {

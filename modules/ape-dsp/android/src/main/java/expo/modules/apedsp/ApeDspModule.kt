@@ -77,6 +77,18 @@ class ApeDspModule : Module() {
   private external fun nativeGenUnlockCap(h: Long)
   private external fun nativeGenRelockCap(h: Long)
   private external fun nativeGenStatus(h: Long): DoubleArray
+  // Wave-2 expansion voices (engineVersion 7).
+  private external fun nativeGenSetFm(h: Long, ratio: Double, index: Double, decaySec: Double)
+  private external fun nativeBinSetSource(
+    h: Long, i: Int, on: Boolean, type: Int, freq: Double, levelDb: Double, az: Double, dist: Double,
+  )
+  private external fun nativeBinStart(h: Long): Boolean
+  private external fun nativeBinStop(h: Long)
+  private external fun nativeBinStatus(h: Long): DoubleArray
+  private external fun nativeModSet(h: Long, param: Int, v: Double)
+  private external fun nativeModStart(h: Long): Boolean
+  private external fun nativeModStop(h: Long)
+  private external fun nativeModStatus(h: Long): DoubleArray
   private external fun nativeRt60Arm(h: Long)
   private external fun nativeRt60Cancel(h: Long)
   private external fun nativeRt60State(h: Long): Int
@@ -110,6 +122,8 @@ class ApeDspModule : Module() {
       if (handle != 0L) {
         nativeStopCapture(handle)
         nativeGenStop(handle)
+        nativeBinStop(handle)
+        nativeModStop(handle)
         nativeDestroy(handle)
         handle = 0L
       }
@@ -312,6 +326,15 @@ class ApeDspModule : Module() {
         val fR = (st["fR"] as? Number)?.toDouble()
         if (fL != null && fR != null) nativeGenSetStereo(handle, (st["on"] as? Boolean) ?: false, fL, fR)
       }
+      // FM voice (wave-2, engineVersion 7) — { ratio, index, decaySec }.
+      // Targets-first like the rest (before mode). Same shape on iOS/JS.
+      (params["fm"] as? Map<*, *>)?.let { fm ->
+        val ratio = (fm["ratio"] as? Number)?.toDouble()
+        val index = (fm["index"] as? Number)?.toDouble()
+        if (ratio != null && index != null) {
+          nativeGenSetFm(handle, ratio, index, (fm["decaySec"] as? Number)?.toDouble() ?: 0.0)
+        }
+      }
       (params["mode"] as? Number)?.let { nativeGenSetMode(handle, it.toInt()) }
     }
     Function("genUnlockCap") { if (handle != 0L) nativeGenUnlockCap(handle) }
@@ -326,6 +349,56 @@ class ApeDspModule : Module() {
     Function("fxGrStatus") {
       (if (handle != 0L) nativeFxGrStatus(handle) else DoubleArray(3)).toList()
     }
+
+    // ---- Wave-2 expansion voices (engineVersion 7). All output voices share
+    // ONE Oboe stream: every start ensures it; every stop closes only when
+    // generator + binaural + modular are ALL idle (native side owns this). ----
+    AsyncFunction("binStart") { promise: Promise ->
+      if (handle == 0L) { promise.reject("E_NO_ENGINE", "engine not created", null); return@AsyncFunction }
+      refreshOutputRouteAndHpf()
+      if (!nativeBinStart(handle)) {
+        promise.reject("E_BIN_START", "Could not start audio output.", null)
+        return@AsyncFunction
+      }
+      promise.resolve(binStatusMap())
+    }
+    AsyncFunction("binStop") { promise: Promise ->
+      if (handle != 0L) nativeBinStop(handle)
+      promise.resolve(null)
+    }
+    // Source i (0..2): { on, type (0 sine·1 white·2 pink), freq, levelDb,
+    // azDeg (−180..180, + = right), dist (m) }. Ramped natively — drag-rate safe.
+    Function("binSet") { sourceIdx: Int, params: Map<String, Any?> ->
+      if (handle == 0L) return@Function
+      nativeBinSetSource(
+        handle, sourceIdx,
+        (params["on"] as? Boolean) ?: false,
+        (params["type"] as? Number)?.toInt() ?: 0,
+        (params["freq"] as? Number)?.toDouble() ?: 440.0,
+        (params["levelDb"] as? Number)?.toDouble() ?: -20.0,
+        (params["azDeg"] as? Number)?.toDouble() ?: 0.0,
+        (params["dist"] as? Number)?.toDouble() ?: 1.0,
+      )
+    }
+    Function("binStatus") { binStatusMap() }
+
+    AsyncFunction("modStart") { promise: Promise ->
+      if (handle == 0L) { promise.reject("E_NO_ENGINE", "engine not created", null); return@AsyncFunction }
+      refreshOutputRouteAndHpf()
+      if (!nativeModStart(handle)) {
+        promise.reject("E_MOD_START", "Could not start audio output.", null)
+        return@AsyncFunction
+      }
+      promise.resolve(modStatusMap())
+    }
+    AsyncFunction("modStop") { promise: Promise ->
+      if (handle != 0L) nativeModStop(handle)
+      promise.resolve(null)
+    }
+    Function("modSet") { param: Int, value: Double ->
+      if (handle != 0L) nativeModSet(handle, param, value)
+    }
+    Function("modStatus") { modStatusMap() }
   }
 
   /** Detect the OUTPUT route and drive the route-aware speaker-safety HPF: the
@@ -375,6 +448,21 @@ class ApeDspModule : Module() {
       "effectiveLevelDb" to g[2], "defaultLevelDb" to g[3], "capDb" to g[4],
       "additiveNorm" to g[5],
       "genHpfHz" to g[6], "genHpfEngaged" to (g[7] == 1.0),
+    )
+  }
+
+  private fun binStatusMap(): Map<String, Any?> {
+    // [running, busNorm] (see nativeBinStatus) — busNorm < 1 = Q4 sum bound active.
+    val b = if (handle != 0L) nativeBinStatus(handle) else DoubleArray(2)
+    return mapOf("running" to (b[0] == 1.0), "busNorm" to (if (b.size > 1) b[1] else 1.0))
+  }
+
+  private fun modStatusMap(): Map<String, Any?> {
+    // [running, envLevel, activeStep] (see nativeModStatus) — live honest meters.
+    val m = if (handle != 0L) nativeModStatus(handle) else doubleArrayOf(0.0, 0.0, -1.0)
+    return mapOf(
+      "running" to (m[0] == 1.0), "envLevel" to m[1],
+      "activeStep" to (if (m.size > 2) m[2].toInt() else -1),
     )
   }
 

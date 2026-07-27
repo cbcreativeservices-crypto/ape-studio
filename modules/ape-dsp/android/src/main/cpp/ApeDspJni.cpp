@@ -23,9 +23,11 @@
 
 #include <oboe/Oboe.h>
 
+#include "Binaural.hpp"
 #include "Effects.hpp"
 #include "EngineHub.hpp"
 #include "Generator.hpp"
+#include "Modular.hpp"
 #include "SpscRing.hpp"
 
 namespace {
@@ -66,7 +68,11 @@ class NativeEngine {
 
   ~NativeEngine() {
     stopCapture();
-    genStop();
+    // Stop every output voice, then the shared close (idle by construction).
+    gen_.stop();
+    bin_.stop();
+    mod_.stop();
+    closeOutputIfIdle();
     delete ring_;
     delete[] scratch_;
   }
@@ -107,41 +113,68 @@ class NativeEngine {
   apedsp::EngineHub engine_;
   apedsp::Generator gen_;
   apedsp::EffectChain chain_;
+  apedsp::BinauralBus bin_;
+  apedsp::ModularVoice mod_;
   apedsp::SpscRing* ring_ = nullptr;
   std::atomic<double> lastWriteAt_;
 
-  // ---- Generator output --------------------------------------------------
+  // ---- Output voices (generator + wave-2 binaural/modular) ---------------
+  // ONE shared output stream: every start ensures it; every stop tears it
+  // down only when ALL voices are idle (after the fade window).
   // Returns false if the output stream failed to open (so the UI doesn't show
-  // a silent "running" generator — review 2026-07-23).
-  bool genStart() {
+  // a silent "running" voice — review 2026-07-23).
+  bool anyVoiceRunning() { return gen_.running() || bin_.running() || mod_.running(); }
+  bool ensureOutput() {
     std::lock_guard<std::mutex> lk(outStreamMu_);
-    const bool ok = outStream_ ? true : openOutput();
+    return outStream_ ? true : openOutput();
+  }
+  bool genStart() {
+    const bool ok = ensureOutput();
     if (ok) gen_.start();
     return ok;
   }
-  void genStop() {
-    // gen_.stop() only requests the 10 ms fade-out — the render callback must
-    // keep running long enough to actually render it, so the stream close is
-    // DEFERRED ~150 ms (iOS parity: ApeDspModule.swift genStop does the same
-    // via asyncAfter). Closing synchronously truncated the fade and popped on
-    // every stop. Blocking here is safe: this runs on the bridge thread
-    // (Expo AsyncFunction / OnDestroy), never the RT callback. If a genStart
-    // lands during the wait (calls are serialized by outStreamMu_ +
-    // JS awaiting genStop-before-start is not guaranteed), the generator is
-    // running again — keep the stream.
-    gen_.stop();
-    // Wait whenever an output stream exists — not just when the generator was
-    // still flagged running: a second genStop inside the first one's window
-    // (STOP then blur) sees running()==false but the fade may still be
-    // rendering, and closing early would truncate it all the same.
+  bool binStart() {
+    const bool ok = ensureOutput();
+    if (ok) bin_.start();
+    return ok;
+  }
+  bool modStart() {
+    const bool ok = ensureOutput();
+    if (ok) mod_.start();
+    return ok;
+  }
+  // stop() only requests the 10 ms fade-out — the render callback must keep
+  // running long enough to actually render it, so the stream close is
+  // DEFERRED ~150 ms (iOS parity: ApeDspModule.swift does the same via
+  // asyncAfter). Closing synchronously truncated the fade and popped on
+  // every stop. Blocking here is safe: this runs on the bridge thread
+  // (Expo AsyncFunction / OnDestroy), never the RT callback. If any start
+  // lands during the wait, some voice is running again — keep the stream.
+  void closeOutputIfIdle() {
+    // Wait whenever an output stream exists — not just when a voice was still
+    // flagged running: a second stop inside the first one's window sees
+    // running()==false but the fade may still be rendering, and closing early
+    // would truncate it all the same.
     if (outStream_ != nullptr) std::this_thread::sleep_for(std::chrono::milliseconds(150));
     std::lock_guard<std::mutex> lk(outStreamMu_);
-    if (gen_.running()) return;  // restarted during the wait — stream stays up
+    if (anyVoiceRunning()) return;  // (re)started during the wait — stream stays up
     if (outStream_) {
       outStream_->requestStop();
       outStream_->close();
       outStream_.reset();
     }
+  }
+  void genStop() {
+    gen_.stop();
+    closeOutputIfIdle();
+  }
+  void binStop() {
+    bin_.stop();
+    closeOutputIfIdle();
+  }
+  void modStop() {
+    mod_.stop();
+    closeOutputIfIdle();
   }
 
  private:
@@ -169,6 +202,9 @@ class NativeEngine {
         eng->gen_.renderStereo(eng->outL_.data(), eng->outR_.data(), nf);
         // Effects-processing path: source → chain → output (skipped when idle).
         if (eng->chain_.anyActive()) eng->chain_.processStereo(eng->outL_.data(), eng->outR_.data(), nf);
+        // Wave-2 voices MIX IN after the generator path (they bypass the chain).
+        eng->bin_.renderAddInto(eng->outL_.data(), eng->outR_.data(), nf);
+        eng->mod_.renderAddInto(eng->outL_.data(), eng->outR_.data(), nf);
         for (uint32_t i = 0; i < nf; ++i) {
           out[2 * i] = eng->outL_[i];
           out[2 * i + 1] = eng->outR_[i];
@@ -253,6 +289,8 @@ class NativeEngine {
     outRate_ = static_cast<double>(outStream_->getSampleRate());
     gen_.configure(outRate_);  // generate at the ACTUAL output rate
     chain_.configure(outRate_);  // effect buffers sized pre-start (not RT)
+    bin_.configure(outRate_);
+    mod_.configure(outRate_);
     if (outStream_->requestStart() != oboe::Result::OK) {
       outStream_->close();
       outStream_.reset();
@@ -505,10 +543,14 @@ Java_expo_modules_apedsp_ApeDspModule_nativeGenSetClickBpm(JNIEnv*, jobject, jlo
   eng(h)->gen_.setClickBpm(bpm);
 }
 // Route-aware speaker-safety high-pass cutoff (Hz); 0 = bypass. Kotlin sets it
-// from the current OUTPUT route (built-in speaker → 150, else 0).
+// from the current OUTPUT route (built-in speaker → 150, else 0). FANS OUT to
+// every output voice (generator + binaural + modular) — one route decision
+// protects the whole output path.
 JNIEXPORT void JNICALL
 Java_expo_modules_apedsp_ApeDspModule_nativeGenSetHpf(JNIEnv*, jobject, jlong h, jdouble hz) {
   eng(h)->gen_.setHpf(hz);
+  eng(h)->bin_.setHpf(hz);
+  eng(h)->mod_.setHpf(hz);
 }
 // Stereo dual-oscillator (hard-panned L/R) — on + the two channel frequencies.
 JNIEXPORT void JNICALL
@@ -572,6 +614,63 @@ Java_expo_modules_apedsp_ApeDspModule_nativeGenStatus(JNIEnv* env, jobject, jlon
                  eng(h)->gen_.hpfHz(), eng(h)->gen_.hpfEngaged() ? 1.0 : 0.0};
   jdoubleArray a = env->NewDoubleArray(8);
   env->SetDoubleArrayRegion(a, 0, 8, v);
+  return a;
+}
+
+// ---- Wave-2 expansion voices (engineVersion 7) ----
+// FM voice targets (GenMode::Fm): modulator ratio, index, index decay seconds.
+JNIEXPORT void JNICALL
+Java_expo_modules_apedsp_ApeDspModule_nativeGenSetFm(JNIEnv*, jobject, jlong h, jdouble ratio,
+                                                     jdouble index, jdouble decaySec) {
+  eng(h)->gen_.setFm(ratio, index, decaySec);
+}
+// Binaural bus: source i (0..2) — on, type (0 sine·1 white·2 pink), freq,
+// levelDb, azimuth deg (−180..180, + = right), distance m (0.5–4). Drag-safe.
+JNIEXPORT void JNICALL
+Java_expo_modules_apedsp_ApeDspModule_nativeBinSetSource(JNIEnv*, jobject, jlong h, jint i,
+                                                         jboolean on, jint type, jdouble freq,
+                                                         jdouble levelDb, jdouble az,
+                                                         jdouble dist) {
+  eng(h)->bin_.setSource(static_cast<uint32_t>(i < 0 ? 0 : i), on == JNI_TRUE, type, freq,
+                         levelDb, az, dist);
+}
+JNIEXPORT jboolean JNICALL
+Java_expo_modules_apedsp_ApeDspModule_nativeBinStart(JNIEnv*, jobject, jlong h) {
+  return eng(h)->binStart() ? JNI_TRUE : JNI_FALSE;
+}
+JNIEXPORT void JNICALL
+Java_expo_modules_apedsp_ApeDspModule_nativeBinStop(JNIEnv*, jobject, jlong h) {
+  eng(h)->binStop();
+}
+// [running, busNorm] — busNorm < 1 = the Q4 sum bound is attenuating.
+JNIEXPORT jdoubleArray JNICALL
+Java_expo_modules_apedsp_ApeDspModule_nativeBinStatus(JNIEnv* env, jobject, jlong h) {
+  double v[2] = {eng(h)->bin_.running() ? 1.0 : 0.0, eng(h)->bin_.busNorm()};
+  jdoubleArray a = env->NewDoubleArray(2);
+  env->SetDoubleArrayRegion(a, 0, 2, v);
+  return a;
+}
+// Modular voice scalar setter (modular::Param ids — lockstep with index.ts).
+JNIEXPORT void JNICALL
+Java_expo_modules_apedsp_ApeDspModule_nativeModSet(JNIEnv*, jobject, jlong h, jint param,
+                                                   jdouble v) {
+  eng(h)->mod_.set(param, v);
+}
+JNIEXPORT jboolean JNICALL
+Java_expo_modules_apedsp_ApeDspModule_nativeModStart(JNIEnv*, jobject, jlong h) {
+  return eng(h)->modStart() ? JNI_TRUE : JNI_FALSE;
+}
+JNIEXPORT void JNICALL
+Java_expo_modules_apedsp_ApeDspModule_nativeModStop(JNIEnv*, jobject, jlong h) {
+  eng(h)->modStop();
+}
+// [running, envLevel, activeStep] — live env + sequencer step (honest UI).
+JNIEXPORT jdoubleArray JNICALL
+Java_expo_modules_apedsp_ApeDspModule_nativeModStatus(JNIEnv* env, jobject, jlong h) {
+  double v[3] = {eng(h)->mod_.running() ? 1.0 : 0.0, eng(h)->mod_.envLevel(),
+                 static_cast<double>(eng(h)->mod_.activeStep())};
+  jdoubleArray a = env->NewDoubleArray(3);
+  env->SetDoubleArrayRegion(a, 0, 3, v);
   return a;
 }
 

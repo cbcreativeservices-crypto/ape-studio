@@ -133,6 +133,7 @@ export const GEN_MODES = {
   click: 10,
   burst: 11,
   additive: 12, // engineVersion ≥ 3 — 12-harmonic additive (HV-2)
+  fm: 13, // engineVersion ≥ 7 — carrier+modulator FM voice (wave-2)
 } as const;
 export type GenModeName = keyof typeof GEN_MODES;
 
@@ -155,6 +156,13 @@ export type GenParams = {
    *  R = sine(fR). `on:false` returns to mono (L==R). Used by stereo lab tools
    *  (Harmonograph: harmonic n1 → L, n2 → R). No-op below v5. */
   stereo?: { on: boolean; fL: number; fR: number };
+  /** FM voice targets (engineVersion ≥ 7, GEN_MODES.fm): modulator = ratio ×
+   *  carrier (`frequency`); index = peak phase deviation in radians (Chowning —
+   *  sidebands at fc±k·fm with amplitudes J_k(I)), ramped native-side;
+   *  decaySec > 0 = per-trigger exponential index decay (the classic bell/
+   *  pluck "brightness fades"; 0 = sustained). A genStart on a running tone is
+   *  the STRIKE (click-free retrigger restarts the decay). No-op below v7. */
+  fm?: { ratio: number; index: number; decaySec?: number };
 };
 
 export type GenStatus = {
@@ -172,6 +180,62 @@ export type GenStatus = {
    *  honest display; the native route layer drives the value. */
   genHpfHz?: number;
   genHpfEngaged?: boolean;
+};
+
+/** Binaural source types (engineVersion ≥ 7 — binaural::Src). */
+export const BIN_SRC = { sine: 0, white: 1, pink: 2 } as const;
+
+/** One binaural source's targets (all ramped native-side — drag-rate safe). */
+export type BinSourceParams = {
+  on: boolean;
+  /** BIN_SRC value. */
+  type?: number;
+  /** Sine frequency in Hz (ignored for noise types). */
+  freq?: number;
+  /** ≤ −12 (Q4 cap, no unlock on this bus). */
+  levelDb?: number;
+  /** Azimuth in degrees: 0 = front, +90 = hard right, ±180 = behind. */
+  azDeg?: number;
+  /** Distance in meters (0.5–4), inverse-distance gain re 1 m. */
+  dist?: number;
+};
+
+export type BinStatus = {
+  running: boolean;
+  /** Bus normalization actually applied (1 = not attenuating; <1 = the Q4 sum
+   *  bound is pulling the mix down) — honest display. */
+  busNorm: number;
+};
+
+/** Modular-voice scalar param ids (engineVersion ≥ 7 — modular::Param; keep in
+ *  lockstep with Modular.hpp). Param blocks: seqStep(i) = semitone offset of
+ *  step i (0..7); seqGate(i) = step active 0/1. */
+export const MOD_PARAM = {
+  shape: 1, // 0 saw · 1 square · 2 triangle · 3 sine
+  baseFreq: 2,
+  cutoff: 3,
+  resonance: 4, // 0..1
+  envA: 5,
+  envD: 6,
+  envS: 7,
+  envR: 8,
+  envToCutoff: 9, // −1..1 (± 4 octaves)
+  lfoRate: 10,
+  lfoDepth: 11, // 0..1
+  lfoDest: 12, // 0 off · 1 pitch · 2 cutoff · 3 amp
+  seqOn: 13,
+  seqRate: 14, // steps/s
+  levelDb: 16,
+  seqStep: (i: number) => 20 + i,
+  seqGate: (i: number) => 28 + i,
+} as const;
+
+export type ModStatus = {
+  running: boolean;
+  /** Live ADSR envelope level 0..1 (honest env meter). */
+  envLevel: number;
+  /** Active sequencer step 0..7, or −1 when the sequencer is off. */
+  activeStep: number;
 };
 
 /** RT60 guided-capture states (spec §13). */
@@ -223,6 +287,15 @@ type NativeApeDsp = {
   fxSet(effectId: number, paramId: number, value: number): void;
   fxReset(): void;
   fxGrStatus(): number[];
+  // Wave-2 expansion voices (engineVersion ≥ 7):
+  binStart(): Promise<BinStatus>;
+  binStop(): Promise<void>;
+  binSet(sourceIdx: number, params: BinSourceParams): void;
+  binStatus(): BinStatus;
+  modStart(): Promise<ModStatus>;
+  modStop(): Promise<void>;
+  modSet(param: number, value: number): void;
+  modStatus(): ModStatus;
 };
 
 let native: NativeApeDsp | null = null;
@@ -374,6 +447,45 @@ export const ApeDsp = {
   /** True when the native effects path exists in this build. */
   fxAvailable(): boolean {
     return this.engineVersion() >= 6;
+  },
+
+  // ---- Wave-2 expansion voices (engineVersion ≥ 7) ----
+  /** True when the FM voice / binaural bus / modular voice exist in this
+   *  build — labs feature-gate their audio on this and degrade honestly. */
+  wave2Available(): boolean {
+    return this.engineVersion() >= 7;
+  },
+  /** Start the binaural bus (shares the output graph with the generator). */
+  binStart(): Promise<BinStatus> {
+    if (this.engineVersion() < 7)
+      return Promise.reject(new Error('binaural bus requires the v7 engine build'));
+    return native!.binStart();
+  },
+  binStop(): Promise<void> {
+    return this.engineVersion() >= 7 ? native!.binStop() : Promise.resolve();
+  },
+  /** Program source 0..2 — targets only, ramped native-side (drag-rate safe). */
+  binSet(sourceIdx: number, params: BinSourceParams): void {
+    if (this.engineVersion() >= 7) native?.binSet(sourceIdx, params);
+  },
+  binStatus(): BinStatus | null {
+    return this.engineVersion() >= 7 ? native!.binStatus() : null;
+  },
+  /** Start the modular voice (shares the output graph with the generator). */
+  modStart(): Promise<ModStatus> {
+    if (this.engineVersion() < 7)
+      return Promise.reject(new Error('modular voice requires the v7 engine build'));
+    return native!.modStart();
+  },
+  modStop(): Promise<void> {
+    return this.engineVersion() >= 7 ? native!.modStop() : Promise.resolve();
+  },
+  /** One scalar param (MOD_PARAM ids) — the fxSet idiom. */
+  modSet(param: number, value: number): void {
+    if (this.engineVersion() >= 7) native?.modSet(param, value);
+  },
+  modStatus(): ModStatus | null {
+    return this.engineVersion() >= 7 ? native!.modStatus() : null;
   },
 };
 
