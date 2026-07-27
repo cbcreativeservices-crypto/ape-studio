@@ -35,7 +35,7 @@ import { guardAdditiveForEngine, guardNoiseLevelForEngine, guardToneLevelForEngi
 import { eqResponseDb } from '../../../features/lab/fxViz';
 import { EngineGate } from '../../tools/EngineGate';
 import type { EngineState } from '../../../features/tools/engine/useDspEngine';
-import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
+import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../../features/lab/guidedLessons';
 import { colors, fonts } from '../../../theme/tokens';
 import { LabChip } from '../LabShell';
 import { ConceptBadge, DragSlider, LevelMeterBar, VizUnavailableCard } from './bits';
@@ -452,6 +452,7 @@ export function FoundationsPlaygroundScreen() {
             )
           ) : null}
           <ConceptBadge />
+          <DisplayGuideButton onPress={() => help('waveform')} />
           {width > 0 && viz ? (
             source === 'sweep' ? (
               // A sweep is a MOVING tone — a fixed waveform/spectrum drawing
@@ -490,8 +491,10 @@ export function FoundationsPlaygroundScreen() {
               </>
             )
           ) : null}
-          <LevelMeterBar levelDb={levelDb} minDb={-48} maxDb={-16} />
-          <View style={styles.readoutRow}>
+          <Pressable onLongPress={() => help('amplitude')} delayLongPress={260}>
+            <LevelMeterBar levelDb={levelDb} minDb={-48} maxDb={-16} />
+          </Pressable>
+          <Pressable style={styles.readoutRow} onLongPress={() => help('readouts')} delayLongPress={260}>
             {source === 'wave' ? (
               <>
                 <Readout label="FREQUENCY" value={`${freq} Hz`} />
@@ -503,7 +506,7 @@ export function FoundationsPlaygroundScreen() {
             ) : (
               <Readout label="CONTENT" value="broadband — no single pitch" />
             )}
-          </View>
+          </Pressable>
         </View>
       </ScrollView>
 

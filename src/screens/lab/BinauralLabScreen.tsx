@@ -23,7 +23,7 @@ import { ApeDsp, BIN_SRC } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
-import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
+import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../features/lab/guidedLessons';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
@@ -231,6 +231,7 @@ export function BinauralLabScreen() {
               triangulates with. Behind-the-head is only gently hinted (front/back needs HRTF
               pinna cues this model deliberately doesn't fake).
             </Text>
+            <DisplayGuideButton onPress={() => openLesson('display')} />
           </View>
 
           {/* AUDIO — engine-gated ≥ v7, honest below. */}

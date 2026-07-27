@@ -26,7 +26,7 @@ import { ApeDsp, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
-import { GuidedLessonSheet, getLabLesson, SOURCE_LESSON, type LabId, type LessonContent } from '../../features/lab/guidedLessons';
+import { GuidedLessonSheet, getLabLesson, SOURCE_LESSON, DisplayGuideButton, type LabId, type LessonContent } from '../../features/lab/guidedLessons';
 import { GrMeter } from '../../features/lab/fxViz';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
@@ -244,6 +244,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
         <Text style={styles.badge}>{config.heroBadge}</Text>
         {config.Hero(values)}
         {config.heroCaption ? <Text style={styles.caption}>{config.heroCaption(values)}</Text> : null}
+        <DisplayGuideButton onPress={() => openLesson('display')} />
         {config.pollGr ? (
           <Pressable
             onLongPress={() => openLesson('gain_reduction')}

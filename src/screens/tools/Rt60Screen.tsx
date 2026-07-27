@@ -33,7 +33,7 @@ import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO, type WarningFlag } from '../../features/tools/measure/types';
 import { colors, fonts } from '../../theme/tokens';
 import { EngineGate } from './EngineGate';
-import { useToolHelp, DisplayGuideButton } from '../../features/lab/guidedLessons';
+import { useToolHelp, HelpHead, DisplayGuideButton } from '../../features/lab/guidedLessons';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Rt60Live'>;
@@ -112,7 +112,7 @@ function DecayCurve({ curveDb, stepSec }: { curveDb: number[]; stepSec: number }
 }
 
 export function Rt60Screen({ navigation }: Props) {
-  const { helpAll, sheet } = useToolHelp('rt60');
+  const { help, helpAll, sheet } = useToolHelp('rt60');
   const insets = useSafeAreaInsets();
   const { state, frames, start, stop, lastError } = useDspEngine({}, { meter: true });
   const [rt60, setRt60] = useState<Rt60Frame | null>(null);
@@ -258,7 +258,7 @@ export function Rt60Screen({ navigation }: Props) {
         ) : showResults && broadband ? (
           <>
             {/* Headline — method + ITS fit's R², always labeled (spec §13). */}
-            <View style={styles.readout}>
+            <Pressable style={styles.readout} onLongPress={() => help('rt60')} delayLongPress={260}>
               <Text style={[styles.readoutValue, !broadband.valid && styles.readoutInvalid]}>
                 {broadband.valid
                   ? fmtSec(headlineMethod === 'T30' ? broadband.t30Rt60Sec : broadband.t20Rt60Sec)
@@ -271,7 +271,7 @@ export function Rt60Screen({ navigation }: Props) {
                     ? `unstable decay fit — R² ${broadband.r2.toFixed(2)} (needs > 0.90) — do not trust this capture`
                     : 'insufficient decay range — do not trust this capture'}
               </Text>
-            </View>
+            </Pressable>
 
             {state !== 'running' && (
               <Text style={styles.stoppedNote}>
@@ -286,7 +286,8 @@ export function Rt60Screen({ navigation }: Props) {
             <DisplayGuideButton onPress={helpAll} />
 
             {/* Octave bands (spec §13 View 3): per-band method labels, honest gaps. */}
-            <Text style={styles.groupHead}>OCTAVE BANDS</Text>
+            <HelpHead title="OCTAVE BANDS" onHelp={() => help('band')} style={styles.groupHead} />
+            <Pressable onLongPress={() => help('band')} delayLongPress={260}>
             <View style={styles.bandTable}>
               <View style={styles.bandRowHead}>
                 <Text style={[styles.bandCellHead, { flex: 1.2 }]}>BAND</Text>
@@ -321,6 +322,7 @@ export function Rt60Screen({ navigation }: Props) {
                 );
               })}
             </View>
+            </Pressable>
 
             <View style={styles.controls}>
               <View style={{ flex: 1 }}>

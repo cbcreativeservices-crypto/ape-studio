@@ -26,7 +26,7 @@ import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { guardAdditiveForEngine, speakerGuardDb, SPEAKER_HPF_HZ } from '../../features/audio/speakerSafety';
-import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
+import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../features/lab/guidedLessons';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
@@ -254,6 +254,7 @@ export function HarmonographLabScreen() {
             ? `${ratio.label} (${ratio.interval.toLowerCase()}) — a simple integer ratio closes into a stable figure.`
             : `${ratio.label} detuned ${detune * 100}% — the near-miss never closes; the slow precession you see IS beating.`}
         </Text>
+        <DisplayGuideButton onPress={() => openLesson('display')} />
       </View>
 
       {/* DRIVE FROM OSCILLATORS — real interval audio (v3 additive only). */}

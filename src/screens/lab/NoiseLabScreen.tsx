@@ -26,7 +26,7 @@ import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { guardNoiseLevelForEngine, speakerGuardDb, SPEAKER_HPF_HZ } from '../../features/audio/speakerSafety';
-import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
+import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../features/lab/guidedLessons';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
@@ -182,6 +182,7 @@ export function NoiseLabScreen() {
                 selected.slope > 0 ? '+' : ''
               }${selected.slope} dB per octave (anchored at 1 kHz). Equal energy per Hz sounds bright because every higher octave holds twice the bandwidth.`}
         </Text>
+        <DisplayGuideButton onPress={() => openLesson('display')} />
       </View>
 
       {engineReady ? (

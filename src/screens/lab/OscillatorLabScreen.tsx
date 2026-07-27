@@ -35,7 +35,7 @@ import {
   SPEAKER_HPF_HZ,
   LOW_FREQ_ADVISORY,
 } from '../../features/audio/speakerSafety';
-import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
+import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../features/lab/guidedLessons';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
@@ -233,6 +233,7 @@ export function OscillatorLabScreen() {
             ? 'Two cycles of the waveform after the speaker high-pass — low partials removed, so the shape flattens toward its upper harmonics.'
             : 'Two cycles of the ideal 12-harmonic recipe — the same series the additive engine renders.'}
         </Text>
+        <DisplayGuideButton onPress={() => openLesson('display')} />
       </View>
 
       {/* HARMONIC BARS — the recipe as levels; filter curve overlaid in speaker view. */}
@@ -246,6 +247,7 @@ export function OscillatorLabScreen() {
             ? `H1–H12 after the high-pass (amber line = the filter's gain at each harmonic's frequency, n × ${f0} Hz).`
             : 'H1–H12 relative amplitudes. Square/triangle = odd only; saw = all; pulse nulls follow its duty cycle.'}
         </Text>
+        <DisplayGuideButton onPress={() => openLesson('display')} />
       </View>
 
       {engineReady ? (

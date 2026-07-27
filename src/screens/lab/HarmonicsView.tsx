@@ -100,7 +100,7 @@ import { guardToneLevelForEngine, LOW_FREQ_ADVISORY } from '../../features/audio
 import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
 import { WARNING_INFO } from '../../features/tools/measure/types';
 import { EngineGate } from '../tools/EngineGate';
-import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
+import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../features/lab/guidedLessons';
 import { colors, fonts } from '../../theme/tokens';
 import {
   additivePayload,
@@ -1420,6 +1420,7 @@ export function HarmonicsView({
             ? 'Levels are the editable model series, relative to model full scale (0 dB = amp 1).'
             : 'Color intensity is relative to the selected scale. dBFS · uncalibrated.'}
         </Text>
+        <DisplayGuideButton onPress={() => openLesson('display')} />
       </View>
 
       {/* STEM EDITOR + IDENTITY CARD — analytic mode only. Edits mutate the

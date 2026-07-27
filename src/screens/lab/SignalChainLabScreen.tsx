@@ -29,7 +29,7 @@ import { ApeDsp, FX, FX_PARAM, EQ_BAND_TYPES, GEN_MODES, type GenParams } from '
 import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
-import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
+import { GuidedLessonSheet, getLabLesson, SOURCE_LESSON, DisplayGuideButton, type LessonContent } from '../../features/lab/guidedLessons';
 import { GrMeter } from '../../features/lab/fxViz';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
@@ -127,10 +127,10 @@ const SCENARIOS: { key: string; label: string; enable: number[]; sourceIdx: numb
   },
 ];
 
-const SOURCES: { label: string; gen: GenParams }[] = [
-  { label: 'CLICK 90', gen: { mode: GEN_MODES.click, clickBpm: 90 } },
-  { label: 'PINK NOISE', gen: { mode: GEN_MODES.pink } },
-  { label: 'SINE 220', gen: { mode: GEN_MODES.sine, frequency: 220 } },
+const SOURCES: { label: string; gen: GenParams; srcKey: string }[] = [
+  { label: 'CLICK 90', gen: { mode: GEN_MODES.click, clickBpm: 90 }, srcKey: 'click' },
+  { label: 'PINK NOISE', gen: { mode: GEN_MODES.pink }, srcKey: 'pink' },
+  { label: 'SINE 220', gen: { mode: GEN_MODES.sine, frequency: 220 }, srcKey: 'sine' },
 ];
 
 export function SignalChainLabScreen() {
@@ -152,8 +152,15 @@ export function SignalChainLabScreen() {
 
   const [lessonKey, setLessonKey] = useState<string | undefined>(undefined);
   const [lessonOpen, setLessonOpen] = useState(false);
+  const [lessonContent, setLessonContent] = useState<LessonContent>(() => getLabLesson('chain'));
   const openLesson = useCallback((key?: string) => {
+    setLessonContent(getLabLesson('chain'));
     setLessonKey(key);
+    setLessonOpen(true);
+  }, []);
+  const openSourceHelp = useCallback((srcKey: string) => {
+    setLessonContent(SOURCE_LESSON);
+    setLessonKey(srcKey);
     setLessonOpen(true);
   }, []);
 
@@ -293,6 +300,7 @@ export function SignalChainLabScreen() {
           Modules run their lab-default teaching settings — each module’s full controls live in its
           own lab. The order is the fixed canonical order; WHY it matters is in the ⓘ mistakes.
         </Text>
+        <DisplayGuideButton onPress={() => openLesson('display')} />
       </View>
 
       <Text style={styles.sectionHead}>SCENARIOS — SIGNATURE INTERACTIONS</Text>
@@ -323,6 +331,7 @@ export function SignalChainLabScreen() {
                 noteAudioActivity();
               }
             }}
+            onLongPress={() => openSourceHelp(s.srcKey)}
           />
         ))}
       </View>
@@ -371,7 +380,7 @@ export function SignalChainLabScreen() {
 
       <GuidedLessonSheet
         visible={lessonOpen}
-        lesson={getLabLesson('chain')}
+        lesson={lessonContent}
         controlKey={lessonKey}
         onClose={() => setLessonOpen(false)}
       />

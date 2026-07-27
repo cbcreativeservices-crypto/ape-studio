@@ -22,7 +22,7 @@ import { ApeDsp, MOD_PARAM } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
-import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
+import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../features/lab/guidedLessons';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
@@ -269,6 +269,7 @@ export function ModularLabScreen() {
           always drives the VCA; everything else is a routing you choose. Tap any box for what it
           does.
         </Text>
+        <DisplayGuideButton onPress={() => openLesson('display')} />
       </View>
 
       <Text style={styles.sectionHead}>PATCH IDEAS — CLASSIC ROUTINGS</Text>

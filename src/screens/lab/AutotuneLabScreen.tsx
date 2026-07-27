@@ -24,7 +24,7 @@ import { ApeDsp, GEN_MODES } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
-import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
+import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../features/lab/guidedLessons';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
@@ -248,6 +248,7 @@ export function AutotuneLabScreen() {
           {Math.abs(MELODY[3].offCents)}¢ error ends {Math.abs(remaining(MELODY[3].offCents))}¢ from
           the line{amount === 1 ? ' — exactly on pitch' : ''}.
         </Text>
+        <DisplayGuideButton onPress={() => openLesson('cents_grid')} />
       </View>
 
       {/* PLAY — real audible correction of the generator "singer". */}

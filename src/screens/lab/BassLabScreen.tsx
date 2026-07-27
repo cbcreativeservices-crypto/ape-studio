@@ -32,7 +32,7 @@ import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { guardAdditiveForEngine, speakerGuardDb, SPEAKER_HPF_HZ } from '../../features/audio/speakerSafety';
-import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
+import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../features/lab/guidedLessons';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
@@ -282,6 +282,7 @@ export function BassLabScreen() {
             ? 'Frets crowd toward the bridge because each semitone is the same RATIO (2^(1/12)) — equal ratios, shrinking spacings. The wave is drawn on the vibrating length (fret → bridge).'
             : `Touching at ${node.frac} damps every mode WITHOUT a node there — harmonic ${node.n} (and its multiples) survive. Nodes are marked; the string rings over its FULL length.`}
         </Text>
+        <DisplayGuideButton onPress={() => openLesson('display')} />
       </View>
 
       {/* READOUT — fraction · frequency · note · interval · wavelength. */}
@@ -316,6 +317,7 @@ export function BassLabScreen() {
           String wave: λ = 2 × vibrating length. Sound wave in air: λ = {SPEED_OF_SOUND}/{soundHz.toFixed(0)} ≈{' '}
           {airWavelen.toFixed(2)} m
         </Text>
+        <DisplayGuideButton onPress={() => openLesson('display')} />
       </View>
 
       {/* PLAY — real audio through the additive engine (sine fallback on v2). */}

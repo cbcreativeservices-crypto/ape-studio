@@ -39,7 +39,7 @@ import type { EngineState } from '../../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { LabChip } from '../LabShell';
-import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
+import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../../features/lab/guidedLessons';
 import { CheckQuestion, ConceptBadge, DragSlider, LevelMeterBar, VizUnavailableCard, type CheckSpec } from './bits';
 import { requireViz, skiaAvailable, type VizModule } from './skiaGate';
 
@@ -162,6 +162,7 @@ function M1Panel({ viz, width, tone, focused, help }: PanelProps) {
         <VizUnavailableCard />
       )}
       <ConceptBadge />
+      <DisplayGuideButton onPress={() => help('air')} />
       <View style={styles.chipRow}>
         <LabChip label="LOW · 110 Hz" selected={f === 110} onPress={() => pick(110)} onLongPress={() => help('frequency')} />
         <LabChip label="MID · 220 Hz" selected={f === 220} onPress={() => pick(220)} onLongPress={() => help('frequency')} />
@@ -185,7 +186,7 @@ function M1Viz({ viz, width, visHz, running }: { viz: VizModule; width: number; 
 }
 
 /** M2 — the three synchronized windows. */
-function M2Panel({ viz, width, tone, focused }: PanelProps) {
+function M2Panel({ viz, width, tone, focused, help }: PanelProps) {
   return (
     <View style={styles.panelCard}>
       {viz ? (
@@ -194,6 +195,7 @@ function M2Panel({ viz, width, tone, focused }: PanelProps) {
         <VizUnavailableCard />
       )}
       <ConceptBadge extra="ALL THREE WINDOWS SHOW THE SAME MOMENT" />
+      <DisplayGuideButton onPress={() => help('speaker_cone')} />
       {tone.engineReady ? (
         <GlassButton
           label={tone.playing ? 'STOP' : 'PLAY THE TONE — 220 Hz'}
@@ -215,6 +217,7 @@ function M3Panel({ viz, width, tone, focused, help }: PanelProps) {
     <View style={styles.panelCard}>
       {viz ? <M3Viz viz={viz} width={width} amp={amt} running={focused} /> : <VizUnavailableCard />}
       <ConceptBadge />
+      <DisplayGuideButton onPress={() => help('pressure_graph')} />
       <DragSlider
         value={amt}
         onChange={(v) => {
@@ -267,6 +270,7 @@ function M4Panel({ viz, width, tone, focused, help }: PanelProps) {
         <VizUnavailableCard />
       )}
       <ConceptBadge />
+      <DisplayGuideButton onPress={() => help('speaker_cone')} />
       <DragSlider
         value={amt}
         onChange={(v) => {
@@ -277,7 +281,9 @@ function M4Panel({ viz, width, tone, focused, help }: PanelProps) {
         readout={amt < 0.33 ? 'small → quiet' : amt < 0.66 ? 'medium' : 'large → loud'}
         onHelp={() => help('amplitude')}
       />
-      <LevelMeterBar levelDb={levelFor(amt)} minDb={-48} maxDb={-18} />
+      <Pressable onLongPress={() => help('amplitude')} delayLongPress={260}>
+        <LevelMeterBar levelDb={levelFor(amt)} minDb={-48} maxDb={-18} />
+      </Pressable>
       {tone.engineReady ? (
         <GlassButton
           label={tone.playing ? 'STOP' : 'HEAR IT — 330 Hz'}

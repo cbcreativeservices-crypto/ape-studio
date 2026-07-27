@@ -395,7 +395,7 @@ export function SignalGenScreen({ navigation }: Props) {
             </View>
 
             {/* Status — the HONEST output level from the native path (Q4). */}
-            <View style={styles.statusCard}>
+            <Pressable style={styles.statusCard} onLongPress={() => help('status')} delayLongPress={260}>
               <View style={styles.statusRow}>
                 <Text style={[styles.statusState, running && styles.statusStateRunning]}>
                   {running ? 'RUNNING' : 'STOPPED'}
@@ -412,9 +412,9 @@ export function SignalGenScreen({ navigation }: Props) {
                   {status ? `${status.effectiveLevelDb.toFixed(1)} dBFS` : '—'}
                 </Text>
               </View>
-              <Text style={styles.caption}>dBFS · uncalibrated approximate — digital output level, not dB SPL</Text>
+              <Text style={styles.caption}>dBFS · uncalibrated approximate — digital output level, not dB SPL · hold for help</Text>
               {genError ? <Text style={styles.errorText}>Generator error: {genError}</Text> : null}
-            </View>
+            </Pressable>
 
             <GlassButton
               label={running ? 'STOP' : 'START'}

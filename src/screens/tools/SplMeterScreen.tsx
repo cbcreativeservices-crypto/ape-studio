@@ -354,7 +354,8 @@ export function SplMeterScreen({ navigation }: Props) {
 
             {/* Session log (spec §9 View 2): Leq + elapsed + reset/save. */}
             <View style={styles.logCard}>
-              <Text style={styles.sectionHead}>SESSION LOG</Text>
+              <HelpHead title="SESSION LOG" onHelp={() => help('session_log')} style={styles.sectionHead} />
+              <Pressable onLongPress={() => help('session_log')} delayLongPress={260}>
               <View style={styles.logRow}>
                 <View style={styles.logCell}>
                   <Text style={styles.cellLabel}>Leq(A)</Text>
@@ -369,6 +370,7 @@ export function SplMeterScreen({ navigation }: Props) {
                   <Text style={styles.cellValue}>{meter ? fmtElapsed(meter.elapsedSec) : '—'}</Text>
                 </View>
               </View>
+              </Pressable>
               <Text style={styles.logNote}>
                 Leq = equivalent continuous level over the session · {unitLabel}
               </Text>
