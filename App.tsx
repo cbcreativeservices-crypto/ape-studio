@@ -12,6 +12,7 @@ import { RootNavigator } from './src/navigation/RootNavigator';
 import { EntitlementProvider } from './src/features/commercial/EntitlementProvider';
 import { AudioOutputGate } from './src/features/audio/AudioOutputGate';
 import { AudioBorderFrame } from './src/features/audio/AudioBorderFrame';
+import { MicFeedbackGuard } from './src/features/audio/MicFeedbackGuard';
 import { LowLightDim } from './src/features/settings/LowLightLayer';
 import { useAccountLocalSync } from './src/features/account/accountLocalSync';
 import { colors, fontAssets } from './src/theme/tokens';
@@ -62,6 +63,10 @@ export default function App() {
             {/* Persistent thin red frame whenever audio output is enabled — a
                 global "the app can sound" indicator on every screen. */}
             <AudioBorderFrame />
+            {/* Mic↔speaker feedback interlock (owner request 2026-07-26): cuts
+                the speaker whenever the mic is capturing without the physical
+                override. Renders nothing; mounted once at the root. */}
+            <MicFeedbackGuard />
           </View>
         </AudioOutputGate>
       </EntitlementProvider>

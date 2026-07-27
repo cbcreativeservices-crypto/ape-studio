@@ -94,7 +94,8 @@ import Svg, { Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { ApeDsp, GEN_MODES, type EngineConfig, type GenParams } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
-import { noteAudioActivity } from '../../features/audio/audioOutputStore';
+import { isFeedbackAllowed, noteAudioActivity, useFeedbackAllowed } from '../../features/audio/audioOutputStore';
+import { FeedbackAllowRow } from '../../features/audio/FeedbackAllowRow';
 import { guardToneLevelForEngine, LOW_FREQ_ADVISORY } from '../../features/audio/speakerSafety';
 import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
 import { WARNING_INFO } from '../../features/tools/measure/types';
@@ -401,6 +402,11 @@ export function HarmonicsView({
   const { state, frames, start, stop, lastError } = useDspEngine(cfg, { meter: true, waveform: true });
   const engineReady = state !== 'absent' && state !== 'spike';
   const running = state === 'running';
+  // Mic↔speaker feedback override (owner request 2026-07-26). LIVE mode needs
+  // the mic AND the speaker at once, so the reference tone may sound only when
+  // the user has physically flipped the override; otherwise the interlock keeps
+  // the speaker muted while the mic listens.
+  const feedbackAllowed = useFeedbackAllowed();
   // HV-2 additive capability: engineVersion ≥ 3 = the generator has the
   // 12-harmonic additive mode. Memoized native constant — cannot change
   // within a process, so a plain read per render is free. A v2 dev client
@@ -833,14 +839,26 @@ export function HarmonicsView({
     setHistory([]);
   }, [stop]);
 
-  /** LIVE start (explicit press): gate → tone → mic capture. A declined gate
-   *  starts nothing; a capture failure surfaces via the honest engine states
-   *  below while the panels stay in their awaiting state. */
+  /** LIVE start (explicit press): mic capture always; the reference tone only
+   *  when the feedback override is on (else the interlock keeps the speaker
+   *  muted while the mic listens — owner request 2026-07-26). A capture failure
+   *  surfaces via the honest engine states below while the panels stay in their
+   *  awaiting state. The tone follows later override flips via the sync effect. */
   const onLiveStart = useCallback(async () => {
-    if (!(await startTone())) return;
     setHistory([]);
     void start();
+    if (isFeedbackAllowed()) void startTone();
   }, [startTone, start]);
+
+  /** LIVE tone ↔ feedback-override sync: while the mic is capturing in live
+   *  mode, the reference tone sounds iff the user has accepted feedback risk.
+   *  Owns the tone's genRunning state (the global MicFeedbackGuard is the
+   *  belt-and-suspenders cut for every OTHER screen). */
+  useEffect(() => {
+    if (view !== 'live' || !running) return;
+    if (feedbackAllowed && !genRunning) void startTone();
+    else if (!feedbackAllowed && genRunning) stopTone();
+  }, [view, running, feedbackAllowed, genRunning, startTone, stopTone]);
 
   const pickView = (v: ViewMode) => {
     if (v === view) return;
@@ -1721,6 +1739,10 @@ export function HarmonicsView({
               {state === 'denied' || state === 'error' ? (
                 <EngineGate state={state} lastError={lastError} />
               ) : null}
+              {/* Feedback override: LIVE mode is the ONE place the app needs mic
+                  + speaker together, so the user must physically accept the
+                  feedback risk before the reference tone will sound. */}
+              <FeedbackAllowRow />
               <GlassButton
                 label={soundOn ? 'STOP' : state === 'starting' ? 'STARTING…' : 'START TONE + MIC'}
                 tint="green"
@@ -1739,6 +1761,9 @@ export function HarmonicsView({
                 Plays the fundamental as a sine ({GEN_LEVEL_DB} dBFS) while analyzing the
                 microphone. Real harmonic distortion from the speaker, room, and mic lines up with
                 the markers — that is the lesson.
+                {!feedbackAllowed
+                  ? ' The tone stays muted for feedback safety until you switch on the override above (use headphones, or the built-in mic will hear the speaker).'
+                  : ''}
               </Text>
               {liveFlags.map((f) => (
                 <Text key={f} style={styles.liveWarn}>

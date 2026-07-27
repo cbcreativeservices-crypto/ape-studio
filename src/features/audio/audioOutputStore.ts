@@ -23,6 +23,15 @@ let enabled = false;
 let lastActivity = 0;
 let idleTimer: ReturnType<typeof setTimeout> | null = null;
 
+// ── Mic-feedback interlock (owner request 2026-07-26) ──────────────────────
+// To avoid user-caused feedback (built-in mic hearing the built-in speaker),
+// the SPEAKER output is auto-muted whenever the MIC is capturing — UNLESS the
+// user has physically flipped the override in the one place the app needs both
+// (the Harmonic Lab LIVE mode). `feedbackAllowed` is session-only, default
+// false, and callers reset it when leaving that context.
+let micActive = false;
+let feedbackAllowed = false;
+
 const listeners = new Set<() => void>();
 
 function emit(): void {
@@ -99,5 +108,65 @@ export function useAudioOutputEnabled(): boolean {
     },
     () => enabled,
     () => enabled,
+  );
+}
+
+// ── Mic-feedback interlock API ─────────────────────────────────────────────
+
+/** Report whether the mic is capturing (set by the capture lifecycle). */
+export function setMicActive(active: boolean): void {
+  if (micActive !== active) {
+    micActive = active;
+    emit();
+  }
+}
+export function isMicActive(): boolean {
+  return micActive;
+}
+
+/** The physical override — allow the speaker to sound WHILE the mic is on
+ *  (accepts feedback risk). Session-only; default false. */
+export function setFeedbackAllowed(allowed: boolean): void {
+  if (feedbackAllowed !== allowed) {
+    feedbackAllowed = allowed;
+    emit();
+  }
+}
+export function isFeedbackAllowed(): boolean {
+  return feedbackAllowed;
+}
+
+/** The interlock verdict: is the speaker currently muted for feedback safety?
+ *  True ⇒ mic is capturing and the user has NOT overridden — no sound may leave
+ *  the speaker. */
+export function isSpeakerFeedbackMuted(): boolean {
+  return micActive && !feedbackAllowed;
+}
+
+/** Subscribe to the interlock verdict (mic active && !override). */
+export function useSpeakerFeedbackMuted(): boolean {
+  return useSyncExternalStore(
+    (cb) => {
+      listeners.add(cb);
+      return () => {
+        listeners.delete(cb);
+      };
+    },
+    isSpeakerFeedbackMuted,
+    isSpeakerFeedbackMuted,
+  );
+}
+
+/** Subscribe to the override flag. */
+export function useFeedbackAllowed(): boolean {
+  return useSyncExternalStore(
+    (cb) => {
+      listeners.add(cb);
+      return () => {
+        listeners.delete(cb);
+      };
+    },
+    () => feedbackAllowed,
+    () => feedbackAllowed,
   );
 }

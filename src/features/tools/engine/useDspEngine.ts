@@ -23,6 +23,7 @@ import {
   type PitchFrame,
   type WaveBucket,
 } from '../../../../modules/ape-dsp';
+import { setMicActive } from '../../audio/audioOutputStore';
 import type { WarningFlag } from '../measure/types';
 
 /** Android runtime mic-permission request (iOS requests it natively inside the
@@ -103,6 +104,7 @@ export function useDspEngine(config: EngineConfig, poll: {
         return;
       }
       setState('running');
+      setMicActive(true); // mic is now capturing → the feedback interlock arms
       stopPolling();
       timer.current = setInterval(() => {
         const p = pollRef.current;
@@ -125,6 +127,7 @@ export function useDspEngine(config: EngineConfig, poll: {
     genRef.current++;
     stopPolling();
     void ApeDsp.stop();
+    setMicActive(false); // mic released → interlock disarms
     setState((s) => (s === 'running' || s === 'starting' ? 'idle' : s));
   }, [stopPolling]);
 
@@ -139,6 +142,7 @@ export function useDspEngine(config: EngineConfig, poll: {
         genRef.current++;
         stopPolling();
         void ApeDsp.stop();
+        setMicActive(false);
         setState((s) => (s === 'running' || s === 'starting' ? 'idle' : s));
       },
       [stopPolling],
@@ -151,6 +155,7 @@ export function useDspEngine(config: EngineConfig, poll: {
       genRef.current++;
       stopPolling();
       void ApeDsp.stop();
+      setMicActive(false);
     },
     [stopPolling],
   );
