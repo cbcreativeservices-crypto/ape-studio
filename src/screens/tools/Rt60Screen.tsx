@@ -33,6 +33,7 @@ import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO, type WarningFlag } from '../../features/tools/measure/types';
 import { colors, fonts } from '../../theme/tokens';
 import { EngineGate } from './EngineGate';
+import { useToolHelp, DisplayGuideButton } from '../../features/lab/guidedLessons';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Rt60Live'>;
@@ -111,6 +112,7 @@ function DecayCurve({ curveDb, stepSec }: { curveDb: number[]; stepSec: number }
 }
 
 export function Rt60Screen({ navigation }: Props) {
+  const { helpAll, sheet } = useToolHelp('rt60');
   const insets = useSafeAreaInsets();
   const { state, frames, start, stop, lastError } = useDspEngine({}, { meter: true });
   const [rt60, setRt60] = useState<Rt60Frame | null>(null);
@@ -281,6 +283,7 @@ export function Rt60Screen({ navigation }: Props) {
             {rt60 && rt60.curveDb.length > 1 && (
               <DecayCurve curveDb={rt60.curveDb} stepSec={rt60.curveStepSec} />
             )}
+            <DisplayGuideButton onPress={helpAll} />
 
             {/* Octave bands (spec §13 View 3): per-band method labels, honest gaps. */}
             <Text style={styles.groupHead}>OCTAVE BANDS</Text>
@@ -427,6 +430,7 @@ export function Rt60Screen({ navigation }: Props) {
           </>
         )}
       </ScrollView>
+      {sheet}
     </View>
   );
 }

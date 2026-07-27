@@ -6,4 +6,4 @@
 export type { LabId, LabTier, ControlLesson, LabLesson, LessonContent } from './types';
 export { LAB_LESSONS, LAB_LESSON_LIST, getLabLesson, getControlLesson } from './content';
 export { GuidedLessonBody, GuidedLessonSheet } from './GuidedLessonSheet';
-export { TOOL_LESSONS, getToolLesson, useToolHelp, HelpHead, type ToolId } from './toolHelp';
+export { TOOL_LESSONS, getToolLesson, useToolHelp, HelpHead, DisplayGuideButton, readoutKey, type ToolId } from './toolHelp';

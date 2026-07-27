@@ -30,7 +30,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { EngineGate } from './EngineGate';
 import { MIC_LIMITS, toolByKey } from './toolsData';
 import type { MeterFrame } from '../../../modules/ape-dsp';
-import { useToolHelp, HelpHead } from '../../features/lab/guidedLessons';
+import { useToolHelp, HelpHead, DisplayGuideButton } from '../../features/lab/guidedLessons';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SplMeter'>;
@@ -73,7 +73,7 @@ function Chip({ label, selected, onPress }: { label: string; selected: boolean; 
 }
 
 export function SplMeterScreen({ navigation }: Props) {
-  const { help, sheet } = useToolHelp('spl');
+  const { help, helpAll, sheet } = useToolHelp('spl');
   const insets = useSafeAreaInsets();
   const tool = toolByKey('spl');
   const { state, frames, start, stop, lastError, resetPeakHold, resetLeq } = useDspEngine(
@@ -230,6 +230,7 @@ export function SplMeterScreen({ navigation }: Props) {
               </Text>
               <Text style={styles.readoutSub}>{unitLabel}</Text>
             </View>
+            <DisplayGuideButton onPress={helpAll} />
 
             {/* Field calibration (ruling R1, 2026-07-23): device-local offset,
                 matched against the user's reference meter. */}

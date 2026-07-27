@@ -30,7 +30,7 @@ import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO } from '../../features/tools/measure/types';
 import { colors, fonts } from '../../theme/tokens';
 import { EngineGate } from './EngineGate';
-import { useToolHelp, HelpHead } from '../../features/lab/guidedLessons';
+import { useToolHelp, HelpHead, DisplayGuideButton, readoutKey } from '../../features/lab/guidedLessons';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Rta'>;
@@ -82,15 +82,21 @@ function bandLabels(centers: number[]): { i: number; text: string }[] {
 const fmtDb = (v: number | undefined) =>
   v != null && Number.isFinite(v) ? `${v > 0 ? '+' : ''}${v.toFixed(1)}` : '—';
 
-function StatCell({ label, value, unit }: { label: string; value: string; unit?: string }) {
+function StatCell({ label, value, unit, help }: { label: string; value: string; unit?: string; help?: (key: string) => void }) {
   return (
-    <View style={styles.statCell}>
+    <Pressable
+      style={styles.statCell}
+      onLongPress={help ? () => help(readoutKey(label)) : undefined}
+      delayLongPress={350}
+      accessibilityRole={help ? 'button' : undefined}
+      accessibilityLabel={help ? `${label} — what it shows` : label}
+    >
       <Text style={styles.statLabel}>{label}</Text>
       <Text style={styles.statValue}>
         {value}
         {unit ? <Text style={styles.statUnit}> {unit}</Text> : null}
       </Text>
-    </View>
+    </Pressable>
   );
 }
 
@@ -221,7 +227,7 @@ function BandsPanel({ bands, fraction, alpha }: { bands: BandsFrame | null; frac
 }
 
 export function RtaScreen({ navigation }: Props) {
-  const { help, sheet } = useToolHelp('rta');
+  const { help, helpAll, sheet } = useToolHelp('rta');
   const insets = useSafeAreaInsets();
 
   // Ref-stable config object: useDspEngine's start() closes over the object we
@@ -358,12 +364,14 @@ export function RtaScreen({ navigation }: Props) {
         {state === 'running' && (
           <>
             <BandsPanel bands={frames.bands} fraction={fraction} alpha={alpha} />
+            <DisplayGuideButton onPress={helpAll} />
 
-            {/* Numeric truth row — peak may exceed 0 dBFS (F1): print it. */}
+            {/* Numeric truth row — peak may exceed 0 dBFS (F1): print it.
+                Long-press any cell for what it shows. */}
             <View style={styles.statGrid}>
-              <StatCell label="PEAK" value={fmtDb(meter?.peakDb)} unit="dBFS" />
-              <StatCell label="PEAK HOLD" value={fmtDb(meter?.peakHoldDb)} unit="dBFS" />
-              <StatCell label="BANDS" value={frames.bands ? String(frames.bands.centers.length) : '—'} />
+              <StatCell help={help} label="PEAK" value={fmtDb(meter?.peakDb)} unit="dBFS" />
+              <StatCell help={help} label="PEAK HOLD" value={fmtDb(meter?.peakHoldDb)} unit="dBFS" />
+              <StatCell help={help} label="BANDS" value={frames.bands ? String(frames.bands.centers.length) : '—'} />
             </View>
 
             {/* Live quality warnings (spec §6) — same flags stored on save. */}

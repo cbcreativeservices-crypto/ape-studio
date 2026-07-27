@@ -34,6 +34,7 @@ import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO } from '../../features/tools/measure/types';
 import { colors, fonts } from '../../theme/tokens';
 import { EngineGate } from './EngineGate';
+import { useToolHelp, DisplayGuideButton } from '../../features/lab/guidedLessons';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'WaveformLive'>;
@@ -55,6 +56,7 @@ const fmtDb = (v: number | undefined | null) =>
   v != null && Number.isFinite(v) ? `${v > 0 ? '+' : ''}${v.toFixed(1)}` : '—';
 
 export function WaveformScreen({ navigation }: Props) {
+  const { helpAll, sheet } = useToolHelp('waveform');
   const insets = useSafeAreaInsets();
   const { state, frames, start, stop, lastError } = useDspEngine(
     { waveformEnabled: true },
@@ -335,6 +337,8 @@ export function WaveformScreen({ navigation }: Props) {
               </Text>
             ))}
 
+            <DisplayGuideButton onPress={helpAll} />
+
             <View style={styles.controls}>
               <View style={{ flex: 1 }}>
                 <GlassButton label="STOP" tint="teal" height={52} fontSize={15} onPress={onStop} />
@@ -373,6 +377,7 @@ export function WaveformScreen({ navigation }: Props) {
           </>
         ) : null}
       </ScrollView>
+      {sheet}
     </View>
   );
 }

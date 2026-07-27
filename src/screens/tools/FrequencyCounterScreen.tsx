@@ -33,6 +33,7 @@ import { WARNING_INFO, type WarningFlag } from '../../features/tools/measure/typ
 import { colors, fonts } from '../../theme/tokens';
 import { EngineGate } from './EngineGate';
 import { ENGINE_NOTE } from './toolsData';
+import { useToolHelp, DisplayGuideButton, readoutKey } from '../../features/lab/guidedLessons';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'FrequencyCounter'>;
@@ -107,15 +108,21 @@ function computeTapStats(taps: number[]): TapStats | null {
 
 const fmtHz = (hz: number) => (hz < 10 ? hz.toFixed(2) : hz.toFixed(1));
 
-function StatCell({ label, value, unit }: { label: string; value: string; unit?: string }) {
+function StatCell({ label, value, unit, help }: { label: string; value: string; unit?: string; help?: (key: string) => void }) {
   return (
-    <View style={styles.statCell}>
+    <Pressable
+      style={styles.statCell}
+      onLongPress={help ? () => help(readoutKey(label)) : undefined}
+      delayLongPress={350}
+      accessibilityRole={help ? 'button' : undefined}
+      accessibilityLabel={help ? `${label} — what it shows` : label}
+    >
       <Text style={styles.statLabel}>{label}</Text>
       <Text style={styles.statValue}>
         {value}
         {unit ? <Text style={styles.statUnit}> {unit}</Text> : null}
       </Text>
-    </View>
+    </Pressable>
   );
 }
 
@@ -142,7 +149,7 @@ function noteFor(freq: number, a4: number): { name: string; octave: number; cent
   return { name: NOTE_NAMES[((n % 12) + 12) % 12], octave: Math.floor(n / 12) - 1, cents };
 }
 
-function LivePitchMode({ kind }: { kind: 'sound' | 'tuner' }) {
+function LivePitchMode({ kind, help, helpAll }: { kind: 'sound' | 'tuner'; help: (key: string) => void; helpAll: () => void }) {
   const { state, frames, start, stop, lastError } = useDspEngine(
     { pitchEnabled: true },
     { meter: true, pitch: true },
@@ -201,10 +208,11 @@ function LivePitchMode({ kind }: { kind: 'sound' | 'tuner' }) {
       )}
 
       <View style={styles.statGrid}>
-        <StatCell label="CONFIDENCE" value={p ? `${Math.round(p.confidence * 100)}%` : '—'} />
-        <StatCell label="INPUT LEVEL" value={p ? p.levelDb.toFixed(1) : '—'} unit="dBFS" />
-        <StatCell label="STATUS" value={showPitch ? 'STABLE' : lowSignal ? 'LOW SIGNAL' : 'LISTENING'} />
+        <StatCell help={help} label="CONFIDENCE" value={p ? `${Math.round(p.confidence * 100)}%` : '—'} />
+        <StatCell help={help} label="INPUT LEVEL" value={p ? p.levelDb.toFixed(1) : '—'} unit="dBFS" />
+        <StatCell help={help} label="STATUS" value={showPitch ? 'STABLE' : lowSignal ? 'LOW SIGNAL' : 'LISTENING'} />
       </View>
+      <DisplayGuideButton onPress={helpAll} />
 
       {kind === 'tuner' && (
         <View style={styles.a4Row}>
@@ -277,7 +285,7 @@ function ModeSelect({ onPick, onLearn, onDemo }: { onPick: (m: Mode) => void; on
   );
 }
 
-function TapMode({ onOpenLibrary }: { onOpenLibrary: () => void }) {
+function TapMode({ onOpenLibrary, help, helpAll }: { onOpenLibrary: () => void; help: (key: string) => void; helpAll: () => void }) {
   const [taps, setTaps] = useState<number[]>([]);
   const [held, setHeld] = useState(false);
   const [justSaved, setJustSaved] = useState(false);
@@ -386,17 +394,19 @@ function TapMode({ onOpenLibrary }: { onOpenLibrary: () => void }) {
 
       {/* Results grid. */}
       <View style={styles.statGrid}>
-        <StatCell label="EVENTS / SEC" value={stats ? fmtHz(stats.eventsPerSec) : '—'} />
-        <StatCell label="PERIOD" value={stats ? Math.round(stats.periodMs).toString() : '—'} unit="ms" />
-        <StatCell label="BPM" value={stats ? Math.round(stats.bpm).toString() : '—'} />
+        <StatCell help={help} label="EVENTS / SEC" value={stats ? fmtHz(stats.eventsPerSec) : '—'} />
+        <StatCell help={help} label="PERIOD" value={stats ? Math.round(stats.periodMs).toString() : '—'} unit="ms" />
+        <StatCell help={help} label="BPM" value={stats ? Math.round(stats.bpm).toString() : '—'} />
         <StatCell
+          help={help}
           label="STABILITY"
           value={stats?.stabilityLabel ?? '—'}
           unit={stats?.stabilityPct != null ? `${stats.stabilityPct}%` : undefined}
         />
-        <StatCell label="MIN" value={stats?.minFreq != null ? fmtHz(stats.minFreq) : '—'} unit={stats?.minFreq != null ? 'Hz' : undefined} />
-        <StatCell label="MAX" value={stats?.maxFreq != null ? fmtHz(stats.maxFreq) : '—'} unit={stats?.maxFreq != null ? 'Hz' : undefined} />
+        <StatCell help={help} label="MIN" value={stats?.minFreq != null ? fmtHz(stats.minFreq) : '—'} unit={stats?.minFreq != null ? 'Hz' : undefined} />
+        <StatCell help={help} label="MAX" value={stats?.maxFreq != null ? fmtHz(stats.maxFreq) : '—'} unit={stats?.maxFreq != null ? 'Hz' : undefined} />
       </View>
+      <DisplayGuideButton onPress={helpAll} />
 
       {/* Live quality warnings ON the measurement screen (spec §6 required
           behavior) — same flags that will be stored on save. */}
@@ -446,6 +456,7 @@ function TapMode({ onOpenLibrary }: { onOpenLibrary: () => void }) {
 
 export function FrequencyCounterScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
+  const { help, helpAll, sheet } = useToolHelp('freqcounter');
   const [mode, setMode] = useState<Mode | null>(null);
   useToolUsage('hzcounter'); // T-1 telemetry (this tool skips ToolInfo)
 
@@ -472,11 +483,11 @@ export function FrequencyCounterScreen({ navigation }: Props) {
             onDemo={() => navigation.navigate('ToolDemo', { toolKey: 'hzcounter' })}
           />
         ) : mode === 'tap' ? (
-          <TapMode onOpenLibrary={() => navigation.navigate('ToolLibrary', { toolKey: 'hzcounter' })} />
+          <TapMode help={help} helpAll={helpAll} onOpenLibrary={() => navigation.navigate('ToolLibrary', { toolKey: 'hzcounter' })} />
         ) : mode === 'sound' || mode === 'tuner' ? (
           // LIVE (engine build 2026-07-23): YIN pitch — numeric (Sound) or
           // musical (Tuner). Gates itself honestly when the engine is absent.
-          <LivePitchMode kind={mode} />
+          <LivePitchMode kind={mode} help={help} helpAll={helpAll} />
         ) : (
           // Light Pulse: honest in-development state (camera path not built).
           <>
@@ -486,6 +497,7 @@ export function FrequencyCounterScreen({ navigation }: Props) {
           </>
         )}
       </ScrollView>
+      {sheet}
     </View>
   );
 }
