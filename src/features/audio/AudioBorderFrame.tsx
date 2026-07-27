@@ -8,8 +8,10 @@
  *
  * Visibility fix (2026-07-26): the original hairline frame at the extreme screen
  * edge was invisible on modern phones — hidden under the status bar / gesture
- * nav and clipped by the rounded display corners. It is now a solid ~3 px frame
- * INSET to the safe area so all four sides are fully on-screen and unmistakable.
+ * nav and clipped by the rounded display corners. It is now a solid frame INSET
+ * to the safe area so all four sides are fully on-screen and unmistakable;
+ * thickness doubled to ~6 px (owner request 2026-07-26) for an even stronger
+ * "audio can sound right now" warning.
  */
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,7 +19,7 @@ import { useAudioOutputEnabled } from './audioOutputStore';
 
 // Vivid warning red (brighter than the old #c90000 so it reads as a warning).
 const AUDIO_RED = '#ff2a2a';
-const THICK = 3;
+const THICK = 6; // doubled from 3 (owner request 2026-07-26)
 
 export function AudioBorderFrame() {
   const on = useAudioOutputEnabled();

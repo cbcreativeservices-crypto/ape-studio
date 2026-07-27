@@ -1,18 +1,26 @@
 /**
  * LowLightLayer — low-light mode UI (user request 2026-07-18):
  *  - <LowLightDim/>  a full-bleed black wash that dims the app's OUTPUT (not the
- *                    device brightness) when ON, PLUS a persistent red line at
- *                    the top of every screen marking the mode active. Mounted
- *                    once at the app root, pointer-transparent.
+ *                    device brightness) when ON, PLUS a persistent line at the
+ *                    top of every screen marking the mode active. Mounted once
+ *                    at the app root, pointer-transparent.
  *  - <LowLightRow/>  the toggle control, placed at the TOP of the Profile
- *                    screen. Turns red when engaged.
+ *                    screen. Lights up when engaged.
+ *
+ * Colour (owner request 2026-07-26): the low-light indicator is a BURNT, darker
+ * glowing ORANGE — not the red used for the audio-output frame. Keeping the two
+ * warnings distinct hues means they're never confused when both are on screen,
+ * and the warm ember reads gentler than red in a dark theater. The top line is
+ * also thicker (doubled) to match the audio frame's new weight.
  */
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fonts } from '../../theme/tokens';
 import { LOW_LIGHT_DIM, toggleLowLight, useLowLight } from './lowLight';
 
-const RED = '#e5473b';
+// Burnt, darker, glowing orange (owner request 2026-07-26) — the low-light
+// indicator hue, deliberately distinct from the audio-output frame's red.
+const EMBER = '#c2540f';
 
 /** Dim wash + red "active" line — both shown only when low-light is ON. */
 export function LowLightDim() {
@@ -67,10 +75,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
-    height: 2,
-    backgroundColor: RED,
-    // Dimmed to 15% brightness so the indicator doesn't throw light in a dark
-    // theater (user request 2026-07-18).
+    // Doubled 2 → 4 px (owner request 2026-07-26) to match the audio frame's
+    // new weight.
+    height: 4,
+    backgroundColor: EMBER,
+    // Still dimmed to 15% brightness so the indicator doesn't throw light in a
+    // dark theater (user request 2026-07-18) — the warm ember reads gentler
+    // than red at this low level.
     opacity: 0.15,
     zIndex: 60,
   },
@@ -85,11 +96,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#262626',
   },
-  rowOn: { backgroundColor: '#1c0e0d', borderColor: RED },
+  rowOn: { backgroundColor: '#1c1108', borderColor: EMBER },
   dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#555' },
-  dotOn: { backgroundColor: RED },
+  dotOn: { backgroundColor: EMBER },
   label: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: '#8a8c90' },
-  labelOn: { color: RED },
+  labelOn: { color: EMBER },
   track: {
     width: 34,
     height: 18,
@@ -100,7 +111,7 @@ const styles = StyleSheet.create({
     padding: 2,
     justifyContent: 'center',
   },
-  trackOn: { backgroundColor: '#3a1512', borderColor: RED, alignItems: 'flex-end' },
+  trackOn: { backgroundColor: '#3a1f0d', borderColor: EMBER, alignItems: 'flex-end' },
   thumb: { width: 12, height: 12, borderRadius: 6, backgroundColor: '#777' },
-  thumbOn: { backgroundColor: RED },
+  thumbOn: { backgroundColor: EMBER },
 });
