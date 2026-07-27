@@ -14,10 +14,10 @@
  * native modStatus (no fake meters, §1.7). Audio needs engineVersion ≥ 7 —
  * below it the diagram + lessons work and the build requirement is stated.
  */
-import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import Svg, { Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { ApeDsp, MOD_PARAM } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
@@ -263,10 +263,11 @@ export function ModularLabScreen() {
       {/* HERO — the live patch-flow diagram. */}
       <View style={styles.panelCard}>
         <Text style={styles.badge}>SIGNAL FLOW — THE ACTUAL NATIVE PATH · ACTIVE ROUTINGS LIT</Text>
-        <PatchDiagram patch={patch} envLevel={envLevel} running={running} />
+        <PatchDiagram patch={patch} envLevel={envLevel} running={running} onBox={openLesson} />
         <Text style={styles.caption}>
           Audio (top row): VCO → VCF → VCA → output stage. Modulators (bottom): the envelope
-          always drives the VCA; everything else is a routing you choose.
+          always drives the VCA; everything else is a routing you choose. Tap any box for what it
+          does.
         </Text>
       </View>
 
@@ -454,7 +455,18 @@ const D_H = 176;
  *  sources LFO · ENV · SEQ below; patch cables drawn ONLY for active routings
  *  (env→VCA always; env→cutoff / LFO→dest / SEQ→pitch as configured). The env
  *  box doubles as the REAL env meter while running. */
-function PatchDiagram({ patch, envLevel, running }: { patch: Patch; envLevel: number; running: boolean }) {
+function PatchDiagram({
+  patch,
+  envLevel,
+  running,
+  onBox,
+}: {
+  patch: Patch;
+  envLevel: number;
+  running: boolean;
+  /** Tap a box → open that section's "what it does" help. */
+  onBox: (key: string) => void;
+}) {
   const [w, setW] = useState(0);
   if (w <= 0) {
     return <View onLayout={(e) => setW(Math.round(e.nativeEvent.layout.width))} style={{ height: D_H }} />;
@@ -465,7 +477,9 @@ function PatchDiagram({ patch, envLevel, running }: { patch: Patch; envLevel: nu
   const botY = 112;
   const xs = [0, 1, 2, 3].map((i) => 10 + i * ((w - 20 - boxW) / 3));
   const audio = ['VCO', 'VCF', 'VCA', 'OUT'];
+  const audioKeys = ['vco', 'vcf', 'vca', 'out'];
   const mods = ['LFO', 'ENV', 'SEQ'];
+  const modKeys = ['lfo', 'envelope', 'sequencer'];
   const mxs = [0, 1, 2].map((i) => 30 + i * ((w - 60 - boxW) / 2));
   const cx = (i: number, top: boolean) => (top ? xs[i] : mxs[i]) + boxW / 2;
 
@@ -514,9 +528,9 @@ function PatchDiagram({ patch, envLevel, running }: { patch: Patch; envLevel: nu
         {patch.lfoDepth > 0 && patch.lfoDest === 2 ? cable(0, 1, lfoColor, 'lfo-vcf') : null}
         {patch.lfoDepth > 0 && patch.lfoDest === 3 ? cable(0, 2, lfoColor, 'lfo-vca') : null}
         {patch.seqOn ? cable(2, 0, seqColor, 'seq-vco') : null}
-        {/* Audio boxes. */}
+        {/* Audio boxes — tap for what each does. */}
         {audio.map((name, i) => (
-          <Fragment key={name}>
+          <G key={name} onPress={() => onBox(audioKeys[i])}>
             <Rect
               x={xs[i]}
               y={topY}
@@ -537,7 +551,7 @@ function PatchDiagram({ patch, envLevel, running }: { patch: Patch; envLevel: nu
             >
               {name}
             </SvgText>
-          </Fragment>
+          </G>
         ))}
         {/* Mod boxes (ENV doubles as the real env meter while running). */}
         {mods.map((name, i) => {
@@ -545,7 +559,7 @@ function PatchDiagram({ patch, envLevel, running }: { patch: Patch; envLevel: nu
           const active =
             i === 0 ? patch.lfoDepth > 0 && patch.lfoDest > 0 : i === 1 ? true : patch.seqOn;
           return (
-            <Fragment key={name}>
+            <G key={name} onPress={() => onBox(modKeys[i])}>
               <Rect
                 x={mxs[i]}
                 y={botY}
@@ -578,7 +592,7 @@ function PatchDiagram({ patch, envLevel, running }: { patch: Patch; envLevel: nu
               >
                 {name}
               </SvgText>
-            </Fragment>
+            </G>
           );
         })}
         <SvgText x={10} y={D_H - 6} fill="#4a4a52" fontSize={9}>

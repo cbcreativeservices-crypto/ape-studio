@@ -774,6 +774,8 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'envelope', name: 'ADSR envelope', definition: 'Attack·Decay·Sustain·Release — the loudness contour of each note (always on the VCA). Routed to the filter (env→cutoff) it makes each note open bright and close dark: the classic synth pluck.' },
       { key: 'lfo', name: 'LFO', definition: 'A low-frequency oscillator too slow to hear as a tone — it WIGGLES a destination instead: pitch = vibrato, cutoff = wah/wobble, amp = tremolo. One modulator, three different classic effects.', range: '0.05–30 Hz' },
       { key: 'sequencer', name: 'Step sequencer', definition: '8 steps of semitone offsets; each active step retunes the VCO and retriggers the envelope. A rest step releases. Rate sets the tempo — the melody is a control signal too.' },
+      { key: 'vca', name: 'VCA (amplifier)', definition: 'The output amplifier — it sets the voice’s LOUDNESS over time. The envelope (ADSR) always drives it, so the VCA is what makes a note fade in and out.' },
+      { key: 'out', name: 'Output', definition: 'The end of the voice: VCO → VCF → VCA → OUT. A gentle saturation stage here adds analog-style warmth and keeps peaks in check before the sound leaves.' },
     ],
     commonMistakes: [
       'Filtering a sine and hearing nothing change — the filter can only REMOVE harmonics; a sine has none above the fundamental. Subtractive synthesis needs a bright source.',
