@@ -53,8 +53,9 @@ import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
 type Card =
   | { kind: 'tools'; id: 'tools' }
   | { kind: 'glossary'; id: 'glossary' }
-  /** Ear Training & Critical Listening Lab — pinned, right of tools/glossary
-   *  (Phase 1 SHELL). Its own card/route → 'EarLab' (NOT a ToolsHub tile). */
+  /** Ear Training & Audio Lab — pinned FAR LEFT, left of tools (owner request
+   *  2026-07-26; was right of tools/glossary). Its own card/route → 'EarLab'
+   *  (NOT a ToolsHub tile). */
   | { kind: 'lab'; id: 'lab' }
   /** Free-topic taster card (Booth 2026-07-11) — gs0 / gs36, after Glossary. */
   | { kind: 'freeTopic'; id: string; gs: number; name: string; courseOrder: number }
@@ -101,9 +102,9 @@ const SIDE_PAD = Math.round((SCREEN_W - CARD_W) / 2);
 /** Lit switch width on the cards — narrower than the card (Booth 2026-07-09q). */
 const CARD_BTN_W = Math.round(CARD_W * 0.62);
 const POSITION_KEY = 'ape:courseCarouselIdx';
-/** Carousel index of the Glossary card ([Tools][Glossary]...) — HOME always
- *  lands here (Booth 2026-07-11). */
-const GLOSSARY_IDX = 1;
+// HOME always lands on the GLOSSARY card (Booth 2026-07-11). Found by kind at
+// landing time (was a fixed index; the deck head is now [Lab][Tools][Glossary]
+// after the 2026-07-26 far-left Lab move, so a hardcoded index would drift).
 
 /** Standalone topic cards awaiting content (Booth 2026-07-11) — rendered as
  *  locked "COMING SOON" topic cards on the right of the catalog. */
@@ -207,7 +208,7 @@ function rawCardTitle(item: Card): string | null {
     case 'glossary':
       return 'Professional Audio Glossary';
     case 'lab':
-      return 'Ear Training & Critical Listening Lab';
+      return 'Ear Training & Audio Lab';
     case 'freeTopic':
     case 'public':
     case 'comingTopic':
@@ -449,7 +450,7 @@ function CourseCardView({
             style={StyleSheet.absoluteFill}
           />
           <View>
-            <Text style={styles.cardTitle}>Ear Training & Critical Listening Lab</Text>
+            <Text style={styles.cardTitle}>Ear Training & Audio Lab</Text>
           </View>
           <View style={{ alignItems: 'center' }}>
             <View style={{ width: CARD_BTN_W }}>
@@ -719,10 +720,11 @@ export function CourseSelectionScreen() {
       // 2026-07-22), linking to the Certificates screen.
       const otherCount = OTHER_CERTS_COUNT;
       setCards([
+        // Ear Training & Audio Lab — pinned FAR LEFT, left of tools (owner
+        // request 2026-07-26).
+        { kind: 'lab', id: 'lab' },
         { kind: 'tools', id: 'tools' },
         { kind: 'glossary', id: 'glossary' },
-        // Ear Training & Critical Listening Lab — pinned, right of tools/glossary.
-        { kind: 'lab', id: 'lab' },
         // 2 free-topic taster cards, right after Glossary (Booth 2026-07-11).
         // gs0 displays as the shortened "Pro Audio Safety".
         ...freeTopicsFrom(catalog).map((ft) => ({
@@ -791,10 +793,11 @@ export function CourseSelectionScreen() {
       // Tools card sits LEFT of the Glossary card (Booth 2026-07-09v); the
       // Glossary remains the standard landing card (index 1 default below).
       setCards([
+        // Ear Training & Audio Lab — pinned FAR LEFT, left of tools (owner
+        // request 2026-07-26).
+        { kind: 'lab', id: 'lab' },
         { kind: 'tools', id: 'tools' },
         { kind: 'glossary', id: 'glossary' },
-        // Ear Training & Critical Listening Lab — pinned, right of tools/glossary.
-        { kind: 'lab', id: 'lab' },
         ...courseCards,
         ...(otherCount > 0 ? [{ kind: 'more' as const, id: 'more' as const, count: otherCount }] : []),
       ]);
@@ -833,7 +836,9 @@ export function CourseSelectionScreen() {
     // __DEV__-bypassed `caps` (which forces academy on in dev). When a
     // subscription expires (lapsed) Home reverts to the default automatically.
     if (entitlement === 'academy' && (homeGs.length > 0 || homeBundleKeys.length > 0)) {
-      const fixed = cards.filter((c) => c.kind === 'tools' || c.kind === 'glossary');
+      // Pinned head cards survive the custom deck: Lab (far left, owner request
+      // 2026-07-26) + Tools + Glossary, in deck order.
+      const fixed = cards.filter((c) => c.kind === 'lab' || c.kind === 'tools' || c.kind === 'glossary');
       const topicCards: Card[] = homeGs.map((gs) => ({
         kind: 'homeTopic',
         id: `home-${gs}`,
@@ -881,8 +886,9 @@ export function CourseSelectionScreen() {
   // card instead (user request 2026-07-24). Keyed on `cards` + the default so it
   // fires on focus/reload and when the choice changes.
   useEffect(() => {
-    if (!displayDeck || displayDeck.length <= GLOSSARY_IDX) return;
-    let target = GLOSSARY_IDX;
+    if (!displayDeck || displayDeck.length === 0) return;
+    // Default landing = the Glossary card, wherever it sits in the deck.
+    let target = Math.max(0, displayDeck.findIndex((c) => c.kind === 'glossary'));
     if (defaultHomeGs != null) {
       const i = displayDeck.findIndex((c) => c.id === `home-${defaultHomeGs}`);
       if (i >= 0) target = i;

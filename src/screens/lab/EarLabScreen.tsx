@@ -100,7 +100,7 @@ export function EarLabScreen({ navigation }: Props) {
         </Pressable>
         <View style={{ flexShrink: 1 }}>
           <Text style={styles.title}>AUDIO LEARNING LAB</Text>
-          <Text style={styles.subtitle}>Ear Training & Critical Listening</Text>
+          <Text style={styles.subtitle}>Ear Training & Audio Lab</Text>
         </View>
       </View>
 
