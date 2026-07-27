@@ -757,6 +757,39 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     ],
     formula: 'Signal: VCO → VCF → VCA → out. Modulation: ADSR → VCA (always) and optionally → cutoff; LFO → pitch | cutoff | amp; SEQ → pitch + envelope retrigger. f(step) = f₀·2^(semis/12).',
   },
+
+  // ──────────────────────── FOUNDATIONS · Foundations of Sound (2026-07-26) ──
+  foundations: {
+    id: 'foundations',
+    num: 23,
+    name: 'Foundations of Sound',
+    tier: 'T1',
+    tagline: 'Understand what you’re hearing.',
+    whatItIs:
+      'The prerequisite mental model: sound is moving air — molecules repeatedly compressing ' +
+      'and spreading — pictured three ways at once (the speaker that makes it, the air that ' +
+      'carries it, the graph engineers draw of it). Amplitude is the SIZE of the vibration; ' +
+      'everything else in audio builds on this picture.',
+    controls: [
+      { key: 'air', name: 'Air particles', definition: 'What actually exists: molecules rocking back and forth around a home position. The pattern of squeezes travels; the air itself stays put.' },
+      { key: 'pressure_graph', name: 'Pressure graph', definition: 'Pressure at one point plotted over time. It is a GRAPH — not the shape of the sound. Above the zero line = compression, below = rarefaction, zero = atmospheric.' },
+      { key: 'speaker_cone', name: 'Speaker cone', definition: 'The source: electricity → motion → air. Forward strokes compress, backward strokes rarefy.' },
+      { key: 'amplitude', name: 'Amplitude', definition: 'How FAR the vibration travels — bigger swings mean bigger pressure changes mean louder sound. Not the same thing as how FAST it vibrates (that is frequency).' },
+    ],
+    commonMistakes: [
+      'Thinking the wavy line IS the sound — the line is a graph of pressure vs time; nothing in the air is ever shaped like it.',
+      'Thinking air travels from the speaker to your ear — each molecule only oscillates around its home; the PATTERN travels, the medium stays.',
+      'Thinking sound is electricity — the electrical signal is an instruction to a speaker; sound only exists once air is moving.',
+      'Confusing amplitude with frequency — amplitude is the SIZE of the vibration (loudness); frequency is its RATE (pitch). A cone moving farther is louder; moving faster is higher.',
+      'Expecting to “see” real air motion — a 440 Hz cycle lasts ~2.3 ms; every animation of sound is a slowed conceptual model (ours says so on-screen).',
+      'Treating transverse drawings as literal — sound in air is LONGITUDINAL: particles move along the direction of travel, not up and down.',
+    ],
+    proTips: [
+      'Whenever a graph confuses you, translate it back to air: “what are the molecules doing right now?” If you can answer that, the graph is just bookkeeping.',
+      'Watch the three windows and pick one moment: cone forward = dense particles = graph peak. If you can point to all three at once, the model has landed.',
+    ],
+    formula: 'v = f·λ (speed = frequency × wavelength, ~343 m/s in air). Pressure swings above/below atmospheric; amplitude sets their size, frequency their rate.',
+  },
 };
 
 /** Lab lessons in spec order (1..16) — for menus/indexes. */

@@ -38,7 +38,8 @@ export type LabId =
   | 'autotune' // Autotune Lab — pitch correction on the cents grid
   | 'fm' // FM Synth Lab — carrier + modulator, ratio, index, sidebands
   | 'binaural' // Binaural Panner Lab — ITD/ILD localization (simplified model)
-  | 'modular'; // Modular Synth Lab — VCO→VCF→VCA + LFO/ENV/SEQ signal flow
+  | 'modular' // Modular Synth Lab — VCO→VCF→VCA + LFO/ENV/SEQ signal flow
+  | 'foundations'; // Foundations of Sound — the prerequisite mental model
 
 /** Native-engine feasibility tier (v4 MASTER §12) — informational. */
 export type LabTier = 'T1' | 'T2' | 'T3';

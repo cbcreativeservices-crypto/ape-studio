@@ -74,6 +74,20 @@ const EXPANSION_LABS: LabEntry[] = [
 ];
 
 const SECTIONS: LabSection[] = [
+  {
+    // FOUNDATIONS OF SOUND leads the whole lab (owner 2026-07-26): the
+    // prerequisite mental model — placed first, freely open, never gated.
+    title: 'START HERE',
+    note: 'The mental model every other lesson builds on — sound made visible.',
+    entries: [
+      {
+        tag: '★',
+        name: 'Foundations of Sound',
+        blurb: 'Understanding what you’re hearing — air, waves, amplitude + the playground.',
+        route: 'FoundationsCourse',
+      },
+    ],
+  },
   { title: 'THE 16 AUDIO LEARNING LABS', entries: AUDIO_LABS },
   {
     title: 'EXPANSION LABS',

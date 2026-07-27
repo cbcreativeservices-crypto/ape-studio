@@ -33,6 +33,7 @@ export type LabRoute =
   | 'FmLab'
   | 'BinauralLab'
   | 'ModularLab'
+  | 'FoundationsCourse'
   | 'EqLab'
   | 'DelayLab'
   | 'ReverbLab'
@@ -110,6 +111,10 @@ const READY_TERMS_MODULAR = [
   'Synthesizer', 'Synthesis', 'Subtractive Synthesis', 'VCO', 'VCF', 'LFO', 'ADSR',
   'Envelope', 'Sequencer', 'Step Sequencer', 'cutoff frequency', 'Patch', 'Tremolo', 'Vibrato',
 ];
+// Foundations of Sound (2026-07-26, course MVP = Modules 1–4). DB-verified;
+// only what the MVP genuinely teaches TODAY — 'Frequency' and 'Loudness' wait
+// for Modules 5 and 9 (honesty rule: link when taught, never before).
+const READY_TERMS_FOUNDATIONS = ['Sound Wave', 'Rarefaction', 'Amplitude'];
 
 // Effect labs LIVE (2026-07-26, the 12 FxLab screens over the v6 effects path).
 // DB-verified terms only; each is genuinely taught by its lab's controls +
@@ -160,6 +165,9 @@ const READY: Record<string, LearningProfile> = Object.fromEntries([
   ),
   ...READY_TERMS_MODULAR.map(
     (t) => [normTerm(t), { lab: 'modular', actions: launch('ModularLab') } as LearningProfile] as const,
+  ),
+  ...READY_TERMS_FOUNDATIONS.map(
+    (t) => [normTerm(t), { lab: 'foundations', actions: launch('FoundationsCourse') } as LearningProfile] as const,
   ),
 ]);
 
