@@ -43,6 +43,7 @@ import {
   ACTION_LABELS,
   type GlossaryAction,
 } from '../../features/glossary/learningProfiles';
+import { getLabLesson } from '../../features/lab/guidedLessons';
 import type { StudyStackParamList } from '../../navigation/types';
 
 /** Small framed-image glyph — marks a term that has a media element. */
@@ -346,6 +347,14 @@ function TermDetails({
   const linkable = selfId != null && index != null && onLink != null;
   // Audio-lab action row — ONLY for terms whose lab link is functional today.
   const labProfile = onLabAction ? getLearningProfile(term) : null;
+  // Lab-lesson Common Mistakes (roadmap 2026-07-26): for a term genuinely taught
+  // by a live lab, surface that lab's authored Common-Mistakes list from the
+  // guided-lesson registry. Client-authored + always available (NOT the
+  // academy-gated DB `common_mistakes` below), so it's honest to show for free.
+  const labLesson = labProfile ? getLabLesson(labProfile.lab) : null;
+  const labMistakesText = labLesson?.commonMistakes?.length
+    ? labLesson.commonMistakes.map((s) => `• ${s}`).join('\n')
+    : null;
   const mistakesText = d.common_mistakes?.length
     ? d.common_mistakes.map((s) => `• ${s}`).join('\n')
     : null;
@@ -376,6 +385,16 @@ function TermDetails({
               </Pressable>
             ))}
           </View>
+        </View>
+      ) : null}
+      {/* LAB COMMON MISTAKES (roadmap 2026-07-26) — the linked lab's authored
+          Common-Mistakes list, shown for lab-taught terms only. Distinct from the
+          entitlement-gated DB mistakes section below (this is free, client
+          content), so the eyebrow names its source lab. */}
+      {labMistakesText && labLesson ? (
+        <View style={styles.detailSection}>
+          <Text style={styles.detailEyebrow}>COMMON MISTAKES · {labLesson.name.toUpperCase()} LAB</Text>
+          <Text style={styles.detailBody}>{labMistakesText}</Text>
         </View>
       ) : null}
       {linkable && firstText ? (
