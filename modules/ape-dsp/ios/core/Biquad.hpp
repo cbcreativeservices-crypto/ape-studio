@@ -78,6 +78,72 @@ struct Biquad {
     const double Q = 0.70710678118654752440;  // Butterworth
     return fromAnalog(1.0, 0.0, 0.0, 1.0, w / Q, w * w, fs);
   }
+
+  // ---- RBJ Audio-EQ Cookbook designs (for the EQ lab / effect chain) --------
+  // All bilinear, a0-normalized. f0 in Hz, q dimensionless, gainDb for the
+  // peaking/shelf types. Standard formulas (Robert Bristow-Johnson).
+  static constexpr double kPiC = 3.14159265358979323846;
+
+  // Peaking (bell) EQ: boost/cut a band around f0.
+  static Biquad peaking(double f0, double q, double gainDb, double fs) {
+    const double A = std::pow(10.0, gainDb / 40.0);
+    const double w = 2.0 * kPiC * f0 / fs, cw = std::cos(w), sw = std::sin(w);
+    const double alpha = sw / (2.0 * q);
+    const double a0 = 1.0 + alpha / A;
+    Biquad b;
+    b.b0 = (1.0 + alpha * A) / a0;
+    b.b1 = (-2.0 * cw) / a0;
+    b.b2 = (1.0 - alpha * A) / a0;
+    b.a1 = (-2.0 * cw) / a0;
+    b.a2 = (1.0 - alpha / A) / a0;
+    return b;
+  }
+
+  // Low-shelf: boost/cut everything below ~f0.
+  static Biquad lowShelf(double f0, double q, double gainDb, double fs) {
+    const double A = std::pow(10.0, gainDb / 40.0);
+    const double w = 2.0 * kPiC * f0 / fs, cw = std::cos(w), sw = std::sin(w);
+    const double alpha = sw / (2.0 * q);
+    const double tsa = 2.0 * std::sqrt(A) * alpha;
+    const double a0 = (A + 1.0) + (A - 1.0) * cw + tsa;
+    Biquad b;
+    b.b0 = A * ((A + 1.0) - (A - 1.0) * cw + tsa) / a0;
+    b.b1 = 2.0 * A * ((A - 1.0) - (A + 1.0) * cw) / a0;
+    b.b2 = A * ((A + 1.0) - (A - 1.0) * cw - tsa) / a0;
+    b.a1 = -2.0 * ((A - 1.0) + (A + 1.0) * cw) / a0;
+    b.a2 = ((A + 1.0) + (A - 1.0) * cw - tsa) / a0;
+    return b;
+  }
+
+  // High-shelf: boost/cut everything above ~f0.
+  static Biquad highShelf(double f0, double q, double gainDb, double fs) {
+    const double A = std::pow(10.0, gainDb / 40.0);
+    const double w = 2.0 * kPiC * f0 / fs, cw = std::cos(w), sw = std::sin(w);
+    const double alpha = sw / (2.0 * q);
+    const double tsa = 2.0 * std::sqrt(A) * alpha;
+    const double a0 = (A + 1.0) - (A - 1.0) * cw + tsa;
+    Biquad b;
+    b.b0 = A * ((A + 1.0) + (A - 1.0) * cw + tsa) / a0;
+    b.b1 = -2.0 * A * ((A - 1.0) + (A + 1.0) * cw) / a0;
+    b.b2 = A * ((A + 1.0) + (A - 1.0) * cw - tsa) / a0;
+    b.a1 = 2.0 * ((A - 1.0) - (A + 1.0) * cw) / a0;
+    b.a2 = ((A + 1.0) - (A - 1.0) * cw - tsa) / a0;
+    return b;
+  }
+
+  // 2nd-order low-pass (RBJ; Q selectable, unlike the Butterworth highpass above).
+  static Biquad lowpass(double f0, double q, double fs) {
+    const double w = 2.0 * kPiC * f0 / fs, cw = std::cos(w), sw = std::sin(w);
+    const double alpha = sw / (2.0 * q);
+    const double a0 = 1.0 + alpha;
+    Biquad b;
+    b.b0 = (1.0 - cw) / 2.0 / a0;
+    b.b1 = (1.0 - cw) / a0;
+    b.b2 = (1.0 - cw) / 2.0 / a0;
+    b.a1 = (-2.0 * cw) / a0;
+    b.a2 = (1.0 - alpha) / a0;
+    return b;
+  }
 };
 
 // A cascade of biquads with an output gain.

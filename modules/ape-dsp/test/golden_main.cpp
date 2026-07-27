@@ -12,6 +12,7 @@
 
 #include "../ios/core/Ballistics.hpp"
 #include "../ios/core/Biquad.hpp"
+#include "../ios/core/Effects.hpp"
 #include "../ios/core/EngineHub.hpp"
 #include "../ios/core/Fft.hpp"
 #include "../ios/core/Generator.hpp"
@@ -744,6 +745,59 @@ int main() {
            return s / (mono.size() - skip);
          }()),
          -23.01, 0.3);
+  }
+
+  // ---- 11) Effects path — RBJ EQ designs + EqEffect end-to-end ------------
+  {
+    auto gainAt = [&](const Biquad& bq, double f) {
+      BiquadCascade c;
+      c.sections.push_back(bq);
+      return db(c.measureGainAt(f, fs));
+    };
+    // 11a. Filter DESIGNS (RBJ cookbook).
+    near("EQ peaking +6 dB @1 kHz (at band)", gainAt(Biquad::peaking(1000.0, 1.0, 6.0, fs), 1000.0), 6.0, 0.3);
+    near("EQ peaking +6 dB @1 kHz (far, 100 Hz)", gainAt(Biquad::peaking(1000.0, 1.0, 6.0, fs), 100.0), 0.0, 0.4);
+    near("EQ low-shelf +6 dB @200 (deep 40 Hz)", gainAt(Biquad::lowShelf(200.0, 0.707, 6.0, fs), 40.0), 6.0, 0.5);
+    near("EQ low-shelf +6 dB @200 (high 8 kHz ~0)", gainAt(Biquad::lowShelf(200.0, 0.707, 6.0, fs), 8000.0), 0.0, 0.3);
+    near("EQ high-shelf +6 dB @2 kHz (10 kHz)", gainAt(Biquad::highShelf(2000.0, 0.707, 6.0, fs), 10000.0), 6.0, 0.5);
+    near("EQ high-shelf +6 dB @2 kHz (100 Hz ~0)", gainAt(Biquad::highShelf(2000.0, 0.707, 6.0, fs), 100.0), 0.0, 0.3);
+    near("EQ low-pass -3 dB @1 kHz corner", gainAt(Biquad::lowpass(1000.0, 0.707, fs), 1000.0), -3.0, 0.4);
+    truthy("EQ low-pass rejects highs (8 kHz <= -30 dB)", gainAt(Biquad::lowpass(1000.0, 0.707, fs), 8000.0) < -30.0);
+
+    // 11b. EqEffect end-to-end (stereo): a +6 dB peak at 1 kHz lifts a 1 kHz
+    //      tone, leaves 100 Hz alone, and bypass is exact passthrough.
+    auto eqGainDb = [&](EqEffect& eq, double f) {
+      const size_t settle = static_cast<size_t>(fs * 0.2), meas = static_cast<size_t>(fs * 0.3);
+      const double w = 2.0 * 3.14159265358979323846 * f / fs;
+      std::vector<float> L(settle + meas), R(settle + meas);
+      for (size_t i = 0; i < L.size(); ++i) L[i] = R[i] = (float)std::sin(w * i);
+      eq.processStereo(L.data(), R.data(), (uint32_t)L.size());
+      double si = 0.0, so = 0.0;
+      for (size_t i = settle; i < L.size(); ++i) {
+        const double x = std::sin(w * i);
+        si += x * x;
+        so += (double)L[i] * L[i];
+      }
+      return 10.0 * std::log10((so + 1e-30) / (si + 1e-30));
+    };
+    EqEffect eq;
+    eq.configure(fs);
+    eq.setEnabled(true);
+    eq.setBand(0, EqEffect::Peak, 1000.0, 1.0, 6.0);
+    near("EqEffect +6 dB peak lifts 1 kHz", eqGainDb(eq, 1000.0), 6.0, 0.5);
+    near("EqEffect +6 dB peak leaves 100 Hz", eqGainDb(eq, 100.0), 0.0, 0.5);
+
+    EqEffect eqBypass;
+    eqBypass.configure(fs);
+    eqBypass.setBand(0, EqEffect::Peak, 1000.0, 1.0, 6.0);  // configured but disabled
+    truthy("EqEffect disabled = exact passthrough", [&] {
+      std::vector<float> L(256), R(256), Lin(256);
+      for (size_t i = 0; i < L.size(); ++i) L[i] = Lin[i] = R[i] = (float)std::sin(0.1 * i);
+      eqBypass.processStereo(L.data(), R.data(), (uint32_t)L.size());
+      for (size_t i = 0; i < L.size(); ++i)
+        if (std::fabs(L[i] - Lin[i]) > 1e-7f) return false;
+      return true;
+    }());
   }
 
   std::printf("\n==== GOLDEN RESULT: %d passed, %d failed ====\n", g_pass, g_fail);
