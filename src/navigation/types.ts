@@ -166,6 +166,8 @@ export type RootStackParamList = {
   /** Mic & Speaker labs (owner 2026-07-29) — visual-first, no audio playback. */
   MicLab: undefined;
   SpeakerLab: undefined;
+  /** Vacuum Tube Fundamentals (owner 2026-07-29) — visual-first, no audio playback. */
+  TubeLab: undefined;
   /** FOUNDATIONS OF SOUND (owner 2026-07-26) — the FIRST module in the Ear
    *  Training & Audio Lab: a stepped teaching course (Modules 1–4 MVP) + the
    *  free Playground sandbox. Skia-animated (pre-Skia clients degrade

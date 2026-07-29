@@ -106,6 +106,15 @@ const SECTIONS: LabSection[] = [
     ],
   },
   {
+    // Vacuum Tube lab (owner 2026-07-29): same visual-first launch contract
+    // as the Mic & Speaker labs — interactive animation, audio demos later.
+    title: 'ELECTRONICS LAB',
+    note: 'Inside the gear — visual-first, audio demos coming later.',
+    entries: [
+      { tag: '24', name: 'Vacuum Tube Fundamentals', blurb: 'How a tube amplifies by controlling electron flow — with an Electron View that shows the invisible.', route: 'TubeLab' },
+    ],
+  },
+  {
     title: 'SIGNAL CHAIN BUILDER',
     note: 'The capstone — assemble a full chain and see per-module and cumulative effect.',
     entries: [

@@ -962,6 +962,50 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     ],
     formula: 'Conceptual coverage: level ∝ (within-dispersion gain) × 1/dⁿ, classified GREEN/YELLOW/RED/GRAY. Direct level falls ~6 dB per doubling of distance — height + tilt equalize front-to-back by geometry.',
   },
+
+  // ──────────────── ELECTRONICS · Vacuum Tube Fundamentals (2026-07-29) ──
+  tube: {
+    id: 'tube',
+    num: 26,
+    name: 'Vacuum Tube Fundamentals',
+    tier: 'T1',
+    tagline: 'How a tube amplifies by controlling electron flow.',
+    whatItIs:
+      'A visual-first lab on what actually happens inside a vacuum tube: the parts, the ' +
+      'warm-up, the electron stream, and the control grid — a whisper of voltage gating a ' +
+      'river of current, which IS amplification. Then bias, saturation, tube types, and why ' +
+      'the classic bottles matter. The Electron View toggle connects the glowing glass on ' +
+      'the outside to the invisible physics inside. Every drawing is a schematic illustrative ' +
+      'model, never measured tube data; audio demonstrations arrive in a future release.',
+    controls: [
+      { key: 'electron_view', name: 'Electron View toggle', definition: 'Two mental models of the SAME tube. PHYSICAL VIEW: what you can see — glass, metal electrodes, the filament glow. ⚡ ELECTRON VIEW: what you cannot — the blue space-charge cloud, the streaming electrons, and the grid’s repelling field. Flip it often; connecting the two views is the whole game.' },
+      { key: 'cutaway', name: 'The cutaway (what the display shows)', definition: 'A schematic side cross-section, drawn as a pentode (the fullest version). From the center out: heater filament → cathode sleeve → control grid → screen grid → suppressor grid → plate — all sealed in a vacuum inside the glass. Tap a part label to highlight it and read its job.' },
+      { key: 'warm_up', name: 'Warm-up (electron flow)', definition: 'The slider walks the start-up story: the heater glows → the hot cathode BOILS OFF electrons (thermionic emission) → they loiter as an invisible cloud (space charge) → the positive plate pulls them across the vacuum → current flows. No heat, no electrons, no sound — that is why tube gear needs warm-up time.' },
+      { key: 'grid_voltage', name: 'Grid voltage', definition: 'The heart of the lab. The control grid is a sparse wire spiral held slightly NEGATIVE: its field pushes electrons back toward the cathode. Make it more negative and the stream starves; less negative and the stream swells. A tiny voltage change controlling a large current is the definition of amplification.' },
+      { key: 'amplification', name: 'Signal amplification (what the display shows)', definition: 'A small waveform wiggles the grid; the plate delivers a LARGE copy. Drawn ~×7 and INVERTED — the flip is real tube behavior: more input drives more current, which drags the plate voltage DOWN. Every tube preamp, guitar amp and compressor is this one picture repeated.' },
+      { key: 'high_voltage', name: 'Supply voltage (B+)', definition: 'Compare a small supply against a proper high-voltage B+ rail. Weak plate voltage barely attracts the cloud — few, slow electrons and no headroom. Hundreds of volts pull a dense, fast stream with room for the signal to swing. It is also why tube chassis deserve respect: capacitors store that voltage after power-down.' },
+      { key: 'tube_types', name: 'Tube types (triode · tetrode · pentode)', definition: 'One grid = TRIODE: simple and linear, but the plate’s field reaches back through the grid. Adding the SCREEN grid (tetrode) shields it for higher gain — but electrons knock SECONDARY electrons off the plate, which the screen steals. Adding the SUPPRESSOR grid (pentode) turns those strays back. Each grid fixes the last one’s problem.' },
+      { key: 'bias', name: 'Bias', definition: 'The idle point — where the tube rests with no signal, set on the transfer curve. Too negative: the stream is already cut off and the bottom of the wave flatlines (CUTOFF). Correct: the whole swing rides the straight middle (LINEAR). Too positive: the top slams into the ceiling (SATURATION). “Biasing your amp” means parking this dot mid-curve.' },
+      { key: 'saturation', name: 'Drive & saturation', definition: 'Push the signal past the straight region and the curve ROUNDS the peaks instead of chopping them — SOFT clipping. Rounding compresses the loudest moments (tube “give”) and adds harmonics related to the note, which the ear hears as warmth and grit rather than fizz. That gentle bend is most of what “tube sound” means.' },
+      { key: 'tube_vs_transistor', name: 'Tube vs transistor', definition: 'Same job, different physics. Tube: electrons crossing a VACUUM, gated by a grid’s field, at hundreds of volts. Transistor: charge carriers crossing SEMICONDUCTOR junctions, gated by a tiny base current, at a few volts. The transistor won on size, cost and reliability; the tube survives wherever its soft overload IS the sound.' },
+      { key: 'classic_tubes', name: 'Classic audio tubes', definition: 'Eight bottles cover most of audio history. Preamp (voltage) tubes: 12AX7 high gain, 12AU7 clean, 12AT7 in between. Power (current) tubes: EL34 British crunch, EL84 chime, 6L6GC American clean, KT88 and 6550 big clean power. Small bottles amplify voltage up front; big bottles move current into speakers.' },
+    ],
+    commonMistakes: [
+      'Memorizing cathode/grid/plate as vocabulary without the picture — the lab exists because the parts only make sense as a path electrons travel.',
+      'Thinking the grid physically blocks electrons like a shutter — it is a sparse spiral; its FIELD does the gating, not the wire.',
+      'Expecting a tube amp to sound right the instant it is switched on — no warm-up, no emission, no current.',
+      'Treating bias as tweaky folklore — it is just where the idle point sits on the curve, and mis-setting it kills one side of the wave first.',
+      'Confusing tube saturation with hard clipping — the rounded shoulder (compression + related harmonics) is the opposite of a chopped-off square edge.',
+      'Assuming “more voltage = louder” — B+ sets the attraction and the headroom; loudness is the signal swinging within it.',
+      'Opening a tube amp chassis casually — filter capacitors hold hundreds of volts long after power-down.',
+      'Arguing tube vs transistor as better/worse — they are different physics with different failure sounds; pick by the job.',
+    ],
+    proTips: [
+      'Use the Electron View on the grid slider and watch the field arrows grow as the grid goes negative — once you SEE the field gating the stream, the rest of tube lore falls into place.',
+      'Map the sections onto a real amp: preamp tubes (12AX7) live where the signal is small, power tubes (EL34/6L6) where it drives the speaker — same physics, different bottle size.',
+    ],
+    formula: 'Illustrative transfer curve: plate current ≈ (tanh(4.2·(V_grid − 0.52)) + 1)/2, normalized — cutoff floor, linear middle, saturation ceiling. Drawn gain ~×7, output inverted (real tube behavior).',
+  },
 };
 
 /** Lab lessons in spec order (1..16) — for menus/indexes. */

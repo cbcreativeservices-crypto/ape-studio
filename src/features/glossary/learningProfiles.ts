@@ -47,7 +47,8 @@ export type LabRoute =
   | 'PhaseLab'
   | 'StereoLab'
   | 'MicLab'
-  | 'SpeakerLab';
+  | 'SpeakerLab'
+  | 'TubeLab';
 
 /** The four glossary actions (v4 MASTER §6.1). */
 export type GlossaryActionKind = 'hear_it' | 'experiment' | 'watch_it' | 'launch_lab';
@@ -133,6 +134,22 @@ const READY_TERMS_SPEAKER = [
   'Loudspeaker', 'Throw',
 ];
 
+// Vacuum Tube lab LIVE (2026-07-29, visual-first). DB-verified 2026-07-29;
+// only what the lab genuinely teaches. 'Clipping'/'Saturation'/'Distortion'
+// stay with DistortionLab (one profile per term); 'Soft Clipping' comes here —
+// the SATURATE section teaches exactly that curve. 'Grid' is the DAW timing
+// grid in the glossary (not linked); 'Transistor' and 'Bias point' have
+// (pending) definitions today — link when authored. Circuit-level terms
+// (Cathode bias, Grid stopper, Plate resistor, Rectifier tube, Tube rolling…)
+// stay unlinked: the lab teaches device physics, not circuit design.
+const READY_TERMS_TUBE = [
+  'Vacuum tube', 'Valve', 'Triode', 'Tetrode', 'Pentode', 'Cathode', 'Control grid',
+  'Screen grid', 'Suppressor grid', 'Anode / Plate', 'Heater', 'Filament', 'Emission',
+  'Tube warm-up', 'Bias', 'Operating point', 'Soft Clipping', 'B+ supply', 'Plate Voltage',
+  'Plate voltage / B+', 'Power tube', 'Small-signal tube', '12AX7 / ECC83', '12AU7 / ECC82',
+  '12AT7 / ECC81', 'EL34', 'EL84 / 6BQ5', '6L6', 'KT88', '6550',
+];
+
 // Effect labs LIVE (2026-07-26, the 12 FxLab screens over the v6 effects path).
 // DB-verified terms only; each is genuinely taught by its lab's controls +
 // hero visual + lesson. Threshold/Attack/Release map to Compression (the
@@ -191,6 +208,9 @@ const READY: Record<string, LearningProfile> = Object.fromEntries([
   ),
   ...READY_TERMS_SPEAKER.map(
     (t) => [normTerm(t), { lab: 'speaker', actions: launch('SpeakerLab') } as LearningProfile] as const,
+  ),
+  ...READY_TERMS_TUBE.map(
+    (t) => [normTerm(t), { lab: 'tube', actions: launch('TubeLab') } as LearningProfile] as const,
   ),
 ]);
 
