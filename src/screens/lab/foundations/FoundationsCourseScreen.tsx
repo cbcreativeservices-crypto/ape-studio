@@ -601,7 +601,7 @@ function M7Panel({ viz, width, tone, focused, help }: PanelProps) {
 
 // ─── M8 — Pitch vs frequency: the octave spiral ─────────────────────────────
 
-function M8Panel({ viz, width, tone, help }: PanelProps) {
+function M8Panel({ viz, width, tone, focused, help }: PanelProps) {
   const [f, setF] = useState(220);
   const fRef = useRef(220);
   const toneRef = useRef(tone);
@@ -655,8 +655,8 @@ function M8Panel({ viz, width, tone, help }: PanelProps) {
   const octAbove = Math.log2(f / 110);
   return (
     <View style={styles.panelCard}>
-      <View {...pan.panHandlers}>{viz ? <viz.OctaveSpiralView width={width} freqHz={f} /> : <VizUnavailableCard />}</View>
-      <AnalyticBadge text="ANALYTIC — THE SPIRAL IS HOW HEARING MAPS FREQUENCY (log), DRAWN EXACTLY" />
+      <View {...pan.panHandlers}>{viz ? <M8Viz viz={viz} width={width} f={f} running={focused} /> : <VizUnavailableCard />}</View>
+      <AnalyticBadge text="ANALYTIC — THE SPIRAL IS HOW HEARING MAPS FREQUENCY (log), DRAWN EXACTLY · THE ORBIT LAPS ONCE PER CYCLE (SLOWED)" />
       <DisplayGuideButton onPress={() => help('octave_spiral')} />
       <Text style={styles.caption}>
         Drag AROUND the spiral to glide the pitch — one full turn is one octave. The dots on the
@@ -683,10 +683,14 @@ function M8Panel({ viz, width, tone, help }: PanelProps) {
     </View>
   );
 }
+function M8Viz({ viz, width, f, running }: { viz: VizModule; width: number; f: number; running: boolean }) {
+  const clock = viz.useVizClock(running);
+  return <viz.OctaveSpiralView clock={clock} width={width} freqHz={f} visHz={visHzFor(f)} />;
+}
 
 // ─── M9 — Loudness vs amplitude: the ear-sensitivity curve ──────────────────
 
-function M9Panel({ viz, width, tone, help }: PanelProps) {
+function M9Panel({ viz, width, tone, focused, help }: PanelProps) {
   const [pos, setPos] = useState(Math.log(1000 / 80) / Math.log(8000 / 80)); // start at 1 kHz
   const [lvl, setLvl] = useState(0.65); // −44..−20 dBFS
   const f = Math.round(80 * Math.pow(8000 / 80, pos));
@@ -694,8 +698,8 @@ function M9Panel({ viz, width, tone, help }: PanelProps) {
   const sens = viz ? viz.earSensDb(f) : null;
   return (
     <View style={styles.panelCard}>
-      {viz ? <viz.EqualLoudnessView width={width} freqHz={f} /> : <VizUnavailableCard />}
-      <AnalyticBadge text="SIMPLIFIED SENSITIVITY CURVE — ILLUSTRATION INSPIRED BY EQUAL-LOUDNESS CONTOURS, NOT MEASURED DATA" />
+      {viz ? <M9Viz viz={viz} width={width} f={f} running={focused} /> : <VizUnavailableCard />}
+      <AnalyticBadge text="SIMPLIFIED SENSITIVITY CURVE — ILLUSTRATION INSPIRED BY EQUAL-LOUDNESS CONTOURS, NOT MEASURED DATA · BOTTOM STRIP = THE SIGNAL, AMPLITUDE CONSTANT (SLOWED)" />
       <DisplayGuideButton onPress={() => help('loudness_curve')} />
       <DragSlider
         value={pos}
@@ -741,15 +745,19 @@ function M9Panel({ viz, width, tone, help }: PanelProps) {
     </View>
   );
 }
+function M9Viz({ viz, width, f, running }: { viz: VizModule; width: number; f: number; running: boolean }) {
+  const clock = viz.useVizClock(running);
+  return <viz.EqualLoudnessView clock={clock} width={width} freqHz={f} visHz={visHzFor(f)} />;
+}
 
 // ─── M10 — Phase: two identical waves + their sum ───────────────────────────
 
-function M10Panel({ viz, width, tone, help }: PanelProps) {
+function M10Panel({ viz, width, tone, focused, help }: PanelProps) {
   const [phase, setPhase] = useState(0);
   return (
     <View style={styles.panelCard}>
-      {viz ? <viz.PhaseOverlayView width={width} phaseDeg={phase} /> : <VizUnavailableCard />}
-      <AnalyticBadge text="DRAWN FROM THE MATH — THE BOTTOM LINE IS THE EXACT SUM OF THE TWO WAVES" />
+      {viz ? <M10Viz viz={viz} width={width} phase={phase} running={focused} /> : <VizUnavailableCard />}
+      <AnalyticBadge text="DRAWN FROM THE MATH — THE BOTTOM LINE IS THE EXACT SUM OF THE TWO TRAVELING WAVES (SLOWED)" />
       <DisplayGuideButton onPress={() => help('phase_sum')} />
       <DragSlider
         value={phase / 360}
@@ -792,6 +800,10 @@ function M10Panel({ viz, width, tone, help }: PanelProps) {
     </View>
   );
 }
+function M10Viz({ viz, width, phase, running }: { viz: VizModule; width: number; phase: number; running: boolean }) {
+  const clock = viz.useVizClock(running);
+  return <viz.PhaseOverlayView clock={clock} width={width} phaseDeg={phase} visHz={visHzFor(220)} />;
+}
 
 // ─── M11 — Harmonics: build a tone layer by layer ───────────────────────────
 
@@ -806,7 +818,7 @@ function m11Amps(on: boolean[]): number[] {
   return Array.from({ length: 12 }, (_, i) => (i < 6 && on[i] ? 1 / (i + 1) : 0));
 }
 
-function M11Panel({ viz, width, tone, help }: PanelProps) {
+function M11Panel({ viz, width, tone, focused, help }: PanelProps) {
   const [on, setOn] = useState<boolean[]>([true, false, false, false, false, false]);
   const apply = (next: boolean[]) => {
     setOn(next);
@@ -814,8 +826,8 @@ function M11Panel({ viz, width, tone, help }: PanelProps) {
   };
   return (
     <View style={styles.panelCard}>
-      {viz ? <viz.HarmonicStackerView width={width} on={on} /> : <VizUnavailableCard />}
-      <AnalyticBadge text="LAYERS AND SUM DRAWN FROM THE SAME RECIPE THE ENGINE PLAYS (1/n weights)" />
+      {viz ? <M11Viz viz={viz} width={width} on={on} running={focused} /> : <VizUnavailableCard />}
+      <AnalyticBadge text="LAYERS AND SUM DRAWN FROM THE SAME RECIPE THE ENGINE PLAYS (1/n weights) · PHASE-LOCKED MOTION, SLOWED — THE SUM'S SHAPE GLIDES WITHOUT CHANGING" />
       <DisplayGuideButton onPress={() => help('harmonic_stack')} />
       <View style={styles.chipRow}>
         {on.map((v, i) => (
@@ -865,6 +877,10 @@ function M11Panel({ viz, width, tone, help }: PanelProps) {
     </View>
   );
 }
+function M11Viz({ viz, width, on, running }: { viz: VizModule; width: number; on: boolean[]; running: boolean }) {
+  const clock = viz.useVizClock(running);
+  return <viz.HarmonicStackerView clock={clock} width={width} on={on} visHz={visHzFor(M11_F0)} />;
+}
 
 // ─── M12 — The Fourier principle: unmix a wave into its recipe ──────────────
 
@@ -874,14 +890,14 @@ const M12_RECIPES: { key: string; label: string; amps: number[] }[] = [
   { key: 'bright', label: 'BRIGHT (all)', amps: m11Amps([true, true, true, true, true, true]) },
 ];
 
-function M12Panel({ viz, width, tone, help }: PanelProps) {
+function M12Panel({ viz, width, tone, focused, help }: PanelProps) {
   const [recipeIdx, setRecipeIdx] = useState(2);
   const [morph, setMorph] = useState(0);
   const recipe = M12_RECIPES[recipeIdx];
   return (
     <View style={styles.panelCard}>
-      {viz ? <viz.FourierLensView width={width} amps={recipe.amps} morph={morph} /> : <VizUnavailableCard />}
-      <AnalyticBadge text="ANALYTIC DECOMPOSITION OF THE MODEL — THE MEASURED VERSION LIVES IN THE RTA & SPECTROGRAM" />
+      {viz ? <M12Viz viz={viz} width={width} amps={recipe.amps} morph={morph} running={focused} /> : <VizUnavailableCard />}
+      <AnalyticBadge text="ANALYTIC DECOMPOSITION OF THE MODEL — WAVE & INGREDIENTS TRAVEL (SLOWED); THE SPECTRUM HOLDS STILL. THE MEASURED VERSION LIVES IN THE RTA & SPECTROGRAM" />
       <DisplayGuideButton onPress={() => help('fourier_morph')} />
       <View style={styles.chipRow}>
         {M12_RECIPES.map((r, i) => (
@@ -921,6 +937,10 @@ function M12Panel({ viz, width, tone, help }: PanelProps) {
     </View>
   );
 }
+function M12Viz({ viz, width, amps, morph, running }: { viz: VizModule; width: number; amps: number[]; morph: number; running: boolean }) {
+  const clock = viz.useVizClock(running);
+  return <viz.FourierLensView clock={clock} width={width} amps={amps} morph={morph} visHz={visHzFor(M11_F0)} />;
+}
 
 // ─── M13 — Why measurement tools exist: concept → the REAL tool ─────────────
 
@@ -936,9 +956,15 @@ const M13_TOOLS: { q: string; name: string; blurb: string; route: ToolRoute }[] 
   { q: 'WHAT DO I TEST WITH?', name: 'Signal Generator', blurb: 'Known tones, noise, sweeps and clicks — because a known source exposes the system.', route: 'SignalGen' },
 ];
 
-function M13Panel({ help, onTool }: PanelProps & { onTool: (r: ToolRoute) => void }) {
+function M13Panel({ viz, width, focused, help, onTool }: PanelProps & { onTool: (r: ToolRoute) => void }) {
   return (
     <View style={styles.panelCard}>
+      {viz ? (
+        <>
+          <M13Viz viz={viz} width={width} running={focused} />
+          <ConceptBadge extra="SOURCE → AIR → MIC — the chain every tool below listens to" />
+        </>
+      ) : null}
       <DisplayGuideButton onPress={() => help('tool_map')} />
       {M13_TOOLS.map((t) => (
         <Pressable
@@ -965,6 +991,10 @@ function M13Panel({ help, onTool }: PanelProps & { onTool: (r: ToolRoute) => voi
     </View>
   );
 }
+function M13Viz({ viz, width, running }: { viz: VizModule; width: number; running: boolean }) {
+  const clock = viz.useVizClock(running);
+  return <viz.SignalPathView clock={clock} width={width} />;
+}
 
 // ─── M14 — Graduation: the playground IS the module ─────────────────────────
 
@@ -984,9 +1014,12 @@ const M14_RECAP = [
   '13 · Tools measure what ears estimate',
 ];
 
-function M14Panel({ onPlayground }: { onPlayground: () => void }) {
+function M14Panel({ viz, width, focused, onPlayground }: { viz: VizModule | null; width: number; focused: boolean; onPlayground: () => void }) {
   return (
     <View style={styles.panelCard}>
+      {/* One last look at the centerpiece — the model you can now read. */}
+      {viz ? <viz.ThreeWindowView width={width} visHz={visHzFor(220)} amp={0.75} running={focused} /> : null}
+      {viz ? <ConceptBadge extra="THE WHOLE MODEL, ONE LAST LOOK" /> : null}
       <Text style={styles.comingHead}>YOU BUILT THE WHOLE MODEL</Text>
       {M14_RECAP.map((c) => (
         <Text key={c} style={styles.comingRow}>
@@ -1282,7 +1315,9 @@ const STEPS: Step[] = [
       'Thirteen modules, one picture: a speaker moves, air squeezes and stretches, a graph describes it, and every property — size, rate, spacing, alignment, recipe — is now a knob you understand.',
       'The final module is not a lesson. It is the whole course on one screen: every control driving every view at once. Go break things.',
     ],
-    Panel: ({ onPlayground }) => <M14Panel onPlayground={onPlayground} />,
+    Panel: ({ viz, width, focused, onPlayground }) => (
+      <M14Panel viz={viz} width={width} focused={focused} onPlayground={onPlayground} />
+    ),
   },
 ];
 
