@@ -59,12 +59,21 @@ const POP_MODES: { key: 'none' | 'pop' | 'foam' | 'blimp'; label: string; pass: 
   { key: 'blimp', label: 'SHOTGUN WINDSHIELD', pass: 0.12, note: 'A full basket creates still air around the mic — the outdoor standard for wind.' },
 ];
 
+// Grip zones (owner ruling 2026-07-29), bottom of the mic → grille:
+// low handle = acceptable-neutral · upper body just BELOW the grille = the
+// CORRECT showcase zone · fingers AT the grille rim = partial cup (orange) ·
+// over the grille = full cup (red). Zone thresholds live in ZONE_AT below.
 const HAND_POSITIONS: { label: string; pos: number; title: string; note: string; good?: boolean }[] = [
-  { label: 'CORRECT', pos: 0, good: true, title: 'Correct grip ✅', note: 'Hand on the handle, below the grille. Intended cardioid pattern, flat response, maximum feedback rejection — the microphone performs as designed.' },
-  { label: 'NEAR GRILLE', pos: 0.45, title: 'Hand near the grille', note: 'The hand begins to interfere with the acoustic ports: slight pattern distortion, slight coloration, reduced rear rejection.' },
-  { label: 'PARTIAL CUP', pos: 0.7, title: 'Partial cup', note: 'Fingers over part of the grille and side ports: the pattern turns irregular, the response grows peaks and dips, feedback becomes more likely, intelligibility drops.' },
+  { label: 'LOW HANDLE', pos: 0, title: 'Low grip — acceptable', note: 'Hand at the bottom of the handle. The pattern stays intact, so this grip is fine — but it gives up control of the mic, and on a wireless mic this is where the antenna lives (see MISTAKES).' },
+  { label: 'CORRECT', pos: 0.3, good: true, title: 'Correct grip ✅', note: 'Hand on the upper body, just BELOW the grille — the showcased grip. Intended cardioid pattern, flat response, maximum feedback rejection — the microphone performs as designed.' },
+  { label: 'GRILLE RIM', pos: 0.62, title: 'Partial cup — fingers on the rim', note: 'Fingertips touch the grille edge and start shading the acoustic ports: the pattern begins collapsing, the response grows peaks and dips, feedback becomes more likely, intelligibility drops.' },
   { label: 'FULL CUP', pos: 1, title: 'Cupping the mic ❌', note: 'The hand surrounds the grille: the cardioid collapses toward omni, coloration is strong, feedback susceptibility jumps. Covering the acoustic ports prevents the microphone from operating as intended.' },
 ];
+
+/** pos01 → grip zone (must mirror the tint thresholds in viz). */
+function zoneAt(pos: number): (typeof HAND_POSITIONS)[number] {
+  return pos < 0.16 ? HAND_POSITIONS[0] : pos < 0.45 ? HAND_POSITIONS[1] : pos < 0.82 ? HAND_POSITIONS[2] : HAND_POSITIONS[3];
+}
 
 const STEREO_TECHS: { key: 'xy' | 'ortf' | 'ab' | 'ms'; label: string; note: string }[] = [
   { key: 'xy', label: 'XY', note: 'Two cardioids COINCIDENT at ~90°. Stereo comes from level differences only — perfectly mono-compatible, modest width.' },
@@ -141,7 +150,7 @@ function PolarSection({ viz, width, focused, help }: SectionProps) {
       <View {...pan.panHandlers}>
         {viz ? <PolarViz viz={viz} width={width} a={pat.a} b={pat.b} angle={angle} running={focused} /> : <VizUnavailableCard />}
       </View>
-      <IllustrationBadge text="ILLUSTRATIVE POLAR MODEL — r(θ) = |A + B·cosθ|, drawn exactly · drag the green source around the mic" />
+      <IllustrationBadge text="CONCEPTUAL PICKUP FIELD — ILLUSTRATIVE MODEL, NOT A MEASURED POLAR RESPONSE · color = r(θ) = |A + B·cosθ| × 1/d falloff · drag the green source around the mic" />
       <DisplayGuideButton onPress={() => help('polar_pattern')} />
       <View style={styles.chipRow}>
         {PATTERNS.map((p, i) => (
@@ -176,7 +185,7 @@ function DistanceSection({ viz, width, focused, help }: SectionProps) {
   return (
     <View style={styles.panelCard}>
       {viz ? <DistanceViz viz={viz} width={width} d01={d01} running={focused} /> : <VizUnavailableCard />}
-      <IllustrationBadge text="CONCEPTUAL MODEL — wavefronts slowed for visibility; bars are illustrative, not measurements" />
+      <IllustrationBadge text="CONCEPTUAL SOUND FIELD — ILLUSTRATIVE MODEL, NOT A MEASUREMENT · direct energy fading into the room glow; wavefronts slowed for visibility" />
       <DisplayGuideButton onPress={() => help('distance')} />
       <DragSlider
         value={d01}
@@ -215,18 +224,22 @@ const PROX_CHECK: CheckSpec = {
   wrongHint: 'Flip the pattern toggle and watch the curve — which pattern refuses to change?',
 };
 
-function ProximitySection({ viz, width, help }: SectionProps) {
+function ProximitySection({ viz, width, focused, help }: SectionProps) {
   const [distIdx, setDistIdx] = useState(0);
   const [directional, setDirectional] = useState(true);
   const d = PROX_DISTANCES[distIdx];
   return (
     <View style={styles.panelCard}>
+      {/* The approach: watch the mic physically close in on the singer. */}
       {viz ? (
-        <viz.ResponseCurveView width={width} dbAt={(f) => (directional ? viz.proximityDb(f, d.boostDb) : 0)} />
+        <ProxApproachViz viz={viz} width={width} inches={d.inches} boostDb={d.boostDb} directional={directional} running={focused} />
       ) : (
         <VizUnavailableCard />
       )}
-      <IllustrationBadge text="ILLUSTRATIVE RESPONSE — a simplified low shelf; real mics vary by design" />
+      {viz ? (
+        <viz.ResponseCurveView width={width} dbAt={(f) => (directional ? viz.proximityDb(f, d.boostDb) : 0)} />
+      ) : null}
+      <IllustrationBadge text="ILLUSTRATIVE — conceptual approach scene + a simplified low-shelf response; real mics vary by design" />
       <DisplayGuideButton onPress={() => help('proximity')} />
       <View style={styles.chipRow}>
         {PROX_DISTANCES.map((p, i) => (
@@ -246,6 +259,32 @@ function ProximitySection({ viz, width, help }: SectionProps) {
       </Text>
       <CheckQuestion spec={PROX_CHECK} />
     </View>
+  );
+}
+function ProxApproachViz({
+  viz,
+  width,
+  inches,
+  boostDb,
+  directional,
+  running,
+}: {
+  viz: MsVizModule;
+  width: number;
+  inches: number;
+  boostDb: number;
+  directional: boolean;
+  running: boolean;
+}) {
+  const phase = viz.usePhaseClock(running, 0.55);
+  return (
+    <viz.ProximityApproachView
+      phase={phase}
+      width={width}
+      inches={inches}
+      boostDb={boostDb}
+      directional={directional}
+    />
   );
 }
 
@@ -369,9 +408,9 @@ const CUP_CHECK: CheckSpec = {
 };
 
 function HandSection({ viz, width, help }: SectionProps) {
-  const [pos, setPos] = useState(0);
+  const [pos, setPos] = useState(0.3);
   const [why, setWhy] = useState(false);
-  const zone = pos < 0.22 ? HAND_POSITIONS[0] : pos < 0.58 ? HAND_POSITIONS[1] : pos < 0.85 ? HAND_POSITIONS[2] : HAND_POSITIONS[3];
+  const zone = zoneAt(pos);
 
   const pan = useRef(
     PanResponder.create({
@@ -404,12 +443,12 @@ function HandSection({ viz, width, help }: SectionProps) {
           <LabChip key={p.label} label={p.label} selected={zone.label === p.label} onPress={() => setPos(p.pos)} onLongPress={() => help('hand_position')} />
         ))}
       </View>
-      <Text style={[styles.readout, !zone.good && pos > 0.55 ? styles.readoutBad : null]}>{zone.title}</Text>
+      <Text style={[styles.readout, !zone.good && pos >= 0.45 ? styles.readoutBad : null]}>{zone.title}</Text>
       <Text style={styles.caption}>{zone.note}</Text>
       <View style={styles.chipRow}>
         <LabChip label={why ? 'HIDE — WHY IT HAPPENS ▴' : 'WHY IT HAPPENS ▾'} selected={why} onPress={() => setWhy((v) => !v)} onLongPress={() => help('cupping_why')} />
       </View>
-      {why ? <WhyCutaway viz={viz} width={width} blocked={pos > 0.6} help={help} /> : null}
+      {why ? <WhyCutaway viz={viz} width={width} blocked={pos >= 0.45} help={help} /> : null}
       <CheckQuestion spec={CUP_CHECK} />
     </View>
   );

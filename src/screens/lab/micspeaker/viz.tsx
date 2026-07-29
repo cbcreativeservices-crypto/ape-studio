@@ -21,15 +21,20 @@
  * micspeaker/skiaGate.requireMsViz(), so pre-Skia clients never evaluate it.
  *
  * Models used (kept honest in shape):
- *   polar        r(θ) = |A + B·cosθ|          (first-order pattern family)
- *   distance     level ∝ 1/d (drawn),         direct/room bars conceptual
+ *   polar        r(θ) = |A + B·cosθ|          (first-order pattern family) —
+ *                drawn as a conceptual pickup FIELD: gain × 1/d through the
+ *                quantized jet colormap (owner 2026-07-29), never a
+ *                measured polar response
+ *   distance     level ∝ 1/d (drawn),         direct/room bars conceptual;
+ *                scene shows a conceptual direct-field + room-glow heat map
  *   proximity    LF shelf grows as distance shrinks — directional mics only
  *   off-axis     broadband 20·log10|A+B·cosθ| + growing HF rolloff
  *   coverage     within-dispersion × 1/d^n — drawn as a fine quantized-jet
  *                heat map (owner 2026-07-29); the legacy 4-band classifier
  *                (classifyCoverage) keeps its exact thresholds for busts/checks
  */
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
+import { Text as RNText, View } from 'react-native';
 import {
   BlurMask,
   Canvas,
@@ -42,9 +47,16 @@ import {
   Skia,
   vec,
 } from '@shopify/react-native-skia';
-import { useDerivedValue, type SharedValue } from 'react-native-reanimated';
+import {
+  Easing,
+  useDerivedValue,
+  useSharedValue,
+  withTiming,
+  type SharedValue,
+} from 'react-native-reanimated';
 // Reuse the house clocks (same Skia-gated load condition as this file).
 import { usePhaseClock } from '../foundations/viz';
+import { fonts } from '../../../theme/tokens';
 export { usePhaseClock, useVizClock } from '../foundations/viz';
 
 const PARTICLE = '#cfd2d8';
@@ -63,8 +75,13 @@ const METAL_MID = '#7c7f89';
 const METAL_LO = '#3a3c44';
 const BODY_HI = '#4a4d58';
 const BODY_LO = '#1e1f26';
-const SKIN_HI = '#3d4149';
-const SKIN_LO = '#23252c';
+// Skin/hair tones for the human illustrations (owner: real skin gradients).
+const SKIN_HI = '#8a6f5a';
+const SKIN_MID = '#5d4a3c';
+const SKIN_LO = '#2e2620';
+const HAIR_HI = '#31343e';
+const HAIR_LO = '#121318';
+const ACCENT_ORANGE = '#ffa94d';
 
 type SkPathT = ReturnType<typeof Skia.Path.Make>;
 
@@ -93,25 +110,92 @@ export const POLAR_PATTERNS: { key: string; label: string; a: number; b: number 
 // Shared illustration builders (all static geometry — always inside useMemo
 // at the call site; nothing here runs per-frame).
 
-/** Human head in profile FACING RIGHT (+x), mouth open, origin at the mouth.
- *  `s` scales a ~46-px-tall base head. */
-function headProfilePath(s: number): SkPathT {
-  const p = Skia.Path.Make();
-  p.moveTo(4 * s, -8 * s); // top of the open mouth
-  p.cubicTo(9 * s, -10 * s, 8.5 * s, -15 * s, 3.5 * s, -16.5 * s); // under-nose
-  p.cubicTo(9.5 * s, -21 * s, 7 * s, -29 * s, -1.5 * s, -33 * s); // nose bridge → brow
-  p.cubicTo(-13 * s, -40 * s, -29 * s, -33 * s, -30 * s, -19 * s); // crown → back of skull
-  p.cubicTo(-30.5 * s, -9 * s, -27 * s, -1 * s, -23 * s, 5 * s); // occiput → nape
-  p.cubicTo(-21 * s, 11 * s, -15 * s, 15.5 * s, -7 * s, 15 * s); // neck → jawline
-  p.cubicTo(-2.5 * s, 14 * s, 2 * s, 10 * s, 3 * s, 6 * s); // jaw → chin
-  p.cubicTo(6.5 * s, 4.5 * s, 6.5 * s, 1.5 * s, 3 * s, 0); // lower lip
-  p.cubicTo(0.5 * s, -2 * s, 0.5 * s, -5.5 * s, 4 * s, -8 * s); // open-mouth notch
-  p.close();
-  return p;
+/** Human head in profile FACING RIGHT (+x), mouth open, origin at the mouth
+ *  opening. Layered parts (owner 2026-07-29: a GENUINELY human profile —
+ *  forehead, brow, nose, lips, chin, jaw, neck, ear, skull curve; smooth
+ *  cubics, skin gradient + rim light, hair mass with its own gradient).
+ *  `s` scales a ~52-px-tall base head. */
+function buildHeadParts(s: number): {
+  face: SkPathT;
+  hair: SkPathT;
+  hairSheen: SkPathT;
+  ear: SkPathT;
+  mouth: SkPathT;
+  details: SkPathT;
+  rim: SkPathT;
+} {
+  const face = Skia.Path.Make();
+  face.moveTo(3.2 * s, -7.5 * s); // front of the upper lip (mouth open)
+  face.cubicTo(5.8 * s, -8.6 * s, 5.2 * s, -10.4 * s, 2.6 * s, -10.8 * s); // upper lip → philtrum
+  face.cubicTo(4.6 * s, -11.4 * s, 7.4 * s, -12.2 * s, 7.8 * s, -14.2 * s); // nostril wing → tip
+  face.cubicTo(8.2 * s, -16.4 * s, 5.0 * s, -19.5 * s, 2.6 * s, -23.5 * s); // nose underside → bridge
+  face.cubicTo(1.8 * s, -25.4 * s, 2.9 * s, -26.6 * s, 1.6 * s, -28.5 * s); // brow ridge
+  face.cubicTo(0.2 * s, -31 * s, -3 * s, -34 * s, -8 * s, -35.6 * s); // forehead
+  face.cubicTo(-14 * s, -37.6 * s, -21 * s, -37.2 * s, -26 * s, -33.4 * s); // crown
+  face.cubicTo(-30.5 * s, -29.8 * s, -32 * s, -24 * s, -31 * s, -18 * s); // back of skull
+  face.cubicTo(-30.2 * s, -12.5 * s, -27.5 * s, -7.5 * s, -25.5 * s, -2.5 * s); // occiput
+  face.cubicTo(-24.5 * s, 0.5 * s, -23.5 * s, 4 * s, -23 * s, 8 * s); // nape
+  face.lineTo(-22.5 * s, 15 * s); // back of the neck
+  face.lineTo(-11.5 * s, 15 * s); // neck base
+  face.cubicTo(-11 * s, 11 * s, -10 * s, 8.5 * s, -7.5 * s, 7.8 * s); // throat → under-jaw
+  face.cubicTo(-3.5 * s, 9.8 * s, 1 * s, 8.8 * s, 3 * s, 6.4 * s); // jawline → chin
+  face.cubicTo(5.4 * s, 5.2 * s, 5.6 * s, 2.6 * s, 3.6 * s, 1.6 * s); // chin ball
+  face.cubicTo(5.6 * s, 0.6 * s, 5.4 * s, -1.4 * s, 2.8 * s, -2.2 * s); // lower lip
+  face.cubicTo(0.4 * s, -3.4 * s, 0.4 * s, -6.2 * s, 3.2 * s, -7.5 * s); // open-mouth notch
+  face.close();
+
+  // Hair mass: crown + back of the skull, with an inner hairline curve.
+  const hair = Skia.Path.Make();
+  hair.moveTo(0.5 * s, -29.5 * s); // front hairline, above the brow
+  hair.cubicTo(-2 * s, -33.5 * s, -8 * s, -37 * s, -14 * s, -37.9 * s);
+  hair.cubicTo(-22 * s, -38.8 * s, -30.2 * s, -34 * s, -31.9 * s, -26 * s);
+  hair.cubicTo(-33 * s, -19 * s, -31.5 * s, -11 * s, -28.5 * s, -4.6 * s); // down the back
+  hair.lineTo(-24.6 * s, -6.4 * s);
+  hair.cubicTo(-28.2 * s, -13 * s, -29.2 * s, -20 * s, -26.8 * s, -26.2 * s); // inner curve
+  hair.cubicTo(-23.6 * s, -32.2 * s, -15.6 * s, -34.6 * s, -8.6 * s, -32.8 * s); // inner crown
+  hair.cubicTo(-4.8 * s, -31.8 * s, -1.8 * s, -30.6 * s, 0.5 * s, -29.5 * s);
+  hair.close();
+  const hairSheen = Skia.Path.Make();
+  hairSheen.moveTo(-6 * s, -34.4 * s);
+  hairSheen.cubicTo(-13 * s, -36.4 * s, -21 * s, -35.6 * s, -26 * s, -30.6 * s);
+
+  // Ear: a soft C tucked under the hair, mid-skull.
+  const ear = Skia.Path.Make();
+  ear.moveTo(-11.4 * s, -14.6 * s);
+  ear.cubicTo(-8 * s, -14.4 * s, -7.8 * s, -8.6 * s, -11.8 * s, -7.8 * s);
+  ear.cubicTo(-15.2 * s, -7.2 * s, -16 * s, -12 * s, -13.4 * s, -14.2 * s);
+  ear.close();
+
+  // Open-mouth interior (dark) — the head is speaking.
+  const mouth = Skia.Path.Make();
+  mouth.moveTo(2.9 * s, -7.1 * s);
+  mouth.quadTo(0.9 * s, -5.8 * s, 0.9 * s, -4.6 * s);
+  mouth.quadTo(0.9 * s, -3.4 * s, 2.6 * s, -2.6 * s);
+  mouth.quadTo(1.9 * s, -4.9 * s, 2.9 * s, -7.1 * s);
+  mouth.close();
+
+  // Fine details: eye lid line + brow line + nostril + ear canal.
+  const details = Skia.Path.Make();
+  details.moveTo(1.6 * s, -24.4 * s); // eye
+  details.quadTo(-0.6 * s, -25.4 * s, -2.8 * s, -24.4 * s);
+  details.moveTo(2.4 * s, -27.2 * s); // brow
+  details.quadTo(-0.4 * s, -28.4 * s, -3.2 * s, -27.4 * s);
+  details.addOval(Skia.XYWHRect(3.4 * s, -13.2 * s, 1.9 * s, 1.3 * s)); // nostril
+  details.moveTo(-12.6 * s, -12.6 * s); // ear canal fold
+  details.quadTo(-10.8 * s, -11.4 * s, -12 * s, -9.6 * s);
+
+  // Rim light: the lit front profile edge (light from the upper-left).
+  const rim = Skia.Path.Make();
+  rim.moveTo(2.8 * s, -10.9 * s);
+  rim.cubicTo(4.8 * s, -11.5 * s, 7.4 * s, -12.2 * s, 7.8 * s, -14.2 * s);
+  rim.cubicTo(8.2 * s, -16.4 * s, 5.0 * s, -19.5 * s, 2.6 * s, -23.5 * s);
+  rim.cubicTo(1.8 * s, -25.4 * s, 2.9 * s, -26.6 * s, 1.6 * s, -28.5 * s);
+  rim.cubicTo(0.2 * s, -31 * s, -3 * s, -34 * s, -8 * s, -35.6 * s);
+  return { face, hair, hairSheen, ear, mouth, details, rim };
 }
 
-/** A rendered profile head (silhouette + form gradient + rim light), facing
- *  along `angleDeg` measured like atan2 (0 = +x / right). */
+/** A rendered profile head (layered face + hair + ear + open mouth, skin
+ *  gradient with rim light), facing along `angleRad` (0 = +x / right). */
 function ProfileHead({
   x,
   y,
@@ -127,19 +211,43 @@ function ProfileHead({
   tint: string;
   glow?: boolean;
 }) {
-  const path = useMemo(() => headProfilePath(scale), [scale]);
-  const ext = 40 * scale;
+  const parts = useMemo(() => buildHeadParts(scale), [scale]);
+  const s = scale;
   return (
     <Group transform={[{ translateX: x }, { translateY: y }, { rotate: angleRad }]}>
       {glow ? (
-        <Path path={path} color={tint} style="stroke" strokeWidth={5 * scale} opacity={0.3}>
-          <BlurMask blur={6 * scale} style="normal" />
+        <Path path={parts.face} color={tint} style="stroke" strokeWidth={5 * s} opacity={0.3}>
+          <BlurMask blur={6 * s} style="normal" />
         </Path>
       ) : null}
-      <Path path={path}>
-        <LinearGradient start={vec(-ext, -ext)} end={vec(ext * 0.4, ext)} colors={[SKIN_HI, SKIN_LO]} />
+      {/* Skin: warm form gradient, light from the upper-left. */}
+      <Path path={parts.face}>
+        <LinearGradient
+          start={vec(-30 * s, -38 * s)}
+          end={vec(10 * s, 15 * s)}
+          colors={[SKIN_HI, SKIN_MID, SKIN_LO]}
+          positions={[0, 0.55, 1]}
+        />
       </Path>
-      <Path path={path} color={tint} style="stroke" strokeWidth={1.6} opacity={0.9} />
+      {/* Cheek/temple lift: a soft radial highlight. */}
+      <Circle cx={-6 * s} cy={-17 * s} r={11 * s} color="#ffffff" opacity={0.06}>
+        <BlurMask blur={7 * s} style="normal" />
+      </Circle>
+      {/* Ear (slightly darker skin) + its fold. */}
+      <Path path={parts.ear}>
+        <LinearGradient start={vec(-16 * s, -15 * s)} end={vec(-8 * s, -7 * s)} colors={[SKIN_MID, SKIN_LO]} />
+      </Path>
+      {/* Hair mass with its own darker gradient + a sheen arc. */}
+      <Path path={parts.hair}>
+        <LinearGradient start={vec(-28 * s, -38 * s)} end={vec(-10 * s, -4 * s)} colors={[HAIR_HI, HAIR_LO]} />
+      </Path>
+      <Path path={parts.hairSheen} color="#5a5f6e" style="stroke" strokeWidth={1.4 * s} opacity={0.5} />
+      {/* Open mouth interior + feature lines. */}
+      <Path path={parts.mouth} color="#170d0c" />
+      <Path path={parts.details} color="#1c1410" style="stroke" strokeWidth={0.9 * s} opacity={0.85} />
+      {/* Rim light along the lit profile + a whisper of state tint. */}
+      <Path path={parts.rim} color="#f2dfc8" style="stroke" strokeWidth={1.1 * s} opacity={0.5} />
+      <Path path={parts.face} color={tint} style="stroke" strokeWidth={1.1} opacity={0.45} />
     </Group>
   );
 }
@@ -163,27 +271,42 @@ function buildHandheldMic(gr: number, len: number) {
   const y1 = y0 + len;
   const topW = gr * 0.68;
   const botW = gr * 0.48;
+  const tailTop = y1 - gr * 0.55; // where the XLR tail begins
   const body = Skia.Path.Make();
   body.moveTo(-topW, y0);
-  body.lineTo(-botW, y1 - botW);
-  body.quadTo(-botW, y1, 0, y1);
-  body.quadTo(botW, y1, botW, y1 - botW);
+  body.lineTo(-botW * 1.02, tailTop);
+  body.lineTo(botW * 1.02, tailTop);
   body.lineTo(topW, y0);
   body.close();
-  // Wire-mesh grille: latitude + longitude ovals inscribed in the sphere.
+  // XLR taper at the tail: a narrower stepped collar with a rounded end.
+  const tail = Skia.Path.Make();
+  tail.addRRect(
+    Skia.RRectXY(Skia.XYWHRect(-botW * 0.82, tailTop, botW * 1.64, y1 - tailTop), gr * 0.16, gr * 0.16),
+  );
+  // Wire-mesh grille: fine crosshatch — latitude AND longitude ovals.
   const mesh = Skia.Path.Make();
-  for (const t of [-0.55, -0.15, 0.25, 0.62]) {
+  for (const t of [-0.72, -0.46, -0.2, 0.06, 0.32, 0.58, 0.8]) {
     const hw = gr * Math.sqrt(1 - t * t);
-    mesh.addOval(Skia.XYWHRect(-hw, gr * t - gr * 0.15, hw * 2, gr * 0.3));
+    mesh.addOval(Skia.XYWHRect(-hw, gr * t - gr * 0.12, hw * 2, gr * 0.24));
   }
-  for (const t of [-0.45, 0, 0.45]) {
+  for (const t of [-0.62, -0.32, 0, 0.32, 0.62]) {
     const hh = gr * Math.sqrt(1 - t * t);
-    mesh.addOval(Skia.XYWHRect(gr * t - gr * 0.13, -hh, gr * 0.26, hh * 2));
+    mesh.addOval(Skia.XYWHRect(gr * t - gr * 0.11, -hh, gr * 0.22, hh * 2));
   }
-  // Accent ring at the neck.
-  const ring = Skia.Path.Make();
-  ring.addRect(Skia.XYWHRect(-topW, y0, topW * 2, gr * 0.2));
-  return { body, mesh, ring, y0, y1 };
+  // Knurled ring at the grille/body joint: band + tick marks.
+  const knurlH = gr * 0.34;
+  const knurlBand = Skia.Path.Make();
+  knurlBand.addRect(Skia.XYWHRect(-topW, y0, topW * 2, knurlH));
+  const knurlTicks = Skia.Path.Make();
+  for (let tx = -topW + gr * 0.12; tx < topW - gr * 0.05; tx += gr * 0.19) {
+    knurlTicks.moveTo(tx, y0 + gr * 0.04);
+    knurlTicks.lineTo(tx, y0 + knurlH - gr * 0.04);
+  }
+  // Subtle brand band mid-body.
+  const brandBand = Skia.Path.Make();
+  const bandY = y0 + (tailTop - y0) * 0.48;
+  brandBand.addRect(Skia.XYWHRect(-botW * 1.08, bandY, botW * 2.16, gr * 0.14));
+  return { body, tail, mesh, knurlBand, knurlTicks, brandBand, y0, y1 };
 }
 
 /**
@@ -208,6 +331,7 @@ function HandheldMic({
   const parts = useMemo(() => buildHandheldMic(gr, bodyLen), [gr, bodyLen]);
   return (
     <Group transform={[{ translateX: x }, { translateY: y }, { rotate: (angleDeg * Math.PI) / 180 }]}>
+      {/* Tapered body: 3-stop metal sheen, lit from the upper-left. */}
       <Path path={parts.body}>
         <LinearGradient
           start={vec(-gr, 0)}
@@ -216,7 +340,23 @@ function HandheldMic({
           positions={[0, 0.28, 0.55, 1]}
         />
       </Path>
-      <Path path={parts.ring} color={WAVE} opacity={0.65} />
+      {/* Subtle brand band mid-body. */}
+      <Path path={parts.brandBand} color={WAVE} opacity={0.5} />
+      {/* XLR taper at the tail. */}
+      <Path path={parts.tail}>
+        <LinearGradient
+          start={vec(-gr * 0.5, 0)}
+          end={vec(gr * 0.5, 0)}
+          colors={['#23242b', '#585c68', '#1c1d23']}
+          positions={[0, 0.32, 1]}
+        />
+      </Path>
+      {/* Knurled ring at the grille/body joint. */}
+      <Path path={parts.knurlBand}>
+        <LinearGradient start={vec(-gr * 0.7, 0)} end={vec(gr * 0.7, 0)} colors={['#3a3c44', '#9ba0ac', '#33343c']} />
+      </Path>
+      <Path path={parts.knurlTicks} color="#15161b" style="stroke" strokeWidth={Math.max(0.5, gr * 0.05)} opacity={0.8} />
+      {/* Grille sphere + fine crosshatch mesh (both directions). */}
       <Circle cx={0} cy={0} r={gr}>
         <RadialGradient
           c={vec(-gr * 0.35, -gr * 0.4)}
@@ -224,10 +364,12 @@ function HandheldMic({
           colors={['#dde0e7', '#8a8c94', '#33343c']}
         />
       </Circle>
-      <Path path={parts.mesh} color="#101116" style="stroke" strokeWidth={Math.max(0.6, gr * 0.07)} opacity={0.55} />
-      <Circle cx={-gr * 0.34} cy={-gr * 0.4} r={gr * 0.3} color="#ffffff" opacity={0.4}>
-        <BlurMask blur={gr * 0.28} style="normal" />
+      <Path path={parts.mesh} color="#101116" style="stroke" strokeWidth={Math.max(0.5, gr * 0.055)} opacity={0.55} />
+      {/* Specular hotspot: soft bloom + crisp core. */}
+      <Circle cx={-gr * 0.34} cy={-gr * 0.4} r={gr * 0.32} color="#ffffff" opacity={0.45}>
+        <BlurMask blur={gr * 0.3} style="normal" />
       </Circle>
+      <Circle cx={-gr * 0.36} cy={-gr * 0.42} r={gr * 0.12} color="#ffffff" opacity={0.8} />
     </Group>
   );
 }
@@ -273,34 +415,142 @@ function PencilMic({ x, y, angleDeg, scale = 1 }: { x: number; y: number; angleD
   );
 }
 
-/** Gripping hand (fist) silhouette around a vertical mic body at (x, y). */
-function fistPath(x: number, y: number, s: number): SkPathT {
-  const p = Skia.Path.Make();
-  // Palm: on the right of the body.
-  p.addOval(Skia.XYWHRect(x - 2 * s, y - 13 * s, 22 * s, 27 * s));
-  // Four fingers wrapping across the body.
+/** Gripping hand around a mic body — a REAL hand (owner 2026-07-29): palm
+ *  mass BEHIND the body, four individually drawn curled fingers with knuckle
+ *  bumps and per-finger shading wrapping IN FRONT, a thumb crossing at a
+ *  natural angle, wrist taper. Rendered in two passes so the mic body sits
+ *  between palm and fingers:
+ *    <GripHand layer="back" …/>  →  <HandheldMic …/>  →  <GripHand layer="front" …/>
+ *  Local coords: (x, y) = grip center ON the (vertical) mic axis; `angleDeg`
+ *  rotates the whole hand with the mic (0 = mic pointing up). */
+function buildGripHand(s: number): {
+  palm: SkPathT;
+  wrist: SkPathT;
+  fingers: SkPathT[];
+  fingerShade: SkPathT;
+  tips: { x: number; y: number }[];
+  thumb: SkPathT;
+  thumbShade: SkPathT;
+} {
+  // Palm mass (mostly hidden by the mic body — its edges read "behind").
+  const palm = Skia.Path.Make();
+  palm.moveTo(-7 * s, -13 * s);
+  palm.cubicTo(4 * s, -17.5 * s, 15 * s, -16 * s, 19 * s, -9 * s); // top → thenar side
+  palm.cubicTo(22 * s, -3 * s, 22 * s, 6 * s, 18 * s, 11.5 * s); // heel of the hand
+  palm.cubicTo(13 * s, 16.5 * s, 2 * s, 17 * s, -5 * s, 14 * s); // base
+  palm.cubicTo(-9.5 * s, 12 * s, -10.5 * s, 2 * s, -9.5 * s, -5 * s); // far edge
+  palm.cubicTo(-9 * s, -9.5 * s, -8.5 * s, -11.5 * s, -7 * s, -13 * s);
+  palm.close();
+  // Wrist taper: forearm leaving toward the lower right.
+  const wrist = Skia.Path.Make();
+  wrist.moveTo(9 * s, 13 * s);
+  wrist.cubicTo(14 * s, 16 * s, 20 * s, 20 * s, 25 * s, 25 * s);
+  wrist.lineTo(17.5 * s, 30.5 * s);
+  wrist.cubicTo(12 * s, 24 * s, 7.5 * s, 20 * s, 3 * s, 16.5 * s);
+  wrist.close();
+  // Four curled fingers: capsule with a knuckle bump on top, a rounded tip
+  // that curls past the far edge of the body — one path each so each gets
+  // its own shading gradient.
+  const fingers: SkPathT[] = [];
+  const tips: { x: number; y: number }[] = [];
+  const fingerShade = Skia.Path.Make();
+  const lens = [12.6, 13.8, 13.4, 11.6]; // index…pinky reach (relative feel)
   for (let i = 0; i < 4; i++) {
-    const fy = y - 11 * s + i * 6.6 * s;
-    p.addRRect(Skia.RRectXY(Skia.XYWHRect(x - 17 * s, fy, 27 * s, 5.4 * s), 2.7 * s, 2.7 * s));
+    const fy = -11.6 * s + i * 6.8 * s; // finger center line
+    const tipX = -(lens[i] ?? 12.6) * s;
+    const f = Skia.Path.Make();
+    f.moveTo(16 * s, fy + 3 * s); // base, at the palm
+    f.lineTo(tipX + 5 * s, fy + 3 * s); // underside toward the tip
+    f.quadTo(tipX, fy + 2.9 * s, tipX, fy + 0.1 * s); // curled tip
+    f.quadTo(tipX, fy - 2.9 * s, tipX + 4.6 * s, fy - 2.9 * s); // tip top
+    f.lineTo(-1.5 * s, fy - 2.9 * s); // top edge in
+    f.quadTo(2.6 * s, fy - 4.4 * s, 6.6 * s, fy - 2.9 * s); // knuckle bump
+    f.lineTo(16 * s, fy - 2.9 * s);
+    f.close();
+    fingers.push(f);
+    tips.push({ x: tipX + 1.6 * s, y: fy });
+    // Contact shadow under each finger — the crease separating them.
+    fingerShade.moveTo(14 * s, fy + 3.2 * s);
+    fingerShade.lineTo(tipX + 5 * s, fy + 3.2 * s);
   }
-  // Thumb hooking up the near side.
-  p.addOval(Skia.XYWHRect(x + 7 * s, y - 18 * s, 7.5 * s, 15 * s));
-  return p;
+  // Thumb: crosses the body diagonally over the upper fingers.
+  const thumb = Skia.Path.Make();
+  thumb.moveTo(17 * s, 3.5 * s); // base at the thenar
+  thumb.cubicTo(11 * s, 1.5 * s, 5 * s, -2.5 * s, 0.5 * s, -7.5 * s); // leading edge
+  thumb.quadTo(-2.6 * s, -11 * s, -0.4 * s, -13.2 * s); // rounded tip
+  thumb.quadTo(1.8 * s, -15.2 * s, 4.6 * s, -12.4 * s); // tip top
+  thumb.cubicTo(9 * s, -8 * s, 14 * s, -3.5 * s, 18.5 * s, -1.5 * s); // trailing edge
+  thumb.close();
+  const thumbShade = Skia.Path.Make();
+  thumbShade.moveTo(15 * s, 2.4 * s);
+  thumbShade.cubicTo(10 * s, 0.4 * s, 5 * s, -3.2 * s, 1.4 * s, -7.2 * s);
+  return { palm, wrist, fingers, fingerShade, tips, thumb, thumbShade };
 }
 
-function Fist({ x, y, scale, tint }: { x: number; y: number; scale: number; tint: string }) {
-  const path = useMemo(() => fistPath(x, y, scale), [x, y, scale]);
+// Per-finger highlight tones (upper fingers catch more of the light).
+const FINGER_HI = ['#94785f', '#8d725a', '#836a53', '#78614c'];
+
+function GripHand({
+  x,
+  y,
+  scale,
+  tint,
+  angleDeg = 0,
+  layer,
+}: {
+  x: number;
+  y: number;
+  scale: number;
+  tint: string;
+  angleDeg?: number;
+  layer: 'back' | 'front';
+}) {
+  const s = scale;
+  const parts = useMemo(() => buildGripHand(s), [s]);
   return (
-    <>
-      <Path path={path}>
-        <LinearGradient
-          start={vec(x - 17 * scale, y - 18 * scale)}
-          end={vec(x + 16 * scale, y + 16 * scale)}
-          colors={[SKIN_HI, SKIN_LO]}
-        />
-      </Path>
-      <Path path={path} color={tint} style="stroke" strokeWidth={1.5} opacity={0.85} />
-    </>
+    <Group transform={[{ translateX: x }, { translateY: y }, { rotate: (angleDeg * Math.PI) / 180 }]}>
+      {layer === 'back' ? (
+        <>
+          <Path path={parts.wrist}>
+            <LinearGradient start={vec(3 * s, 13 * s)} end={vec(25 * s, 30 * s)} colors={[SKIN_MID, SKIN_LO]} />
+          </Path>
+          <Path path={parts.palm}>
+            <LinearGradient start={vec(-9 * s, -17 * s)} end={vec(22 * s, 17 * s)} colors={[SKIN_MID, SKIN_LO]} />
+          </Path>
+        </>
+      ) : (
+        <>
+          {/* Four fingers, each with its own gradient — knuckles lit. */}
+          {parts.fingers.map((f, i) => (
+            <Path key={i} path={f}>
+              <LinearGradient
+                start={vec(0, -14.5 * s + i * 6.8 * s)}
+                end={vec(0, -8.6 * s + i * 6.8 * s)}
+                colors={[FINGER_HI[i] ?? SKIN_HI, SKIN_LO]}
+              />
+            </Path>
+          ))}
+          {/* Creases between the fingers. */}
+          <Path path={parts.fingerShade} color="#1c130d" style="stroke" strokeWidth={1.1 * s} opacity={0.7} />
+          {/* Fingertips curling away around the far side of the body. */}
+          {parts.tips.map((t, i) => (
+            <Circle key={i} cx={t.x} cy={t.y} r={2.4 * s} color={SKIN_LO} opacity={0.55}>
+              <BlurMask blur={1.6 * s} style="normal" />
+            </Circle>
+          ))}
+          {/* Thumb crossing at a natural diagonal, over the fingers. */}
+          <Path path={parts.thumb}>
+            <LinearGradient start={vec(-2 * s, -14 * s)} end={vec(18 * s, 4 * s)} colors={['#97795f', SKIN_MID]} />
+          </Path>
+          <Path path={parts.thumbShade} color="#1c130d" style="stroke" strokeWidth={1 * s} opacity={0.55} />
+          {/* State tint: a thin edge light, not an outline blob. */}
+          <Path path={parts.thumb} color={tint} style="stroke" strokeWidth={1} opacity={0.5} />
+          {parts.fingers.map((f, i) => (
+            <Path key={`t${i}`} path={f} color={tint} style="stroke" strokeWidth={0.9} opacity={0.4} />
+          ))}
+        </>
+      )}
+    </Group>
   );
 }
 
@@ -365,6 +615,52 @@ function GlowStroke({
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 1 · Polar Pattern Viewer — drag the source around the mic
+
+/** Conceptual field level → colormap position for the mic-lab heat fields
+ *  (same idea as the speaker lab's coverageT, tuned so on-axis near the mic
+ *  glows red and the pattern nulls sit in deep navy). ILLUSTRATIVE, never a
+ *  measured response. */
+function fieldT(lvl: number): number {
+  const db = 10 * Math.log10(Math.max(1e-4, lvl));
+  return Math.max(0, Math.min(1, (db + 12) / 15));
+}
+
+/** Fine conceptual pickup field around the mic: polar gain r(θ) × 1/d
+ *  falloff, quantized into ≤32 jet buckets — ONE Path per bucket, memoized
+ *  per pattern change (never per frame). */
+function usePolarFieldBuckets(
+  w: number,
+  h: number,
+  cx: number,
+  cy: number,
+  R: number,
+  a: number,
+  b: number,
+): SkPathT[] {
+  return useMemo(() => {
+    const bucketPaths: SkPathT[] = Array.from({ length: JET_BUCKET_COUNT }, () => Skia.Path.Make());
+    const COLS = 50;
+    const ROWS = 50;
+    const cw = w / COLS;
+    const ch = h / ROWS;
+    const refD = R * 0.45;
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const px = (c + 0.5) * cw;
+        const py = (r + 0.5) * ch;
+        const dx = px - cx;
+        const dy = py - cy;
+        const d = Math.max(10, Math.hypot(dx, dy));
+        const th = Math.atan2(dx, -dy); // angle from the mic's front axis (up)
+        const lvl = polarGain(a, b, th) * (refD / d);
+        const idx = Math.round(fieldT(lvl) * (JET_BUCKET_COUNT - 1));
+        // +0.5 overlap kills hairline seams between cells.
+        bucketPaths[idx].addRect(Skia.XYWHRect(c * cw, r * ch, cw + 0.5, ch + 0.5));
+      }
+    }
+    return bucketPaths;
+  }, [w, h, cx, cy, R, a, b]);
+}
 
 export function PolarPatternView({
   phase,
@@ -438,23 +734,21 @@ export function PolarPatternView({
     return p;
   }, [phase, sx, sy, cx, cy]);
 
+  const field = usePolarFieldBuckets(w, h, cx, cy, R, a, b);
+
   return (
     <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
-      {/* Ambient depth behind the plot. */}
-      <Circle cx={cx} cy={cy} r={R}>
-        <RadialGradient c={vec(cx, cy)} r={R} colors={['#15161c', BG]} />
-      </Circle>
-      <Path path={grid} color={GRID} style="stroke" strokeWidth={1} />
-      <Path path={ripples} color={PARTICLE} style="stroke" strokeWidth={1.2} opacity={0.28} />
-      {/* Pattern: gradient-filled lobe + glow stroke (abstract data, styled). */}
-      <Path path={pattern}>
-        <RadialGradient
-          c={vec(cx, cy)}
-          r={R}
-          colors={[withAlpha(WAVE, 0.26), withAlpha(WAVE, 0.03)]}
-        />
-      </Path>
-      <GlowStroke path={pattern} color={WAVE} width={2.4} />
+      {/* Conceptual pickup FIELD: polar gain × 1/d falloff through the jet
+          colormap — 50×50 cells in ≤32 bucket paths, memoized per pattern.
+          Smooth lobes glow red on-axis and fall to deep navy in the nulls. */}
+      {field.map((p, i) => (
+        <Path key={i} path={p} color={JET_BUCKETS[i]} opacity={0.92} />
+      ))}
+      {/* Polar grid, faint over the field. */}
+      <Path path={grid} color="#ffffff" style="stroke" strokeWidth={1} opacity={0.1} />
+      <Path path={ripples} color="#ffffff" style="stroke" strokeWidth={1.2} opacity={0.32} />
+      {/* Pattern boundary: a thin bright edge over the field. */}
+      <GlowStroke path={pattern} color="#ffffff" width={1.6} opacity={0.6} />
       {/* Pickup line, weight fading with gain (same opacity law as before). */}
       <Path
         path={pickupLine}
@@ -467,7 +761,6 @@ export function PolarPatternView({
       <HandheldMic x={cx} y={cy - 6} angleDeg={0} grilleR={8} bodyLen={22} />
       {/* The source: a head in profile, mouth toward the mic. */}
       <ProfileHead x={sx} y={sy} angleRad={faceAngle} scale={0.4} tint={ACCENT_GREEN} glow />
-      <Vignette w={w} h={h} />
     </Canvas>
   );
 }
@@ -506,18 +799,51 @@ export function DistanceView({
     return p;
   }, [phase, srcX, mid, w]);
 
+  // Conceptual sound field: DIRECT energy (forward lobe × 1/d from the mouth)
+  // over a constant diffuse ROOM glow — the mic slides THROUGH the field as
+  // the distance changes. Static per layout (source is fixed): memoized,
+  // ≤32 jet-bucket paths, never rebuilt per frame.
+  const field = useMemo(() => {
+    const bucketPaths: SkPathT[] = Array.from({ length: JET_BUCKET_COUNT }, () => Skia.Path.Make());
+    const fieldH = h - 16; // stop at the floor strip
+    const COLS = 50;
+    const ROWS = 22;
+    const cw = w / COLS;
+    const ch = fieldH / ROWS;
+    const refD = 42;
+    const room = 0.14; // the diffuse room level the direct field sinks into
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const px = (c + 0.5) * cw;
+        const py = (r + 0.5) * ch;
+        const dx = px - srcX;
+        const dy = py - mid;
+        const d = Math.max(12, Math.hypot(dx, dy));
+        const offDeg = (Math.abs(Math.atan2(dy, Math.max(1e-3, dx))) * 180) / Math.PI;
+        const forward = dx > 0 ? smoothEdge(offDeg, 55) : 0.12; // a mouth radiates ahead
+        const lvl = forward * (refD / d) + room;
+        const idx = Math.round(fieldT(lvl) * (JET_BUCKET_COUNT - 1));
+        bucketPaths[idx].addRect(Skia.XYWHRect(c * cw, r * ch, cw + 0.5, ch + 0.5));
+      }
+    }
+    return bucketPaths;
+  }, [w, h, srcX, mid]);
+
   return (
     <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+      {/* Heat field: direct sound fading into the room glow. */}
+      {field.map((p, i) => (
+        <Path key={i} path={p} color={JET_BUCKETS[i]} opacity={0.92} />
+      ))}
       <Floor w={w} y={h - 16} h={16} />
-      <Path path={fronts} color={WAVE} style="stroke" strokeWidth={4} opacity={0.12}>
+      <Path path={fronts} color="#ffffff" style="stroke" strokeWidth={4} opacity={0.1}>
         <BlurMask blur={4} style="normal" />
       </Path>
-      <Path path={fronts} color={PARTICLE} style="stroke" strokeWidth={1.3} opacity={0.42} />
+      <Path path={fronts} color="#ffffff" style="stroke" strokeWidth={1.3} opacity={0.4} />
       {/* Talker in profile, mouth at the wavefront origin. */}
       <ProfileHead x={srcX} y={mid} angleRad={0} scale={0.52} tint={CONE} />
       {/* The mic at working distance, grille facing the talker. */}
       <HandheldMic x={micX} y={mid} angleDeg={-90} grilleR={9} bodyLen={26} />
-      <Vignette w={w} h={h} />
     </Canvas>
   );
 }
@@ -596,6 +922,134 @@ export function ResponseCurveView({
       </Path>
       <GlowStroke path={curve} color={color} width={2.4} />
     </Canvas>
+  );
+}
+
+/**
+ * Proximity APPROACH scene (owner 2026-07-29): a live side view of the mic
+ * physically moving toward the singer as the distance changes — eased motion
+ * (never snapping), an annotated gap, and low-frequency emphasis visualized
+ * as a warm capsule glow + swelling bass arcs at close range. Pairs with the
+ * response curve; ILLUSTRATIVE throughout.
+ */
+export function ProximityApproachView({
+  phase,
+  width,
+  height = 128,
+  inches,
+  boostDb,
+  directional,
+}: {
+  phase: SharedValue<number>;
+  width: number;
+  height?: number;
+  /** Working distance in inches (1..12 in the lab). */
+  inches: number;
+  /** The illustrative LF boost at this distance (dB). */
+  boostDb: number;
+  /** Omni mics have no proximity effect — the glow stays off. */
+  directional: boolean;
+}) {
+  const w = width;
+  const h = height;
+  const mid = h * 0.52;
+  const headX = 32; // ProfileHead origin = the mouth
+  // Map inches → on-screen gap (mouth → grille), then EASE toward it.
+  const gapPx = 16 + ((inches - 1) / 11) * Math.max(40, w - 150);
+  const targetX = headX + gapPx + 9; // grille center (grilleR 9)
+  const micX = useSharedValue(targetX);
+  const warm = useSharedValue(directional ? boostDb : 0);
+  useEffect(() => {
+    micX.value = withTiming(targetX, { duration: 650, easing: Easing.out(Easing.cubic) });
+    warm.value = withTiming(directional ? boostDb : 0, { duration: 650, easing: Easing.out(Easing.cubic) });
+  }, [micX, warm, targetX, boostDb, directional]);
+
+  const micTransform = useDerivedValue(() => [{ translateX: micX.value }, { translateY: mid }], [micX, mid]);
+
+  // Ripples: voice traveling mouth → mic (forward arcs, phase-continuous).
+  const ripples = useDerivedValue(() => {
+    const p = Skia.Path.Make();
+    const ph = phase.value;
+    const maxR = Math.max(20, micX.value - 9 - headX);
+    for (let i = 0; i < 3; i++) {
+      const f = (ph / (2 * Math.PI) + i / 3) % 1;
+      const r = 6 + f * maxR;
+      p.addArc({ x: headX - r, y: mid - r, width: 2 * r, height: 2 * r }, -56, 112);
+    }
+    return p;
+  }, [phase, micX, headX, mid]);
+
+  // Bass arcs: LF energy swelling at the capsule as the mic closes in.
+  const bassArcs = useDerivedValue(() => {
+    const p = Skia.Path.Make();
+    if (warm.value <= 0.2) return p;
+    const gx = micX.value;
+    const pulse = 1 + 0.05 * Math.sin(phase.value * 2);
+    for (let i = 1; i <= 3; i++) {
+      const r = (10 + i * 8) * pulse;
+      p.addArc({ x: gx - 9 - r, y: mid - r, width: 2 * r, height: 2 * r }, 128, 104);
+    }
+    return p;
+  }, [warm, micX, phase, mid]);
+  const bassOp = useDerivedValue(() => Math.min(0.55, warm.value * 0.055), [warm]);
+  const bassWidth = useDerivedValue(() => 1.4 + warm.value * 0.22, [warm]);
+  const glowR = useDerivedValue(() => 10 + warm.value * 2.4, [warm]);
+  const glowOp = useDerivedValue(() => Math.min(0.5, warm.value * 0.048), [warm]);
+
+  // Gap annotation: a dimension line with end ticks, riding the eased mic.
+  const dimLine = useDerivedValue(() => {
+    const p = Skia.Path.Make();
+    const x0 = headX + 4;
+    const x1 = micX.value - 12;
+    const yD = mid + 34;
+    if (x1 - x0 > 10) {
+      p.moveTo(x0, yD - 5);
+      p.lineTo(x0, yD + 5);
+      p.moveTo(x0, yD);
+      p.lineTo(x1, yD);
+      p.moveTo(x1, yD - 5);
+      p.lineTo(x1, yD + 5);
+    }
+    return p;
+  }, [micX, headX, mid]);
+
+  return (
+    <View style={{ width: w, height: h }}>
+      <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
+        <Floor w={w} y={h - 14} h={14} />
+        <Path path={ripples} color="#ffffff" style="stroke" strokeWidth={1.2} opacity={0.3} />
+        {/* LF emphasis: warm glow + swelling bass arcs at the capsule. */}
+        <Path path={bassArcs} color="#ffb35e" style="stroke" strokeWidth={bassWidth} opacity={bassOp}>
+          <BlurMask blur={3} style="normal" />
+        </Path>
+        <Group transform={micTransform}>
+          <Circle cx={-9} cy={0} r={glowR} color="#ff9b4d" opacity={glowOp}>
+            <BlurMask blur={10} style="normal" />
+          </Circle>
+          <HandheldMic x={0} y={0} angleDeg={-90} grilleR={9} bodyLen={28} />
+        </Group>
+        {/* The singer, mouth toward the approaching mic. */}
+        <ProfileHead x={headX} y={mid} angleRad={0} scale={0.56} tint={CONE} />
+        <GlowStroke path={dimLine} color={ACCENT_GREEN} width={1.2} opacity={0.7} />
+        <Vignette w={w} h={h} />
+      </Canvas>
+      {/* Gap readout (RN text — the annotation the dimension line points at). */}
+      <RNText
+        style={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          bottom: 1,
+          textAlign: 'center',
+          fontFamily: fonts.oswaldSemiBold,
+          fontSize: 10.5,
+          letterSpacing: 1.2,
+          color: '#5bff85',
+        }}
+      >
+        {`GAP ≈ ${inches} in${directional ? ` · LF +${boostDb} dB` : ' · OMNI — no LF rise'}`}
+      </RNText>
+    </View>
   );
 }
 
@@ -1022,7 +1476,11 @@ export function StereoTechniqueView({
 // ─────────────────────────────────────────────────────────────────────────────
 // 8 · Hand placement — mic · polar · response, synchronized (the cupping star)
 
-/** Morph params for a hand at pos01 (0 = correct grip … 1 = full cup). */
+/** Morph params for a hand at pos01 (0 = bottom of the handle … 1 = full
+ *  cup over the grille). Port interference begins at 0.35 — exactly where
+ *  the hand leaves the correct below-the-grille zone for the grille rim
+ *  (grip-zone ruling 2026-07-29; the MATH is unchanged, only the zone
+ *  labels around it moved). */
 export function cupMorph(pos01: number): { a: number; b: number; ripple: number; sever: number } {
   const t = Math.max(0, Math.min(1, pos01));
   const c = Math.max(0, (t - 0.35) / 0.65); // port interference begins ~0.35
@@ -1046,7 +1504,10 @@ export function HandPlacementView({
   pos01,
 }: {
   width: number;
-  /** 0 = hand on the handle (correct) … 1 = full cup over the grille. */
+  /** 0 = hand at the BOTTOM of the handle … 1 = full cup over the grille.
+   *  Zones (2026-07-29 ruling): <0.16 low handle (neutral) · <0.45 correct
+   *  (just below the grille, green) · <0.82 grille rim (partial cup,
+   *  orange) · ≥0.82 full cup (red). */
   pos01: number;
 }) {
   const w = width;
@@ -1061,7 +1522,7 @@ export function HandPlacementView({
   const yC = botY - 24 - pos01 * (botY - topY - 44);
   const cupArc = useMemo(() => {
     const p = Skia.Path.Make();
-    if (pos01 > 0.8) {
+    if (pos01 >= 0.82) {
       p.addArc({ x: micX - 21, y: grilleY - 21, width: 42, height: 42 }, 200, 140);
     }
     return p;
@@ -1127,17 +1588,22 @@ export function HandPlacementView({
     return { resp: c, respUnder: u };
   }, [rx0, rw, ry0, rh, pos01]);
 
-  const alarm = pos01 > 0.6;
-  const liveColor = alarm ? ACCENT_RED : WAVE;
+  // Zone tints match the grip-zone ruling (owner 2026-07-29): low handle =
+  // neutral blue · below the grille = the CORRECT green zone · at the grille
+  // rim = orange partial cup · over the grille = red full cup.
+  const zoneTint = pos01 < 0.16 ? ACCENT_BLUE : pos01 < 0.45 ? ACCENT_GREEN : pos01 < 0.82 ? ACCENT_ORANGE : ACCENT_RED;
+  const liveColor = pos01 < 0.45 ? WAVE : pos01 < 0.82 ? ACCENT_ORANGE : ACCENT_RED;
 
   return (
     <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
       {/* Panel frames. */}
       <SkLine p1={{ x: w * 0.34, y: 8 }} p2={{ x: w * 0.34, y: h - 8 }} color={GHOST} strokeWidth={1.4} />
       <SkLine p1={{ x: w * 0.36, y: h * 0.53 }} p2={{ x: w - 6, y: h * 0.53 }} color={GHOST} strokeWidth={1.4} />
-      {/* 1 · The mic — full handheld illustration — and the gripping hand. */}
+      {/* 1 · The mic and the gripping hand — palm BEHIND the body, fingers
+          wrapping in front. */}
+      <GripHand x={micX} y={yC} scale={1.05} tint={zoneTint} layer="back" />
       <HandheldMic x={micX} y={grilleY} angleDeg={0} grilleR={15} bodyLen={botY - grilleY - 26} />
-      <Fist x={micX} y={yC} scale={1.05} tint={alarm ? ACCENT_RED : ACCENT_BLUE} />
+      <GripHand x={micX} y={yC} scale={1.05} tint={zoneTint} layer="front" />
       <GlowStroke path={cupArc} color={ACCENT_RED} width={5} opacity={0.9} />
       {/* 2 · Polar: intended (ghost) vs current, gradient-filled. */}
       <Path path={polarRef} color={GHOST} style="stroke" strokeWidth={1.6} />
@@ -1201,20 +1667,31 @@ export function MicCutawayView({
     return p;
   }, [cx, capY]);
 
-  // The cupping hand: a curved palm hugging the capsule (blocked state).
-  const handBlock = useMemo(() => {
-    const p = Skia.Path.Make();
+  // The cupping hand (blocked state): a REAL curved palm — a thick filled
+  // crescent hugging the capsule — with four fingertip pads riding its edge.
+  const cupHand = useMemo(() => {
+    const palm = Skia.Path.Make();
+    const tips = Skia.Path.Make();
+    const edge = Skia.Path.Make();
     if (blocked) {
-      p.addArc({ x: cx - 58, y: capY - 20, width: 116, height: 84 }, 140, 260);
-      // Finger bumps riding the palm curve.
-      for (const ang of [155, 205, 255, 305]) {
+      const ccy = capY + 8;
+      const ro = 62;
+      const ri = 45;
+      const a0 = 148;
+      const sweep = 246;
+      palm.arcToOval(Skia.XYWHRect(cx - ro, ccy - ro, ro * 2, ro * 2), a0, sweep, true);
+      palm.arcToOval(Skia.XYWHRect(cx - ri, ccy - ri, ri * 2, ri * 2), a0 + sweep, -sweep, false);
+      palm.close();
+      edge.arcToOval(Skia.XYWHRect(cx - ro, ccy - ro, ro * 2, ro * 2), a0, sweep, true);
+      // Fingertip pads curling over the inner edge toward the capsule.
+      for (const ang of [170, 220, 270, 320]) {
         const rad = (ang * Math.PI) / 180;
-        const fx = cx + 58 * Math.cos(rad);
-        const fy = capY + 22 + 42 * Math.sin(rad);
-        p.addOval(Skia.XYWHRect(fx - 5, fy - 5, 10, 10));
+        const fx = cx + (ri + 3) * Math.cos(rad);
+        const fy = ccy + (ri + 3) * Math.sin(rad);
+        tips.addOval(Skia.XYWHRect(fx - 6.5, fy - 5.5, 13, 11));
       }
     }
-    return p;
+    return { palm, tips, edge };
   }, [cx, capY, blocked]);
 
   // Animated entries: FRONT always arrives; REAR arrives only when open.
@@ -1254,10 +1731,19 @@ export function MicCutawayView({
         <BlurMask blur={3.5} style="normal" />
       </Path>
       <Path path={arrows} color={dotColor} />
-      <Path path={handBlock} color={ACCENT_RED} style="stroke" strokeWidth={3} opacity={0.35}>
+      {/* The cupping hand: filled palm crescent + fingertip pads, with a red
+          problem-glow along its outer edge. */}
+      <Path path={cupHand.palm} opacity={0.96}>
+        <LinearGradient start={vec(cx - 62, capY - 54)} end={vec(cx + 62, capY + 70)} colors={[SKIN_HI, SKIN_MID, SKIN_LO]} positions={[0, 0.5, 1]} />
+      </Path>
+      <Path path={cupHand.tips}>
+        <LinearGradient start={vec(cx - 48, capY - 30)} end={vec(cx + 48, capY + 56)} colors={[SKIN_MID, SKIN_LO]} />
+      </Path>
+      <Path path={cupHand.tips} color="#1c130d" style="stroke" strokeWidth={1.2} opacity={0.6} />
+      <Path path={cupHand.edge} color={ACCENT_RED} style="stroke" strokeWidth={3} opacity={0.3}>
         <BlurMask blur={5} style="normal" />
       </Path>
-      <Path path={handBlock} color={ACCENT_RED} style="stroke" strokeWidth={3} opacity={0.9} />
+      <Path path={cupHand.edge} color={ACCENT_RED} style="stroke" strokeWidth={2} opacity={0.85} />
       <Vignette w={w} h={h} />
     </Canvas>
   );
@@ -1296,9 +1782,11 @@ export function MistakeIllustration({
       : kind === 'away'
         ? micAt(cx + 10, 62, 55)
         : micAt(cx + 6, 66, -35);
-    // Hand position along the mic axis: handle grip vs at the grille.
+    // Hand position along the mic axis (grip-zone ruling 2026-07-29):
+    // correct = upper body just BELOW the grille; grille/cup = at/over the
+    // grille; antenna = the very bottom; others = neutral mid-body.
     const atGrille = kind === 'grille' || kind === 'cup';
-    const handF = atGrille ? 16 : kind === 'antenna' ? -26 : -8;
+    const handF = atGrille ? 19 : kind === 'antenna' ? -26 : kind === 'correct' ? 8 : -8;
     const hand = { x: mic.x + mic.dx * handF, y: mic.y + mic.dy * handF };
     const extras = Skia.Path.Make();
     if (kind === 'cup') {
@@ -1332,12 +1820,23 @@ export function MistakeIllustration({
       <Floor w={w} y={h - 8} h={8} />
       <ProfileHead x={layout.head.x} y={layout.head.y} angleRad={0} scale={0.44} tint={outline} glow={good} />
       <Path path={layout.extras} color={PARTICLE} style="stroke" strokeWidth={1.6} opacity={0.6} />
-      <HandheldMic x={layout.mic.gx} y={layout.mic.gy} angleDeg={layout.mic.ang} grilleR={8} bodyLen={24} />
-      <Fist
+      {/* Hand wraps the mic: palm behind the body, fingers in front. */}
+      <GripHand
         x={layout.hand.x}
         y={layout.hand.y}
-        scale={0.72}
+        scale={0.62}
+        angleDeg={layout.mic.ang}
         tint={layout.badHand ? ACCENT_RED : good ? ACCENT_GREEN : ACCENT_BLUE}
+        layer="back"
+      />
+      <HandheldMic x={layout.mic.gx} y={layout.mic.gy} angleDeg={layout.mic.ang} grilleR={8} bodyLen={24} />
+      <GripHand
+        x={layout.hand.x}
+        y={layout.hand.y}
+        scale={0.62}
+        angleDeg={layout.mic.ang}
+        tint={layout.badHand ? ACCENT_RED : good ? ACCENT_GREEN : ACCENT_BLUE}
+        layer="front"
       />
       <GlowStroke path={layout.alert} color={ACCENT_RED} width={2} opacity={0.95} />
       <Vignette w={w} h={h} />
