@@ -116,7 +116,6 @@ type SectionProps = { viz: MsVizModule | null; width: number; focused: boolean; 
 function PolarSection({ viz, width, focused, help }: SectionProps) {
   const [patIdx, setPatIdx] = useState(1);
   const [angle, setAngle] = useState(35);
-  const angleRef = useRef(35);
   const widthRef = useRef(width);
   widthRef.current = width;
   const pat = PATTERNS[patIdx];
@@ -131,7 +130,6 @@ function PolarSection({ viz, width, focused, help }: SectionProps) {
         const dy = e.nativeEvent.locationY - 115;
         if (Math.hypot(dx, dy) < 22) return; // hub dead-zone
         const deg = Math.round((Math.atan2(dx, -dy) * 180) / Math.PI);
-        angleRef.current = deg;
         setAngle(deg);
       },
       onPanResponderTerminationRequest: () => false,
@@ -373,17 +371,23 @@ const CUP_CHECK: CheckSpec = {
 function HandSection({ viz, width, help }: SectionProps) {
   const [pos, setPos] = useState(0);
   const [why, setWhy] = useState(false);
-  const posRef = useRef(0);
   const zone = pos < 0.22 ? HAND_POSITIONS[0] : pos < 0.58 ? HAND_POSITIONS[1] : pos < 0.85 ? HAND_POSITIONS[2] : HAND_POSITIONS[3];
 
   const pan = useRef(
     PanResponder.create({
-      onStartShouldSetPanResponder: () => false,
-      onMoveShouldSetPanResponder: (_e, gs) => Math.abs(gs.dy) > 4,
+      // Claim on TOUCH START: this vertical drag would otherwise race the
+      // vertical ScrollView on Android (reviewer finding). The canvas is a
+      // dedicated interactive area — scrolling starts from anywhere else, and
+      // the position chips remain the tap alternative.
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: (_e, gs) => Math.abs(gs.dy) > 2,
+      onPanResponderGrant: (e) => {
+        const v = Math.max(0, Math.min(1, 1 - (e.nativeEvent.locationY - 16) / 184));
+        setPos(v);
+      },
       onPanResponderMove: (e) => {
         // Drag the hand along the mic body: top of the canvas = full cup.
         const v = Math.max(0, Math.min(1, 1 - (e.nativeEvent.locationY - 16) / 184));
-        posRef.current = v;
         setPos(v);
       },
       onPanResponderTerminationRequest: () => false,
@@ -511,7 +515,8 @@ export function MicPrinciplesLabScreen() {
         </View>
         <Text style={styles.sectionTitle}>{s.title}</Text>
         <Text style={styles.body}>{s.blurb}</Text>
-        <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 24)}>
+        {/* panelCard consumes 24 padding + 2 border → content box is −26. */}
+        <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
           {width > 0 ? <s.Comp viz={viz} width={width} focused={focused} help={help} /> : null}
         </View>
       </ScrollView>

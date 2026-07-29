@@ -634,10 +634,11 @@ export function HandPlacementView({
     return p;
   }, [micX, h, pos01]);
 
-  // Panel 2 — the polar pattern (top right).
+  // Panel 2 — the polar pattern (top right). pR sized so gain+ripple (≤1.2)
+  // never clips the canvas top.
   const pcx = w * 0.63;
   const pcy = h * 0.28;
-  const pR = h * 0.24;
+  const pR = h * 0.22;
   const polar = useMemo(() => {
     const p = Skia.Path.Make();
     for (let i = 0; i <= 150; i++) {
@@ -974,7 +975,9 @@ export function TopCoverageView({
       const sz = s.small ? 6 : 10;
       glyphs.addRRect(Skia.RRectXY(Skia.XYWHRect(s.x - sz, s.y - sz - 6, sz * 2, sz * 1.6), 3, 3));
       glyphs.moveTo(s.x, s.y);
-      glyphs.lineTo(s.x + dx * (s.small ? 26 : 46), s.y + dy * (s.small ? 26 : 46));
+      // Aim cue clamped into the canvas so an edge speaker at hard aim keeps it.
+      const L = s.small ? 26 : 46;
+      glyphs.lineTo(Math.max(4, Math.min(w - 4, s.x + dx * L)), s.y + dy * L);
     }
     return { cells: paths, speakers: glyphs };
   }, [w, h, audY0, audH, spk1x01, spk1AimDeg, spk2On, spk2x01, spk2AimDeg, hDeg, frontFills]);

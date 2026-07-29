@@ -289,7 +289,8 @@ export function SpeakerCoverageLabScreen() {
         </View>
         <Text style={styles.sectionTitle}>{s.title}</Text>
         <Text style={styles.body}>{s.blurb}</Text>
-        <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 24)}>
+        {/* panelCard consumes 24 padding + 2 border → content box is −26. */}
+        <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
           {width > 0 ? <s.Comp viz={viz} width={width} help={help} /> : null}
         </View>
       </ScrollView>
