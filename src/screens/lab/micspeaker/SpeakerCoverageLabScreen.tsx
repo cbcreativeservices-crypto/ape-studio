@@ -172,6 +172,9 @@ function SideSection({ viz, width, help }: SectionProps) {
   const [depth01, setDepth01] = useState(0.85);
   const [sloped, setSloped] = useState(false);
   const [delayOn, setDelayOn] = useState(false);
+  const [lineArray, setLineArray] = useState(false);
+  const [rearDelay, setRearDelay] = useState(false);
+  const [timeAligned, setTimeAligned] = useState(true);
   const disp = DISPERSIONS[dispIdx];
 
   return (
@@ -187,11 +190,27 @@ function SideSection({ viz, width, help }: SectionProps) {
           depth01={depth01}
           sloped={sloped}
           delayOn={delayOn}
+          lineArray={lineArray}
+          rearDelayOn={rearDelay}
+          timeAligned={timeAligned}
         />
       ) : (
         <VizUnavailableCard />
       )}
       <IllustrationBadge text="CONCEPTUAL LEVEL MAP — illustrative model, NOT an SPL prediction; heads are tinted by whether the vertical pattern reaches them (real rooms, reflections & arrays differ)" />
+      {lineArray ? (
+        <Text style={styles.badge}>
+          LINE ARRAY — CONCEPTUAL MODEL, NOT AN SPL PREDICTION. The summed field illustrates why a
+          splayed hang holds level deeper than one box; real array prediction is far more involved.
+        </Text>
+      ) : null}
+      {rearDelay ? (
+        <Text style={styles.badge}>
+          DELAY ALIGNMENT — CONCEPTUAL MODEL, NOT TRUE TIME-ALIGNMENT MATH. The two travelling
+          fronts illustrate firing the rear speaker late so arrivals fuse; timing here is
+          illustrative only.
+        </Text>
+      ) : null}
       <DisplayGuideButton onPress={() => help('side_view')} />
       <View style={styles.chipRow}>
         {DISPERSIONS.map((d, i) => (
@@ -204,13 +223,21 @@ function SideSection({ viz, width, help }: SectionProps) {
         <LabChip label={sloped ? 'SLOPED SEATING ●' : 'FLAT SEATING'} selected={sloped} onPress={() => setSloped((v) => !v)} onLongPress={() => help('room_shape')} />
         <LabChip label={delayOn ? 'DELAY SPEAKER ●' : 'ADD DELAY SPEAKER'} selected={delayOn} onPress={() => setDelayOn((v) => !v)} onLongPress={() => help('delay_speaker')} />
       </View>
+      <View style={styles.chipRow}>
+        <LabChip label={lineArray ? 'LINE ARRAY ●' : 'LINE ARRAY'} selected={lineArray} onPress={() => setLineArray((v) => !v)} onLongPress={() => help('line_array')} />
+        <LabChip label={rearDelay ? 'REAR DELAY ●' : 'REAR DELAY SPKR'} selected={rearDelay} onPress={() => setRearDelay((v) => !v)} onLongPress={() => help('delay_speaker')} />
+        {rearDelay ? (
+          <LabChip label={timeAligned ? 'TIME-ALIGNED ●' : 'MISALIGNED'} selected={timeAligned} onPress={() => setTimeAligned((v) => !v)} onLongPress={() => help('delay_speaker')} />
+        ) : null}
+      </View>
       <DragSlider value={stage01} onChange={setStage01} label="STAGE HEIGHT" readout={stage01 < 0.33 ? 'low' : stage01 > 0.66 ? 'high' : 'mid'} onHelp={() => help('room_shape')} />
       <DragSlider value={ceil01} onChange={setCeil01} label="CEILING HEIGHT" readout={ceil01 < 0.33 ? 'low' : ceil01 > 0.66 ? 'high' : 'mid'} onHelp={() => help('room_shape')} />
       <DragSlider value={depth01} onChange={setDepth01} label="AUDIENCE DEPTH" readout={depth01 < 0.4 ? 'shallow' : depth01 > 0.75 ? 'deep' : 'medium'} onHelp={() => help('room_shape')} />
       <Text style={styles.caption}>
         The vertical pattern is a wedge: aim its CENTER at the far seats and let its EDGE graze the
-        near ones. Deep rooms eventually outrun any single box — the DELAY SPEAKER picks up the
-        rear (concept only here: in practice it is time-aligned so both arrivals fuse into one).
+        near ones. Deep rooms outrun any single box — a LINE ARRAY splays several boxes so the whole
+        depth hears an even level, and a REAR DELAY speaker (fired late, so its sound arrives in step
+        with the mains) rescues the back rows. Both are conceptual illustrations, not SPL predictions.
       </Text>
       <CheckQuestion spec={SIDE_CHECK} />
     </View>

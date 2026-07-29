@@ -89,6 +89,39 @@ const LINE = '#d7dbe2';
  *  line art where it sits over a busy heat-map field. */
 const HEAD_PLATE = 'rgba(9,10,14,0.62)';
 
+// ── Scene scale & real-world proportions (owner ruling 2026-07-29) ───────────
+// The coverage scenes are zoomed OUT 27% — content is drawn at SCENE_SCALE so a
+// uniform margin appears around the rig in the panel — and EVERY object is
+// sized from one pixels-per-metre so the rig reads true to a real PA: a
+// loudspeaker cabinet is ~0.6 m, a line-array box ~0.3 m, a standing human
+// ~1.7 m, a seated head+shoulders bust ~0.9 m tall. Before this pass the
+// cabinets and the audience were sized independently and read out of scale;
+// now they all descend from the same metre.
+export const SCENE_SCALE = 0.73;
+const M_HUMAN = 1.7; // standing human, metres (the scale reference)
+const M_CAB = 0.6; //   loudspeaker cabinet height, metres
+const M_BOX = 0.3; //   line-array box height, metres
+const M_BUST = 0.95; //  seated head+shoulders visible height, metres
+// Authored drawn heights (in local px at scale 1) of the reusable builders,
+// used to convert a metric size into the `scale` each one expects.
+const CAB_DRAWN_H = 18; // CabinetSide spans y −9…+9
+const BUST_DRAWN_H = 16.6; // appendBust footprint
+
+/** Centred scale transform: shrink canvas content to SCENE_SCALE about the
+ *  canvas centre so a uniform margin appears on every side. Returned as a
+ *  plain array (Skia `Transforms3d`). */
+function sceneTransform(w: number, h: number) {
+  const cx = w / 2;
+  const cy = h / 2;
+  return [
+    { translateX: cx },
+    { translateY: cy },
+    { scale: SCENE_SCALE },
+    { translateX: -cx },
+    { translateY: -cy },
+  ];
+}
+
 type SkPathT = ReturnType<typeof Skia.Path.Make>;
 
 function withAlpha(hex: string, a: number): string {
@@ -3045,48 +3078,73 @@ export function sideLevelSmooth(
   return scale * smoothEdge(offDeg, halfDeg) * Math.pow(refD / d, 1.5);
 }
 
-// ── Wavefront rings — life over the (static, memoized) heat maps ─────────────
-// Expanding arcs emanate from each active speaker on the phase clock: eased
-// radius, opacity fading as they travel. 3 staggered layers × 2 paths each
-// (glow + line) — constant node count, all per-frame work in worklets.
+// ── Wavefront rings — physically faithful concentric propagation ─────────────
+// Each active source radiates CONCENTRIC circular wavefronts from the cabinet,
+// all expanding at ONE constant speed and spaced by a constant wavelength, so
+// the pattern is a moving train of equally-spaced rings — real propagation, not
+// a single sweeping arc. Amplitude is DIRECTIONAL: every ring is drawn only
+// across the cabinet's aimed dispersion wedge, with a brighter core along the
+// axis, so energy fades toward and behind the pattern edges. The rings render
+// with an ADDITIVE ('plus') blend, so where two sources' wavefronts cross they
+// visibly REINFORCE — the "overlap = hot ridge / comb" lesson. Each ring is one
+// component whose radius is r = ((f + i)/RINGS)·maxR: as f sweeps 0→1 the whole
+// multiset of radii is continuous, and each ring's opacity fades to zero at
+// birth (r→0) and death (r→maxR), so the train never pops. Per-frame work is
+// worklet-safe (useDerivedValue); node count is fixed at RINGS × 2 paths.
 
-type RingCenter = { x: number; y: number; dirDeg: number; maxR: number };
+type RingCenter = { x: number; y: number; dirDeg: number; maxR: number; spreadDeg?: number };
 
-function RingLayer({
+const RINGS_PER_SRC = 5;
+
+/** One wavefront ring (index i of the constant-wavelength train), summed across
+ *  every active source; additive so crossings reinforce. */
+function WaveRing({
   phase,
   centers,
   spreadDeg,
-  offset,
+  i,
 }: {
   phase: SharedValue<number>;
   centers: RingCenter[];
   spreadDeg: number;
-  offset: number;
+  i: number;
 }) {
   const path = useDerivedValue(() => {
-    const f = (phase.value / (2 * Math.PI) + offset) % 1;
-    const e = f * (2 - f); // ease-out
+    const f = (phase.value / (2 * Math.PI)) % 1;
     const p = Skia.Path.Make();
-    for (const c of centers) {
-      const r = 7 + e * c.maxR;
-      p.addArc({ x: c.x - r, y: c.y - r, width: 2 * r, height: 2 * r }, c.dirDeg - spreadDeg / 2, spreadDeg);
+    for (let ci = 0; ci < centers.length; ci++) {
+      const c = centers[ci];
+      const r = ((f + i) / RINGS_PER_SRC) * c.maxR;
+      if (r < 3 || r > c.maxR) continue;
+      const spread = c.spreadDeg ?? spreadDeg;
+      const box = { x: c.x - r, y: c.y - r, width: 2 * r, height: 2 * r };
+      // Wide dim wavefront across the whole wedge…
+      p.addArc(box, c.dirDeg - spread / 2, spread);
+      // …plus a brighter core along the axis (additive → hotter centre).
+      p.addArc(box, c.dirDeg - spread / 4, spread / 2);
     }
     return p;
-  }, [phase, centers, spreadDeg, offset]);
+  }, [phase, centers, spreadDeg, i]);
   const lineOp = useDerivedValue(() => {
-    const f = (phase.value / (2 * Math.PI) + offset) % 1;
-    return 0.34 * (1 - f) * (1 - f);
-  }, [phase, offset]);
+    const f = (phase.value / (2 * Math.PI)) % 1;
+    const u = (f + i) / RINGS_PER_SRC; // radius fraction 0→1
+    const fadeIn = Math.min(1, u / 0.14);
+    const fadeOut = (1 - u) * (1 - u);
+    return 0.42 * fadeIn * fadeOut;
+  }, [phase, i]);
   const glowOp = useDerivedValue(() => {
-    const f = (phase.value / (2 * Math.PI) + offset) % 1;
-    return 0.14 * (1 - f) * (1 - f);
-  }, [phase, offset]);
+    const f = (phase.value / (2 * Math.PI)) % 1;
+    const u = (f + i) / RINGS_PER_SRC;
+    const fadeIn = Math.min(1, u / 0.14);
+    const fadeOut = (1 - u) * (1 - u);
+    return 0.2 * fadeIn * fadeOut;
+  }, [phase, i]);
   return (
     <>
-      <Path path={path} color="#ffffff" style="stroke" strokeWidth={3.4} opacity={glowOp}>
+      <Path path={path} color="#bcd4ff" style="stroke" strokeWidth={3.4} opacity={glowOp} blendMode="plus">
         <BlurMask blur={4} style="normal" />
       </Path>
-      <Path path={path} color="#ffffff" style="stroke" strokeWidth={1.2} opacity={lineOp} />
+      <Path path={path} color="#e6f0ff" style="stroke" strokeWidth={1.2} opacity={lineOp} blendMode="plus" />
     </>
   );
 }
@@ -3102,9 +3160,9 @@ function WavefrontRings({
 }) {
   return (
     <>
-      <RingLayer phase={phase} centers={centers} spreadDeg={spreadDeg} offset={0} />
-      <RingLayer phase={phase} centers={centers} spreadDeg={spreadDeg} offset={1 / 3} />
-      <RingLayer phase={phase} centers={centers} spreadDeg={spreadDeg} offset={2 / 3} />
+      {Array.from({ length: RINGS_PER_SRC }, (_, i) => (
+        <WaveRing key={i} phase={phase} centers={centers} spreadDeg={spreadDeg} i={i} />
+      ))}
     </>
   );
 }
@@ -3118,8 +3176,20 @@ export function classifyCoverage(lvl: number): CoverageClass {
 
 /** Top-view PA cabinet: trapezoid box + face gradient + horn slot (local
  *  coords, front face toward +y — matching the aim convention). */
-function CabinetTop({ x, y, aimDeg, small }: { x: number; y: number; aimDeg: number; small?: boolean }) {
-  const s = small ? 0.62 : 1;
+function CabinetTop({
+  x,
+  y,
+  aimDeg,
+  small,
+  scale = 1,
+}: {
+  x: number;
+  y: number;
+  aimDeg: number;
+  small?: boolean;
+  scale?: number;
+}) {
+  const s = (small ? 0.62 : 1) * scale;
   const path = useMemo(() => {
     const p = Skia.Path.Make();
     const bw = 7.5 * s; // back half-width
@@ -3257,26 +3327,67 @@ export function TopCoverageView({
     return p;
   }, [w]);
 
+  // Audience SEATING (owner 2026-07-29): rows of head-dots (viewed from above)
+  // in proportional blocks split by aisles. The heat map is an OVERLAY on this
+  // seating — drawn under the field at reduced field alpha so the seats read
+  // through it, exactly like a coverage plot laid over a venue plan. A head
+  // from above is ~0.4 m; the block/aisle proportions follow a real room.
+  const seating = useMemo(() => {
+    const dots = Skia.Path.Make();
+    const x0 = 10;
+    const x1 = w - 10;
+    const y0 = audY0 + 8;
+    const y1 = h - 8;
+    const span = x1 - x0;
+    const blocks = 3;
+    const aisleFrac = 0.05; // each aisle = 5% of the audience width
+    const blockW = (span - aisleFrac * span * (blocks - 1)) / blocks;
+    const pitch = 11; // seat/row pitch (px)
+    const dotR = 3.0;
+    for (let b = 0; b < blocks; b++) {
+      const bx0 = x0 + b * (blockW + aisleFrac * span);
+      const cols = Math.max(1, Math.round(blockW / pitch));
+      const cstep = blockW / cols;
+      for (let yy = y0; yy <= y1; yy += pitch) {
+        for (let cc = 0; cc < cols; cc++) {
+          dots.addCircle(bx0 + (cc + 0.5) * cstep, yy, dotR);
+        }
+      }
+    }
+    return dots;
+  }, [w, h, audY0]);
+
+  // Cabinet scale: a PA main viewed from above is ~0.6 m across — sized down
+  // from the old fixed footprint so it reads proportional to the seat blocks.
+  const mainCabS = 0.7;
+
   return (
     <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
-      {/* Stage strip with depth + a hint of the band. */}
-      <Path path={stage}>
-        <LinearGradient start={vec(0, 0)} end={vec(0, stageH)} colors={['#3b4252', '#232833']} />
-      </Path>
-      {/* Performers in the line-art language of the head icons. */}
-      <LineBusts path={performers} stroke={LINE} sw={1.4} />
-      {/* Heat map: ≤32 quantized-jet bucket paths (abstract data — styled,
-          kept honest: conceptual level, never an SPL prediction). */}
-      {buckets.map((p, i) => (
-        <Path key={i} path={p} color={JET_BUCKETS[i]} opacity={0.92} />
-      ))}
-      {/* Wavefronts ripple across the field from each active speaker. */}
-      <WavefrontRings phase={ringPhase} centers={ringCenters} spreadDeg={Math.min(170, hDeg + 30)} />
-      <SkLine p1={{ x: 0, y: stageH }} p2={{ x: w, y: stageH }} color={GRID} strokeWidth={1.5} />
-      <GlowStroke path={aims} color={PARTICLE} width={1.6} opacity={0.8} />
-      {spkList.map((s, i) => (
-        <CabinetTop key={i} x={s.x} y={s.y} aimDeg={s.aim} small={s.small} />
-      ))}
+      <Group transform={sceneTransform(w, h)}>
+        {/* Stage deck with depth + a hint of the band. */}
+        <Path path={stage}>
+          <LinearGradient start={vec(0, 0)} end={vec(0, stageH)} colors={['#3b4252', '#232833']} />
+        </Path>
+        {/* Performers in the line-art language of the head icons. */}
+        <LineBusts path={performers} stroke={LINE} sw={1.4} />
+        {/* SEATING under the map: dim head-dots + a faint rim, drawn BEFORE the
+            field so the coverage overlays real seats (not floating on black). */}
+        <Path path={seating} color="#2b3040" />
+        <Path path={seating} color="#4a5162" style="stroke" strokeWidth={0.6} />
+        {/* Heat map: ≤32 quantized-jet bucket paths (abstract data — styled,
+            kept honest: conceptual level, never an SPL prediction). Field alpha
+            is held at 0.6 so the seating reads THROUGH the coverage overlay. */}
+        {buckets.map((p, i) => (
+          <Path key={i} path={p} color={JET_BUCKETS[i]} opacity={0.6} />
+        ))}
+        {/* Wavefronts ripple across the field from each active speaker. */}
+        <WavefrontRings phase={ringPhase} centers={ringCenters} spreadDeg={Math.min(170, hDeg + 30)} />
+        <SkLine p1={{ x: 0, y: stageH }} p2={{ x: w, y: stageH }} color={GRID} strokeWidth={1.5} />
+        <GlowStroke path={aims} color={PARTICLE} width={1.6} opacity={0.8} />
+        {spkList.map((s, i) => (
+          <CabinetTop key={i} x={s.x} y={s.y} aimDeg={s.aim} small={s.small} scale={s.small ? 1 : mainCabS} />
+        ))}
+      </Group>
     </Canvas>
   );
 }
@@ -3333,6 +3444,117 @@ const SEAT_LINE: Record<CoverageClass, string> = {
   gray: '#b6b9c4',
 };
 
+/** Standing GUITARIST — recognizable line-art musician holding a guitar, in the
+ *  same single-stroke language as the head icons (owner ruling 2026-07-29).
+ *  Canonical figure is ~46 units crown→feet, origin AT THE FEET (y grows down,
+ *  figure occupies y ∈ [−46s, 0]) so it stands on the stage deck. Sized from
+ *  the scene metre so it is a true ~1.7 m reference beside the ~0.6 m cabinet. */
+function buildGuitarist(s: number): { body: SkPathT; guitar: SkPathT } {
+  const body = Skia.Path.Make();
+  body.addCircle(0, -42.5 * s, 3.7 * s); // head
+  body.moveTo(0, -38.8 * s); // spine: neck → hips
+  body.lineTo(0, -22 * s);
+  body.moveTo(-5 * s, -36.5 * s); // shoulders
+  body.lineTo(5 * s, -36.5 * s);
+  body.moveTo(0, -22 * s); // left leg
+  body.lineTo(-4 * s, 0);
+  body.moveTo(0, -22 * s); // right leg
+  body.lineTo(4.6 * s, 0);
+  body.moveTo(-5 * s, -36.5 * s); // strumming arm → over the lower bout
+  body.cubicTo(-9.5 * s, -33 * s, -9 * s, -27 * s, -4.5 * s, -24.5 * s);
+  body.moveTo(5 * s, -36.5 * s); // fretting arm → up the neck
+  body.cubicTo(10 * s, -35 * s, 13 * s, -31 * s, 15.5 * s, -27.5 * s);
+
+  const guitar = Skia.Path.Make();
+  guitar.moveTo(-1.5 * s, -31 * s); // figure-8 body held at the waist
+  guitar.cubicTo(-7 * s, -31 * s, -8 * s, -26 * s, -5 * s, -24 * s);
+  guitar.cubicTo(-9 * s, -22 * s, -8 * s, -15 * s, -1 * s, -15 * s);
+  guitar.cubicTo(6 * s, -15 * s, 7 * s, -22 * s, 3 * s, -24 * s);
+  guitar.cubicTo(6 * s, -26 * s, 5 * s, -31 * s, 0, -31 * s);
+  guitar.close();
+  guitar.moveTo(-1 * s, -30 * s); // neck up to the fretting hand
+  guitar.lineTo(15.5 * s, -27.5 * s);
+  return { body, guitar };
+}
+
+function Guitarist({ x, footY, scale, tint }: { x: number; footY: number; scale: number; tint: string }) {
+  const parts = useMemo(() => buildGuitarist(scale), [scale]);
+  const lw = 1.5 * scale;
+  return (
+    <Group transform={[{ translateX: x }, { translateY: footY }]}>
+      <Path path={parts.guitar} color="#2a2116" />
+      <Path path={parts.guitar} color={tint} style="stroke" strokeWidth={lw} strokeCap="round" strokeJoin="round" />
+      <Path path={parts.body} color={LINE} style="stroke" strokeWidth={lw} strokeCap="round" strokeJoin="round" />
+      <Path path={parts.body} color={tint} style="stroke" strokeWidth={lw} strokeCap="round" strokeJoin="round" opacity={0.4} />
+    </Group>
+  );
+}
+
+/**
+ * DELAY-ALIGNMENT overlay (CONCEPTUAL MODEL — owner 2026-07-29). Two travelling
+ * wavefronts race to the rear rows: the MAIN system's front sweeps the full
+ * depth from the stage (slow to arrive), and the REAR hanging speaker's front
+ * covers the short hop to the rear seats. When `aligned`, the rear speaker
+ * FIRES LATE — held back by the propagation delay (distance ÷ speed) — so both
+ * fronts land on the rear rows TOGETHER (green "IN STEP" flash). When not
+ * aligned, the rear fires with the mains, arrives early, and the two arrivals
+ * separate (an echo). It is illustrative timing, NOT true time-alignment math.
+ */
+function AlignmentOverlay({
+  phase,
+  mainX,
+  rearX,
+  targetX,
+  yTop,
+  yBot,
+  aligned,
+}: {
+  phase: SharedValue<number>;
+  mainX: number;
+  rearX: number;
+  targetX: number;
+  yTop: number;
+  yBot: number;
+  aligned: boolean;
+}) {
+  const D_REAR = 0.16; // rear front's travel time as a fraction of the cycle
+  const mainPath = useDerivedValue(() => {
+    const g = (phase.value / (2 * Math.PI)) % 1;
+    const x = mainX + g * (targetX - mainX);
+    const p = Skia.Path.Make();
+    p.moveTo(x, yTop);
+    p.lineTo(x, yBot);
+    return p;
+  }, [phase, mainX, targetX, yTop, yBot]);
+  const rearPath = useDerivedValue(() => {
+    const g = (phase.value / (2 * Math.PI)) % 1;
+    const start = aligned ? 1 - D_REAR : 0; // aligned → fire late by the delay
+    const local = (g - start) / D_REAR;
+    const p = Skia.Path.Make();
+    if (local >= 0 && local <= 1) {
+      const x = rearX + local * (targetX - rearX);
+      p.moveTo(x, yTop);
+      p.lineTo(x, yBot);
+    }
+    return p;
+  }, [phase, rearX, targetX, yTop, yBot, aligned]);
+  // Green "in step" pulse when both fronts converge on the rear rows (g→1).
+  const flashOp = useDerivedValue(() => {
+    const g = (phase.value / (2 * Math.PI)) % 1;
+    const near = Math.max(0, 1 - Math.abs(g - 1) / 0.1);
+    return aligned ? 0.55 * near : 0;
+  }, [phase, aligned]);
+  return (
+    <>
+      <Path path={mainPath} color={ACCENT_YELLOW} style="stroke" strokeWidth={2.2} opacity={0.9} />
+      <Path path={rearPath} color={ACCENT_BLUE} style="stroke" strokeWidth={2.2} opacity={0.9} />
+      <Circle cx={targetX} cy={(yTop + yBot) / 2} r={11} color={ACCENT_GREEN} opacity={flashOp}>
+        <BlurMask blur={6} style="normal" />
+      </Circle>
+    </>
+  );
+}
+
 export function SideCoverageView({
   width,
   height = 230,
@@ -3344,6 +3566,9 @@ export function SideCoverageView({
   depth01,
   sloped,
   delayOn,
+  lineArray = false,
+  rearDelayOn = false,
+  timeAligned = true,
 }: {
   width: number;
   height?: number;
@@ -3357,6 +3582,12 @@ export function SideCoverageView({
   depth01: number;
   sloped: boolean;
   delayOn: boolean;
+  /** Replace the single flown box with a splayed vertical line array. */
+  lineArray?: boolean;
+  /** A distinct DELAYED hanging speaker over the rear seats (own coverage). */
+  rearDelayOn?: boolean;
+  /** Rear speaker fires late by the propagation delay so arrivals fuse. */
+  timeAligned?: boolean;
 }) {
   const w = width;
   const h = height;
@@ -3367,23 +3598,64 @@ export function SideCoverageView({
   const spkX = 30;
   const spkY = stageTop - 8 - h01 * Math.max(10, stageTop - 8 - (ceilY + 12));
 
+  // ── Real-world sizing: one metre drives every object (owner 2026-07-29) ────
+  const HUMAN_PX = 42; // a standing human ≈ 1.7 m
+  const MPP = HUMAN_PX / M_HUMAN; // pixels per metre
+  const cabScale = (M_CAB * MPP) / CAB_DRAWN_H; // ~0.6 m cabinet
+  const boxScale = (M_BOX * MPP) / CAB_DRAWN_H; // ~0.3 m line-array box
+  const bustScale = (M_BUST * MPP) / BUST_DRAWN_H; // seated head+shoulders
+  const guitaristScale = (M_HUMAN * MPP) / 46; // 46-unit canonical figure
+
+  // Line-array hang: N boxes down from the fly point with progressive splay —
+  // top boxes near-flat for far throw, lower boxes tilting down for the near
+  // seats (the classic J so the whole depth hears an even level).
+  const arrayBoxes = useMemo(() => {
+    const boxDrawnH = CAB_DRAWN_H * boxScale + 1.5;
+    const N = 6;
+    const out: { x: number; y: number; tilt: number }[] = [];
+    let a = tiltDeg - 2;
+    for (let i = 0; i < N; i++) {
+      out.push({ x: spkX, y: spkY + i * boxDrawnH, tilt: a });
+      a += 2.4 + i * 1.3;
+    }
+    return out;
+  }, [spkX, spkY, tiltDeg, boxScale]);
+  const arrayMidY = arrayBoxes.length ? arrayBoxes[Math.floor(arrayBoxes.length / 2)].y : spkY;
+
   const geo = useMemo(() => {
     const axis = (tiltDeg * Math.PI) / 180;
     const half = ((vDeg / 2) * Math.PI) / 180;
     const L = w * 1.2;
+    const boxHalf = (7 * Math.PI) / 180; // per-array-box vertical control
 
-    // Main coverage wedge: a filled fan, plus its center-axis cue.
+    // Main coverage wedge (single box): a filled fan + its center-axis cue.
+    // With a line array the single wedge is replaced by faint per-box beams.
     const wedgeFill = Skia.Path.Make();
-    wedgeFill.moveTo(spkX, spkY);
-    const N = 14;
-    for (let i = 0; i <= N; i++) {
-      const a = axis - half + ((2 * half) * i) / N;
-      wedgeFill.lineTo(spkX + Math.cos(a) * L, spkY + Math.sin(a) * L);
-    }
-    wedgeFill.close();
     const axisLine = Skia.Path.Make();
-    axisLine.moveTo(spkX, spkY);
-    axisLine.lineTo(spkX + Math.cos(axis) * L, spkY + Math.sin(axis) * L);
+    if (!lineArray) {
+      wedgeFill.moveTo(spkX, spkY);
+      const N = 14;
+      for (let i = 0; i <= N; i++) {
+        const a = axis - half + ((2 * half) * i) / N;
+        wedgeFill.lineTo(spkX + Math.cos(a) * L, spkY + Math.sin(a) * L);
+      }
+      wedgeFill.close();
+      axisLine.moveTo(spkX, spkY);
+      axisLine.lineTo(spkX + Math.cos(axis) * L, spkY + Math.sin(axis) * L);
+    }
+
+    // Per-box beam edges: each array box's own narrow wedge, drawn faint over
+    // the summed field so the array total reads as a stack of contributions.
+    const boxBeams = Skia.Path.Make();
+    if (lineArray) {
+      for (const b of arrayBoxes) {
+        const ba = (b.tilt * Math.PI) / 180;
+        for (const edge of [ba - boxHalf, ba + boxHalf]) {
+          boxBeams.moveTo(b.x, b.y);
+          boxBeams.lineTo(b.x + Math.cos(edge) * L, b.y + Math.sin(edge) * L);
+        }
+      }
+    }
 
     // Room lines.
     const room = Skia.Path.Make();
@@ -3394,52 +3666,122 @@ export function SideCoverageView({
     const stage = Skia.Path.Make();
     stage.addRRect(Skia.RRectXY(Skia.XYWHRect(4, stageTop, stageW, floorY - stageTop), 3, 3));
 
-    // Delay speaker (concept only): hung at ~60% depth, covering the rear.
+    // Audience extent.
     const audX0 = stageW + 26;
     const audW = depth01 * (w - audX0 - 14);
+
+    // Existing DELAY SPEAKER (concept only): hung at ~58% depth.
     const dlyX = audX0 + audW * 0.58;
     const dlyY = ceilY + 22;
     const delayWedge = Skia.Path.Make();
     if (delayOn) {
-      // Fan between the two original delay-cone edges.
-      const aA = Math.atan2(w * 0.34, w * 0.5); // shallow edge
-      const aB = Math.atan2(w * 0.5, w * 0.16); // steep edge
+      const aA = Math.atan2(w * 0.34, w * 0.5);
+      const aB = Math.atan2(w * 0.5, w * 0.16);
       delayWedge.moveTo(dlyX, dlyY);
-      const M = 10;
-      for (let i = 0; i <= M; i++) {
-        const a = aA + ((aB - aA) * i) / M;
+      const Md = 10;
+      for (let i = 0; i <= Md; i++) {
+        const a = aA + ((aB - aA) * i) / Md;
         delayWedge.lineTo(dlyX + Math.cos(a) * w * 0.65, dlyY + Math.sin(a) * w * 0.65);
       }
       delayWedge.close();
     }
 
-    // Seats: classified audience busts along the depth (SAME classification
-    // math as always — only the drawing changed).
+    // NEW distinct DELAYED HANGING speaker, farther back OVER the rear seats,
+    // with its own steep coverage wedge onto the rear rows.
+    const rearX = audX0 + audW * 0.84;
+    const rearY = ceilY + 16;
+    const rearAxis = (72 * Math.PI) / 180; // steep down onto the rear rows
+    const rearHalf = (26 * Math.PI) / 180;
+    const rearWedge = Skia.Path.Make();
+    if (rearDelayOn) {
+      rearWedge.moveTo(rearX, rearY);
+      const Mr = 10;
+      const Lr = w * 0.5;
+      for (let i = 0; i <= Mr; i++) {
+        const a = rearAxis - rearHalf + ((2 * rearHalf) * i) / Mr;
+        rearWedge.lineTo(rearX + Math.cos(a) * Lr, rearY + Math.sin(a) * Lr);
+      }
+      rearWedge.close();
+    }
+
+    // Seats: classified audience busts along the depth. classifyCoverage() and
+    // its thresholds are untouched; this inline tint generalises to the array
+    // (even deep coverage) and the two delayed speakers (rear rescue).
     const seatPaths: Record<CoverageClass, SkPathT> = {
       red: Skia.Path.Make(),
       green: Skia.Path.Make(),
       yellow: Skia.Path.Make(),
       gray: Skia.Path.Make(),
     };
+    const topA = arrayBoxes.length ? (arrayBoxes[0].tilt * Math.PI) / 180 : axis;
+    const botA = arrayBoxes.length ? (arrayBoxes[arrayBoxes.length - 1].tilt * Math.PI) / 180 : axis;
     const NS = 9;
     for (let i = 0; i < NS; i++) {
       const sx = audX0 + ((i + 0.5) / NS) * audW;
       const rise = sloped ? (i / (NS - 1)) * 34 : 0;
       const hy = floorY - 14 - rise;
-      const vx = sx - spkX;
-      const vy = hy - spkY;
-      const d = Math.hypot(vx, vy);
-      const ang = Math.atan2(vy, vx); // downward positive
-      const off = Math.abs(ang - axis);
-      let cls: CoverageClass = off <= half ? 'green' : off <= half + (7 * Math.PI) / 180 ? 'yellow' : 'gray';
+      let cls: CoverageClass;
+      let d: number;
+      if (lineArray) {
+        // The array covers evenly across its whole vertical spread.
+        const vx = sx - spkX;
+        const vy = hy - arrayMidY;
+        d = Math.hypot(vx, vy);
+        const ang = Math.atan2(vy, vx);
+        if (ang >= topA - boxHalf && ang <= botA + boxHalf) cls = 'green';
+        else if (ang >= topA - boxHalf - (6 * Math.PI) / 180 && ang <= botA + boxHalf + (6 * Math.PI) / 180)
+          cls = 'yellow';
+        else cls = 'gray';
+      } else {
+        const vx = sx - spkX;
+        const vy = hy - spkY;
+        d = Math.hypot(vx, vy);
+        const off = Math.abs(Math.atan2(vy, vx) - axis);
+        cls = off <= half ? 'green' : off <= half + (7 * Math.PI) / 180 ? 'yellow' : 'gray';
+      }
       // Hot zone: front rows blasted point-blank inside the core.
       if (cls === 'green' && d < w * 0.2) cls = 'red';
-      // Delay speaker rescues the rear (concept only).
+      // Existing delay speaker rescues the mid/rear (concept only).
       if (delayOn && cls === 'gray' && sx > dlyX - 8) cls = 'green';
-      appendBust(seatPaths[cls], sx, floorY - rise, 1.35);
+      // Distinct rear hanging speaker rescues the rear rows.
+      if (rearDelayOn && (cls === 'gray' || cls === 'yellow') && sx > rearX - audW * 0.3) cls = 'green';
+      appendBust(seatPaths[cls], sx, floorY - rise, bustScale);
     }
-    return { wedgeFill, axisLine, room, stage, delayWedge, seats: seatPaths, dlyX, dlyY };
-  }, [w, floorY, ceilY, stageTop, spkX, spkY, tiltDeg, vDeg, depth01, sloped, delayOn, stageW]);
+    return {
+      wedgeFill,
+      axisLine,
+      boxBeams,
+      room,
+      stage,
+      delayWedge,
+      rearWedge,
+      seats: seatPaths,
+      dlyX,
+      dlyY,
+      rearX,
+      rearY,
+      audX0,
+      audW,
+    };
+  }, [
+    w,
+    floorY,
+    ceilY,
+    stageTop,
+    spkX,
+    spkY,
+    tiltDeg,
+    vDeg,
+    depth01,
+    sloped,
+    delayOn,
+    stageW,
+    lineArray,
+    rearDelayOn,
+    arrayBoxes,
+    arrayMidY,
+    bustScale,
+  ]);
 
   // Side-plane heat map (stage front → rear wall, ceiling → floor): the same
   // vertical-pattern × distance model, continuous, quantized-jet bucketed —
@@ -3450,9 +3792,16 @@ export function SideCoverageView({
     const x1 = w - 2;
     const y0 = ceilY + 4;
     const y1 = floorY;
-    const srcs: { x: number; y: number; axis: number; half: number; refD: number; scale: number }[] = [
-      { x: spkX, y: spkY, axis: (tiltDeg * Math.PI) / 180, half: vDeg / 2, refD: w * 0.5, scale: 1 },
-    ];
+    const srcs: { x: number; y: number; axis: number; half: number; refD: number; scale: number }[] = [];
+    if (lineArray) {
+      // Every box contributes its own tight beam; run-length merged into the
+      // SAME ≤32 bucket paths, so the field the audience sees is the array SUM.
+      for (const b of arrayBoxes) {
+        srcs.push({ x: b.x, y: b.y, axis: (b.tilt * Math.PI) / 180, half: 7, refD: w * 0.52, scale: 0.5 });
+      }
+    } else {
+      srcs.push({ x: spkX, y: spkY, axis: (tiltDeg * Math.PI) / 180, half: vDeg / 2, refD: w * 0.5, scale: 1 });
+    }
     if (delayOn) {
       // Delay box beam: mid-axis of its drawn wedge (same edges as geo).
       const aA = Math.atan2(w * 0.34, w * 0.5);
@@ -3465,6 +3814,10 @@ export function SideCoverageView({
         refD: w * 0.3,
         scale: 0.7,
       });
+    }
+    if (rearDelayOn) {
+      // Distinct rear hanging speaker: its OWN heat contribution on the rear.
+      srcs.push({ x: geo.rearX, y: geo.rearY, axis: (72 * Math.PI) / 180, half: 26, refD: w * 0.32, scale: 0.72 });
     }
     // 192 × 120 cells — 4× the previous 48 × 30 linear resolution (owner
     // 2026-07-29), run-length merged per row into the ≤32 bucket paths.
@@ -3493,46 +3846,104 @@ export function SideCoverageView({
       });
     }
     return bucketPaths;
-  }, [w, ceilY, floorY, stageW, spkX, spkY, tiltDeg, vDeg, delayOn, geo.dlyX, geo.dlyY]);
+  }, [
+    w,
+    ceilY,
+    floorY,
+    stageW,
+    spkX,
+    spkY,
+    tiltDeg,
+    vDeg,
+    delayOn,
+    geo.dlyX,
+    geo.dlyY,
+    lineArray,
+    rearDelayOn,
+    geo.rearX,
+    geo.rearY,
+    arrayBoxes,
+  ]);
 
   const ringPhase = usePhaseClock(true, 0.22);
   const ringCenters = useMemo<RingCenter[]>(() => {
-    const r: RingCenter[] = [{ x: spkX, y: spkY, dirDeg: tiltDeg, maxR: w * 0.85 }];
+    const r: RingCenter[] = [];
+    if (lineArray) {
+      // The array's summed wavefront: one clean train from the hang centre,
+      // tighter vertical spread than a single box.
+      r.push({ x: spkX, y: arrayMidY, dirDeg: tiltDeg + 6, maxR: w * 0.9, spreadDeg: 34 });
+    } else {
+      r.push({ x: spkX, y: spkY, dirDeg: tiltDeg, maxR: w * 0.85 });
+    }
     if (delayOn) r.push({ x: geo.dlyX, y: geo.dlyY, dirDeg: 53, maxR: w * 0.5 });
+    if (rearDelayOn) r.push({ x: geo.rearX, y: geo.rearY, dirDeg: 72, maxR: w * 0.42, spreadDeg: 52 });
     return r;
-  }, [spkX, spkY, tiltDeg, w, delayOn, geo.dlyX, geo.dlyY]);
+  }, [spkX, spkY, arrayMidY, tiltDeg, w, delayOn, geo.dlyX, geo.dlyY, lineArray, rearDelayOn, geo.rearX, geo.rearY]);
+
+  // Alignment overlay anchors: main front sweeps from the stage; rear front
+  // hops from the rear speaker; both aim at the rear-row target.
+  const alignPhase = usePhaseClock(rearDelayOn, 0.5);
+  const rearTargetX = geo.audX0 + geo.audW * 0.96;
 
   return (
     <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
-      {/* Room: ceiling line + gradient floor. */}
-      <Path path={geo.room} color={GRID} style="stroke" strokeWidth={1.6} />
-      <Floor w={w} y={floorY} h={h - floorY} />
-      {/* Heat map: the vertical beam glows in the field (≤32 bucket paths). */}
-      {heat.map((p, i) => (
-        <Path key={i} path={p} color={JET_BUCKETS[i]} opacity={0.92} />
-      ))}
-      {/* Wavefronts ripple down the beam. */}
-      <WavefrontRings phase={ringPhase} centers={ringCenters} spreadDeg={Math.min(170, vDeg + 30)} />
-      {/* Wedge edge + axis cues stay as thin overlays on the heat field. */}
-      <Path path={geo.wedgeFill} color={WAVE} style="stroke" strokeWidth={1} opacity={0.28} />
-      <GlowStroke path={geo.axisLine} color={WAVE} width={1.4} opacity={0.6} />
-      {delayOn ? (
-        <Path path={geo.delayWedge} color={ACCENT_BLUE} style="stroke" strokeWidth={1} opacity={0.3} />
-      ) : null}
-      {/* Stage block. */}
-      <Path path={geo.stage}>
-        <LinearGradient start={vec(4, stageTop)} end={vec(4, floorY)} colors={['#2b2d36', '#15161b']} />
-      </Path>
-      <Path path={geo.stage} color="#454854" style="stroke" strokeWidth={1.2} />
-      {/* Cabinets: main (tilted with the wedge) + optional delay box. */}
-      <CabinetSide x={spkX} y={spkY} tiltDeg={tiltDeg} />
-      {delayOn ? <CabinetSide x={geo.dlyX} y={geo.dlyY} tiltDeg={48} scale={0.72} /> : null}
-      {/* The audience: line-art busts (light uniform stroke over a subtle dark
-          interior) so they read over the heat field, with the stroke carrying
-          the SAME coverage classification the old fill did. */}
-      {(['gray', 'yellow', 'green', 'red'] as CoverageClass[]).map((k) => (
-        <LineBusts key={k} path={geo.seats[k]} stroke={SEAT_LINE[k]} sw={1.7} />
-      ))}
+      <Group transform={sceneTransform(w, h)}>
+        {/* Room: ceiling line + gradient floor. */}
+        <Path path={geo.room} color={GRID} style="stroke" strokeWidth={1.6} />
+        <Floor w={w} y={floorY} h={h - floorY} />
+        {/* Heat map: the vertical beam(s) glow in the field (≤32 bucket paths). */}
+        {heat.map((p, i) => (
+          <Path key={i} path={p} color={JET_BUCKETS[i]} opacity={0.92} />
+        ))}
+        {/* Wavefronts ripple down the beam. */}
+        <WavefrontRings phase={ringPhase} centers={ringCenters} spreadDeg={Math.min(170, vDeg + 30)} />
+        {/* Single-box wedge cues, OR faint per-box array beam edges. */}
+        {lineArray ? (
+          <Path path={geo.boxBeams} color={ACCENT_YELLOW} style="stroke" strokeWidth={0.8} opacity={0.34} />
+        ) : (
+          <>
+            <Path path={geo.wedgeFill} color={WAVE} style="stroke" strokeWidth={1} opacity={0.28} />
+            <GlowStroke path={geo.axisLine} color={WAVE} width={1.4} opacity={0.6} />
+          </>
+        )}
+        {delayOn ? (
+          <Path path={geo.delayWedge} color={ACCENT_BLUE} style="stroke" strokeWidth={1} opacity={0.3} />
+        ) : null}
+        {rearDelayOn ? (
+          <Path path={geo.rearWedge} color={ACCENT_BLUE} style="stroke" strokeWidth={1} opacity={0.34} />
+        ) : null}
+        {/* Stage block. */}
+        <Path path={geo.stage}>
+          <LinearGradient start={vec(4, stageTop)} end={vec(4, floorY)} colors={['#2b2d36', '#15161b']} />
+        </Path>
+        <Path path={geo.stage} color="#454854" style="stroke" strokeWidth={1.2} />
+        {/* Guitarist on stage — a true ~1.7 m human next to the ~0.6 m cabinet. */}
+        <Guitarist x={stageW * 0.6} footY={stageTop} scale={guitaristScale} tint={ACCENT_ORANGE} />
+        {/* Cabinets: single flown box, OR the splayed line-array hang. */}
+        {lineArray ? (
+          arrayBoxes.map((b, i) => <CabinetSide key={i} x={b.x} y={b.y} tiltDeg={b.tilt} scale={boxScale} />)
+        ) : (
+          <CabinetSide x={spkX} y={spkY} tiltDeg={tiltDeg} scale={cabScale} />
+        )}
+        {delayOn ? <CabinetSide x={geo.dlyX} y={geo.dlyY} tiltDeg={48} scale={cabScale * 0.86} /> : null}
+        {rearDelayOn ? <CabinetSide x={geo.rearX} y={geo.rearY} tiltDeg={62} scale={cabScale * 0.86} /> : null}
+        {/* The audience: proportional line-art busts, tinted by coverage class. */}
+        {(['gray', 'yellow', 'green', 'red'] as CoverageClass[]).map((k) => (
+          <LineBusts key={k} path={geo.seats[k]} stroke={SEAT_LINE[k]} sw={1.7} />
+        ))}
+        {/* Delay-alignment race to the rear rows (conceptual timing). */}
+        {rearDelayOn ? (
+          <AlignmentOverlay
+            phase={alignPhase}
+            mainX={spkX}
+            rearX={geo.rearX}
+            targetX={rearTargetX}
+            yTop={ceilY + 6}
+            yBot={floorY - 2}
+            aligned={timeAligned}
+          />
+        ) : null}
+      </Group>
     </Canvas>
   );
 }
