@@ -75,13 +75,19 @@ const METAL_MID = '#7c7f89';
 const METAL_LO = '#3a3c44';
 const BODY_HI = '#4a4d58';
 const BODY_LO = '#1e1f26';
-// Skin/hair tones for the human illustrations (owner: real skin gradients).
+// Skin tones for the HAND illustration (the hand stays a rendered object).
 const SKIN_HI = '#8a6f5a';
 const SKIN_MID = '#5d4a3c';
 const SKIN_LO = '#2e2620';
-const HAIR_HI = '#31343e';
-const HAIR_LO = '#121318';
 const ACCENT_ORANGE = '#ffa94d';
+// Line-art head icons (owner ruling 2026-07-29, reference art supplied): a
+// single uniform-weight stroke, rounded caps, no fill, no shading, bald. The
+// reference is dark-on-white; our labs are on near-black, so the stroke is a
+// light neutral and `tint` rides on top as the state accent.
+const LINE = '#d7dbe2';
+/** The ONLY fill the head icons are allowed: a readability plate under the
+ *  line art where it sits over a busy heat-map field. */
+const HEAD_PLATE = 'rgba(9,10,14,0.62)';
 
 type SkPathT = ReturnType<typeof Skia.Path.Make>;
 
@@ -110,92 +116,187 @@ export const POLAR_PATTERNS: { key: string; label: string; a: number; b: number 
 // Shared illustration builders (all static geometry — always inside useMemo
 // at the call site; nothing here runs per-frame).
 
-/** Human head in profile FACING RIGHT (+x), mouth open, origin at the mouth
- *  opening. Layered parts (owner 2026-07-29: a GENUINELY human profile —
- *  forehead, brow, nose, lips, chin, jaw, neck, ear, skull curve; smooth
- *  cubics, skin gradient + rim light, hair mass with its own gradient).
- *  `s` scales a ~52-px-tall base head. */
-function buildHeadParts(s: number): {
-  face: SkPathT;
-  hair: SkPathT;
-  hairSheen: SkPathT;
-  ear: SkPathT;
-  mouth: SkPathT;
-  details: SkPathT;
-  rim: SkPathT;
-} {
-  const face = Skia.Path.Make();
-  face.moveTo(3.2 * s, -7.5 * s); // front of the upper lip (mouth open)
-  face.cubicTo(5.8 * s, -8.6 * s, 5.2 * s, -10.4 * s, 2.6 * s, -10.8 * s); // upper lip → philtrum
-  face.cubicTo(4.6 * s, -11.4 * s, 7.4 * s, -12.2 * s, 7.8 * s, -14.2 * s); // nostril wing → tip
-  face.cubicTo(8.2 * s, -16.4 * s, 5.0 * s, -19.5 * s, 2.6 * s, -23.5 * s); // nose underside → bridge
-  face.cubicTo(1.8 * s, -25.4 * s, 2.9 * s, -26.6 * s, 1.6 * s, -28.5 * s); // brow ridge
-  face.cubicTo(0.2 * s, -31 * s, -3 * s, -34 * s, -8 * s, -35.6 * s); // forehead
-  face.cubicTo(-14 * s, -37.6 * s, -21 * s, -37.2 * s, -26 * s, -33.4 * s); // crown
-  face.cubicTo(-30.5 * s, -29.8 * s, -32 * s, -24 * s, -31 * s, -18 * s); // back of skull
-  face.cubicTo(-30.2 * s, -12.5 * s, -27.5 * s, -7.5 * s, -25.5 * s, -2.5 * s); // occiput
-  face.cubicTo(-24.5 * s, 0.5 * s, -23.5 * s, 4 * s, -23 * s, 8 * s); // nape
-  face.lineTo(-22.5 * s, 15 * s); // back of the neck
-  face.lineTo(-11.5 * s, 15 * s); // neck base
-  face.cubicTo(-11 * s, 11 * s, -10 * s, 8.5 * s, -7.5 * s, 7.8 * s); // throat → under-jaw
-  face.cubicTo(-3.5 * s, 9.8 * s, 1 * s, 8.8 * s, 3 * s, 6.4 * s); // jawline → chin
-  face.cubicTo(5.4 * s, 5.2 * s, 5.6 * s, 2.6 * s, 3.6 * s, 1.6 * s); // chin ball
-  face.cubicTo(5.6 * s, 0.6 * s, 5.4 * s, -1.4 * s, 2.8 * s, -2.2 * s); // lower lip
-  face.cubicTo(0.4 * s, -3.4 * s, 0.4 * s, -6.2 * s, 3.2 * s, -7.5 * s); // open-mouth notch
-  face.close();
-
-  // Hair mass: crown + back of the skull, with an inner hairline curve.
-  const hair = Skia.Path.Make();
-  hair.moveTo(0.5 * s, -29.5 * s); // front hairline, above the brow
-  hair.cubicTo(-2 * s, -33.5 * s, -8 * s, -37 * s, -14 * s, -37.9 * s);
-  hair.cubicTo(-22 * s, -38.8 * s, -30.2 * s, -34 * s, -31.9 * s, -26 * s);
-  hair.cubicTo(-33 * s, -19 * s, -31.5 * s, -11 * s, -28.5 * s, -4.6 * s); // down the back
-  hair.lineTo(-24.6 * s, -6.4 * s);
-  hair.cubicTo(-28.2 * s, -13 * s, -29.2 * s, -20 * s, -26.8 * s, -26.2 * s); // inner curve
-  hair.cubicTo(-23.6 * s, -32.2 * s, -15.6 * s, -34.6 * s, -8.6 * s, -32.8 * s); // inner crown
-  hair.cubicTo(-4.8 * s, -31.8 * s, -1.8 * s, -30.6 * s, 0.5 * s, -29.5 * s);
-  hair.close();
-  const hairSheen = Skia.Path.Make();
-  hairSheen.moveTo(-6 * s, -34.4 * s);
-  hairSheen.cubicTo(-13 * s, -36.4 * s, -21 * s, -35.6 * s, -26 * s, -30.6 * s);
-
-  // Ear: a soft C tucked under the hair, mid-skull.
-  const ear = Skia.Path.Make();
-  ear.moveTo(-11.4 * s, -14.6 * s);
-  ear.cubicTo(-8 * s, -14.4 * s, -7.8 * s, -8.6 * s, -11.8 * s, -7.8 * s);
-  ear.cubicTo(-15.2 * s, -7.2 * s, -16 * s, -12 * s, -13.4 * s, -14.2 * s);
-  ear.close();
-
-  // Open-mouth interior (dark) — the head is speaking.
-  const mouth = Skia.Path.Make();
-  mouth.moveTo(2.9 * s, -7.1 * s);
-  mouth.quadTo(0.9 * s, -5.8 * s, 0.9 * s, -4.6 * s);
-  mouth.quadTo(0.9 * s, -3.4 * s, 2.6 * s, -2.6 * s);
-  mouth.quadTo(1.9 * s, -4.9 * s, 2.9 * s, -7.1 * s);
-  mouth.close();
-
-  // Fine details: eye lid line + brow line + nostril + ear canal.
-  const details = Skia.Path.Make();
-  details.moveTo(1.6 * s, -24.4 * s); // eye
-  details.quadTo(-0.6 * s, -25.4 * s, -2.8 * s, -24.4 * s);
-  details.moveTo(2.4 * s, -27.2 * s); // brow
-  details.quadTo(-0.4 * s, -28.4 * s, -3.2 * s, -27.4 * s);
-  details.addOval(Skia.XYWHRect(3.4 * s, -13.2 * s, 1.9 * s, 1.3 * s)); // nostril
-  details.moveTo(-12.6 * s, -12.6 * s); // ear canal fold
-  details.quadTo(-10.8 * s, -11.4 * s, -12 * s, -9.6 * s);
-
-  // Rim light: the lit front profile edge (light from the upper-left).
-  const rim = Skia.Path.Make();
-  rim.moveTo(2.8 * s, -10.9 * s);
-  rim.cubicTo(4.8 * s, -11.5 * s, 7.4 * s, -12.2 * s, 7.8 * s, -14.2 * s);
-  rim.cubicTo(8.2 * s, -16.4 * s, 5.0 * s, -19.5 * s, 2.6 * s, -23.5 * s);
-  rim.cubicTo(1.8 * s, -25.4 * s, 2.9 * s, -26.6 * s, 1.6 * s, -28.5 * s);
-  rim.cubicTo(0.2 * s, -31 * s, -3 * s, -34 * s, -8 * s, -35.6 * s);
-  return { face, hair, hairSheen, ear, mouth, details, rim };
+/**
+ * ── HEAD PROPORTION vs THE MIC (owner ruling 2026-07-29) ────────────────────
+ * A real head is ~23 cm tall; a handheld vocal mic is ~16 cm long. So the head
+ * must be NOTICEABLY LARGER than the mic in every scene where both appear —
+ * and the owner explicitly prefers correct proportion over fitting the whole
+ * head on canvas: the cranium is ALLOWED to crop off the top/side as long as
+ * the mouth/nose region (the acoustically relevant part) stays in view.
+ *
+ * `HEAD_CANON_H` is the crown→chin height of the line-art canon below in head
+ * units, so headScaleForMic() returns exactly the scale that puts a 23 cm head
+ * next to the 16 cm mic actually drawn at that call site.
+ */
+const HEAD_CANON_H = 45.6; // crown (−35.1) → chin (+10.5), head units
+const HEAD_CM = 23;
+const MIC_CM = 16;
+/** Total drawn length of a mic built by buildHandheldMic(gr, len) — the same
+ *  1.72·gr + len the 3.2 : 1 proportion notes use throughout this file. */
+export function micTotalLen(grilleR: number, bodyLen: number): number {
+  return 1.72 * grilleR + bodyLen;
+}
+/** TRUE human proportion: the head scale that matches a 23 cm head to the
+ *  16 cm mic drawn with (grilleR, bodyLen) at this call site. */
+export function headScaleForMic(grilleR: number, bodyLen: number): number {
+  return (micTotalLen(grilleR, bodyLen) * (HEAD_CM / MIC_CM)) / HEAD_CANON_H;
 }
 
-/** A rendered profile head (layered face + hair + ear + open mouth, skin
- *  gradient with rim light), facing along `angleRad` (0 = +x / right). */
+/**
+ * PROFILE head — CLEAN LINE-ART ICON, authored FACING LEFT (owner ruling
+ * 2026-07-29; the shaded/rendered head was rejected twice and is gone).
+ *
+ * ORIGIN = THE MOUTH OPENING, exactly: the lip line is y = 0 and the front of
+ * the lips is x = 0 (call sites measure mouth→grille gaps straight from it).
+ * Canon, in head units: crown −35.1 · brow −21.4 · nose tip −7.7 · nose base
+ * −3.9 · MOUTH 0 · chin +10.5 · neck base +20.9. Head depth (nose tip −11.3 →
+ * occiput +32.5) ≈ head height, and the cranium is deliberately FULL AT THE
+ * BACK — the single most common profile mistake.
+ *
+ * The reference art is one uniform stroke: no fill, no gradient, no shading,
+ * no hair. Landmarks along the front edge, in path order from the neck up:
+ * throat → jaw sweeping BACK AND UP to the ear → chin tucking under → fuller
+ * lower lip → lip notch → upper lip → philtrum → nostril undercut → defined
+ * nose tip → straight bridge → nasion (brow notch) → brow → forehead slope →
+ * crown → full back of the skull → occiput → nape. The THICK SQUARED NECK is
+ * two open lines dropping from the jaw and the nape, not a thin stalk.
+ *
+ * FACING: this is the ONLY authored version. The right-facing head every call
+ * site actually uses is derived by MIRRORING (scaleX −1) inside ProfileHead,
+ * exactly as the owner instructed — there is no second hand-authored path.
+ */
+function appendProfileOutline(p: SkPathT, s: number): void {
+  p.moveTo(16.8 * s, -0.6 * s); // the ramus, just in front of the ear
+  p.cubicTo(16.6 * s, 6.4 * s, 15.0 * s, 10.0 * s, 12.0 * s, 11.4 * s); // → gonion
+  p.cubicTo(7.0 * s, 13.4 * s, 1.5 * s, 12.6 * s, -3.0 * s, 9.7 * s); // jaw → chin
+  p.cubicTo(-4.4 * s, 8.5 * s, -5.6 * s, 7.8 * s, -5.6 * s, 6.7 * s); // chin projects
+  p.cubicTo(-5.6 * s, 5.5 * s, -4.0 * s, 5.1 * s, -4.0 * s, 3.5 * s); // …tucks under
+  p.cubicTo(-4.2 * s, 2.5 * s, -5.2 * s, 2.3 * s, -5.2 * s, 1.5 * s); // fuller lower lip
+  p.cubicTo(-5.2 * s, 0.8 * s, -4.4 * s, 0.5 * s, -3.9 * s, 0.0 * s); // lip notch (= origin plane)
+  p.cubicTo(-4.3 * s, -0.7 * s, -4.7 * s, -1.1 * s, -4.9 * s, -1.5 * s); // upper lip
+  p.cubicTo(-4.4 * s, -2.5 * s, -3.6 * s, -3.0 * s, -2.6 * s, -3.9 * s); // philtrum
+  p.cubicTo(-4.8 * s, -4.3 * s, -6.8 * s, -4.6 * s, -8.6 * s, -5.2 * s); // nose base / wing
+  p.cubicTo(-10.3 * s, -5.7 * s, -11.3 * s, -6.5 * s, -11.3 * s, -7.7 * s); // nostril undercut → tip
+  p.cubicTo(-11.3 * s, -9.6 * s, -9.3 * s, -11.7 * s, -6.5 * s, -14.7 * s); // straight bridge
+  p.cubicTo(-4.5 * s, -16.7 * s, -3.4 * s, -17.5 * s, -3.0 * s, -18.7 * s); // nasion notch
+  p.cubicTo(-2.8 * s, -19.7 * s, -4.0 * s, -20.2 * s, -4.0 * s, -21.4 * s); // brow
+  p.cubicTo(-4.0 * s, -24.1 * s, -2.4 * s, -27.2 * s, 0.6 * s, -29.9 * s); // forehead slope
+  p.cubicTo(3.8 * s, -32.8 * s, 8.2 * s, -34.8 * s, 13.5 * s, -35.1 * s); // crown
+  p.cubicTo(21.2 * s, -35.6 * s, 28.0 * s, -31.6 * s, 30.5 * s, -25.3 * s);
+  p.cubicTo(32.5 * s, -20.3 * s, 32.1 * s, -14.3 * s, 29.9 * s, -8.9 * s); // FULL at the back
+  p.cubicTo(28.4 * s, -5.3 * s, 26.4 * s, -2.3 * s, 25.4 * s, 1.5 * s); // occiput → mastoid
+  p.cubicTo(24.6 * s, 4.5 * s, 24.1 * s, 7.7 * s, 23.7 * s, 11.1 * s); // nape
+}
+
+function buildProfileHead(s: number): { lines: SkPathT; plate: SkPathT; open: SkPathT } {
+  // ── The one stroked family: outline + neck + ear + lip line ───────────────
+  const lines = Skia.Path.Make();
+  appendProfileOutline(lines, s);
+  // Thick squared neck column: two open lines, jaw → base and nape → base.
+  lines.moveTo(6.2 * s, 13.2 * s);
+  lines.lineTo(7.6 * s, 20.9 * s);
+  lines.moveTo(23.7 * s, 11.1 * s);
+  lines.lineTo(23.4 * s, 20.9 * s);
+  // Ear, mid-skull: outer helix oval…
+  lines.moveTo(14.2 * s, -14.7 * s);
+  lines.cubicTo(17.6 * s, -16.7 * s, 21.4 * s, -14.9 * s, 21.6 * s, -10.7 * s);
+  lines.cubicTo(21.8 * s, -7.3 * s, 19.8 * s, -4.5 * s, 17.2 * s, -3.3 * s);
+  lines.cubicTo(15.2 * s, -2.4 * s, 13.6 * s, -3.5 * s, 13.4 * s, -5.7 * s);
+  lines.cubicTo(13.2 * s, -8.7 * s, 13.4 * s, -12.1 * s, 14.2 * s, -14.7 * s);
+  lines.close();
+  // …plus the small inner fold curl.
+  lines.moveTo(15.4 * s, -13.3 * s);
+  lines.cubicTo(18.6 * s, -13.7 * s, 19.8 * s, -10.9 * s, 18.8 * s, -7.9 * s);
+  lines.cubicTo(18.2 * s, -6.1 * s, 16.8 * s, -5.1 * s, 15.6 * s, -5.1 * s);
+  // Lip line running back into the face from the notch.
+  lines.moveTo(-4.2 * s, 0.1 * s);
+  lines.cubicTo(-2.6 * s, 0.8 * s, -0.8 * s, 0.9 * s, 0.6 * s, 0.4 * s);
+
+  // ── Speaking variant: the lip strokes open into a small mouth lens ────────
+  const open = Skia.Path.Make();
+  open.moveTo(-4.4 * s, -0.8 * s);
+  open.cubicTo(-2.4 * s, -1.8 * s, -0.4 * s, -1.4 * s, 1.0 * s, -0.3 * s);
+  open.cubicTo(-0.4 * s, 1.8 * s, -2.8 * s, 2.0 * s, -4.4 * s, 0.9 * s);
+  open.close();
+
+  // ── Readability plate: the silhouette + the neck column, filled dark. The
+  //    ONLY fill in the icon, and only used where a head sits on a heat map.
+  const plate = Skia.Path.Make();
+  appendProfileOutline(plate, s); // Skia closes it implicitly when filled
+  plate.close();
+  plate.moveTo(6.2 * s, 13.2 * s);
+  plate.lineTo(7.6 * s, 20.9 * s);
+  plate.lineTo(23.4 * s, 20.9 * s);
+  plate.lineTo(23.7 * s, 11.1 * s);
+  plate.close();
+  return { lines, plate, open };
+}
+
+/**
+ * FRONT head — the same line-art language, symmetric, used wherever a head is
+ * seen face-on. Tall rounded cranium, temples narrowing to cheeks, a soft
+ * tapered jaw to a rounded chin, one small elongated ear each side with a tiny
+ * inner fold, two curved eyebrow strokes, a nose drawn ONLY as two short
+ * bridge lines meeting two nostril curls, and a small two-stroke mouth.
+ * NOTE: the reference has NO EYES — deliberately kept that way.
+ */
+function buildFrontHead(s: number): { lines: SkPathT; plate: SkPathT } {
+  const shell = (p: SkPathT) => {
+    p.moveTo(0, -35.1 * s);
+    p.cubicTo(7.6 * s, -35.1 * s, 12.8 * s, -31.8 * s, 14.0 * s, -25.8 * s);
+    p.cubicTo(14.8 * s, -21.4 * s, 14.2 * s, -15.6 * s, 13.6 * s, -8.8 * s); // temple → cheek
+    p.cubicTo(13.2 * s, -3.9 * s, 11.4 * s, 1.0 * s, 8.6 * s, 5.1 * s); // cheek → jaw
+    p.cubicTo(6.4 * s, 8.2 * s, 3.5 * s, 10.4 * s, 0, 10.5 * s); // jaw → rounded chin
+    p.cubicTo(-3.5 * s, 10.4 * s, -6.4 * s, 8.2 * s, -8.6 * s, 5.1 * s);
+    p.cubicTo(-11.4 * s, 1.0 * s, -13.2 * s, -3.9 * s, -13.6 * s, -8.8 * s);
+    p.cubicTo(-14.2 * s, -15.6 * s, -14.8 * s, -21.4 * s, -14.0 * s, -25.8 * s);
+    p.cubicTo(-12.8 * s, -31.8 * s, -7.6 * s, -35.1 * s, 0, -35.1 * s);
+    p.close();
+  };
+  const lines = Skia.Path.Make();
+  shell(lines);
+  for (const g of [-1, 1]) {
+    // Ear: small elongated outer curve hugging the skull…
+    lines.moveTo(g * 13.4 * s, -14.2 * s);
+    lines.cubicTo(g * 17.6 * s, -15.2 * s, g * 18.4 * s, -10.0 * s, g * 17.0 * s, -6.2 * s);
+    lines.cubicTo(g * 16.0 * s, -3.6 * s, g * 13.8 * s, -3.4 * s, g * 13.2 * s, -5.4 * s);
+    // …with a tiny inner fold.
+    lines.moveTo(g * 15.4 * s, -12.4 * s);
+    lines.cubicTo(g * 16.6 * s, -11.0 * s, g * 16.4 * s, -8.4 * s, g * 15.2 * s, -7.0 * s);
+    // Eyebrow.
+    lines.moveTo(g * 10.0 * s, -18.4 * s);
+    lines.cubicTo(g * 7.6 * s, -20.4 * s, g * 4.6 * s, -20.4 * s, g * 2.6 * s, -19.0 * s);
+    // Nose: a short bridge line that ends in a nostril curl (no nose outline).
+    lines.moveTo(g * 2.0 * s, -15.2 * s);
+    lines.lineTo(g * 2.6 * s, -5.2 * s);
+    lines.cubicTo(g * 3.6 * s, -3.6 * s, g * 5.0 * s, -4.0 * s, g * 5.2 * s, -5.6 * s);
+    // Neck column.
+    lines.moveTo(g * 7.0 * s, 6.6 * s);
+    lines.lineTo(g * 7.0 * s, 20.9 * s);
+  }
+  // Two-stroke mouth.
+  lines.moveTo(-5.0 * s, -0.8 * s);
+  lines.cubicTo(-2.4 * s, -2.0 * s, 2.4 * s, -2.0 * s, 5.0 * s, -0.8 * s);
+  lines.moveTo(-4.4 * s, 0.5 * s);
+  lines.cubicTo(-2.0 * s, 2.0 * s, 2.0 * s, 2.0 * s, 4.4 * s, 0.5 * s);
+
+  const plate = Skia.Path.Make();
+  shell(plate);
+  plate.moveTo(-7.0 * s, 6.6 * s);
+  plate.lineTo(-7.0 * s, 20.9 * s);
+  plate.lineTo(7.0 * s, 20.9 * s);
+  plate.lineTo(7.0 * s, 6.6 * s);
+  plate.close();
+  return { lines, plate };
+}
+
+/**
+ * PROFILE head icon. `angleRad` = the facing direction, 0 = +x (RIGHT) — the
+ * left-facing canon above is MIRRORED (scaleX −1) to get there, per the owner.
+ * Stroke width scales with `scale` (never absolute px), rounded caps/joins.
+ * `tint` rides on the same stroke as the state accent; `plate` turns on the
+ * dark interior for heads that sit over a heat-map field.
+ */
 function ProfileHead({
   x,
   y,
@@ -203,6 +304,8 @@ function ProfileHead({
   scale,
   tint,
   glow,
+  plate,
+  speaking,
 }: {
   x: number;
   y: number;
@@ -210,58 +313,145 @@ function ProfileHead({
   scale: number;
   tint: string;
   glow?: boolean;
+  /** Dark translucent interior — ONLY where the head overlaps a heat map. */
+  plate?: boolean;
+  /** Mouth-open state: the lip strokes open into a small mouth. */
+  speaking?: boolean;
 }) {
-  const parts = useMemo(() => buildHeadParts(scale), [scale]);
+  const parts = useMemo(() => buildProfileHead(scale), [scale]);
   const s = scale;
+  const lw = 1.55 * s;
   return (
-    <Group transform={[{ translateX: x }, { translateY: y }, { rotate: angleRad }]}>
+    <Group
+      transform={[{ translateX: x }, { translateY: y }, { rotate: angleRad }, { scaleX: -1 }]}
+    >
+      {plate ? <Path path={parts.plate} color={HEAD_PLATE} /> : null}
       {glow ? (
-        <Path path={parts.face} color={tint} style="stroke" strokeWidth={5 * s} opacity={0.3}>
-          <BlurMask blur={6 * s} style="normal" />
+        <Path
+          path={parts.lines}
+          color={tint}
+          style="stroke"
+          strokeWidth={lw * 3.4}
+          strokeCap="round"
+          strokeJoin="round"
+          opacity={0.3}
+        >
+          <BlurMask blur={3 * s} style="normal" />
         </Path>
       ) : null}
-      {/* Skin: warm form gradient, light from the upper-left. */}
-      <Path path={parts.face}>
-        <LinearGradient
-          start={vec(-30 * s, -38 * s)}
-          end={vec(10 * s, 15 * s)}
-          colors={[SKIN_HI, SKIN_MID, SKIN_LO]}
-          positions={[0, 0.55, 1]}
+      <Path
+        path={parts.lines}
+        color={LINE}
+        style="stroke"
+        strokeWidth={lw}
+        strokeCap="round"
+        strokeJoin="round"
+      />
+      <Path
+        path={parts.lines}
+        color={tint}
+        style="stroke"
+        strokeWidth={lw}
+        strokeCap="round"
+        strokeJoin="round"
+        opacity={0.34}
+      />
+      {speaking ? (
+        <Path
+          path={parts.open}
+          color={LINE}
+          style="stroke"
+          strokeWidth={lw}
+          strokeCap="round"
+          strokeJoin="round"
         />
-      </Path>
-      {/* Cheek/temple lift: a soft radial highlight. */}
-      <Circle cx={-6 * s} cy={-17 * s} r={11 * s} color="#ffffff" opacity={0.06}>
-        <BlurMask blur={7 * s} style="normal" />
-      </Circle>
-      {/* Ear (slightly darker skin) + its fold. */}
-      <Path path={parts.ear}>
-        <LinearGradient start={vec(-16 * s, -15 * s)} end={vec(-8 * s, -7 * s)} colors={[SKIN_MID, SKIN_LO]} />
-      </Path>
-      {/* Hair mass with its own darker gradient + a sheen arc. */}
-      <Path path={parts.hair}>
-        <LinearGradient start={vec(-28 * s, -38 * s)} end={vec(-10 * s, -4 * s)} colors={[HAIR_HI, HAIR_LO]} />
-      </Path>
-      <Path path={parts.hairSheen} color="#5a5f6e" style="stroke" strokeWidth={1.4 * s} opacity={0.5} />
-      {/* Open mouth interior + feature lines. */}
-      <Path path={parts.mouth} color="#170d0c" />
-      <Path path={parts.details} color="#1c1410" style="stroke" strokeWidth={0.9 * s} opacity={0.85} />
-      {/* Rim light along the lit profile + a whisper of state tint. */}
-      <Path path={parts.rim} color="#f2dfc8" style="stroke" strokeWidth={1.1 * s} opacity={0.5} />
-      <Path path={parts.face} color={tint} style="stroke" strokeWidth={1.1} opacity={0.45} />
+      ) : null}
     </Group>
   );
 }
 
-/** Head-and-shoulders bust appended to `p`; `x` = center, `y` = base line. */
+/** FRONT head icon — same line-art language, used wherever a head is face-on. */
+function FrontHead({
+  x,
+  y,
+  scale,
+  tint,
+  plate,
+}: {
+  x: number;
+  y: number;
+  scale: number;
+  tint: string;
+  plate?: boolean;
+}) {
+  const parts = useMemo(() => buildFrontHead(scale), [scale]);
+  const lw = 1.55 * scale;
+  return (
+    <Group transform={[{ translateX: x }, { translateY: y }]}>
+      {plate ? <Path path={parts.plate} color={HEAD_PLATE} /> : null}
+      <Path
+        path={parts.lines}
+        color={LINE}
+        style="stroke"
+        strokeWidth={lw}
+        strokeCap="round"
+        strokeJoin="round"
+      />
+      <Path
+        path={parts.lines}
+        color={tint}
+        style="stroke"
+        strokeWidth={lw}
+        strokeCap="round"
+        strokeJoin="round"
+        opacity={0.34}
+      />
+    </Group>
+  );
+}
+
+/** Head-and-shoulders bust appended to `p`; `x` = center, `y` = base line.
+ *  ONE closed contour (shoulders → neck → jaw → cranium → back down) so the
+ *  caller's dark outline stroke traces a single crisp silhouette with no
+ *  internal seams — these are drawn small and layered over heat maps, where a
+ *  clean edge is the only thing keeping them readable. Same overall footprint
+ *  (16.6·s tall, 16·s wide) as the previous helper, so every seat/stage layout
+ *  that positions them is untouched. */
 function appendBust(p: SkPathT, x: number, y: number, s: number) {
-  // Shoulders: a soft dome.
   p.moveTo(x - 8 * s, y);
-  p.cubicTo(x - 8 * s, y - 5.5 * s, x - 5 * s, y - 8 * s, x - 2.4 * s, y - 8.6 * s);
-  p.lineTo(x + 2.4 * s, y - 8.6 * s);
-  p.cubicTo(x + 5 * s, y - 8 * s, x + 8 * s, y - 5.5 * s, x + 8 * s, y);
+  // Left trapezius → shoulder → neck.
+  p.cubicTo(x - 8 * s, y - 4.6 * s, x - 6.6 * s, y - 6.8 * s, x - 4.2 * s, y - 7.6 * s);
+  p.cubicTo(x - 2.8 * s, y - 8.1 * s, x - 2.1 * s, y - 8.6 * s, x - 2.0 * s, y - 9.6 * s);
+  // Jaw → cheek → cranium (widest just above the ear line).
+  p.cubicTo(x - 3.2 * s, y - 10.6 * s, x - 3.9 * s, y - 11.9 * s, x - 3.9 * s, y - 13.2 * s);
+  p.cubicTo(x - 3.9 * s, y - 15.4 * s, x - 2.2 * s, y - 16.7 * s, x, y - 16.7 * s);
+  p.cubicTo(x + 2.2 * s, y - 16.7 * s, x + 3.9 * s, y - 15.4 * s, x + 3.9 * s, y - 13.2 * s);
+  p.cubicTo(x + 3.9 * s, y - 11.9 * s, x + 3.2 * s, y - 10.6 * s, x + 2.0 * s, y - 9.6 * s);
+  // Right neck → shoulder → trapezius.
+  p.cubicTo(x + 2.1 * s, y - 8.6 * s, x + 2.8 * s, y - 8.1 * s, x + 4.2 * s, y - 7.6 * s);
+  p.cubicTo(x + 6.6 * s, y - 6.8 * s, x + 8 * s, y - 4.6 * s, x + 8 * s, y);
   p.close();
-  // Head: a slightly egg-shaped oval on the shoulders.
-  p.addOval(Skia.XYWHRect(x - 3.5 * s, y - 16.6 * s, 7 * s, 8.6 * s));
+}
+
+/** Audience/performer busts in the SAME LINE-ART LANGUAGE as the head icons
+ *  (owner ruling 2026-07-29): the silhouette keeps its shape, but it is now a
+ *  light uniform stroke over a subtle dark interior so it reads instantly on
+ *  top of a busy heat-map field. `stroke` carries meaning where the caller has
+ *  meaning to carry (the coverage class); `sw` scales with the bust. */
+function LineBusts({ path, stroke, sw }: { path: SkPathT; stroke: string; sw: number }) {
+  return (
+    <Group>
+      <Path path={path} color={HEAD_PLATE} />
+      <Path
+        path={path}
+        color={stroke}
+        style="stroke"
+        strokeWidth={sw}
+        strokeCap="round"
+        strokeJoin="round"
+      />
+    </Group>
+  );
 }
 
 /** Handheld vocal mic parts, LOCAL coords: grille sphere centered at the
@@ -469,6 +659,7 @@ function buildHand(s: number): {
   creases: SkPathT[];
   thumb: SkPathT;
   thumbShade: SkPathT;
+  thumbEdge: SkPathT;
 } {
   // Palm mass: a rounded organic silhouette BEHIND the body. Its far edge
   // stops just short of the axis so it never shows on the finger side.
@@ -529,7 +720,21 @@ function buildHand(s: number): {
   const thumbShade = Skia.Path.Make();
   thumbShade.moveTo(16.5 * s, 4.4 * s);
   thumbShade.cubicTo(10.5 * s, 2.2 * s, 4.5 * s, -2.2 * s, 0.8 * s, -7 * s);
-  return { palm, wrist, fingers, creases, thumb, thumbShade };
+  // STRAY-THUMB FIX (owner defect 2026-07-29 — "there is still a drawn outline
+  // of a thumb on top of the hand … in the various handle positions"). ROOT
+  // CAUSE: the front layer stroked the CLOSED `thumb` path in the state tint
+  // AFTER filling it, and then stroked all four fingers in the tint after
+  // that — so a complete, unbroken thumb-shaped contour was drawn over the
+  // filled fingers at every grip position, reading as a second, ghost thumb.
+  // There is only ever ONE thumb shape; the tint now rides a SINGLE OPEN edge
+  // (the thumb's lit leading edge) instead of a closed outline, and the finger
+  // edges are drawn BEFORE the thumb so nothing outlines across it.
+  const thumbEdge = Skia.Path.Make();
+  thumbEdge.moveTo(19 * s, 5.5 * s);
+  thumbEdge.cubicTo(12 * s, 3.2 * s, 5 * s, -1.5 * s, 0.2 * s, -7.2 * s);
+  thumbEdge.quadTo(-3.2 * s, -11.2 * s, -0.6 * s, -13.6 * s);
+  thumbEdge.quadTo(2 * s, -15.8 * s, 5 * s, -12.6 * s);
+  return { palm, wrist, fingers, creases, thumb, thumbShade, thumbEdge };
 }
 
 // Per-finger highlight tones (upper fingers catch more of the light).
@@ -593,7 +798,13 @@ function GripHand({
           {parts.creases.map((c, i) => (
             <Path key={`c${i}`} path={c} color="#1c130d" opacity={0.45} />
           ))}
-          {/* Thumb crossing at a natural diagonal, over the fingers. */}
+          {/* Finger edge light FIRST — so no finger outline is ever drawn
+              across the thumb that sits on top of them. */}
+          {parts.fingers.map((f, i) => (
+            <Path key={`t${i}`} path={f} color={tint} style="stroke" strokeWidth={hair * 0.9} opacity={0.4} />
+          ))}
+          {/* Thumb crossing at a natural diagonal, over the fingers — filled
+              once, edge-lit once, never outlined as a closed shape. */}
           <Path path={parts.thumb}>
             <LinearGradient
               start={vec(-3.2 * s, -15.8 * s)}
@@ -603,11 +814,14 @@ function GripHand({
             />
           </Path>
           <Path path={parts.thumbShade} color="#1c130d" style="stroke" strokeWidth={hair} opacity={0.5} />
-          {/* State tint: a thin edge light that scales with the hand. */}
-          <Path path={parts.thumb} color={tint} style="stroke" strokeWidth={hair} opacity={0.5} />
-          {parts.fingers.map((f, i) => (
-            <Path key={`t${i}`} path={f} color={tint} style="stroke" strokeWidth={hair * 0.9} opacity={0.4} />
-          ))}
+          <Path
+            path={parts.thumbEdge}
+            color={tint}
+            style="stroke"
+            strokeWidth={hair}
+            strokeCap="round"
+            opacity={0.5}
+          />
         </>
       )}
     </Group>
@@ -757,21 +971,44 @@ function usePolarFieldBuckets(
   }, [w, h, cx, cy, R, a, b]);
 }
 
+// ── POLAR: the head IS the source, positioned FREELY (owner 2026-07-29) ─────
+// The old build pinned the source to a fixed radius and kept a large keep-out
+// zone around the mic, so it could never come close. Now the head is dragged
+// anywhere on the canvas and the ONLY restriction is that its silhouette may
+// not INTERSECT the mic's — it may sit right up against it. The collision
+// floor is solved in the host screen (which must also work on pre-Skia
+// clients), against the geometry constants published here.
+/** Grille radius / body length of the polar scene's mic. */
+export const POLAR_MIC_GR = 8;
+export const POLAR_MIC_LEN = 37;
+/** Mic grille-centre offset from the canvas centre, in px. */
+export const POLAR_MIC_DY = -6;
+/** The head silhouette as three collision circles, in HEAD UNITS, in the
+ *  head's own frame (origin = the mouth, +x = the facing direction): cranium,
+ *  mid-face, nose/chin. Multiply by headScaleForMic(POLAR_MIC_GR, …). */
+export const HEAD_COLLIDERS: { u: number; v: number; r: number }[] = [
+  { u: -14, v: -20, r: 20 },
+  { u: -4, v: -10, r: 13 },
+  { u: 4, v: -2, r: 10 },
+];
+
 export function PolarPatternView({
   phase,
   width,
   height = 230,
   a,
   b,
-  srcAngleDeg,
+  srcX,
+  srcY,
 }: {
   phase: SharedValue<number>;
   width: number;
   height?: number;
   a: number;
   b: number;
-  /** Source angle: 0° = the mic's front (up); clockwise positive. */
-  srcAngleDeg: number;
+  /** Source position in CANVAS px — already collision-clamped by the host. */
+  srcX: number;
+  srcY: number;
 }) {
   const w = width;
   const h = height;
@@ -804,30 +1041,33 @@ export function PolarPatternView({
   }, [cx, cy, R, a, b]);
 
   // Source position + its pickup gain (plain JS — captured by the worklet).
-  const thSrc = (srcAngleDeg * Math.PI) / 180;
-  const sx = cx + R * Math.sin(thSrc);
-  const sy = cy - R * Math.cos(thSrc);
+  // The polar math is UNCHANGED: θ is still measured from the mic's front
+  // axis (up); only where the source may sit has changed.
+  const sx = srcX;
+  const sy = srcY;
+  const gy = cy + POLAR_MIC_DY; // the grille centre the head aims at
+  const thSrc = Math.atan2(sx - cx, -(sy - gy));
   const gain = polarGain(a, b, thSrc);
-  const faceAngle = Math.atan2(cy - sy, cx - sx); // head faces the mic
+  const faceAngle = Math.atan2(gy - sy, cx - sx); // head faces the mic
 
   const pickupLine = useMemo(() => {
     const p = Skia.Path.Make();
     p.moveTo(sx, sy);
-    p.lineTo(cx, cy);
+    p.lineTo(cx, gy);
     return p;
-  }, [sx, sy, cx, cy]);
+  }, [sx, sy, cx, gy]);
 
   // Ripples traveling source → mic (phase-continuous).
   const ripples = useDerivedValue(() => {
     const ph = phase.value;
     const p = Skia.Path.Make();
-    const dist = Math.hypot(sx - cx, sy - cy);
+    const dist = Math.hypot(sx - cx, sy - gy);
     for (let i = 0; i < 3; i++) {
       const f = (ph / (2 * Math.PI) + i / 3) % 1;
       p.addCircle(sx, sy, 6 + f * dist);
     }
     return p;
-  }, [phase, sx, sy, cx, cy]);
+  }, [phase, sx, sy, cx, gy]);
 
   const field = usePolarFieldBuckets(w, h, cx, cy, R, a, b);
 
@@ -853,9 +1093,21 @@ export function PolarPatternView({
         opacity={0.25 + 0.75 * gain}
       />
       {/* The mic itself, front axis up (1.72·8 + 37 ≈ 3.2 × the 16-px grille). */}
-      <HandheldMic x={cx} y={cy - 6} angleDeg={0} grilleR={8} bodyLen={37} />
-      {/* The source: a head in profile, mouth toward the mic. */}
-      <ProfileHead x={sx} y={sy} angleRad={faceAngle} scale={0.4} tint={ACCENT_GREEN} glow />
+      <HandheldMic x={cx} y={gy} angleDeg={0} grilleR={POLAR_MIC_GR} bodyLen={POLAR_MIC_LEN} />
+      {/* THE SOURCE: a head in profile, mouth toward the mic, in TRUE human
+          proportion to it (23 cm head vs 16 cm mic) and free to be dragged
+          right up next to the grille. Plated so the line art stays readable
+          over the heat field. */}
+      <ProfileHead
+        x={sx}
+        y={sy}
+        angleRad={faceAngle}
+        scale={headScaleForMic(POLAR_MIC_GR, POLAR_MIC_LEN)}
+        tint={ACCENT_GREEN}
+        glow
+        plate
+        speaking
+      />
     </Canvas>
   );
 }
@@ -934,8 +1186,18 @@ export function DistanceView({
         <BlurMask blur={4} style="normal" />
       </Path>
       <Path path={fronts} color="#ffffff" style="stroke" strokeWidth={1.3} opacity={0.4} />
-      {/* Talker in profile, mouth at the wavefront origin. */}
-      <ProfileHead x={srcX} y={mid} angleRad={0} scale={0.52} tint={CONE} />
+      {/* Talker in profile, mouth at the wavefront origin — TRUE proportion to
+          the mic (head ≈ 1.44 × the mic's length); the back of the skull runs
+          off the left edge by design. */}
+      <ProfileHead
+        x={srcX}
+        y={mid}
+        angleRad={0}
+        scale={headScaleForMic(8, 37)}
+        tint={CONE}
+        plate
+        speaking
+      />
       {/* The mic at working distance, grille facing the talker (3.2 : 1). */}
       <HandheldMic x={micX} y={mid} angleDeg={-90} grilleR={8} bodyLen={37} />
     </Canvas>
@@ -952,6 +1214,31 @@ export function proximityDb(f: number, boostDb: number): number {
   return boostDb * x;
 }
 
+/** Frequency ticks for the response graphs — the ACTUAL plotted decade span
+ *  (40 Hz … 16 kHz), so the axis never claims range the curve doesn't have. */
+const FREQ_TICKS: { f: number; label: string }[] = [
+  { f: 40, label: '40' },
+  { f: 100, label: '100' },
+  { f: 1000, label: '1k' },
+  { f: 10000, label: '10k' },
+  { f: 16000, label: '16k' },
+];
+
+/** Pick a dB grid step giving ≤ 4 interior lines for the caller's range. */
+function dbStepFor(range: number): number {
+  for (const v of [2, 3, 5, 6, 10, 12, 20, 25]) if (range / v <= 4) return v;
+  return 30;
+}
+
+/**
+ * Response curve WITH READABLE AXES (owner 2026-07-29 — the bare curve gave
+ * no ranges). Log FREQUENCY axis with labelled ticks along the bottom, and an
+ * AMPLITUDE axis in dB down the left gutter that shows the caller's ACTUAL
+ * plotted range: the floor and ceiling are always labelled endpoints, with a
+ * nice-stepped grid between them and a brighter 0 dB reference line. Labels
+ * are RN text over the canvas (the lab's font tokens), like the proximity
+ * scene's readout — no Skia font asset needed.
+ */
 export function ResponseCurveView({
   width,
   height = 132,
@@ -972,17 +1259,51 @@ export function ResponseCurveView({
   const h = height;
   const fLo = 40;
   const fHi = 16000;
-  const xOf = (f: number) => (Math.log(f / fLo) / Math.log(fHi / fLo)) * w;
-  const yOf = (db: number) => 8 + ((ceilDb - Math.max(floorDb, Math.min(ceilDb, db))) / (ceilDb - floorDb)) * (h - 16);
+  const PAD_L = 30; // dB gutter
+  const PAD_R = 8;
+  const PAD_T = 9;
+  const PAD_B = 15; // frequency label strip
+  const plotW = Math.max(20, w - PAD_L - PAD_R);
+  const plotH = Math.max(20, h - PAD_T - PAD_B);
+  const xOf = (f: number) => PAD_L + (Math.log(f / fLo) / Math.log(fHi / fLo)) * plotW;
+  const yOf = (db: number) =>
+    PAD_T + ((ceilDb - Math.max(floorDb, Math.min(ceilDb, db))) / (ceilDb - floorDb)) * plotH;
 
-  const grid = useMemo(() => {
-    const p = Skia.Path.Make();
-    for (const f of [100, 1000, 10000]) {
-      p.moveTo(xOf(f), 4);
-      p.lineTo(xOf(f), h - 4);
+  // dB ticks: nice-stepped multiples inside the range, plus the exact floor
+  // and ceiling so the reader always sees what the graph actually spans.
+  const dbTicks = useMemo(() => {
+    const step = dbStepFor(ceilDb - floorDb);
+    const out: number[] = [];
+    for (let v = Math.ceil(floorDb / step) * step; v <= ceilDb + 1e-6; v += step) out.push(v);
+    if (out.length === 0 || out[0] - floorDb > step * 0.4) out.unshift(floorDb);
+    if (ceilDb - out[out.length - 1] > step * 0.4) out.push(ceilDb);
+    return out;
+  }, [floorDb, ceilDb]);
+
+  const { grid, ticks, frame } = useMemo(() => {
+    const g = Skia.Path.Make();
+    const t = Skia.Path.Make();
+    const fr = Skia.Path.Make();
+    for (const ft of FREQ_TICKS) {
+      const x = xOf(ft.f);
+      g.moveTo(x, PAD_T);
+      g.lineTo(x, PAD_T + plotH);
+      t.moveTo(x, PAD_T + plotH);
+      t.lineTo(x, PAD_T + plotH + 3.5);
     }
-    return p;
-  }, [w, h]);
+    for (const db of dbTicks) {
+      const y = yOf(db);
+      g.moveTo(PAD_L, y);
+      g.lineTo(PAD_L + plotW, y);
+      t.moveTo(PAD_L - 3.5, y);
+      t.lineTo(PAD_L, y);
+    }
+    // Plot frame: left axis + baseline.
+    fr.moveTo(PAD_L, PAD_T);
+    fr.lineTo(PAD_L, PAD_T + plotH);
+    fr.lineTo(PAD_L + plotW, PAD_T + plotH);
+    return { grid: g, ticks: t, frame: fr };
+  }, [w, h, floorDb, ceilDb, dbTicks]);
 
   const { curve, under } = useMemo(() => {
     const c = Skia.Path.Make();
@@ -991,31 +1312,112 @@ export function ResponseCurveView({
     for (let i = 0; i <= N; i++) {
       const f = fLo * Math.pow(fHi / fLo, i / N);
       const y = yOf(dbAt(f));
-      const x = i === 0 ? 0 : xOf(f);
+      const x = xOf(f);
       if (i === 0) {
-        c.moveTo(0, y);
-        u.moveTo(0, y);
+        c.moveTo(x, y);
+        u.moveTo(x, y);
       } else {
         c.lineTo(x, y);
         u.lineTo(x, y);
       }
     }
-    u.lineTo(w, h);
-    u.lineTo(0, h);
+    u.lineTo(PAD_L + plotW, PAD_T + plotH);
+    u.lineTo(PAD_L, PAD_T + plotH);
     u.close();
     return { curve: c, under: u };
-  }, [w, h, dbAt]);
+  }, [w, h, dbAt, floorDb, ceilDb]);
+
+  const axisText = {
+    fontFamily: fonts.mono,
+    fontSize: 8.5,
+    color: '#767a85',
+  } as const;
+  const zeroInRange = floorDb <= 0 && ceilDb >= 0;
 
   return (
-    <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
-      <Path path={grid} color={GHOST} style="stroke" strokeWidth={1} />
-      <SkLine p1={{ x: 0, y: yOf(0) }} p2={{ x: w, y: yOf(0) }} color={GRID} strokeWidth={1.2} />
-      {/* Gradient underfill lifts the curve off black (abstract, styled). */}
-      <Path path={under}>
-        <LinearGradient start={vec(0, 0)} end={vec(0, h)} colors={[withAlpha(color, 0.26), withAlpha(color, 0.02)]} />
-      </Path>
-      <GlowStroke path={curve} color={color} width={2.4} />
-    </Canvas>
+    <View style={{ width: w, height: h }}>
+      <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
+        <Path path={grid} color={GHOST} style="stroke" strokeWidth={1} />
+        <Path path={ticks} color={GRID} style="stroke" strokeWidth={1.2} />
+        <Path path={frame} color={GRID} style="stroke" strokeWidth={1.2} />
+        {/* 0 dB reference, brighter than the grid. */}
+        {zeroInRange ? (
+          <SkLine
+            p1={{ x: PAD_L, y: yOf(0) }}
+            p2={{ x: PAD_L + plotW, y: yOf(0) }}
+            color="#4b4e58"
+            strokeWidth={1.4}
+          />
+        ) : null}
+        {/* Gradient underfill lifts the curve off black (abstract, styled). */}
+        <Path path={under}>
+          <LinearGradient
+            start={vec(0, PAD_T)}
+            end={vec(0, PAD_T + plotH)}
+            colors={[withAlpha(color, 0.26), withAlpha(color, 0.02)]}
+          />
+        </Path>
+        <GlowStroke path={curve} color={color} width={2.4} />
+      </Canvas>
+      {/* AMPLITUDE axis (dB) — the actual plotted range. */}
+      {dbTicks.map((db) => (
+        <RNText
+          key={`d${db}`}
+          style={{
+            position: 'absolute',
+            left: 0,
+            width: PAD_L - 5,
+            top: yOf(db) - 5,
+            textAlign: 'right',
+            ...axisText,
+          }}
+        >
+          {db > 0 ? `+${db}` : `${db}`}
+        </RNText>
+      ))}
+      <RNText
+        style={{
+          position: 'absolute',
+          left: 1,
+          top: 0,
+          fontFamily: fonts.oswaldSemiBold,
+          fontSize: 8,
+          letterSpacing: 0.8,
+          color: '#767a85',
+        }}
+      >
+        dB
+      </RNText>
+      {/* FREQUENCY axis (log). */}
+      {FREQ_TICKS.map((ft) => (
+        <RNText
+          key={`f${ft.f}`}
+          style={{
+            position: 'absolute',
+            left: Math.max(0, Math.min(w - 30, xOf(ft.f) - 15)),
+            width: 30,
+            top: h - 11,
+            textAlign: 'center',
+            ...axisText,
+          }}
+        >
+          {ft.label}
+        </RNText>
+      ))}
+      <RNText
+        style={{
+          position: 'absolute',
+          left: 1,
+          top: h - 11,
+          fontFamily: fonts.oswaldSemiBold,
+          fontSize: 8,
+          letterSpacing: 0.8,
+          color: '#767a85',
+        }}
+      >
+        Hz
+      </RNText>
+    </View>
   );
 }
 
@@ -1047,11 +1449,17 @@ export function ProximityApproachView({
   const w = width;
   const h = height;
   const mid = h * 0.52;
-  const headX = 32; // ProfileHead origin = the mouth
+  const headX = 30; // ProfileHead origin = the mouth
   const GR = 9; // grille radius
   const LEN = 42; // body length → 1.72·9 + 42 = 57.5 ≈ 3.2 × the 18-px grille
-  // Map inches → on-screen gap (mouth → grille), then EASE toward it.
-  const gapPx = 16 + ((inches - 1) / 11) * Math.max(40, w - 150);
+  // TRUE proportion: the head is ~1.8× the drawn scale, i.e. ~82 px crown→chin
+  // against the 57.5-px mic. The cranium reaches y ≈ mid − 63, so it just
+  // clears the top of this panel; the nose tip lands at headX + 20.
+  const headS = headScaleForMic(GR, LEN);
+  // Map inches → on-screen gap (mouth → grille), then EASE toward it. The
+  // 26-px floor is the closest the grille may come before it would touch the
+  // (now correctly sized) nose.
+  const gapPx = 26 + ((inches - 1) / 11) * Math.max(36, w - 168);
   const targetX = headX + gapPx + GR; // grille centre
   const micX = useSharedValue(targetX);
   const warm = useSharedValue(directional ? boostDb : 0);
@@ -1207,9 +1615,9 @@ export function ProximityApproachView({
   // Gap annotation: a dimension line with end ticks, riding the eased mic.
   const dimLine = useDerivedValue(() => {
     const p = Skia.Path.Make();
-    const x0 = headX + 4;
+    const x0 = headX + 2;
     const x1 = micX.value - 12;
-    const yD = mid + 34;
+    const yD = mid + 42; // clear of the (now full-size) neck column
     if (x1 - x0 > 10) {
       p.moveTo(x0, yD - 5);
       p.lineTo(x0, yD + 5);
@@ -1272,8 +1680,8 @@ export function ProximityApproachView({
           <BlurMask blur={GR * 0.3} style="normal" />
         </Path>
         <Path path={specCore} color="#ffffff" opacity={0.8} />
-        {/* The singer, mouth toward the approaching mic. */}
-        <ProfileHead x={headX} y={mid} angleRad={0} scale={0.56} tint={CONE} />
+        {/* The singer, mouth toward the approaching mic — TRUE proportion. */}
+        <ProfileHead x={headX} y={mid} angleRad={0} scale={headS} tint={CONE} speaking />
         <GlowStroke path={dimLine} color={ACCENT_GREEN} width={1.2} opacity={0.7} />
         <Vignette w={w} h={h} />
       </Canvas>
@@ -1328,7 +1736,7 @@ export function OffAxisMicView({
 
   const arrow = useMemo(() => {
     const p = Skia.Path.Make();
-    p.moveTo(srcX + 14, mid);
+    p.moveTo(srcX + 28, mid); // starts clear of the full-size nose
     p.lineTo(micX - 26, mid);
     p.moveTo(micX - 34, mid - 5);
     p.lineTo(micX - 26, mid);
@@ -1340,7 +1748,8 @@ export function OffAxisMicView({
     <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
       <Floor w={w} y={h - 10} h={10} />
       <GlowStroke path={arrow} color={WAVE} width={1.8} opacity={0.8} />
-      <ProfileHead x={srcX} y={mid} angleRad={0} scale={0.42} tint={CONE} />
+      {/* Talker in true proportion to the 45-px mic (crown crops by design). */}
+      <ProfileHead x={srcX} y={mid} angleRad={0} scale={headScaleForMic(7, 33)} tint={CONE} speaking />
       {/* Mic rotated: at 0° the grille faces the incoming sound (left).
           1.72·7 + 33 = 45 ≈ 3.2 × the 14-px grille diameter. */}
       <HandheldMic x={micX} y={mid} angleDeg={-90 + angleDeg} grilleR={7} bodyLen={33} />
@@ -1463,7 +1872,8 @@ export function PopFilterView({
         <BlurMask blur={3.5} style="normal" />
       </Path>
       <Path path={puffs} color={ACCENT_BLUE} />
-      <ProfileHead x={srcX} y={mid} angleRad={0} scale={0.5} tint={CONE} />
+      {/* The talker firing the plosive — TRUE proportion to the mic. */}
+      <ProfileHead x={srcX} y={mid} angleRad={0} scale={headScaleForMic(8, 37)} tint={CONE} speaking />
       <HandheldMic x={gx} y={mid} angleDeg={-90} grilleR={8} bodyLen={37} />
       {mode === 'pop' ? (
         <>
@@ -1498,10 +1908,31 @@ export function PopFilterView({
 // ─────────────────────────────────────────────────────────────────────────────
 // 6 · Shock mount — vibration up the stand
 
+/**
+ * HANDLING NOISE — rebuilt 2026-07-29 (owner: "make the entire animation way
+ * better especially the detail of the mic and shockmount. The green animation
+ * is confusing since the mic is supposed to be moving minimally, and the stand
+ * below is moving, but the green animation is wobbling around the mic").
+ *
+ * WHAT THE SCENE NOW SHOWS
+ *  • A properly detailed studio mic (head basket with crosshatch mesh, body,
+ *    badge band) held in a REAL elastic cradle: an outer suspension ring on a
+ *    yoke, with visible tensioned bands anchored ring → mic body.
+ *  • The PHYSICS is legible. The STAND always shakes by the full ±AMP. With
+ *    the SHOCK MOUNT the ring shakes WITH the stand while the mic body stays
+ *    nearly still, so the BANDS STRETCH AND BOW — you watch the elastic absorb
+ *    the motion. RIGID swaps the cradle for a hard clip and the shake goes
+ *    straight into the body: the mic moves with the stand.
+ *  • The confusing green wobble halo around the mic is GONE. Transmitted
+ *    vibration is now read WHERE IT ACTUALLY IS: an excursion track with a
+ *    live marker and a peak-to-peak bar at the STAND, and a second one at the
+ *    CAPSULE. "Lots of shake down here, almost none up there" (shock mount)
+ *    vs "the same shake all the way up" (rigid) — no halo anywhere.
+ */
 export function ShockMountView({
   phase,
   width,
-  height = 170,
+  height = 216,
   shockMount,
 }: {
   phase: SharedValue<number>;
@@ -1512,91 +1943,295 @@ export function ShockMountView({
   const w = width;
   const h = height;
   const cx = w / 2;
-  const floorY = h - 14;
-  const topY = 34;
+  // Fraction of the stand's motion that reaches the mic. IDENTICAL to the
+  // host screen's "VIBRATION TRANSMITTED INTO THE MIC" meter (0.15 / 0.9).
   const damp = shockMount ? 0.15 : 0.9;
+  const AMP = 6; // stand excursion, px
 
-  // The stand column: full vibration at the floor, `damp` of it at the mic.
-  const stand = useDerivedValue(() => {
-    const ph = phase.value;
-    const base = 5 * Math.sin(ph * 1.9);
+  // ── Fixed scene geometry ─────────────────────────────────────────────────
+  const CAP_TRACK_Y = 22; // capsule excursion readout
+  const MIC_TOP = 38;
+  const BASKET_BOT = 70;
+  const MIC_BOT = 128;
+  const MIC_HW = 11; // body half-width
+  const RING_CY = 98;
+  const RING_RX = 36;
+  const RING_RY = 28;
+  const CLUTCH_Y = 140;
+  const SHAFT_TOP = 156;
+  const FLOOR_Y = 182;
+  const STAND_TRACK_Y = 196;
+
+  // Stand: tripod + shaft, riding the FULL excursion.
+  const standPath = useDerivedValue(() => {
+    'worklet';
+    const o = AMP * Math.sin(phase.value * 1.9);
     const p = Skia.Path.Make();
-    const N = 12;
-    for (let i = 0; i <= N; i++) {
-      const f = i / N;
-      const y = floorY - f * (floorY - topY - 18);
-      const off = base * (1 - f) + base * damp * f;
-      if (i === 0) p.moveTo(cx + off, y);
-      else p.lineTo(cx + off, y);
+    p.moveTo(cx + o, SHAFT_TOP);
+    p.lineTo(cx + o, FLOOR_Y - 16);
+    p.moveTo(cx + o - 30, FLOOR_Y);
+    p.lineTo(cx + o, FLOOR_Y - 16);
+    p.lineTo(cx + o + 30, FLOOR_Y);
+    p.moveTo(cx + o - 16, FLOOR_Y - 8);
+    p.lineTo(cx + o, FLOOR_Y - 16);
+    p.lineTo(cx + o + 16, FLOOR_Y - 8);
+    return p;
+  }, [phase, cx]);
+
+  // Clutch collar (the knurled twist-lock on the shaft) — moves with the stand.
+  const clutchPath = useDerivedValue(() => {
+    'worklet';
+    const o = AMP * Math.sin(phase.value * 1.9);
+    const p = Skia.Path.Make();
+    p.addRRect(
+      Skia.RRectXY(Skia.XYWHRect(cx + o - 9, CLUTCH_Y, 18, SHAFT_TOP - CLUTCH_Y + 2), 3, 3),
+    );
+    return p;
+  }, [phase, cx]);
+
+  // Cradle: suspension ring + yoke arms (shock mount), or a hard clip (rigid).
+  const mountPath = useDerivedValue(() => {
+    'worklet';
+    const o = AMP * Math.sin(phase.value * 1.9);
+    const p = Skia.Path.Make();
+    if (shockMount) {
+      p.addOval(
+        Skia.XYWHRect(cx + o - RING_RX, RING_CY - RING_RY, RING_RX * 2, RING_RY * 2),
+      );
+      // Yoke: both arms from the ring's lower flanks down to the clutch.
+      p.moveTo(cx + o - RING_RX * 0.82, RING_CY + RING_RY * 0.56);
+      p.quadTo(cx + o - 22, CLUTCH_Y - 6, cx + o - 7, CLUTCH_Y);
+      p.moveTo(cx + o + RING_RX * 0.82, RING_CY + RING_RY * 0.56);
+      p.quadTo(cx + o + 22, CLUTCH_Y - 6, cx + o + 7, CLUTCH_Y);
+    } else {
+      // Rigid clip: a hard bracket bolting the body straight to the clutch.
+      p.addRRect(
+        Skia.RRectXY(Skia.XYWHRect(cx + o - MIC_HW - 5, RING_CY - 12, (MIC_HW + 5) * 2, 24), 4, 4),
+      );
+      p.moveTo(cx + o, RING_CY + 12);
+      p.lineTo(cx + o, CLUTCH_Y);
     }
-    // Tripod legs riding the base offset.
-    p.moveTo(cx + base - 26, floorY);
-    p.lineTo(cx + base, floorY - 16);
-    p.lineTo(cx + base + 26, floorY);
     return p;
-  }, [phase, cx, floorY, topY, damp]);
+  }, [phase, cx, shockMount]);
 
-  // Mic assembly (body + grille) riding the damped top of the stand.
-  const micBody = useDerivedValue(() => {
-    const ph = phase.value;
-    const base = 5 * Math.sin(ph * 1.9);
-    const micOff = base * damp;
-    const p = Skia.Path.Make();
-    p.addRRect(Skia.RRectXY(Skia.XYWHRect(cx + micOff - 9, topY - 20, 18, 38), 8, 8));
-    p.addCircle(cx + micOff, topY - 24, 9);
-    return p;
-  }, [phase, cx, topY, damp]);
-
-  // Elastic cradle: suspension ring + visible bands (shock mount only).
-  const cradle = useDerivedValue(() => {
+  // THE ELASTIC: each band runs from a RING anchor (moving with the stand) to
+  // a BODY anchor (nearly still). The difference is drawn as a bowed quad, so
+  // the band visibly stretches and slackens through the cycle.
+  const bandsPath = useDerivedValue(() => {
+    'worklet';
     const p = Skia.Path.Make();
     if (!shockMount) return p;
-    const ph = phase.value;
-    const base = 5 * Math.sin(ph * 1.9);
-    const micOff = base * damp;
-    const rx = 24;
-    const ry = 30;
-    const ringCx = cx + base * 0.55; // ring follows the stand more than the mic
-    const ringCy = topY - 2;
-    p.addOval(Skia.XYWHRect(ringCx - rx, ringCy - ry, rx * 2, ry * 2));
-    // Elastic bands: ring → mic body (they stretch as the two move apart).
-    for (const t of [-0.8, -0.3, 0.3, 0.8]) {
-      const bandY = ringCy + t * ry * 0.86;
-      const edge = rx * Math.sqrt(Math.max(0, 1 - Math.pow((bandY - ringCy) / ry, 2)));
-      p.moveTo(ringCx - edge, bandY);
-      p.lineTo(cx + micOff - 9, bandY);
-      p.moveTo(ringCx + edge, bandY);
-      p.lineTo(cx + micOff + 9, bandY);
+    const o = AMP * Math.sin(phase.value * 1.9);
+    const m = o * damp;
+    for (const t of [-0.86, -0.3, 0.3, 0.86]) {
+      const by = RING_CY + t * RING_RY * 0.82;
+      const edge = RING_RX * Math.sqrt(Math.max(0, 1 - Math.pow((by - RING_CY) / RING_RY, 2)));
+      for (const sgn of [-1, 1]) {
+        const rx = cx + o + sgn * edge;
+        const mx = cx + m + sgn * MIC_HW;
+        // Bow the band away from the straight line by the mismatch — the
+        // elastic visibly takes up the motion the mic never receives.
+        const bow = (o - m) * 0.55;
+        p.moveTo(rx, by);
+        p.quadTo((rx + mx) / 2, by + bow, mx, by);
+      }
     }
     return p;
-  }, [phase, cx, topY, damp, shockMount]);
+  }, [phase, cx, shockMount, damp]);
 
+  // ── The mic itself: basket + body + badge, riding `damp` of the shake ─────
+  const micBody = useDerivedValue(() => {
+    'worklet';
+    const m = AMP * Math.sin(phase.value * 1.9) * damp;
+    const p = Skia.Path.Make();
+    p.addRRect(
+      Skia.RRectXY(Skia.XYWHRect(cx + m - MIC_HW, BASKET_BOT - 6, MIC_HW * 2, MIC_BOT - BASKET_BOT + 6), 4, 4),
+    );
+    return p;
+  }, [phase, cx, damp]);
+
+  const micBasket = useDerivedValue(() => {
+    'worklet';
+    const m = AMP * Math.sin(phase.value * 1.9) * damp;
+    const p = Skia.Path.Make();
+    p.addRRect(
+      Skia.RRectXY(Skia.XYWHRect(cx + m - 14, MIC_TOP, 28, BASKET_BOT - MIC_TOP), 13, 11),
+    );
+    return p;
+  }, [phase, cx, damp]);
+
+  const micMesh = useDerivedValue(() => {
+    'worklet';
+    const m = AMP * Math.sin(phase.value * 1.9) * damp;
+    const p = Skia.Path.Make();
+    const cyB = (MIC_TOP + BASKET_BOT) / 2;
+    const ry = (BASKET_BOT - MIC_TOP) / 2 - 2;
+    for (let i = -3; i <= 3; i++) {
+      const yy = cyB + (i / 3.6) * ry;
+      const hw = 12 * Math.sqrt(Math.max(0, 1 - Math.pow((yy - cyB) / (ry + 2), 2)));
+      p.moveTo(cx + m - hw, yy);
+      p.lineTo(cx + m + hw, yy);
+    }
+    for (let i = -2; i <= 2; i++) {
+      const xx = cx + m + (i / 2.6) * 12;
+      const hh = ry * Math.sqrt(Math.max(0, 1 - Math.pow((xx - cx - m) / 13, 2)));
+      p.moveTo(xx, cyB - hh);
+      p.lineTo(xx, cyB + hh);
+    }
+    return p;
+  }, [phase, cx, damp]);
+
+  const micBadge = useDerivedValue(() => {
+    'worklet';
+    const m = AMP * Math.sin(phase.value * 1.9) * damp;
+    const p = Skia.Path.Make();
+    p.addRect(Skia.XYWHRect(cx + m - MIC_HW, BASKET_BOT + 8, MIC_HW * 2, 3));
+    p.addRect(Skia.XYWHRect(cx + m - MIC_HW, MIC_BOT - 12, MIC_HW * 2, 2));
+    return p;
+  }, [phase, cx, damp]);
+
+  // ── TRANSMITTED-VIBRATION READOUT (replaces the green wobble halo) ────────
+  // Static: two excursion tracks with a peak-to-peak bar sized by what each
+  // point actually receives — the stand's bar is full width, the capsule's is
+  // `damp` of it. Per-frame: a live marker on each track.
+  const tracks = useMemo(() => {
+    const p = Skia.Path.Make();
+    for (const [ty, half] of [
+      [CAP_TRACK_Y, AMP + 7],
+      [STAND_TRACK_Y, AMP + 7],
+    ] as const) {
+      p.moveTo(cx - half, ty);
+      p.lineTo(cx + half, ty);
+      p.moveTo(cx - half, ty - 4);
+      p.lineTo(cx - half, ty + 4);
+      p.moveTo(cx + half, ty - 4);
+      p.lineTo(cx + half, ty + 4);
+      p.moveTo(cx, ty - 3); // rest position
+      p.lineTo(cx, ty + 3);
+    }
+    return p;
+  }, [cx]);
+  const capBar = useMemo(() => {
+    const p = Skia.Path.Make();
+    const half = Math.max(0.6, AMP * damp);
+    p.addRRect(Skia.RRectXY(Skia.XYWHRect(cx - half, CAP_TRACK_Y - 8, half * 2, 5), 2, 2));
+    return p;
+  }, [cx, damp]);
+  const standBar = useMemo(() => {
+    const p = Skia.Path.Make();
+    p.addRRect(Skia.RRectXY(Skia.XYWHRect(cx - AMP, STAND_TRACK_Y - 8, AMP * 2, 5), 2, 2));
+    return p;
+  }, [cx]);
+  const capMarker = useDerivedValue(() => {
+    'worklet';
+    const p = Skia.Path.Make();
+    p.addCircle(cx + AMP * Math.sin(phase.value * 1.9) * damp, CAP_TRACK_Y, 3.2);
+    return p;
+  }, [phase, cx, damp]);
+  const standMarker = useDerivedValue(() => {
+    'worklet';
+    const p = Skia.Path.Make();
+    p.addCircle(cx + AMP * Math.sin(phase.value * 1.9), STAND_TRACK_Y, 3.2);
+    return p;
+  }, [phase, cx]);
+  // Where the shake is injected: arrows at the foot of the stand.
   const arrows = useMemo(() => {
     const p = Skia.Path.Make();
     for (const s of [-1, 1]) {
-      p.moveTo(cx + s * 34, floorY - 12);
-      p.lineTo(cx + s * 22, floorY - 8);
-      p.moveTo(cx + s * 34, floorY - 4);
-      p.lineTo(cx + s * 22, floorY - 8);
+      p.moveTo(cx + s * 46, FLOOR_Y - 12);
+      p.lineTo(cx + s * 34, FLOOR_Y - 8);
+      p.moveTo(cx + s * 46, FLOOR_Y - 4);
+      p.lineTo(cx + s * 34, FLOOR_Y - 8);
     }
     return p;
-  }, [cx, floorY]);
+  }, [cx]);
+
+  const capColor = shockMount ? ACCENT_GREEN : ACCENT_RED;
+  const pct = Math.round(damp * 100);
+  const label = {
+    position: 'absolute' as const,
+    left: 0,
+    right: 0,
+    textAlign: 'center' as const,
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 9.5,
+    letterSpacing: 1.1,
+  };
 
   return (
-    <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
-      <Floor w={w} y={floorY} h={h - floorY} />
-      {/* Vibration source cue at the base. */}
-      <GlowStroke path={arrows} color={ACCENT_RED} width={2} opacity={0.85} />
-      <Path path={stand} style="stroke" strokeWidth={5} strokeJoin="round" strokeCap="round">
-        <LinearGradient start={vec(cx - 6, 0)} end={vec(cx + 6, 0)} colors={[METAL_HI, METAL_LO]} />
-      </Path>
-      <Path path={cradle} color={ACCENT_GREEN} style="stroke" strokeWidth={2} opacity={0.9} />
-      <Path path={micBody}>
-        <LinearGradient start={vec(cx - 10, 0)} end={vec(cx + 10, 0)} colors={[METAL_LO, METAL_HI, METAL_LO]} positions={[0, 0.35, 1]} />
-      </Path>
-      <Path path={micBody} color="#565a66" style="stroke" strokeWidth={1} opacity={0.7} />
-      <Vignette w={w} h={h} />
-    </Canvas>
+    <View style={{ width: w, height: h }}>
+      <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
+        <Floor w={w} y={FLOOR_Y} h={h - FLOOR_Y} />
+        {/* The shake is applied HERE — at the floor. */}
+        <GlowStroke path={arrows} color={ACCENT_RED} width={2} opacity={0.9} />
+        {/* Stand: tripod + shaft + clutch, at full excursion. */}
+        <Path
+          path={standPath}
+          color={METAL_MID}
+          style="stroke"
+          strokeWidth={5}
+          strokeJoin="round"
+          strokeCap="round"
+        />
+        <Path path={clutchPath} color="#5c606c" />
+        <Path path={clutchPath} color="#9ba0ac" style="stroke" strokeWidth={1.1} />
+        {/* Cradle / clip. */}
+        <Path
+          path={mountPath}
+          color="#8e93a1"
+          style="stroke"
+          strokeWidth={2.6}
+          strokeJoin="round"
+          strokeCap="round"
+        />
+        {/* The elastic bands — they stretch and bow as the ring moves and the
+            mic does not. This is the shock mount actually working. */}
+        <Path path={bandsPath} color={WAVE} style="stroke" strokeWidth={3.4} opacity={0.22}>
+          <BlurMask blur={3} style="normal" />
+        </Path>
+        <Path path={bandsPath} color={WAVE} style="stroke" strokeWidth={1.5} strokeCap="round" />
+        {/* The mic. */}
+        <Path path={micBody}>
+          <LinearGradient
+            start={vec(cx - MIC_HW, 0)}
+            end={vec(cx + MIC_HW, 0)}
+            colors={[METAL_LO, METAL_HI, METAL_MID, METAL_LO]}
+            positions={[0, 0.3, 0.58, 1]}
+          />
+        </Path>
+        <Path path={micBasket}>
+          <LinearGradient
+            start={vec(cx - 14, 0)}
+            end={vec(cx + 14, 0)}
+            colors={['#4a4e5a', '#a8adba', '#2a2c34']}
+            positions={[0, 0.32, 1]}
+          />
+        </Path>
+        <Path path={micMesh} color="#12131a" style="stroke" strokeWidth={0.8} opacity={0.6} />
+        <Path path={micBasket} color="#c3c8d4" style="stroke" strokeWidth={1.2} opacity={0.8} />
+        <Path path={micBadge} color={WAVE} opacity={0.55} />
+        <Path path={micBody} color="#666b78" style="stroke" strokeWidth={1} opacity={0.8} />
+        {/* Transmitted-vibration readout: peak-to-peak bars + live markers. */}
+        <Path path={tracks} color="#4b4e58" style="stroke" strokeWidth={1.2} />
+        <Path path={capBar} color={capColor} opacity={0.55} />
+        <Path path={standBar} color={ACCENT_RED} opacity={0.55} />
+        <Path path={capMarker} color={capColor} opacity={0.4}>
+          <BlurMask blur={3} style="normal" />
+        </Path>
+        <Path path={capMarker} color={capColor} />
+        <Path path={standMarker} color={ACCENT_RED} opacity={0.4}>
+          <BlurMask blur={3} style="normal" />
+        </Path>
+        <Path path={standMarker} color={ACCENT_RED} />
+        <Vignette w={w} h={h} />
+      </Canvas>
+      <RNText style={[label, { top: 3, color: capColor }]}>
+        {`AT THE CAPSULE — ${pct}% OF THE SHAKE`}
+      </RNText>
+      <RNText style={[label, { top: h - 15, color: ACCENT_RED }]}>
+        STAND SHAKE — 100% (THE SOURCE)
+      </RNText>
+    </View>
   );
 }
 
@@ -1605,9 +2240,13 @@ export function ShockMountView({
 
 export type StereoTech = 'xy' | 'ortf' | 'ab' | 'ms';
 
+/** One capsule of a stereo pair: position, aim (lab convention — 0° points up,
+ *  front = (sin θ, −cos θ)) and its first-order polar coefficients. */
+type StereoCapsule = { x: number; y: number; angDeg: number; a: number; b: number };
+
 export function StereoTechniqueView({
   width,
-  height = 190,
+  height = 200,
   tech,
 }: {
   width: number;
@@ -1617,12 +2256,18 @@ export function StereoTechniqueView({
   const w = width;
   const h = height;
   const cx = w / 2;
-  const cy = h * 0.68;
+  const cy = h * 0.72;
+  // The stage is now a real DECK with a front LIP (owner 2026-07-29: it had
+  // almost no contrast against the background). Deck value ≫ field value, and
+  // the lip gives it a physical edge you read instantly.
+  const DECK_H = 28;
+  const LIP_H = 6;
+  const fieldY0 = DECK_H + LIP_H;
 
   const layout = useMemo(() => {
-    const R = h * 0.52;
-    const mics: { x: number; y: number; ang: number }[] = [];
-    const wedges: { x: number; y: number; path: SkPathT }[] = [];
+    const R = h * 0.5;
+    const caps: StereoCapsule[] = [];
+    const wedges: SkPathT[] = [];
     const chrome = Skia.Path.Make();
     const lobes: { x: number; y: number; r: number }[] = [];
     const wedge = (x: number, y: number, angDeg: number, spreadDeg: number) => {
@@ -1636,14 +2281,18 @@ export function StereoTechniqueView({
         p.lineTo(x + R * Math.cos(a), y + R * Math.sin(a));
       }
       p.close();
-      wedges.push({ x, y, path: p });
+      wedges.push(p);
     };
+    const CARD = { a: 0.5, b: 0.5 };
     if (tech === 'xy') {
-      mics.push({ x: cx, y: cy, ang: -45 }, { x: cx, y: cy, ang: 45 });
+      caps.push({ x: cx, y: cy, angDeg: -45, ...CARD }, { x: cx, y: cy, angDeg: 45, ...CARD });
       wedge(cx, cy, -45, 70);
       wedge(cx, cy, 45, 70);
     } else if (tech === 'ortf') {
-      mics.push({ x: cx - 20, y: cy, ang: -55 }, { x: cx + 20, y: cy, ang: 55 });
+      caps.push(
+        { x: cx - 20, y: cy, angDeg: -55, ...CARD },
+        { x: cx + 20, y: cy, angDeg: 55, ...CARD },
+      );
       wedge(cx - 20, cy, -55, 70);
       wedge(cx + 20, cy, 55, 70);
       // Spacing bracket (≈17 cm).
@@ -1654,7 +2303,11 @@ export function StereoTechniqueView({
       chrome.moveTo(cx + 20, cy + 18);
       chrome.lineTo(cx + 20, cy + 26);
     } else if (tech === 'ab') {
-      mics.push({ x: cx - 62, y: cy, ang: 0 }, { x: cx + 62, y: cy, ang: 0 });
+      // Spaced OMNIS — a = 1, b = 0.
+      caps.push(
+        { x: cx - 62, y: cy, angDeg: 0, a: 1, b: 0 },
+        { x: cx + 62, y: cy, angDeg: 0, a: 1, b: 0 },
+      );
       wedge(cx - 62, cy, 0, 80);
       wedge(cx + 62, cy, 0, 80);
       chrome.moveTo(cx - 62, cy + 22);
@@ -1665,57 +2318,132 @@ export function StereoTechniqueView({
       chrome.lineTo(cx + 62, cy + 26);
     } else {
       // Mid-Side: cardioid forward + figure-8 sideways at one point.
-      mics.push({ x: cx, y: cy - 6, ang: 0 });
+      caps.push(
+        { x: cx, y: cy - 6, angDeg: 0, ...CARD },
+        { x: cx, y: cy + 6, angDeg: 90, a: 0, b: 1 },
+      );
       wedge(cx, cy - 6, 0, 80);
       lobes.push({ x: cx - 26, y: cy + 10, r: 22 }, { x: cx + 26, y: cy + 10, r: 22 });
       // The side (figure-8) element: a small horizontal capsule.
       chrome.addRRect(Skia.RRectXY(Skia.XYWHRect(cx - 14, cy + 6, 28, 8), 4, 4));
     }
-    return { mics, wedges, chrome, lobes, R };
+    // Mic bodies to draw (MS draws only the mid capsule as a pencil mic).
+    const mics = tech === 'ms' ? [caps[0]] : caps;
+    return { caps, mics, wedges, chrome, lobes, R };
   }, [cx, cy, h, tech]);
 
-  const stage = useMemo(() => {
-    const p = Skia.Path.Make();
-    p.addRect(Skia.XYWHRect(0, 0, w, 24));
-    return p;
+  // ── PICKUP FIELD radiating from the PAIR (owner 2026-07-29) ───────────────
+  // Same machinery as every other heat map in this file: the two capsules'
+  // first-order polar gains × 1/d, summed for the technique's actual geometry,
+  // quantized into ≤32 jet buckets, run-length merged per row, memoized.
+  // ILLUSTRATIVE — a conceptual pickup field, never a measured response.
+  const field = useMemo(() => {
+    const bucketPaths: SkPathT[] = Array.from({ length: JET_BUCKET_COUNT }, () => Skia.Path.Make());
+    const COLS = 160;
+    const ROWS = 120;
+    const cw = w / COLS;
+    const ch = (h - fieldY0) / ROWS;
+    const refD = h * 0.3;
+    const src = layout.caps.map((c) => {
+      const th = (c.angDeg * Math.PI) / 180;
+      return { x: c.x, y: c.y, ax: Math.sin(th), ay: -Math.cos(th), a: c.a, b: c.b };
+    });
+    for (let r = 0; r < ROWS; r++) {
+      const py = fieldY0 + (r + 0.5) * ch;
+      addFieldRow(bucketPaths, COLS, 0, fieldY0 + r * ch, cw, ch, (c) => {
+        const px = (c + 0.5) * cw;
+        let lvl = 0;
+        for (let k = 0; k < src.length; k++) {
+          const s = src[k];
+          const vx = px - s.x;
+          const vy = py - s.y;
+          let d = Math.sqrt(vx * vx + vy * vy);
+          if (d < 12) d = 12;
+          const cosT = (vx * s.ax + vy * s.ay) / d;
+          // θ from THIS capsule's front axis → the same |A + B·cosθ| family.
+          lvl += Math.abs(s.a + s.b * (cosT < -1 ? -1 : cosT > 1 ? 1 : cosT)) * (refD / d);
+        }
+        return Math.round(fieldT(lvl) * (JET_BUCKET_COUNT - 1));
+      });
+    }
+    return bucketPaths;
+  }, [w, h, fieldY0, layout.caps]);
+
+  const deck = useMemo(() => {
+    const board = Skia.Path.Make();
+    board.addRect(Skia.XYWHRect(0, 0, w, DECK_H));
+    const lip = Skia.Path.Make();
+    lip.addRect(Skia.XYWHRect(0, DECK_H, w, LIP_H));
+    const planks = Skia.Path.Make();
+    for (let i = 1; i < 8; i++) {
+      planks.moveTo((i / 8) * w, 2);
+      planks.lineTo((i / 8) * w, DECK_H - 1);
+    }
+    const shadow = Skia.Path.Make();
+    shadow.addRect(Skia.XYWHRect(0, DECK_H + LIP_H, w, 9));
+    return { board, lip, planks, shadow };
   }, [w]);
   const performers = useMemo(() => {
     const p = Skia.Path.Make();
-    for (const fx of [0.3, 0.5, 0.7]) appendBust(p, w * fx, 23, 1.15);
+    for (const fx of [0.3, 0.5, 0.7]) appendBust(p, w * fx, DECK_H - 2, 1.2);
     return p;
   }, [w]);
 
   return (
     <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
-      {/* The stage the pair is aimed at — with performers, not a bare line. */}
-      <Path path={stage}>
-        <LinearGradient start={vec(0, 0)} end={vec(0, 24)} colors={['#1c1d24', '#111116']} />
-      </Path>
-      <Path path={performers}>
-        <LinearGradient start={vec(0, 4)} end={vec(0, 24)} colors={['#4a4d58', '#26272e']} />
-      </Path>
-      <SkLine p1={{ x: 0, y: 24 }} p2={{ x: w, y: 24 }} color={withAlpha(WAVE, 0.4)} strokeWidth={1.2} />
-      {/* Pickup areas: soft gradient wedges (abstract, styled). */}
-      {layout.wedges.map((wd, i) => (
-        <Path key={i} path={wd.path}>
-          <RadialGradient c={vec(wd.x, wd.y)} r={layout.R} colors={[withAlpha(WAVE, 0.22), withAlpha(WAVE, 0)]} />
-        </Path>
+      {/* Conceptual pickup FIELD from the pair — ≤32 quantized jet buckets. */}
+      {field.map((p, i) => (
+        <Path key={i} path={p} color={JET_BUCKETS[i]} opacity={0.92} />
       ))}
+      {/* THE STAGE: a lit deck, a defined front lip, and a cast shadow — a
+          different value from the field, so it reads instantly. */}
+      <Path path={deck.shadow}>
+        <LinearGradient
+          start={vec(0, DECK_H + LIP_H)}
+          end={vec(0, DECK_H + LIP_H + 9)}
+          colors={['rgba(0,0,0,0.62)', 'rgba(0,0,0,0)']}
+        />
+      </Path>
+      <Path path={deck.board}>
+        <LinearGradient start={vec(0, 0)} end={vec(0, DECK_H)} colors={['#3b4252', '#232833']} />
+      </Path>
+      <Path path={deck.planks} color="#161a22" style="stroke" strokeWidth={1} opacity={0.5} />
+      {/* Performers, in the same line-art language as the head icons. */}
+      <LineBusts path={performers} stroke={LINE} sw={1.5} />
+      <Path path={deck.lip}>
+        <LinearGradient
+          start={vec(0, DECK_H)}
+          end={vec(0, DECK_H + LIP_H)}
+          colors={['#6d778f', '#3a4152']}
+        />
+      </Path>
+      <SkLine p1={{ x: 0, y: DECK_H }} p2={{ x: w, y: DECK_H }} color="#9aa4bb" strokeWidth={1.2} />
+      <SkLine
+        p1={{ x: 0, y: DECK_H + LIP_H }}
+        p2={{ x: w, y: DECK_H + LIP_H }}
+        color="#11131a"
+        strokeWidth={1.4}
+      />
+      {/* Nominal acceptance angle: a thin edge cue over the field. */}
       {layout.wedges.map((wd, i) => (
-        <Path key={`s${i}`} path={wd.path} color={WAVE} style="stroke" strokeWidth={1.1} opacity={0.4} />
+        <Path key={`s${i}`} path={wd} color={WAVE} style="stroke" strokeWidth={1.1} opacity={0.45} />
       ))}
       {/* Mid-Side fig-8 lobes. */}
       {layout.lobes.map((lb, i) => (
-        <Circle key={i} cx={lb.x} cy={lb.y} r={lb.r}>
-          <RadialGradient c={vec(lb.x, lb.y)} r={lb.r} colors={[withAlpha(ACCENT_BLUE, 0.22), withAlpha(ACCENT_BLUE, 0.02)]} />
-        </Circle>
-      ))}
-      {layout.lobes.map((lb, i) => (
-        <Circle key={`s${i}`} cx={lb.x} cy={lb.y} r={lb.r} color={ACCENT_BLUE} style="stroke" strokeWidth={1.2} opacity={0.5} />
+        <Circle
+          key={`l${i}`}
+          cx={lb.x}
+          cy={lb.y}
+          r={lb.r}
+          color={ACCENT_BLUE}
+          style="stroke"
+          strokeWidth={1.2}
+          opacity={0.55}
+        />
       ))}
       <Path path={layout.chrome} color={CONE} style="stroke" strokeWidth={2} />
       {layout.mics.map((m, i) => (
-        <PencilMic key={i} x={m.x} y={m.y} angleDeg={m.ang} scale={1.1} />
+        <PencilMic key={i} x={m.x} y={m.y} angleDeg={m.angDeg} scale={1.1} />
       ))}
       <Vignette w={w} h={h} />
     </Canvas>
@@ -2098,7 +2826,11 @@ export function MistakeIllustration({
       return { gx: x + dx * 22, gy: y + dy * 22, ang: angDeg, x, y, dx, dy };
     };
     const far = kind === 'far';
-    const head = far ? { x: cx - 62, y: 30 } : { x: cx - 46, y: 34 };
+    // TRUE proportion (owner 2026-07-29): the head is ~73 px crown→chin
+    // against the 50.8-px mic, so the mouth is dropped to y ≈ 62 and the
+    // cranium/back of the skull deliberately crop off the top-left — the
+    // acoustically relevant mouth/nose region stays fully in view.
+    const head = far ? { x: cx - 68, y: 60 } : { x: cx - 50, y: 62 };
     const mic = far
       ? micAt(cx + 42, 78, -30)
       : kind === 'away'
@@ -2124,7 +2856,7 @@ export function MistakeIllustration({
       // The gulf between mouth and mic: fading dots.
       for (let i = 1; i <= 5; i++) {
         const t = i / 6;
-        extras.addCircle(head.x + 16 + t * (mic.gx - head.x - 26), head.y + 10 + t * (mic.gy - head.y - 8), 1.6);
+        extras.addCircle(head.x + 26 + t * (mic.gx - head.x - 36), head.y + t * (mic.gy - head.y), 1.6);
       }
     }
     if (kind === 'antenna') {
@@ -2146,7 +2878,15 @@ export function MistakeIllustration({
   return (
     <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
       <Floor w={w} y={h - 8} h={8} />
-      <ProfileHead x={layout.head.x} y={layout.head.y} angleRad={0} scale={0.44} tint={outline} glow={good} />
+      <ProfileHead
+        x={layout.head.x}
+        y={layout.head.y}
+        angleRad={0}
+        scale={headScaleForMic(MIST_GR, MIST_LEN)}
+        tint={outline}
+        glow={good}
+        speaking
+      />
       <Path path={layout.extras} color={PARTICLE} style="stroke" strokeWidth={1.6} opacity={0.6} />
       {/* Hand wraps the mic: palm behind the body, fingers in front. */}
       <GripHand
@@ -2521,11 +3261,10 @@ export function TopCoverageView({
     <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
       {/* Stage strip with depth + a hint of the band. */}
       <Path path={stage}>
-        <LinearGradient start={vec(0, 0)} end={vec(0, stageH)} colors={['#20212a', '#131318']} />
+        <LinearGradient start={vec(0, 0)} end={vec(0, stageH)} colors={['#3b4252', '#232833']} />
       </Path>
-      <Path path={performers}>
-        <LinearGradient start={vec(0, 4)} end={vec(0, stageH)} colors={['#464956', '#23242c']} />
-      </Path>
+      {/* Performers in the line-art language of the head icons. */}
+      <LineBusts path={performers} stroke={LINE} sw={1.4} />
       {/* Heat map: ≤32 quantized-jet bucket paths (abstract data — styled,
           kept honest: conceptual level, never an SPL prediction). */}
       {buckets.map((p, i) => (
@@ -2584,11 +3323,14 @@ function CabinetSide({ x, y, tiltDeg, scale = 1 }: { x: number; y: number; tiltD
   );
 }
 
-const SEAT_GRADS: Record<CoverageClass, [string, string]> = {
-  green: ['#7dffa1', '#20713d'],
-  yellow: ['#ffe08f', '#7d6526'],
-  red: ['#ff8a7d', '#7c332c'],
-  gray: ['#9a9ca6', '#3a3c44'],
+/** Coverage class → the line-art stroke colour of an audience bust. Same
+ *  classification, same meaning as the old gradient fills — restyled to the
+ *  head icons' line-art language (owner ruling 2026-07-29). */
+const SEAT_LINE: Record<CoverageClass, string> = {
+  green: '#7dffa1',
+  yellow: '#ffe08f',
+  red: '#ff8a7d',
+  gray: '#b6b9c4',
 };
 
 export function SideCoverageView({
@@ -2785,15 +3527,11 @@ export function SideCoverageView({
       {/* Cabinets: main (tilted with the wedge) + optional delay box. */}
       <CabinetSide x={spkX} y={spkY} tiltDeg={tiltDeg} />
       {delayOn ? <CabinetSide x={geo.dlyX} y={geo.dlyY} tiltDeg={48} scale={0.72} /> : null}
-      {/* The audience: coverage-tinted busts ON TOP of the heat field, with a
-          dark outline so they never vanish against hot colors. */}
+      {/* The audience: line-art busts (light uniform stroke over a subtle dark
+          interior) so they read over the heat field, with the stroke carrying
+          the SAME coverage classification the old fill did. */}
       {(['gray', 'yellow', 'green', 'red'] as CoverageClass[]).map((k) => (
-        <Group key={k}>
-          <Path path={geo.seats[k]} color="#0a0a0e" style="stroke" strokeWidth={2.6} opacity={0.85} />
-          <Path path={geo.seats[k]}>
-            <LinearGradient start={vec(0, floorY - 58)} end={vec(0, floorY)} colors={SEAT_GRADS[k]} />
-          </Path>
-        </Group>
+        <LineBusts key={k} path={geo.seats[k]} stroke={SEAT_LINE[k]} sw={1.7} />
       ))}
     </Canvas>
   );

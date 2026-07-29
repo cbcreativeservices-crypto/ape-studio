@@ -43,6 +43,73 @@ function gainAt(a: number, b: number, deg: number): number {
   return Math.abs(a + b * Math.cos((deg * Math.PI) / 180));
 }
 
+// ── POLAR: free source positioning with a COLLISION FLOOR (owner 2026-07-29)
+// The source used to be pinned to a fixed radius and blocked from approaching
+// the mic. It is now the HEAD icon, draggable ANYWHERE on the canvas, and the
+// only restriction is that its silhouette may not INTERSECT the mic's — it may
+// come right up next to it. Solved here (not in viz.tsx) because this screen
+// must also run on pre-Skia clients, which never load viz.tsx; the numbers
+// mirror viz.tsx's POLAR_MIC_* / HEAD_COLLIDERS exactly.
+const POLAR_H = 230; // PolarPatternView's default canvas height
+const POLAR_GR = 8; // grille radius
+const POLAR_LEN = 37; // body length
+const POLAR_MIC_DY = -6; // grille centre offset from the canvas centre
+/** headScaleForMic(): a 23 cm head against the 16 cm mic actually drawn. */
+const POLAR_HEAD_S = ((1.72 * POLAR_GR + POLAR_LEN) * (23 / 16)) / 45.6;
+/** The head silhouette as three circles in head units, head frame
+ *  (origin = the mouth, +x = the facing direction). */
+const HEAD_CIRCLES: [number, number, number][] = [
+  [-14, -20, 20],
+  [-4, -10, 13],
+  [4, -2, 10],
+];
+
+/** Signed distance from a point to the mic's rounded-rect silhouette. */
+function micSdf(px: number, py: number, cx: number, cy: number): number {
+  const halfW = POLAR_GR;
+  const top = cy + POLAR_MIC_DY - POLAR_GR;
+  const bot = cy + POLAR_MIC_DY + POLAR_GR * 0.72 + POLAR_LEN;
+  const my = (top + bot) / 2;
+  const halfH = (bot - top) / 2;
+  const r = POLAR_GR * 0.8;
+  const qx = Math.abs(px - cx) - (halfW - r);
+  const qy = Math.abs(py - my) - (halfH - r);
+  return Math.hypot(Math.max(qx, 0), Math.max(qy, 0)) + Math.min(Math.max(qx, qy), 0) - r;
+}
+
+/**
+ * Collision FLOOR (not a keep-out radius): push the head out along the
+ * mic→head axis just far enough that no part of its silhouette overlaps the
+ * mic. Touching is allowed; intersecting is not.
+ */
+function clampPolarSource(x: number, y: number, w: number): { x: number; y: number } {
+  const cx = w / 2;
+  const cy = POLAR_H / 2;
+  const my = cy + POLAR_MIC_DY + (POLAR_GR * 0.72 + POLAR_LEN) / 2 - POLAR_GR / 2;
+  let px = Math.max(2, Math.min(w - 2, x));
+  let py = Math.max(2, Math.min(POLAR_H - 2, y));
+  for (let iter = 0; iter < 4; iter++) {
+    const face = Math.atan2(cy + POLAR_MIC_DY - py, cx - px); // head faces the mic
+    const cs = Math.cos(face);
+    const sn = Math.sin(face);
+    let worst = 0;
+    for (const [u, v, r] of HEAD_CIRCLES) {
+      const wx = px + (u * cs - v * sn) * POLAR_HEAD_S;
+      const wy = py + (u * sn + v * cs) * POLAR_HEAD_S;
+      worst = Math.max(worst, r * POLAR_HEAD_S - micSdf(wx, wy, cx, cy));
+    }
+    if (worst <= 0.25) break;
+    let dx = px - cx;
+    let dy = py - my;
+    const d = Math.hypot(dx, dy) || 1;
+    dx /= d;
+    dy /= d;
+    px += dx * worst;
+    py += dy * worst;
+  }
+  return { x: px, y: py };
+}
+
 const PROX_DISTANCES: { label: string; inches: number; boostDb: number }[] = [
   { label: '12 in', inches: 12, boostDb: 1 },
   { label: '6 in', inches: 6, boostDb: 3 },
@@ -155,10 +222,21 @@ type SectionProps = { viz: MsVizModule | null; width: number; focused: boolean; 
 
 function PolarSection({ viz, width, focused, help }: SectionProps) {
   const [patIdx, setPatIdx] = useState(1);
-  const [angle, setAngle] = useState(35);
+  // The source is now a FREE position in canvas px, not an angle on a fixed
+  // radius. It starts at the old 35° / near-edge spot so the scene opens the
+  // same way, then may be dragged anywhere (collision-clamped off the mic).
+  const [src, setSrc] = useState(() => {
+    const R = Math.min(width, POLAR_H) / 2 - 16;
+    const th = (35 * Math.PI) / 180;
+    return clampPolarSource(width / 2 + R * Math.sin(th), POLAR_H / 2 - R * Math.cos(th), width);
+  });
   const widthRef = useRef(width);
   widthRef.current = width;
   const pat = PATTERNS[patIdx];
+  // Polar math UNCHANGED: θ is still measured from the mic's front axis (up).
+  const angle = Math.round(
+    (Math.atan2(src.x - width / 2, -(src.y - (POLAR_H / 2 + POLAR_MIC_DY))) * 180) / Math.PI,
+  );
   const g = gainAt(pat.a, pat.b, angle);
 
   const pan = useRef(
@@ -166,11 +244,11 @@ function PolarSection({ viz, width, focused, help }: SectionProps) {
       onStartShouldSetPanResponder: () => false,
       onMoveShouldSetPanResponder: (_e, gs) => Math.abs(gs.dx) > 4 || Math.abs(gs.dy) > 4,
       onPanResponderMove: (e) => {
-        const dx = e.nativeEvent.locationX - widthRef.current / 2;
-        const dy = e.nativeEvent.locationY - 115;
-        if (Math.hypot(dx, dy) < 22) return; // hub dead-zone
-        const deg = Math.round((Math.atan2(dx, -dy) * 180) / Math.PI);
-        setAngle(deg);
+        // Free positioning: the head goes wherever the finger is; the ONLY
+        // limit is the collision floor against the mic's silhouette.
+        setSrc(
+          clampPolarSource(e.nativeEvent.locationX, e.nativeEvent.locationY, widthRef.current),
+        );
       },
       onPanResponderTerminationRequest: () => false,
     }),
@@ -179,9 +257,9 @@ function PolarSection({ viz, width, focused, help }: SectionProps) {
   return (
     <View style={styles.panelCard}>
       <View {...pan.panHandlers}>
-        {viz ? <PolarViz viz={viz} width={width} a={pat.a} b={pat.b} angle={angle} running={focused} /> : <VizUnavailableCard />}
+        {viz ? <PolarViz viz={viz} width={width} a={pat.a} b={pat.b} src={src} running={focused} /> : <VizUnavailableCard />}
       </View>
-      <IllustrationBadge text="CONCEPTUAL PICKUP FIELD — ILLUSTRATIVE MODEL, NOT A MEASURED POLAR RESPONSE · color = r(θ) = |A + B·cosθ| × 1/d falloff · drag the green source around the mic" />
+      <IllustrationBadge text="CONCEPTUAL PICKUP FIELD — ILLUSTRATIVE MODEL, NOT A MEASURED POLAR RESPONSE · color = r(θ) = |A + B·cosθ| × 1/d falloff · drag the head anywhere — it can come right up next to the mic, but never through it" />
       <DisplayGuideButton onPress={() => help('polar_pattern')} />
       <View style={styles.chipRow}>
         {PATTERNS.map((p, i) => (
@@ -200,9 +278,23 @@ function PolarSection({ viz, width, focused, help }: SectionProps) {
     </View>
   );
 }
-function PolarViz({ viz, width, a, b, angle, running }: { viz: MsVizModule; width: number; a: number; b: number; angle: number; running: boolean }) {
+function PolarViz({
+  viz,
+  width,
+  a,
+  b,
+  src,
+  running,
+}: {
+  viz: MsVizModule;
+  width: number;
+  a: number;
+  b: number;
+  src: { x: number; y: number };
+  running: boolean;
+}) {
   const phase = viz.usePhaseClock(running, 0.7);
-  return <viz.PolarPatternView phase={phase} width={width} a={a} b={b} srcAngleDeg={angle} />;
+  return <viz.PolarPatternView phase={phase} width={width} a={a} b={b} srcX={src.x} srcY={src.y} />;
 }
 
 // ── 2 · Distance ────────────────────────────────────────────────────────────
@@ -379,7 +471,7 @@ function ShockSection({ viz, width, focused, help }: SectionProps) {
   return (
     <View style={styles.panelCard}>
       {viz ? <ShockViz viz={viz} width={width} shock={shock} running={focused} /> : <VizUnavailableCard />}
-      <IllustrationBadge text="CONCEPTUAL — the stand is being shaken; watch how much motion reaches the mic body" />
+      <IllustrationBadge text="CONCEPTUAL — the STAND is being shaken (red readout, bottom). The readout above the capsule shows how much of that shake actually arrives at the mic; with a shock mount you can watch the elastic bands take up the difference." />
       <DisplayGuideButton onPress={() => help('shock_mount')} />
       <View style={styles.chipRow}>
         <LabChip label="RIGID MOUNT" selected={!shock} onPress={() => setShock(false)} onLongPress={() => help('shock_mount')} />
@@ -407,7 +499,7 @@ function StereoSection({ viz, width, help }: SectionProps) {
   return (
     <View style={styles.panelCard}>
       {viz ? <viz.StereoTechniqueView width={width} tech={t.key} /> : <VizUnavailableCard />}
-      <IllustrationBadge text="ILLUSTRATIVE — capsule angles, spacing and approximate pickup areas (top line = the stage)" />
+      <IllustrationBadge text="CONCEPTUAL PICKUP FIELD — ILLUSTRATIVE MODEL, NOT A MEASUREMENT · the two capsules' |A + B·cosθ| gains × 1/d, summed for this technique's geometry · the lit deck at the top is the stage" />
       <DisplayGuideButton onPress={() => help('stereo_pair')} />
       <View style={styles.chipRow}>
         {STEREO_TECHS.map((s, i) => (
