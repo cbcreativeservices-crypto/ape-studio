@@ -115,6 +115,15 @@ const SECTIONS: LabSection[] = [
     ],
   },
   {
+    // Audio Calculator Laboratory (owner 2026-07-29): one unified lab of
+    // consolidated calculator workspaces with the Calculation Chain.
+    title: 'CALCULATOR LABORATORY',
+    note: 'Professional audio math — with the reasoning, not just the result.',
+    entries: [
+      { tag: '25', name: 'Audio Calculator Laboratory', blurb: '25 calculator workspaces: waves, dB, SPL, speakers, rooms, digital — chain results between tools.', route: 'CalcLab' },
+    ],
+  },
+  {
     title: 'SIGNAL CHAIN BUILDER',
     note: 'The capstone — assemble a full chain and see per-module and cumulative effect.',
     entries: [
