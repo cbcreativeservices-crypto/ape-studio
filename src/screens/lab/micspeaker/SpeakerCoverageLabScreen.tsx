@@ -3,8 +3,8 @@
  * Single mission: HOW LOUDSPEAKERS DISTRIBUTE SOUND.
  *
  * VISUAL-FIRST LAUNCH: conceptual coverage only — the map is a TEACHING
- * MODEL (within-dispersion × distance falloff classified into four bands),
- * NEVER an SPL prediction, and every panel says so (§1.7). Audio
+ * MODEL (within-dispersion × distance falloff drawn as a continuous jet
+ * heat map), NEVER an SPL prediction, and every panel says so (§1.7). Audio
  * demonstrations are marked as coming in a future release.
  *
  * SHAPE: sectioned lab — TOP VIEW (position · aim · dispersion · overlap ·
@@ -33,15 +33,22 @@ const DISPERSIONS: { key: string; label: string; hDeg: number; vDeg: number }[] 
 ];
 
 function IllustrationBadge({ text }: { text?: string }) {
-  return <Text style={styles.badge}>{text ?? 'CONCEPTUAL COVERAGE MODEL — A TEACHING PICTURE, NOT AN SPL PREDICTION'}</Text>;
+  return (
+    <Text style={styles.badge}>
+      {text ??
+        'CONCEPTUAL LEVEL MAP — ILLUSTRATIVE MODEL, NOT AN SPL PREDICTION (REAL ROOMS, REFLECTIONS & ARRAY BEHAVIOR DIFFER)'}
+    </Text>
+  );
 }
 
+// Heat-map legend: the continuous jet colormap, hottest → none.
 function Legend() {
   const rows: { c: string; t: string }[] = [
-    { c: '#5bff85', t: 'GREEN — ideal coverage' },
-    { c: '#ffd76b', t: 'YELLOW — acceptable, getting quiet' },
-    { c: '#ff6b5e', t: 'RED — excessive (hot spot / heavy overlap)' },
-    { c: '#8a8c94', t: 'GRAY — insufficient (dead zone)' },
+    { c: '#d81f1f', t: 'RED / ORANGE — hottest: too loud, or heavy overlap' },
+    { c: '#e8e13a', t: 'YELLOW — strong, upper end of the listening range' },
+    { c: '#3fd06c', t: 'GREEN — the target listening range' },
+    { c: '#19c7c2', t: 'CYAN / BLUE — quiet: pattern edge, or far away' },
+    { c: '#0b1c4a', t: 'DEEP BLUE — little to no coverage (dead zone)' },
   ];
   return (
     <View style={{ gap: 3 }}>
@@ -51,6 +58,10 @@ function Legend() {
           <Text style={styles.caption}>{r.t}</Text>
         </View>
       ))}
+      <Text style={styles.caption}>
+        Overlapping speakers read as hot ridges where their beams cross. (Side-view audience
+        busts keep their own green/yellow/red/gray tint: does the vertical pattern reach that row?)
+      </Text>
     </View>
   );
 }
@@ -180,7 +191,7 @@ function SideSection({ viz, width, help }: SectionProps) {
       ) : (
         <VizUnavailableCard />
       )}
-      <IllustrationBadge text="CONCEPTUAL — heads are colored by whether the vertical pattern reaches them; never an SPL prediction" />
+      <IllustrationBadge text="CONCEPTUAL LEVEL MAP — illustrative model, NOT an SPL prediction; heads are tinted by whether the vertical pattern reaches them (real rooms, reflections & arrays differ)" />
       <DisplayGuideButton onPress={() => help('side_view')} />
       <View style={styles.chipRow}>
         {DISPERSIONS.map((d, i) => (
@@ -249,7 +260,7 @@ function FutureAudioNote() {
 const SECTIONS: { key: string; label: string; title: string; blurb: string; Comp: (p: SectionProps) => React.JSX.Element }[] = [
   { key: 'top', label: 'TOP VIEW', title: 'COVERAGE FROM ABOVE', blurb: 'Move the speakers, choose their dispersion, aim them — and watch who they reach.', Comp: TopSection },
   { key: 'side', label: 'SIDE VIEW', title: 'HEIGHT & TILT', blurb: 'Raise, tilt, and shape the room — make the wedge land on every row.', Comp: SideSection },
-  { key: 'read', label: 'READING IT', title: 'READING A COVERAGE MAP', blurb: 'The four colors, and the vocabulary every system tech uses.', Comp: ConceptsSection },
+  { key: 'read', label: 'READING IT', title: 'READING A COVERAGE MAP', blurb: 'The heat-map colors, and the vocabulary every system tech uses.', Comp: ConceptsSection },
 ];
 
 export function SpeakerCoverageLabScreen() {

@@ -25,7 +25,9 @@
  *   distance     level ∝ 1/d (drawn),         direct/room bars conceptual
  *   proximity    LF shelf grows as distance shrinks — directional mics only
  *   off-axis     broadband 20·log10|A+B·cosθ| + growing HF rolloff
- *   coverage     within-dispersion × 1/d^n, classified into 4 bands
+ *   coverage     within-dispersion × 1/d^n — drawn as a fine quantized-jet
+ *                heat map (owner 2026-07-29); the legacy 4-band classifier
+ *                (classifyCoverage) keeps its exact thresholds for busts/checks
  */
 import { useMemo } from 'react';
 import {
@@ -42,6 +44,7 @@ import {
 } from '@shopify/react-native-skia';
 import { useDerivedValue, type SharedValue } from 'react-native-reanimated';
 // Reuse the house clocks (same Skia-gated load condition as this file).
+import { usePhaseClock } from '../foundations/viz';
 export { usePhaseClock, useVizClock } from '../foundations/viz';
 
 const PARTICLE = '#cfd2d8';
@@ -1354,8 +1357,52 @@ export const DISPERSIONS: { key: string; label: string; hDeg: number; vDeg: numb
 
 export type CoverageClass = 'red' | 'green' | 'yellow' | 'gray';
 
-/** Conceptual level from one speaker to one point (top view). */
-function topLevel(
+// ── Jet colormap (heat-map rendering, owner directive 2026-07-29) ────────────
+// Deep navy (below range / no coverage) → blue → cyan → green → yellow →
+// orange → red (hottest). Piecewise-linear through 8 stops, quantized to 32
+// buckets so each map renders as ~32 Skia paths, never thousands of nodes.
+
+const JET_STOPS: { t: number; rgb: [number, number, number] }[] = [
+  { t: 0.0, rgb: [11, 28, 74] }, // #0b1c4a deep navy — no coverage
+  { t: 0.14, rgb: [29, 63, 168] }, // blue
+  { t: 0.28, rgb: [30, 125, 221] }, // azure
+  { t: 0.42, rgb: [25, 199, 194] }, // cyan
+  { t: 0.56, rgb: [63, 208, 108] }, // green — target range
+  { t: 0.7, rgb: [232, 225, 58] }, // yellow
+  { t: 0.84, rgb: [242, 140, 38] }, // orange
+  { t: 1.0, rgb: [216, 31, 31] }, // #d81f1f red — hottest
+];
+
+/** Jet-style colormap: t01 ∈ [0,1] → CSS rgb() through the 8 stops above. */
+export function jetColor(t01: number): string {
+  const t = Math.max(0, Math.min(1, t01));
+  let i = 0;
+  while (i < JET_STOPS.length - 2 && t > JET_STOPS[i + 1].t) i++;
+  const a = JET_STOPS[i];
+  const b = JET_STOPS[i + 1];
+  const f = (t - a.t) / (b.t - a.t);
+  const mix = (k: 0 | 1 | 2) => Math.round(a.rgb[k] + (b.rgb[k] - a.rgb[k]) * Math.max(0, Math.min(1, f)));
+  return `rgb(${mix(0)},${mix(1)},${mix(2)})`;
+}
+
+const JET_BUCKET_COUNT = 32;
+const JET_BUCKETS: string[] = Array.from({ length: JET_BUCKET_COUNT }, (_, i) =>
+  jetColor(i / (JET_BUCKET_COUNT - 1)),
+);
+
+/** Conceptual level → colormap position. Same honesty rules as ever: this is
+ *  an ILLUSTRATIVE dB-ish scale (10·log10 of the summed conceptual energy),
+ *  mapped so the old class thresholds land in sensible colormap zones
+ *  (red ≥ 1.7 → hot reds · green ≥ 0.5 → greens/yellows · < 0.26 → blues). */
+export function coverageT(lvl: number): number {
+  const db = 10 * Math.log10(Math.max(1e-4, lvl));
+  return Math.max(0, Math.min(1, (db + 16) / 21));
+}
+
+/** Conceptual level from one speaker to one point (top view). Banded pattern
+ *  edge — the ORIGINAL model, kept verbatim (readouts/semantics unchanged).
+ *  Exported so its meaning stays inspectable alongside the smooth variant. */
+export function topLevel(
   sx: number,
   sy: number,
   aimDeg: number,
@@ -1377,6 +1424,120 @@ function topLevel(
   const half = hDeg / 2;
   const base = ang <= half ? 1 : ang <= half + 12 ? 0.5 : 0.08;
   return scale * base * Math.pow(refD / d, 1.5);
+}
+
+/** Smooth pattern-edge gain: 1 inside the nominal wedge, then a continuous
+ *  −3 dB-per-8° rolloff (floored) — ADDED for the heat map so the field has
+ *  the smooth spatial falloff of the reference plots. Same dispersion ×
+ *  distance family as topLevel; only the edge is continuous, not banded. */
+function smoothEdge(offDeg: number, halfDeg: number): number {
+  const over = offDeg - halfDeg;
+  if (over <= 0) return 1;
+  return Math.max(0.055, Math.pow(0.5, over / 8));
+}
+
+/** topLevel's continuous sibling (top view, heat map only). */
+export function topLevelSmooth(
+  sx: number,
+  sy: number,
+  aimDeg: number,
+  hDeg: number,
+  px: number,
+  py: number,
+  refD: number,
+  scale: number,
+): number {
+  const vx = px - sx;
+  const vy = py - sy;
+  const d = Math.max(12, Math.hypot(vx, vy));
+  const th = (aimDeg * Math.PI) / 180;
+  const ax = Math.sin(th);
+  const ay = Math.cos(th);
+  const cosA = (vx * ax + vy * ay) / d;
+  const ang = (Math.acos(Math.max(-1, Math.min(1, cosA))) * 180) / Math.PI;
+  return scale * smoothEdge(ang, hDeg / 2) * Math.pow(refD / d, 1.5);
+}
+
+/** Side-plane conceptual level (vertical pattern × distance, smooth edge). */
+function sideLevelSmooth(
+  sx: number,
+  sy: number,
+  axisRad: number,
+  halfDeg: number,
+  px: number,
+  py: number,
+  refD: number,
+  scale: number,
+): number {
+  const vx = px - sx;
+  const vy = py - sy;
+  const d = Math.max(12, Math.hypot(vx, vy));
+  const offDeg = (Math.abs(Math.atan2(vy, vx) - axisRad) * 180) / Math.PI;
+  return scale * smoothEdge(offDeg, halfDeg) * Math.pow(refD / d, 1.5);
+}
+
+// ── Wavefront rings — life over the (static, memoized) heat maps ─────────────
+// Expanding arcs emanate from each active speaker on the phase clock: eased
+// radius, opacity fading as they travel. 3 staggered layers × 2 paths each
+// (glow + line) — constant node count, all per-frame work in worklets.
+
+type RingCenter = { x: number; y: number; dirDeg: number; maxR: number };
+
+function RingLayer({
+  phase,
+  centers,
+  spreadDeg,
+  offset,
+}: {
+  phase: SharedValue<number>;
+  centers: RingCenter[];
+  spreadDeg: number;
+  offset: number;
+}) {
+  const path = useDerivedValue(() => {
+    const f = (phase.value / (2 * Math.PI) + offset) % 1;
+    const e = f * (2 - f); // ease-out
+    const p = Skia.Path.Make();
+    for (const c of centers) {
+      const r = 7 + e * c.maxR;
+      p.addArc({ x: c.x - r, y: c.y - r, width: 2 * r, height: 2 * r }, c.dirDeg - spreadDeg / 2, spreadDeg);
+    }
+    return p;
+  }, [phase, centers, spreadDeg, offset]);
+  const lineOp = useDerivedValue(() => {
+    const f = (phase.value / (2 * Math.PI) + offset) % 1;
+    return 0.34 * (1 - f) * (1 - f);
+  }, [phase, offset]);
+  const glowOp = useDerivedValue(() => {
+    const f = (phase.value / (2 * Math.PI) + offset) % 1;
+    return 0.14 * (1 - f) * (1 - f);
+  }, [phase, offset]);
+  return (
+    <>
+      <Path path={path} color="#ffffff" style="stroke" strokeWidth={3.4} opacity={glowOp}>
+        <BlurMask blur={4} style="normal" />
+      </Path>
+      <Path path={path} color="#ffffff" style="stroke" strokeWidth={1.2} opacity={lineOp} />
+    </>
+  );
+}
+
+function WavefrontRings({
+  phase,
+  centers,
+  spreadDeg,
+}: {
+  phase: SharedValue<number>;
+  centers: RingCenter[];
+  spreadDeg: number;
+}) {
+  return (
+    <>
+      <RingLayer phase={phase} centers={centers} spreadDeg={spreadDeg} offset={0} />
+      <RingLayer phase={phase} centers={centers} spreadDeg={spreadDeg} offset={1 / 3} />
+      <RingLayer phase={phase} centers={centers} spreadDeg={spreadDeg} offset={2 / 3} />
+    </>
+  );
 }
 
 export function classifyCoverage(lvl: number): CoverageClass {
@@ -1445,7 +1606,7 @@ export function TopCoverageView({
   const audY0 = stageH + 8;
   const audH = h - audY0 - 8;
 
-  const { cells, aims, spkList } = useMemo(() => {
+  const { buckets, aims, spkList, ringCenters } = useMemo(() => {
     const refD = 0.55 * audH;
     const spks: { x: number; y: number; aim: number; hd: number; refD: number; scale: number; small?: boolean }[] = [
       { x: spk1x01 * (w - 40) + 20, y: stageH, aim: spk1AimDeg, hd: hDeg, refD, scale: 1 },
@@ -1456,14 +1617,11 @@ export function TopCoverageView({
         spks.push({ x: fx * w, y: stageH, aim: 0, hd: 90, refD: 0.2 * audH, scale: 0.5, small: true });
       }
     }
-    const paths: Record<CoverageClass, SkPathT> = {
-      red: Skia.Path.Make(),
-      green: Skia.Path.Make(),
-      yellow: Skia.Path.Make(),
-      gray: Skia.Path.Make(),
-    };
-    const COLS = 13;
-    const ROWS = 14;
+    // Fine heat map (~15× the old 13×14 cells): gap-free rects bucketed into
+    // ≤32 quantized jet colors → one Path per bucket, never per cell.
+    const bucketPaths: SkPathT[] = Array.from({ length: JET_BUCKET_COUNT }, () => Skia.Path.Make());
+    const COLS = 56;
+    const ROWS = 48;
     const cw = w / COLS;
     const ch = audH / ROWS;
     for (let r = 0; r < ROWS; r++) {
@@ -1471,10 +1629,10 @@ export function TopCoverageView({
         const px = (c + 0.5) * cw;
         const py = audY0 + (r + 0.5) * ch;
         let lvl = 0;
-        for (const s of spks) lvl += topLevel(s.x, s.y, s.aim, s.hd, px, py, s.refD, s.scale);
-        paths[classifyCoverage(lvl)].addRRect(
-          Skia.RRectXY(Skia.XYWHRect(c * cw + 1.2, audY0 + r * ch + 1.2, cw - 2.4, ch - 2.4), 2.5, 2.5),
-        );
+        for (const s of spks) lvl += topLevelSmooth(s.x, s.y, s.aim, s.hd, px, py, s.refD, s.scale);
+        const idx = Math.round(coverageT(lvl) * (JET_BUCKET_COUNT - 1));
+        // +0.5 overlap kills hairline seams between cells.
+        bucketPaths[idx].addRect(Skia.XYWHRect(c * cw, audY0 + r * ch, cw + 0.5, ch + 0.5));
       }
     }
     // Aim cue lines, clamped into the canvas (kept absolute like before so an
@@ -1488,8 +1646,17 @@ export function TopCoverageView({
       aimPath.moveTo(s.x, s.y);
       aimPath.lineTo(Math.max(4, Math.min(w - 4, s.x + dx * L)), s.y + dy * L);
     }
-    return { cells: paths, aims: aimPath, spkList: spks };
+    // Wavefront-ring anchors: arcs open toward each speaker's aim.
+    const rings: RingCenter[] = spks.map((s) => ({
+      x: s.x,
+      y: s.y,
+      dirDeg: 90 - s.aim, // screen angle of the aim vector (sin θ, cos θ)
+      maxR: s.small ? audH * 0.42 : audH * 1.05,
+    }));
+    return { buckets: bucketPaths, aims: aimPath, spkList: spks, ringCenters: rings };
   }, [w, h, audY0, audH, spk1x01, spk1AimDeg, spk2On, spk2x01, spk2AimDeg, hDeg, frontFills]);
+
+  const ringPhase = usePhaseClock(true, 0.22);
 
   const stage = useMemo(() => {
     const p = Skia.Path.Make();
@@ -1511,11 +1678,13 @@ export function TopCoverageView({
       <Path path={performers}>
         <LinearGradient start={vec(0, 4)} end={vec(0, stageH)} colors={['#464956', '#23242c']} />
       </Path>
-      {/* Coverage cells: rounded, soft (abstract data — styled, kept honest). */}
-      <Path path={cells.gray} color="rgba(150,150,160,0.12)" />
-      <Path path={cells.yellow} color="rgba(255,215,107,0.30)" />
-      <Path path={cells.green} color="rgba(91,255,133,0.30)" />
-      <Path path={cells.red} color="rgba(255,107,94,0.38)" />
+      {/* Heat map: ≤32 quantized-jet bucket paths (abstract data — styled,
+          kept honest: conceptual level, never an SPL prediction). */}
+      {buckets.map((p, i) => (
+        <Path key={i} path={p} color={JET_BUCKETS[i]} opacity={0.92} />
+      ))}
+      {/* Wavefronts ripple across the field from each active speaker. */}
+      <WavefrontRings phase={ringPhase} centers={ringCenters} spreadDeg={Math.min(170, hDeg + 30)} />
       <SkLine p1={{ x: 0, y: stageH }} p2={{ x: w, y: stageH }} color={GRID} strokeWidth={1.5} />
       <GlowStroke path={aims} color={PARTICLE} width={1.6} opacity={0.8} />
       {spkList.map((s, i) => (
@@ -1682,24 +1851,71 @@ export function SideCoverageView({
     return { wedgeFill, axisLine, room, stage, delayWedge, seats: seatPaths, dlyX, dlyY };
   }, [w, floorY, ceilY, stageTop, spkX, spkY, tiltDeg, vDeg, depth01, sloped, delayOn, stageW]);
 
+  // Side-plane heat map (stage front → rear wall, ceiling → floor): the same
+  // vertical-pattern × distance model, continuous, quantized-jet bucketed —
+  // ≤32 Path nodes, rebuilt only when a drive parameter changes.
+  const heat = useMemo(() => {
+    const bucketPaths: SkPathT[] = Array.from({ length: JET_BUCKET_COUNT }, () => Skia.Path.Make());
+    const x0 = stageW + 8;
+    const x1 = w - 2;
+    const y0 = ceilY + 4;
+    const y1 = floorY;
+    const srcs: { x: number; y: number; axis: number; half: number; refD: number; scale: number }[] = [
+      { x: spkX, y: spkY, axis: (tiltDeg * Math.PI) / 180, half: vDeg / 2, refD: w * 0.5, scale: 1 },
+    ];
+    if (delayOn) {
+      // Delay box beam: mid-axis of its drawn wedge (same edges as geo).
+      const aA = Math.atan2(w * 0.34, w * 0.5);
+      const aB = Math.atan2(w * 0.5, w * 0.16);
+      srcs.push({
+        x: geo.dlyX,
+        y: geo.dlyY,
+        axis: (aA + aB) / 2,
+        half: (((aB - aA) / 2) * 180) / Math.PI,
+        refD: w * 0.3,
+        scale: 0.7,
+      });
+    }
+    const COLS = 48;
+    const ROWS = 30;
+    const cw = (x1 - x0) / COLS;
+    const ch = (y1 - y0) / ROWS;
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const px = x0 + (c + 0.5) * cw;
+        const py = y0 + (r + 0.5) * ch;
+        let lvl = 0;
+        for (const s of srcs) lvl += sideLevelSmooth(s.x, s.y, s.axis, s.half, px, py, s.refD, s.scale);
+        const idx = Math.round(coverageT(lvl) * (JET_BUCKET_COUNT - 1));
+        bucketPaths[idx].addRect(Skia.XYWHRect(x0 + c * cw, y0 + r * ch, cw + 0.5, ch + 0.5));
+      }
+    }
+    return bucketPaths;
+  }, [w, ceilY, floorY, stageW, spkX, spkY, tiltDeg, vDeg, delayOn, geo.dlyX, geo.dlyY]);
+
+  const ringPhase = usePhaseClock(true, 0.22);
+  const ringCenters = useMemo<RingCenter[]>(() => {
+    const r: RingCenter[] = [{ x: spkX, y: spkY, dirDeg: tiltDeg, maxR: w * 0.85 }];
+    if (delayOn) r.push({ x: geo.dlyX, y: geo.dlyY, dirDeg: 53, maxR: w * 0.5 });
+    return r;
+  }, [spkX, spkY, tiltDeg, w, delayOn, geo.dlyX, geo.dlyY]);
+
   return (
     <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
       {/* Room: ceiling line + gradient floor. */}
       <Path path={geo.room} color={GRID} style="stroke" strokeWidth={1.6} />
       <Floor w={w} y={floorY} h={h - floorY} />
-      {/* Coverage wedge: soft gradient fan + axis cue (abstract, styled). */}
-      <Path path={geo.wedgeFill}>
-        <RadialGradient c={vec(spkX, spkY)} r={w * 0.9} colors={[withAlpha(WAVE, 0.2), withAlpha(WAVE, 0)]} />
-      </Path>
-      <Path path={geo.wedgeFill} color={WAVE} style="stroke" strokeWidth={1} opacity={0.35} />
+      {/* Heat map: the vertical beam glows in the field (≤32 bucket paths). */}
+      {heat.map((p, i) => (
+        <Path key={i} path={p} color={JET_BUCKETS[i]} opacity={0.92} />
+      ))}
+      {/* Wavefronts ripple down the beam. */}
+      <WavefrontRings phase={ringPhase} centers={ringCenters} spreadDeg={Math.min(170, vDeg + 30)} />
+      {/* Wedge edge + axis cues stay as thin overlays on the heat field. */}
+      <Path path={geo.wedgeFill} color={WAVE} style="stroke" strokeWidth={1} opacity={0.28} />
       <GlowStroke path={geo.axisLine} color={WAVE} width={1.4} opacity={0.6} />
       {delayOn ? (
-        <>
-          <Path path={geo.delayWedge}>
-            <RadialGradient c={vec(geo.dlyX, geo.dlyY)} r={w * 0.6} colors={[withAlpha(ACCENT_BLUE, 0.2), withAlpha(ACCENT_BLUE, 0)]} />
-          </Path>
-          <Path path={geo.delayWedge} color={ACCENT_BLUE} style="stroke" strokeWidth={1} opacity={0.35} />
-        </>
+        <Path path={geo.delayWedge} color={ACCENT_BLUE} style="stroke" strokeWidth={1} opacity={0.3} />
       ) : null}
       {/* Stage block. */}
       <Path path={geo.stage}>
@@ -1709,20 +1925,16 @@ export function SideCoverageView({
       {/* Cabinets: main (tilted with the wedge) + optional delay box. */}
       <CabinetSide x={spkX} y={spkY} tiltDeg={tiltDeg} />
       {delayOn ? <CabinetSide x={geo.dlyX} y={geo.dlyY} tiltDeg={48} scale={0.72} /> : null}
-      {/* The audience: coverage-tinted busts. */}
-      <Path path={geo.seats.gray}>
-        <LinearGradient start={vec(0, floorY - 58)} end={vec(0, floorY)} colors={SEAT_GRADS.gray} />
-      </Path>
-      <Path path={geo.seats.yellow}>
-        <LinearGradient start={vec(0, floorY - 58)} end={vec(0, floorY)} colors={SEAT_GRADS.yellow} />
-      </Path>
-      <Path path={geo.seats.green}>
-        <LinearGradient start={vec(0, floorY - 58)} end={vec(0, floorY)} colors={SEAT_GRADS.green} />
-      </Path>
-      <Path path={geo.seats.red}>
-        <LinearGradient start={vec(0, floorY - 58)} end={vec(0, floorY)} colors={SEAT_GRADS.red} />
-      </Path>
-      <Vignette w={w} h={h} />
+      {/* The audience: coverage-tinted busts ON TOP of the heat field, with a
+          dark outline so they never vanish against hot colors. */}
+      {(['gray', 'yellow', 'green', 'red'] as CoverageClass[]).map((k) => (
+        <Group key={k}>
+          <Path path={geo.seats[k]} color="#0a0a0e" style="stroke" strokeWidth={2.6} opacity={0.85} />
+          <Path path={geo.seats[k]}>
+            <LinearGradient start={vec(0, floorY - 58)} end={vec(0, floorY)} colors={SEAT_GRADS[k]} />
+          </Path>
+        </Group>
+      ))}
     </Canvas>
   );
 }
