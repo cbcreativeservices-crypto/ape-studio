@@ -39,7 +39,9 @@ export type LabId =
   | 'fm' // FM Synth Lab — carrier + modulator, ratio, index, sidebands
   | 'binaural' // Binaural Panner Lab — ITD/ILD localization (simplified model)
   | 'modular' // Modular Synth Lab — VCO→VCF→VCA + LFO/ENV/SEQ signal flow
-  | 'foundations'; // Foundations of Sound — the prerequisite mental model
+  | 'foundations' // Foundations of Sound — the prerequisite mental model
+  | 'mic' // Microphone Principles — visual-first (owner 2026-07-29)
+  | 'speaker'; // Speaker Placement & Coverage — visual-first (owner 2026-07-29)
 
 /** Native-engine feasibility tier (v4 MASTER §12) — informational. */
 export type LabTier = 'T1' | 'T2' | 'T3';

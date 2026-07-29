@@ -95,6 +95,17 @@ const SECTIONS: LabSection[] = [
     entries: EXPANSION_LABS,
   },
   {
+    // Mic & Speaker labs (owner 2026-07-29): visual-first at launch — every
+    // concept taught through manipulable drawings; audio demos in a future
+    // release (stated inside each lab, §1.7).
+    title: 'MIC & SPEAKER LABS',
+    note: 'Capture and coverage — visual-first, audio demos coming later.',
+    entries: [
+      { tag: '22', name: 'Microphone Principles', blurb: 'Pickup patterns, proximity, off-axis, plosives, stereo pairs — and what cupping the mic really does.', route: 'MicLab' },
+      { tag: '23', name: 'Speaker Placement & Coverage', blurb: 'Dispersion, aim, height and tilt — who stands in the beam, drawn as a live coverage map.', route: 'SpeakerLab' },
+    ],
+  },
+  {
     title: 'SIGNAL CHAIN BUILDER',
     note: 'The capstone — assemble a full chain and see per-module and cumulative effect.',
     entries: [

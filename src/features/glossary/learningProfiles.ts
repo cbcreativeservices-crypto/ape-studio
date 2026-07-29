@@ -45,7 +45,9 @@ export type LabRoute =
   | 'LimiterLab'
   | 'DistortionLab'
   | 'PhaseLab'
-  | 'StereoLab';
+  | 'StereoLab'
+  | 'MicLab'
+  | 'SpeakerLab';
 
 /** The four glossary actions (v4 MASTER §6.1). */
 export type GlossaryActionKind = 'hear_it' | 'experiment' | 'watch_it' | 'launch_lab';
@@ -116,6 +118,21 @@ const READY_TERMS_MODULAR = [
 // for Modules 5 and 9 (honesty rule: link when taught, never before).
 const READY_TERMS_FOUNDATIONS = ['Sound Wave', 'Rarefaction', 'Amplitude'];
 
+// Mic & Speaker labs LIVE (2026-07-29, visual-first). DB-verified 2026-07-29;
+// only what each lab genuinely teaches. Figure-8/XY/Mid-Side are NOT glossary
+// terms today — nothing to link. Line Array / Point Source stay unlinked (the
+// Speaker lab teaches placement/coverage, not array design — honesty rule).
+const READY_TERMS_MIC = [
+  'Cardioid', 'Omnidirectional', 'Supercardioid', 'Hypercardioid', 'Polar Pattern',
+  'Pickup Pattern', 'Proximity Effect', 'Off-Axis', 'Off-axis coloration', 'Pop filter',
+  'Windscreen', 'Plosive', 'Shock mount', 'Handling noise', 'ORTF', 'Coincident Pair',
+  'Spaced Pair', 'Stereo miking',
+];
+const READY_TERMS_SPEAKER = [
+  'Coverage', 'Dispersion', 'Front Fill', 'Front fills', 'Delay speaker', 'Hot spot',
+  'Loudspeaker', 'Throw',
+];
+
 // Effect labs LIVE (2026-07-26, the 12 FxLab screens over the v6 effects path).
 // DB-verified terms only; each is genuinely taught by its lab's controls +
 // hero visual + lesson. Threshold/Attack/Release map to Compression (the
@@ -168,6 +185,12 @@ const READY: Record<string, LearningProfile> = Object.fromEntries([
   ),
   ...READY_TERMS_FOUNDATIONS.map(
     (t) => [normTerm(t), { lab: 'foundations', actions: launch('FoundationsCourse') } as LearningProfile] as const,
+  ),
+  ...READY_TERMS_MIC.map(
+    (t) => [normTerm(t), { lab: 'mic', actions: launch('MicLab') } as LearningProfile] as const,
+  ),
+  ...READY_TERMS_SPEAKER.map(
+    (t) => [normTerm(t), { lab: 'speaker', actions: launch('SpeakerLab') } as LearningProfile] as const,
   ),
 ]);
 

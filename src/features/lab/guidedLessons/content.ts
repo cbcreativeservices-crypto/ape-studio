@@ -879,6 +879,89 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     ],
     formula: 'v = f·λ (speed = frequency × wavelength, ~343 m/s in air). Pressure swings above/below atmospheric; amplitude sets their size, frequency their rate.',
   },
+
+  // ───────────────── MIC & SPEAKER · Microphone Principles (2026-07-29) ──
+  mic: {
+    id: 'mic',
+    num: 24,
+    name: 'Microphone Principles',
+    tier: 'T1',
+    tagline: 'How microphones capture sound.',
+    whatItIs:
+      'A visual-first lab on microphone behavior: pickup patterns, distance and the room, ' +
+      'proximity effect, off-axis response, plosives and wind, handling noise, stereo pairs, ' +
+      'and — the star — what your HAND does to a handheld mic. Every display is an ' +
+      'illustrative model drawn from the standard equations, never a measurement; audio ' +
+      'demonstrations arrive in a future release.',
+    controls: [
+      { key: 'polar_pattern', name: 'Polar pattern viewer', definition: 'The pattern is the mic’s sensitivity map by direction — r(θ) = |A + B·cosθ| drawn exactly. Drag the green source around the mic and read its pickup; switch OMNI · CARDIOID · SUPER · HYPER · FIGURE-8 to move the nulls.' },
+      { key: 'distance', name: 'Mic distance', definition: 'Slides the mic away from the source. Direct sound falls ~6 dB per doubling of distance while the room stays roughly constant — the direct-to-room ratio IS what “close” sounds like. Typical speech working distance: 4–12 inches.' },
+      { key: 'proximity', name: 'Proximity effect', definition: 'Directional (pressure-gradient) mics grow a low shelf as you move in — from ~+1 dB at 12 in to ~+10 dB at 1 in (illustrative). Omnis are pure pressure mics: no ports, no gradient, no proximity effect. Radio warmth and mud both live here.' },
+      { key: 'off_axis', name: 'Off-axis response', definition: 'Rotating the mic away from the source loses level (the polar equation) AND treble — the drawn curve adds a growing high-frequency rolloff with angle. Off-axis sound is duller, not just quieter.' },
+      { key: 'pop_filter', name: 'Plosives & wind protection', definition: '“P” and “B” fire a jet of MOVING AIR at the diaphragm. The pop filter, foam, and shotgun windshield all do one thing: break up the airflow while the sound wave passes. The meter shows how much blast still reaches the capsule (conceptual).' },
+      { key: 'shock_mount', name: 'Handling noise & isolation', definition: 'Vibration travels through solids — stand, boom, cable — into the capsule as low-frequency thumps. A shock mount is a soft spring between stand and mic: the shake stays in the stand. Compare RIGID vs SHOCK and watch how much motion reaches the body.' },
+      { key: 'stereo_pair', name: 'Stereo techniques', definition: 'XY = coincident cardioids (level-only stereo, mono-safe). ORTF = 17 cm at 110° (level + time, wider). AB = spaced omnis (time-based, big but mono-risky). MID-SIDE = cardioid + figure-8 in one spot (width decided in the mix, fully mono-safe).' },
+      { key: 'hand_position', name: 'Hand placement (cupping)', definition: 'Drag the hand up the mic. On the handle, the mic performs as designed. Near the grille, the ports start to block. Cupping collapses the cardioid toward OMNI, colors the response with peaks and dips, and erases the feedback-rejecting null — the classic stage mistake, drawn live in three synced panels.' },
+      { key: 'cupping_why', name: 'Why cupping breaks it (cutaway)', definition: 'A cardioid is a pressure-GRADIENT design: sound reaches the diaphragm from the front and, through rear ports, from behind — timed so rear sound cancels. Cover the ports and only the front path remains: an omni with a resonant hand-cavity stuck on it.' },
+      { key: 'mistakes', name: 'Common handheld mistakes', definition: 'The field guide: correct grip · holding the grille · cupping · pointing away from the mouth · working too far away · covering the switch · blocking a wireless transmitter antenna. One good habit each.' },
+    ],
+    commonMistakes: [
+      'Cupping the grille for “tone” or volume — it collapses the pattern toward omni, invites feedback, and muddies the sound.',
+      'Singing across or past the capsule — the most sensitive axis misses the mouth (off-axis = quieter AND duller).',
+      'Blaming the mic for boomy vocals when it’s proximity effect — back off an inch or engage the high-pass.',
+      'Expecting proximity bass from an omni — no gradient, no proximity effect.',
+      'Skipping the pop filter in the studio — one hard “P” ruins an otherwise perfect take.',
+      'Rigid-mounting a mic on a hollow stage — every footstep arrives as a low-frequency thump.',
+      'Choosing a spaced pair (AB) for material that must fold to mono — time-based stereo combs when summed.',
+      'Aiming a cardioid’s NULL carelessly — the null is a tool; point it at the monitor wedge, not the audience.',
+    ],
+    proTips: [
+      'Live vocals: cardioid null at the wedge, grille a hand-width from the mouth, hand on the handle — that trio wins most feedback fights before the EQ does.',
+      'Use proximity effect deliberately: close in for radio warmth on a thin voice, back off for clarity on a boomy one.',
+    ],
+    formula: 'Polar family: r(θ) = |A + B·cosθ| (omni 1+0 · cardioid .5+.5 · fig-8 0+1). Direct level ≈ −6 dB per doubling of distance; the room stays — their ratio is “closeness”.',
+  },
+
+  // ──────────────── MIC & SPEAKER · Speaker Placement & Coverage (2026-07-29) ──
+  speaker: {
+    id: 'speaker',
+    num: 25,
+    name: 'Speaker Placement & Coverage',
+    tier: 'T1',
+    tagline: 'How loudspeakers distribute sound.',
+    whatItIs:
+      'A visual-first lab on getting sound TO people: dispersion, aiming, mounting height, ' +
+      'coverage overlap, hot spots, dead zones, front fills, and the delay-speaker concept. ' +
+      'The coverage map is a conceptual teaching model (within-pattern × distance falloff in ' +
+      'four color bands) — never an SPL prediction. Audio demos arrive in a future release.',
+    controls: [
+      { key: 'top_view', name: 'Top view (what the display shows)', definition: 'The room from above: stage strip at top, audience below, colored per seat-area — GREEN ideal, YELLOW acceptable, RED excessive (hot spot/overlap), GRAY insufficient (dead zone). Conceptual model, not SPL.' },
+      { key: 'position', name: 'Speaker position', definition: 'Slides the selected cabinet along the stage line. Position decides WHERE the pattern lands — center clusters cover evenly but can leave sides gray; left/right pairs cover wide but overlap in the middle.' },
+      { key: 'aim', name: 'Aim', definition: 'Rotates the cabinet. The pattern is a beam: aim it at the seats, not the walls. A few degrees moves the whole green zone — aiming is free; extra speakers are not.' },
+      { key: 'dispersion', name: 'Dispersion (H° × V°)', definition: 'The nominal wedge a cabinet controls — 60°×40° throws far and narrow, 120°×60° covers wide and close. Narrower patterns need more careful aim; wider ones fall off faster with distance.' },
+      { key: 'second_speaker', name: 'Second speaker', definition: 'Adds the other main. Watch the middle: where both patterns land, the map turns RED — energy piles up, and in the real world the two arrivals comb. Real designs minimize or carefully control overlap.' },
+      { key: 'front_fills', name: 'Front fills', definition: 'Small speakers on the stage lip covering the first rows that flown or raised mains pass over — they rescue the gray strip at the front without touching the rest of the map.' },
+      { key: 'side_view', name: 'Side view (what the display shows)', definition: 'The room in profile: stage, speaker on its height, the vertical pattern as a wedge, and audience heads colored by whether the wedge reaches them. Raise + tilt until every head is green.' },
+      { key: 'height_tilt', name: 'Height & down-tilt', definition: 'The core move of system design: aim the LOUD center of the vertical pattern at the FAR seats and let the pattern edge graze the near ones — distance and pattern cancel, front and back hear alike. That is why speakers fly.' },
+      { key: 'room_shape', name: 'Room shape (stage · ceiling · depth · slope)', definition: 'Stage height changes where the speaker can sit; ceiling limits how high you can fly; audience depth decides whether one box can cover at all; sloped seating lifts the rear rows INTO the pattern — the room is half the design.' },
+      { key: 'delay_speaker', name: 'Delay speaker (concept)', definition: 'A second cabinet deeper in the room covering the seats the mains cannot reach. Concept only here — in practice it is time-ALIGNED to the mains so both arrivals fuse into one sound (that alignment is the “delay”).' },
+      { key: 'coverage_legend', name: 'Reading the coverage map', definition: 'GREEN = in the pattern at a workable level. YELLOW = pattern edge, getting quiet. RED = too much — point-blank seats or heavy overlap. GRAY = the pattern never arrives. The goal of every placement decision: maximum green, zero gray, minimum red.' },
+    ],
+    commonMistakes: [
+      'Aiming speakers AT the room instead of AT the audience — walls don’t buy tickets; they only reflect.',
+      'Mounting mains low “so people can hear them” — the front row gets blasted while the pattern skims heads and dies before the back.',
+      'Ignoring overlap in the center — two mains both covering the middle seats comb and turn rough.',
+      'Choosing wide-dispersion boxes for a deep room — width is not throw; the rear rows stay gray.',
+      'Fixing a dead zone with the master fader — everywhere else gets louder first.',
+      'Forgetting the first rows under flown mains — that gray strip is exactly what front fills exist for.',
+      'Adding a rear speaker WITHOUT time alignment — two arrivals, one echo (the delay in “delay speaker” is the whole point).',
+    ],
+    proTips: [
+      'Design order: pick dispersion for the room shape → set height/tilt for depth → aim → then fills and delays for whatever is still gray.',
+      'Walk the room in the map: check the worst seat (far corner, front edge, under-balcony) — if those are green, the middle takes care of itself.',
+    ],
+    formula: 'Conceptual coverage: level ∝ (within-dispersion gain) × 1/dⁿ, classified GREEN/YELLOW/RED/GRAY. Direct level falls ~6 dB per doubling of distance — height + tilt equalize front-to-back by geometry.',
+  },
 };
 
 /** Lab lessons in spec order (1..16) — for menus/indexes. */
