@@ -48,7 +48,8 @@ export type LabRoute =
   | 'StereoLab'
   | 'MicLab'
   | 'SpeakerLab'
-  | 'TubeLab';
+  | 'TubeLab'
+  | 'DigitalLab';
 
 /** The four glossary actions (v4 MASTER §6.1). */
 export type GlossaryActionKind = 'hear_it' | 'experiment' | 'watch_it' | 'launch_lab';
@@ -142,6 +143,22 @@ const READY_TERMS_SPEAKER = [
 // (pending) definitions today — link when authored. Circuit-level terms
 // (Cathode bias, Grid stopper, Plate resistor, Rectifier tube, Tube rolling…)
 // stay unlinked: the lab teaches device physics, not circuit design.
+// Digital Audio Sampling & Conversion Lab LIVE (2026-07-29, standalone lab).
+// DB-verified 2026-07-29. 'Sample' and 'Clock' deliberately NOT linked — the
+// glossary's senses are the sampler-sample and the sequencer tempo clock, not
+// the converter meanings this lab teaches (honesty rule: right sense only).
+// Word length / LSB / MSB / Two's complement / Truncation / Zero-order hold /
+// Spectral image are not glossary terms today — nothing to link.
+const READY_TERMS_DIGITAL = [
+  'ADC', 'DAC', 'Analog-to-digital converter stage', 'Digital-to-analog converter stage',
+  'Aliasing', 'Anti-aliasing filter', 'Reconstruction filter', 'Bit Depth', 'dBFS',
+  'dither', 'Dithering', 'Noise Shaping', 'Nyquist frequency', 'Pulse-Code Modulation',
+  'quantization', 'Quantization Noise', 'Sample and hold', 'Sample Rate',
+  'Sample Rate Conversion', 'oversampling', 'Upsampling', 'Downsampling',
+  'Inter-Sample Peak', 'Inter-sample peaks', 'jitter', 'Effective number of bits',
+  'Signal-to-noise-and-distortion ratio', 'Full scale', 'Passband', 'Stopband',
+];
+
 const READY_TERMS_TUBE = [
   'Vacuum tube', 'Valve', 'Triode', 'Tetrode', 'Pentode', 'Cathode', 'Control grid',
   'Screen grid', 'Suppressor grid', 'Anode / Plate', 'Heater', 'Filament', 'Emission',
@@ -211,6 +228,9 @@ const READY: Record<string, LearningProfile> = Object.fromEntries([
   ),
   ...READY_TERMS_TUBE.map(
     (t) => [normTerm(t), { lab: 'tube', actions: launch('TubeLab') } as LearningProfile] as const,
+  ),
+  ...READY_TERMS_DIGITAL.map(
+    (t) => [normTerm(t), { lab: 'digital', actions: launch('DigitalLab') } as LearningProfile] as const,
   ),
 ]);
 

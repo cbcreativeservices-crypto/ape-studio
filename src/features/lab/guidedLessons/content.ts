@@ -1006,6 +1006,67 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     ],
     formula: 'Illustrative transfer curve: plate current ≈ (tanh(4.2·(V_grid − 0.52)) + 1)/2, normalized — cutoff floor, linear middle, saturation ceiling. Drawn gain ~×7, output inverted (real tube behavior).',
   },
+
+  // ────────── DIGITAL AUDIO SAMPLING & CONVERSION LAB (2026-07-29) ──────────
+  digital: {
+    id: 'digital',
+    num: 27,
+    name: 'Digital Audio Sampling & Conversion',
+    tier: 'T1',
+    tagline: 'How analog sound becomes digital data — and digital data becomes sound again.',
+    whatItIs:
+      'A standalone laboratory tracing the complete chain: acoustic sound → microphone → analog ' +
+      'voltage → anti-aliasing filter → sampling → quantization → binary data → processing → ' +
+      'reconstruction → sound. Eight modules make the invisible visible WITHOUT the classic ' +
+      'myths: digital audio is not stair steps, sample rate is not "smoothness", bit depth is ' +
+      'not frequency response, and floating point does not un-clip a converter.',
+    controls: [
+      { key: 'source', name: 'Source signal', definition: 'The reference signal being converted — sine, square, triangle, saw, impulse, or noise. Everything downstream (samples, codes, spectra) is computed from this exact waveform.' },
+      { key: 'waveform_view', name: 'Analog waveform view', definition: 'Three synchronized pictures of ONE event: air pressure at the source, the mic diaphragm riding it, and the continuous voltage leaving the preamp. The microphone creates a continuously varying voltage — no numbers exist yet.' },
+      { key: 'sample_rate', name: 'Sample rate', definition: 'How many times per second the converter measures the voltage. 48 kHz = one measurement every 20.833 µs. It sets the audio BANDWIDTH available (up to Nyquist) — it does not set loudness resolution.' },
+      { key: 'samples_per_cycle', name: 'Samples per cycle', definition: 'Sample rate ÷ signal frequency. A 1 kHz tone at 48 kHz gets 48 samples per cycle; at 3 samples per cycle the drawn dots look sparse but still describe the sine uniquely — until you pass 2.' },
+      { key: 'nyquist', name: 'Nyquist frequency', definition: 'Half the sample rate — the highest frequency the sampled data can represent. Approach it and samples-per-cycle approaches 2; pass it and the samples describe a DIFFERENT, lower frequency (an alias).' },
+      { key: 'aliasing', name: 'Aliasing', definition: 'When the input exceeds Nyquist, the sample points fit a lower-frequency sinusoid exactly — the alias, folded around Nyquist: f_alias = |f − nearest multiple of fs|. The lab plays the input AND the predicted alias so you hear the fold.' },
+      { key: 'aa_filter', name: 'Anti-aliasing filter', definition: 'A low-pass BEFORE the sampler that removes content above Nyquist so it can never fold down. Off: aliases land in-band, permanently. On: highs near Nyquist are attenuated, and everything above is gone before measurement.' },
+      { key: 'bit_depth', name: 'Bit depth', definition: 'How many binary digits store each measurement: N bits = 2ᴺ levels (16-bit = 65,536). It sets amplitude resolution and theoretical dynamic range (≈ 6.02·N + 1.76 dB) — it has nothing to do with frequency response.' },
+      { key: 'quant_levels', name: 'Quantization levels', definition: 'The horizontal rungs the sampled voltage must round to. At 3 bits (8 levels) the rounding is visible and audible; at 24 bits (16.7 million) the steps are far below any analog noise floor.' },
+      { key: 'quant_error', name: 'Quantization error', definition: 'Original sample value − stored value: the small rounding residue. ERROR-ONLY view isolates it. With healthy signals it behaves like noise; with tiny undithered signals it becomes correlated distortion — the reason dither exists.' },
+      { key: 'dither', name: 'Dither', definition: 'A controlled trace of noise added before reducing bit depth. It LINEARIZES quantization: the correlated error becomes a benign noise floor, and low-level detail survives statistically over time — at the cost of that small added noise. It is not "extra resolution" magic.' },
+      { key: 'noise_shaping', name: 'Noise shaping', definition: 'Dither\'s companion: pushes the added noise energy toward frequencies where hearing is least sensitive, buying audibly quieter results at the same bit depth. Applied at final fixed-point output — not repeatedly.' },
+      { key: 'binary_sample', name: 'Sample inspector', definition: 'One stored sample, every way at once: decimal, binary, hex, normalized amplitude, % of full scale and dBFS. Sample 24,001 = 12,486 = 0011000011000110 = +0.381 = −8.4 dBFS — same number, five costumes.' },
+      { key: 'bit_toggle', name: 'Bit toggling', definition: 'Flip any bit and watch the value move: the MSB carries half the full scale (and the sign in two\'s complement), the LSB carries one quantization step. Bit significance made physical.' },
+      { key: 'twos_complement', name: 'Two\'s complement', definition: 'How signed PCM stores negatives: the top bit carries negative weight. It gives one extra negative code (−32,768 vs +32,767 at 16-bit) and makes binary arithmetic seamless across zero.' },
+      { key: 'adc_chain', name: 'ADC signal flow', definition: 'Mic → preamp → analog gain → anti-aliasing filter → sample-and-hold → quantizer → encoder → PCM stream. Tap any block for its job, its failure modes, and what those failures sound like.' },
+      { key: 'sample_hold', name: 'Sample-and-hold', definition: 'The converter freezes the instantaneous voltage long enough to measure it. A converter operation — NOT what the final analog output of a DAC looks like.' },
+      { key: 'gain_staging', name: 'Gain staging into the ADC', definition: 'Set analog gain BEFORE conversion. Too low: the signal lives near the analog noise. Right: healthy SNR with safe peaks. Too high: clipping — flattened peaks whose information is gone forever. Analog overload and digital full-scale are tracked separately because they happen at different points.' },
+      { key: 'float_vs_int', name: 'Integer vs floating point', definition: 'Fixed-point integers have a hard ceiling at full scale. Floating point (sign · exponent · mantissa) has an enormous internal range — great for mixing headroom — but it cannot restore anything clipped BEFORE it, and it must come back to a fixed range at the output.' },
+      { key: 'gain_above_zero', name: 'Above 0 dBFS in float', definition: 'Push a mix over 0 dBFS inside a float path, then trim it down before output: intact. Render the same over-zero signal straight to fixed point: clipped. The modern DAW lesson in one exercise.' },
+      { key: 'reconstruction', name: 'Reconstruction', definition: 'The DAC + reconstruction filter turn stored values into a CONTINUOUS analog waveform via band-limited interpolation — not stair steps, not straight lines between dots. The samples uniquely describe one band-limited signal; the filter produces it.' },
+      { key: 'zoh', name: 'Zero-order hold', definition: 'The stepped intermediate voltage a DAC element produces before filtering. A real stage in the chain and a useful model — but calling it "what digital audio looks like" is the myth this lab exists to kill.' },
+      { key: 'spectral_images', name: 'Spectral images', definition: 'Sampling creates copies of the audio spectrum around every multiple of the sample rate. The reconstruction filter\'s whole job is removing those images so only the baseband remains.' },
+      { key: 'oversampling', name: 'Oversampling', definition: 'Running the converter at a multiple of the base rate pushes the spectral images far from the audio band, so a gentle, well-behaved analog filter finishes the job. It relaxes the filter — it does not add information beyond the original band.' },
+      { key: 'isp', name: 'Inter-sample peaks', definition: 'Two samples can sit below 0 dBFS while the reconstructed waveform between them rises ABOVE it. Sample meters say "no clip"; the DAC or a downstream encoder can still overload. This is why true-peak meters oversample.' },
+      { key: 'jitter', name: 'Clock & jitter', definition: 'Jitter is timing deviation of the sampling instants — not value rounding. Its audibility depends on magnitude, spectrum, signal content and converter design; buffered/reclocked playback can remove it entirely. Beware sweeping cable-audiophile claims.' },
+      { key: 'data_rate', name: 'Data rate & storage', definition: 'Rate = sample rate × bit depth × channels. 48 kHz × 24-bit × 2 = 2.304 Mbit/s ≈ 17.3 MB/min. The full calculator (with storage planning) lives in the Calculator Laboratory.' },
+      { key: 'myths', name: 'Myth vs reality', definition: 'The permanent misconception panel: stair steps, "more samples = smoother", bit depth vs frequency, 144 dB from 24 bits, float un-clipping recordings, hot-to-0 dBFS recording. Each myth paired with what is actually true.' },
+      { key: 'listening', name: 'Listening tests', definition: 'Level-matched A/Bs (bit depths, dither on/off, truncation vs rounding, SRC quality, clipping types) — arriving with the native audio release. One is live today: the aliasing demo really plays the input tone and its predicted alias.' },
+    ],
+    commonMistakes: [
+      'Believing DAC output is a staircase — sample values describe a band-limited signal; the reconstruction filter outputs a continuous waveform.',
+      'Thinking higher sample rates make waveforms "smoother" — reconstruction is band-limited interpolation, not connect-the-dots; more rate buys BANDWIDTH, not smoothness.',
+      'Assigning frequency response to bit depth or loudness resolution to sample rate — time and amplitude are separate axes with separate settings.',
+      'Expecting 144 dB of usable range from every 24-bit recording — analog noise, clocking and converter linearity set the real (ENOB) limit well below theory.',
+      'Recording as hot as possible "for resolution" — modern converters have headroom to spare; clipped peaks are unrecoverable, quiet ones are fine.',
+      'Converting a clipped file to 32-bit float to repair it — float cannot restore information destroyed before or during conversion.',
+      'Applying dither after every operation, or never — it belongs at the final fixed-point bit-depth reduction.',
+      'Treating every clock/cable swap as audible — jitter matters when it is large, in-band, and uncorrected; buffering and reclocking exist.',
+    ],
+    proTips: [
+      'Anchor everything to two numbers: samples per cycle (fs ÷ f) for time, and levels (2ᴺ) for amplitude — every myth in this lab dies against one of those two.',
+      'Track with peaks around −18 to −10 dBFS: converter noise is far below you, and no transient ever reaches the cliff.',
+    ],
+    formula: 'Nyquist = fs/2 · alias = |f − n·fs| (nearest n) · levels = 2ᴺ · DR ≈ 6.02·N + 1.76 dB (theoretical) · data rate = fs × N × channels.',
+  },
 };
 
 /** Lab lessons in spec order (1..16) — for menus/indexes. */

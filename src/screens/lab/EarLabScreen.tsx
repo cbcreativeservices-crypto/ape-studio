@@ -115,6 +115,15 @@ const SECTIONS: LabSection[] = [
     ],
   },
   {
+    // Digital Audio Sampling & Conversion Lab (owner 2026-07-29): a
+    // STANDALONE laboratory with its own home + 8 modules.
+    title: 'DIGITAL AUDIO LAB',
+    note: 'How analog sound becomes numbers — and numbers become sound again.',
+    entries: [
+      { tag: '26', name: 'Digital Audio Sampling & Conversion Lab', blurb: 'Sampling, Nyquist, aliasing, bit depth, dither, binary data, reconstruction — the full A/D/A chain, myth-free.', route: 'DigitalLab' },
+    ],
+  },
+  {
     // Audio Calculator Laboratory (owner 2026-07-29): one unified lab of
     // consolidated calculator workspaces with the Calculation Chain.
     title: 'CALCULATOR LABORATORY',

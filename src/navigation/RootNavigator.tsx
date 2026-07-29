@@ -60,6 +60,8 @@ import { SpeakerCoverageLabScreen } from '../screens/lab/micspeaker/SpeakerCover
 import { VacuumTubeLabScreen } from '../screens/lab/tube/VacuumTubeLabScreen';
 import { CalcLabScreen } from '../screens/lab/calc/CalcLabScreen';
 import { CalcWorkspaceScreen } from '../screens/lab/calc/CalcWorkspaceScreen';
+import { DigitalLabHomeScreen } from '../screens/lab/digital/DigitalLabHomeScreen';
+import { DigitalModuleScreen } from '../screens/lab/digital/DigitalModuleScreen';
 import { FoundationsCourseScreen } from '../screens/lab/foundations/FoundationsCourseScreen';
 import { FoundationsPlaygroundScreen } from '../screens/lab/foundations/FoundationsPlaygroundScreen';
 import { LandingScreen } from '../screens/landing/LandingScreen';
@@ -143,6 +145,8 @@ export function RootNavigator() {
       <Stack.Screen name="TubeLab" component={VacuumTubeLabScreen} />
       <Stack.Screen name="CalcLab" component={CalcLabScreen} />
       <Stack.Screen name="CalcWorkspace" component={CalcWorkspaceScreen} />
+      <Stack.Screen name="DigitalLab" component={DigitalLabHomeScreen} />
+      <Stack.Screen name="DigitalModule" component={DigitalModuleScreen} />
       {/* Foundations of Sound — the Ear Lab's first module (course + sandbox). */}
       <Stack.Screen name="FoundationsCourse" component={FoundationsCourseScreen} />
       <Stack.Screen name="FoundationsPlayground" component={FoundationsPlaygroundScreen} />

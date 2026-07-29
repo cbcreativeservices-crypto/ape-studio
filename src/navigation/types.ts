@@ -171,6 +171,10 @@ export type RootStackParamList = {
   /** Audio Calculator Laboratory (owner 2026-07-29) — unified calc workspaces. */
   CalcLab: undefined;
   CalcWorkspace: { id: string };
+  /** Digital Audio Sampling & Conversion Lab (owner 2026-07-29) — standalone
+   *  laboratory with its own home + 8 modules. */
+  DigitalLab: undefined;
+  DigitalModule: { id: import('../screens/lab/digital/modules/registry').DigitalModuleId };
   /** FOUNDATIONS OF SOUND (owner 2026-07-26) — the FIRST module in the Ear
    *  Training & Audio Lab: a stepped teaching course (Modules 1–4 MVP) + the
    *  free Playground sandbox. Skia-animated (pre-Skia clients degrade
