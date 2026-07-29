@@ -61,13 +61,20 @@ export function IntroSheet({
   delayMs?: number;
 }) {
   const copy = SCREEN_INTROS[introKey];
-  const [ready, setReady] = useState(delayMs <= 0);
+  // `instantIntros` (dev-only) zeroes every governed read-timer so intros are
+  // immediately dismissable during screen sweeps; the delayMs values passed by
+  // callers are left untouched so flipping the flag restores them exactly.
+  const holdMs = devBypass('instantIntros') ? 0 : delayMs;
+  const [ready, setReady] = useState(holdMs <= 0);
   useEffect(() => {
-    if (delayMs <= 0) return;
+    if (holdMs <= 0) {
+      setReady(true);
+      return;
+    }
     setReady(false);
-    const t = setTimeout(() => setReady(true), delayMs);
+    const t = setTimeout(() => setReady(true), holdMs);
     return () => clearTimeout(t);
-  }, [delayMs]);
+  }, [holdMs]);
 
   return (
     <Modal

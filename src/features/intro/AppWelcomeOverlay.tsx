@@ -14,7 +14,10 @@ import { colors, fonts } from '../../theme/tokens';
 import { LowLightDim } from '../settings/LowLightLayer';
 import { SCREEN_INTROS } from './screenIntros';
 import { useScreenIntro } from './ScreenIntroOverlay';
+import { devBypass } from '../../config/devMode';
 
+/** Governed dwell time (ratified: 9 s before "LET'S GET STARTED" appears).
+ *  Left intact — the `instantIntros` dev bypass zeroes it only in __DEV__. */
 const WELCOME_DELAY_MS = 9000;
 
 export function AppWelcomeOverlay() {
@@ -24,6 +27,10 @@ export function AppWelcomeOverlay() {
   useEffect(() => {
     if (!visible) {
       setCanContinue(false);
+      return;
+    }
+    if (devBypass('instantIntros')) {
+      setCanContinue(true);
       return;
     }
     setCanContinue(false);

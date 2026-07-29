@@ -25,6 +25,14 @@ export const DEV_BYPASS = {
   /** Every screen intro/tutorial + coach mark shows on EVERY entry (first-time
    *  experience each visit), ignoring the persisted seen/retire counters. */
   alwaysShowIntros: true,
+  /** Intro/welcome READ-TIMERS forced to zero: every intro popup is instantly
+   *  dismissable instead of holding the reader for its governed dwell time
+   *  (owner 2026-07-29, "for now" — logging/screen-sweep aid).
+   *  ⚠️ GOVERNANCE: the real dwell times (app welcome 9 s, commitment 8 s) are
+   *  a ratified decision (APE_BACKEND_HANDOFF_2026_07_23 §2.3). This flag only
+   *  bypasses them in __DEV__; the constants themselves are untouched, so
+   *  flipping this to false restores the governed behavior exactly. */
+  instantIntros: true,
 } as const;
 
 /** True only in dev builds AND when at least one bypass is on. */
