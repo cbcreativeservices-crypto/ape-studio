@@ -489,3 +489,668 @@ export function AnalyticSpectrumView({
     </Canvas>
   );
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Module 5 — Rate comparator: two sources vibrating at different RATES.
+// Same conceptual-model rules as everything above (slowed, badged by the host).
+
+export function RateComparatorView({
+  clock,
+  width,
+  height = 132,
+  visHzA,
+  visHzB,
+  amp = 0.8,
+  active = 'none',
+}: {
+  clock: SharedValue<number>;
+  width: number;
+  height?: number;
+  visHzA: number;
+  visHzB: number;
+  amp?: number;
+  /** Which side is currently SOUNDING ('a' | 'b' | 'none') — highlighted. */
+  active?: 'a' | 'b' | 'none';
+}) {
+  const w = width;
+  const h = height;
+  const colW = (w - 14) / 2;
+
+  // One column's rest grid (shared by both sides; mirrored by x offset).
+  const COLS = 12;
+  const ROWS = 4;
+  const grid = useMemo(() => {
+    const xs: number[] = [];
+    const ys: number[] = [];
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        xs.push(26 + ((c + 0.5) / COLS) * (colW - 56) + (hashJs(r * COLS + c) - 0.5) * 5);
+        ys.push(34 + ((r + 0.5) / ROWS) * (h - 48) + (hashJs(r * COLS + c + 500) - 0.5) * 6);
+      }
+    }
+    return { xs, ys };
+  }, [colW, h]);
+  const gxs = grid.xs;
+  const gys = grid.ys;
+
+  // Per-side paths: piston+orbit-hand (stroke) and particles+orbit-dot (fill).
+  const makeSide = (visHz: number, x0: number) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const fill = useDerivedValue(() => {
+      const t = clock.value;
+      const om = 2 * Math.PI * visHz;
+      const lambda = colW / 1.7;
+      const k = (2 * Math.PI) / lambda;
+      const p = Skia.Path.Make();
+      for (let i = 0; i < gxs.length; i++) {
+        const dx = amp * 6 * Math.sin(om * t - k * gxs[i]);
+        p.addCircle(x0 + gxs[i] + dx, gys[i], 2);
+      }
+      // Orbit dot — ONE revolution per cycle (count laps = count cycles).
+      const ocx = x0 + colW - 22;
+      const ocy = 17;
+      p.addCircle(ocx + 10 * Math.cos(om * t - Math.PI / 2), ocy + 10 * Math.sin(om * t - Math.PI / 2), 3);
+      return p;
+    }, [clock, visHz, x0, gxs, gys, amp, colW]);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const stroke = useDerivedValue(() => {
+      const t = clock.value;
+      const om = 2 * Math.PI * visHz;
+      const p = Skia.Path.Make();
+      // Piston (the source): a vertical bar oscillating along the travel axis.
+      const px = x0 + 12 + amp * 7 * Math.sin(om * t);
+      p.moveTo(px, 34);
+      p.lineTo(px, h - 14);
+      return p;
+    }, [clock, visHz, x0, amp, h]);
+    return { fill, stroke };
+  };
+
+  const a = makeSide(visHzA, 0);
+  const b = makeSide(visHzB, colW + 14);
+
+  // Static chrome: divider + the two orbit rings.
+  const chrome = useMemo(() => {
+    const p = Skia.Path.Make();
+    p.moveTo(colW + 7, 8);
+    p.lineTo(colW + 7, h - 8);
+    p.addCircle(colW - 22, 17, 10);
+    p.addCircle(colW + 14 + colW - 22, 17, 10);
+    return p;
+  }, [colW, h]);
+
+  return (
+    <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+      <Path path={chrome} color="#2c2c33" style="stroke" strokeWidth={1.4} />
+      <Path path={a.stroke} color={active === 'a' ? ACCENT_GREEN : CONE} style="stroke" strokeWidth={3} />
+      <Path path={b.stroke} color={active === 'b' ? ACCENT_GREEN : CONE} style="stroke" strokeWidth={3} />
+      <Path path={a.fill} color={active === 'a' ? '#eef2ee' : PARTICLE} />
+      <Path path={b.fill} color={active === 'b' ? '#eef2ee' : PARTICLE} />
+    </Canvas>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Module 6 — Wavelength ruler: the wave laid across a real room (7 m), with a
+// λ bracket whose drawn length IS 343/f mapped onto the room scale.
+
+export const RULER_ROOM_M = 7;
+
+export function WavelengthRulerView({
+  clock,
+  width,
+  height = 158,
+  freqHz,
+  visHz,
+  amp = 0.85,
+}: {
+  clock: SharedValue<number>;
+  width: number;
+  height?: number;
+  freqHz: number;
+  visHz: number;
+  amp?: number;
+}) {
+  const w = width;
+  const h = height;
+  const floorY = h - 18;
+  const lambdaM = 343 / Math.max(20, freqHz);
+  const lambdaPx = (lambdaM / RULER_ROOM_M) * w;
+
+  // Dense particle field — compression bands are the star.
+  const COLS = 38;
+  const ROWS = 6;
+  const grid = useMemo(() => {
+    const xs: number[] = [];
+    const ys: number[] = [];
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        xs.push(((c + 0.5) / COLS) * w + (hashJs(r * COLS + c + 77) - 0.5) * (w / COLS) * 0.5);
+        ys.push(10 + ((r + 0.5) / ROWS) * (floorY - 46) + (hashJs(r * COLS + c + 901) - 0.5) * 7);
+      }
+    }
+    return { xs, ys };
+  }, [w, floorY]);
+  const gxs = grid.xs;
+  const gys = grid.ys;
+
+  const dots = useDerivedValue(() => {
+    const t = clock.value;
+    const om = 2 * Math.PI * visHz;
+    const k = (2 * Math.PI) / Math.max(24, lambdaPx);
+    const p = Skia.Path.Make();
+    // Displacement capped so tight lambdas never collapse into solid bands.
+    const disp = Math.min(9, lambdaPx / 7);
+    for (let i = 0; i < gxs.length; i++) {
+      const dx = amp * disp * Math.sin(om * t - k * gxs[i]);
+      p.addCircle(gxs[i] + dx, gys[i], 1.9);
+    }
+    return p;
+  }, [clock, visHz, lambdaPx, gxs, gys, amp]);
+
+  // λ bracket (static per freq): measures ONE wavelength of spacing — the
+  // moving bands flow through it.
+  const bracket = useMemo(() => {
+    const p = Skia.Path.Make();
+    const y = floorY - 22;
+    const x0 = 8;
+    const x1 = Math.min(w - 8, x0 + lambdaPx);
+    p.moveTo(x0, y - 5);
+    p.lineTo(x0, y + 5);
+    p.moveTo(x0, y);
+    p.lineTo(x1, y);
+    p.moveTo(x1, y - 5);
+    p.lineTo(x1, y + 5);
+    return p;
+  }, [w, floorY, lambdaPx]);
+
+  // Floor + 1 m ticks + a stick person for scale (static).
+  const room = useMemo(() => {
+    const p = Skia.Path.Make();
+    p.moveTo(0, floorY);
+    p.lineTo(w, floorY);
+    for (let m = 0; m <= RULER_ROOM_M; m++) {
+      const x = (m / RULER_ROOM_M) * w;
+      p.moveTo(x, floorY);
+      p.lineTo(x, floorY + (m % 2 === 0 ? 8 : 5));
+    }
+    // Stick person (garnish — vertical is NOT to the meter scale).
+    const px = w - 26;
+    p.addCircle(px, floorY - 40, 5);
+    p.moveTo(px, floorY - 35);
+    p.lineTo(px, floorY - 16);
+    p.moveTo(px - 8, floorY - 28);
+    p.lineTo(px + 8, floorY - 28);
+    p.moveTo(px, floorY - 16);
+    p.lineTo(px - 6, floorY);
+    p.moveTo(px, floorY - 16);
+    p.lineTo(px + 6, floorY);
+    return p;
+  }, [w, floorY]);
+
+  return (
+    <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+      <Path path={dots} color={PARTICLE} />
+      <Path path={bracket} color={WAVE} style="stroke" strokeWidth={2.2} />
+      <Path path={room} color="#3a3a42" style="stroke" strokeWidth={1.6} />
+    </Canvas>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Module 7 — Time vs space: the SAME wave on two rulers. The two cursor dots
+// always sit at the SAME PHASE — equal heights is the whole lesson (d = v·t).
+
+const DD_CYC = 2.2; // cycles across each window (identical → same pattern width)
+
+export function DualDomainView({
+  width,
+  visHz,
+  cursor,
+  running,
+}: {
+  width: number;
+  visHz: number;
+  /** 0..1 — the linked phase cursor (from the panel's slider). */
+  cursor: number;
+  running: boolean;
+}) {
+  const clock = useVizClock(running);
+  const w = width;
+  const h = 84;
+
+  // TOP — pressure at ONE point (the mic, right edge) plotted over TIME.
+  const timeTrace = useDerivedValue(() => {
+    const t = clock.value;
+    const om = 2 * Math.PI * visHz;
+    const p = Skia.Path.Make();
+    const mid = h / 2;
+    const a = h * 0.34;
+    const N = 90;
+    for (let i = 0; i <= N; i++) {
+      const x = (i / N) * w;
+      // Right edge = now; moving left = further into the past.
+      const y = mid - a * Math.cos(om * t - ((w - x) / w) * 2 * Math.PI * DD_CYC);
+      if (i === 0) p.moveTo(x, y);
+      else p.lineTo(x, y);
+    }
+    return p;
+  }, [clock, visHz, w]);
+  const timeDots = useDerivedValue(() => {
+    const t = clock.value;
+    const om = 2 * Math.PI * visHz;
+    const mid = h / 2;
+    const a = h * 0.34;
+    const p = Skia.Path.Make();
+    // The mic itself (right edge, reading "now").
+    p.addCircle(w - 6, mid - a * Math.cos(om * t), 4);
+    // The linked cursor — cursor c of a cycle back in time.
+    const xc = w * (1 - cursor);
+    p.addCircle(xc, mid - a * Math.cos(om * t - cursor * 2 * Math.PI * DD_CYC), 4.5);
+    return p;
+  }, [clock, visHz, w, cursor]);
+
+  // BOTTOM — pressure along DISTANCE at this instant (source at the left).
+  const spaceTrace = useDerivedValue(() => {
+    const t = clock.value;
+    const om = 2 * Math.PI * visHz;
+    const p = Skia.Path.Make();
+    const mid = h / 2;
+    const a = h * 0.34;
+    const N = 90;
+    for (let i = 0; i <= N; i++) {
+      const x = (i / N) * w;
+      const y = mid - a * Math.cos(om * t - (x / w) * 2 * Math.PI * DD_CYC);
+      if (i === 0) p.moveTo(x, y);
+      else p.lineTo(x, y);
+    }
+    return p;
+  }, [clock, visHz, w]);
+  const spaceDots = useDerivedValue(() => {
+    const t = clock.value;
+    const om = 2 * Math.PI * visHz;
+    const mid = h / 2;
+    const a = h * 0.34;
+    const p = Skia.Path.Make();
+    // Same phase as the time cursor → ALWAYS the same height. That's d = v·t.
+    const xc = w * cursor;
+    p.addCircle(xc, mid - a * Math.cos(om * t - cursor * 2 * Math.PI * DD_CYC), 4.5);
+    return p;
+  }, [clock, visHz, w, cursor]);
+
+  const cursorLineTop = useMemo(() => {
+    const p = Skia.Path.Make();
+    const x = w * (1 - cursor);
+    p.moveTo(x, 4);
+    p.lineTo(x, h - 4);
+    return p;
+  }, [w, cursor]);
+  const cursorLineBottom = useMemo(() => {
+    const p = Skia.Path.Make();
+    const x = w * cursor;
+    p.moveTo(x, 4);
+    p.lineTo(x, h - 4);
+    return p;
+  }, [w, cursor]);
+  const speaker = useMemo(() => {
+    const p = Skia.Path.Make();
+    p.moveTo(2, h / 2 - 14);
+    p.lineTo(10, h / 2 - 7);
+    p.lineTo(10, h / 2 + 7);
+    p.lineTo(2, h / 2 + 14);
+    p.close();
+    return p;
+  }, []);
+
+  return (
+    <View style={{ gap: 4 }}>
+      <Text style={twStyles.winLabel}>OVER TIME — pressure at the mic (right edge = now)</Text>
+      <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+        <SkLine p1={{ x: 0, y: h / 2 }} p2={{ x: w, y: h / 2 }} color="#2c2c33" strokeWidth={1} />
+        <Path path={cursorLineTop} color={ACCENT_GREEN} style="stroke" strokeWidth={1} opacity={0.5} />
+        <Path path={timeTrace} color={WAVE} style="stroke" strokeWidth={2.2} />
+        <Path path={timeDots} color={ACCENT_GREEN} />
+      </Canvas>
+      <Text style={twStyles.winLabel}>OVER DISTANCE — pressure along the room (this instant)</Text>
+      <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+        <SkLine p1={{ x: 0, y: h / 2 }} p2={{ x: w, y: h / 2 }} color="#2c2c33" strokeWidth={1} />
+        <Path path={cursorLineBottom} color={ACCENT_GREEN} style="stroke" strokeWidth={1} opacity={0.5} />
+        <Path path={speaker} color={CONE} style="stroke" strokeWidth={2} />
+        <Path path={spaceTrace} color={WAVE} style="stroke" strokeWidth={2.2} />
+        <Path path={spaceDots} color={ACCENT_GREEN} />
+      </Canvas>
+    </View>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Module 8 — Octave spiral: one turn = one octave; equal musical steps are
+// equal ANGLES while the Hz counter accelerates. Static (prop-driven).
+
+export const SPIRAL_F0 = 110;
+export const SPIRAL_OCTAVES = 3; // 110 → 880
+
+export function OctaveSpiralView({
+  width,
+  height = 210,
+  freqHz,
+}: {
+  width: number;
+  height?: number;
+  freqHz: number;
+}) {
+  const w = width;
+  const h = height;
+  const cx = w / 2;
+  const cy = h / 2;
+  const rMax = Math.min(w, h) / 2 - 14;
+  const r0 = 18;
+  const rOf = (o: number) => r0 + (o / (SPIRAL_OCTAVES + 0.15)) * (rMax - r0);
+  const angOf = (o: number) => -Math.PI / 2 + o * 2 * Math.PI;
+
+  const spiral = useMemo(() => {
+    const p = Skia.Path.Make();
+    for (let i = 0; i <= 320; i++) {
+      const o = (i / 320) * (SPIRAL_OCTAVES + 0.15);
+      const x = cx + rOf(o) * Math.cos(angOf(o));
+      const y = cy + rOf(o) * Math.sin(angOf(o));
+      if (i === 0) p.moveTo(x, y);
+      else p.lineTo(x, y);
+    }
+    // Octave markers — every crossing of the 12-o'clock ray is a DOUBLING.
+    for (let o = 0; o <= SPIRAL_OCTAVES; o++) {
+      p.addCircle(cx + rOf(o) * Math.cos(angOf(o)), cy + rOf(o) * Math.sin(angOf(o)), 4);
+    }
+    return p;
+  }, [cx, cy, rMax]);
+
+  const marker = useMemo(() => {
+    const oF = Math.max(0, Math.min(SPIRAL_OCTAVES, Math.log2(freqHz / SPIRAL_F0)));
+    const p = Skia.Path.Make();
+    const x = cx + rOf(oF) * Math.cos(angOf(oF));
+    const y = cy + rOf(oF) * Math.sin(angOf(oF));
+    p.moveTo(cx, cy);
+    p.lineTo(x, y);
+    p.addCircle(x, y, 7);
+    return p;
+  }, [freqHz, cx, cy, rMax]);
+
+  return (
+    <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+      {/* The 12-o'clock "doubling ray": every crossing = ×2 frequency. */}
+      <SkLine p1={{ x: cx, y: cy - r0 + 6 }} p2={{ x: cx, y: cy - rMax - 6 }} color="#2c2c33" strokeWidth={1.4} />
+      <Path path={spiral} color="#4a4a54" style="stroke" strokeWidth={2} />
+      <Path path={marker} color={WAVE} style="stroke" strokeWidth={2.4} />
+    </Canvas>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Module 9 — Ear-sensitivity curve (SIMPLIFIED equal-loudness illustration —
+// the host badges it: analytic, inspired by ISO-226-style contours, NOT data).
+
+/** Simplified ear-sensitivity model in dB re 1 kHz (illustration only). */
+export function earSensDb(f: number): number {
+  const fc = Math.max(30, Math.min(18000, f));
+  let s: number;
+  if (fc < 1000) {
+    s = -20 * Math.pow(Math.log10(1000 / fc), 1.8);
+  } else {
+    const bump = 5 * Math.exp(-Math.pow(Math.log2(fc / 3500), 2) / 0.6);
+    const roll = -9 * Math.max(0, Math.log2(fc / 9000));
+    s = bump + roll;
+  }
+  return Math.max(-42, Math.min(8, s));
+}
+
+export function EqualLoudnessView({
+  width,
+  height = 120,
+  freqHz,
+}: {
+  width: number;
+  height?: number;
+  freqHz: number;
+}) {
+  const w = width;
+  const h = height;
+  const fLo = 40;
+  const fHi = 16000;
+  const xOf = (f: number) => (Math.log(f / fLo) / Math.log(fHi / fLo)) * w;
+  const yOf = (db: number) => 10 + ((8 - db) / 50) * (h - 24);
+
+  const curve = useMemo(() => {
+    const p = Skia.Path.Make();
+    const N = 100;
+    for (let i = 0; i <= N; i++) {
+      const f = fLo * Math.pow(fHi / fLo, i / N);
+      const y = yOf(earSensDb(f));
+      if (i === 0) p.moveTo(0, y);
+      else p.lineTo(xOf(f), y);
+    }
+    return p;
+  }, [w, h]);
+
+  const grid = useMemo(() => {
+    const p = Skia.Path.Make();
+    for (const f of [100, 1000, 10000]) {
+      p.moveTo(xOf(f), 6);
+      p.lineTo(xOf(f), h - 6);
+    }
+    return p;
+  }, [w, h]);
+
+  const dot = useMemo(() => {
+    const p = Skia.Path.Make();
+    const f = Math.max(fLo, Math.min(fHi, freqHz));
+    p.addCircle(xOf(f), yOf(earSensDb(f)), 6);
+    return p;
+  }, [freqHz, w, h]);
+
+  return (
+    <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+      <Path path={grid} color="#232329" style="stroke" strokeWidth={1} />
+      {/* 1 kHz reference line (sensitivity 0 dB). */}
+      <SkLine p1={{ x: 0, y: yOf(0) }} p2={{ x: w, y: yOf(0) }} color="#2c2c33" strokeWidth={1.2} />
+      <Path path={curve} color="#6fa8ff" style="stroke" strokeWidth={2.2} />
+      <Path path={dot} color={WAVE} />
+    </Canvas>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Module 10 — Phase overlay: two identical waves at a phase offset + their SUM.
+// At 180° the sum line goes flat — the "magic trick", drawn from the math.
+
+export function PhaseOverlayView({
+  width,
+  height = 184,
+  phaseDeg,
+}: {
+  width: number;
+  height?: number;
+  phaseDeg: number;
+}) {
+  const w = width;
+  const h = height;
+  const midTop = h * 0.27;
+  const midBot = h * 0.76;
+  const ampTop = h * 0.18;
+  const ampBot = h * 0.18;
+  const CYC = 2.2;
+  const phi = (phaseDeg * Math.PI) / 180;
+
+  const paths = useMemo(() => {
+    const A = Skia.Path.Make();
+    const B = Skia.Path.Make();
+    const S = Skia.Path.Make();
+    const N = 130;
+    for (let i = 0; i <= N; i++) {
+      const x = (i / N) * w;
+      const th = (i / N) * 2 * Math.PI * CYC;
+      const ya = midTop - ampTop * Math.sin(th);
+      const yb = midTop - ampTop * Math.sin(th + phi);
+      const ys = midBot - ampBot * 0.5 * (Math.sin(th) + Math.sin(th + phi));
+      if (i === 0) {
+        A.moveTo(x, ya);
+        B.moveTo(x, yb);
+        S.moveTo(x, ys);
+      } else {
+        A.lineTo(x, ya);
+        B.lineTo(x, yb);
+        S.lineTo(x, ys);
+      }
+    }
+    return { A, B, S };
+  }, [w, midTop, midBot, ampTop, ampBot, phi]);
+
+  return (
+    <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+      <SkLine p1={{ x: 0, y: midTop }} p2={{ x: w, y: midTop }} color="#2c2c33" strokeWidth={1} />
+      <SkLine p1={{ x: 0, y: midBot }} p2={{ x: w, y: midBot }} color="#2c2c33" strokeWidth={1} />
+      <SkLine p1={{ x: 0, y: h * 0.52 }} p2={{ x: w, y: h * 0.52 }} color="#1c1c22" strokeWidth={2} />
+      <Path path={paths.A} color="#8a8c94" style="stroke" strokeWidth={2} />
+      <Path path={paths.B} color="#6fa8ff" style="stroke" strokeWidth={2} />
+      <Path path={paths.S} color={WAVE} style="stroke" strokeWidth={2.8} />
+    </Canvas>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Module 11 — Harmonic stacker: six sine layers (1/n amplitudes) + their SUM.
+
+export function HarmonicStackerView({
+  width,
+  on,
+}: {
+  width: number;
+  /** Six booleans — harmonics 1..6 in/out of the stack. */
+  on: boolean[];
+}) {
+  const w = width;
+  const rowH = 21;
+  const sumH = 66;
+  const h = 6 * rowH + 10 + sumH;
+
+  const { rowsOn, rowsOff, sum } = useMemo(() => {
+    const pOn = Skia.Path.Make();
+    const pOff = Skia.Path.Make();
+    const pSum = Skia.Path.Make();
+    const N = 140;
+    for (let n = 1; n <= 6; n++) {
+      const mid = (n - 0.5) * rowH;
+      const a = 8.5 * Math.pow(1 / n, 0.6); // visual hint of 1/n without vanishing
+      const target = on[n - 1] ? pOn : pOff;
+      for (let i = 0; i <= N; i++) {
+        const x = (i / N) * w;
+        const y = mid - a * Math.sin(2 * Math.PI * 1.6 * n * (i / N));
+        if (i === 0) target.moveTo(x, y);
+        else target.lineTo(x, y);
+      }
+    }
+    // SUM — true 1/n weights, engine-style peak normalization.
+    const midS = 6 * rowH + 10 + sumH / 2;
+    let wsum = 0;
+    for (let n = 1; n <= 6; n++) if (on[n - 1]) wsum += 1 / n;
+    const norm = 1 / Math.max(1, wsum);
+    for (let i = 0; i <= N; i++) {
+      const x = (i / N) * w;
+      let s = 0;
+      for (let n = 1; n <= 6; n++) {
+        if (on[n - 1]) s += (1 / n) * Math.sin(2 * Math.PI * 1.6 * n * (i / N));
+      }
+      const y = midS - sumH * 0.42 * s * norm;
+      if (i === 0) pSum.moveTo(x, y);
+      else pSum.lineTo(x, y);
+    }
+    return { rowsOn: pOn, rowsOff: pOff, sum: pSum };
+  }, [w, on]);
+
+  return (
+    <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+      <SkLine p1={{ x: 0, y: 6 * rowH + 5 }} p2={{ x: w, y: 6 * rowH + 5 }} color="#2c2c33" strokeWidth={1.4} />
+      <Path path={rowsOff} color="#26262c" style="stroke" strokeWidth={1.4} />
+      <Path path={rowsOn} color="rgba(255,198,77,.55)" style="stroke" strokeWidth={1.6} />
+      <Path path={sum} color={WAVE} style="stroke" strokeWidth={2.6} />
+    </Canvas>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Module 12 — Fourier lens: MORPH between a complex wave and its sine
+// "recipe" — the components visually un-mix as the slider moves.
+
+export function FourierLensView({
+  width,
+  height = 208,
+  amps,
+  morph,
+}: {
+  width: number;
+  height?: number;
+  /** 12 relative amplitudes (the additive recipe being played). */
+  amps: number[];
+  /** 0 = the summed wave · 1 = fully separated components + spectrum. */
+  morph: number;
+}) {
+  const w = width;
+  const h = height;
+  const m = Math.max(0, Math.min(1, morph));
+  const centerY = h * 0.27;
+  const specBase = h - 14;
+
+  const { sum, comps, bars } = useMemo(() => {
+    const pSum = Skia.Path.Make();
+    const pComp = Skia.Path.Make();
+    const pBars = Skia.Path.Make();
+    const N = 140;
+    let wsum = 0;
+    for (const a of amps) wsum += a;
+    const norm = 1 / Math.max(1, wsum);
+    // The summed wave (top).
+    for (let i = 0; i <= N; i++) {
+      const x = (i / N) * w;
+      let s = 0;
+      for (let n = 0; n < amps.length; n++) {
+        if (amps[n] <= 0) continue;
+        s += amps[n] * Math.sin(2 * Math.PI * 1.6 * (n + 1) * (i / N));
+      }
+      const y = centerY - h * 0.2 * s * norm;
+      if (i === 0) pSum.moveTo(x, y);
+      else pSum.lineTo(x, y);
+    }
+    // The components — sliding from the sum's center line to their own rows.
+    const active: number[] = [];
+    for (let n = 0; n < amps.length; n++) if (amps[n] > 0) active.push(n);
+    const rows = Math.max(1, active.length);
+    active.forEach((n, idx) => {
+      const rowY = h * 0.5 + ((idx + 0.5) / rows) * (h * 0.36) - h * 0.06;
+      const yC = centerY + (rowY - centerY) * m;
+      const aa = Math.max(3.5, 11 * Math.pow(amps[n], 0.55));
+      for (let i = 0; i <= N; i++) {
+        const x = (i / N) * w;
+        const y = yC - aa * Math.sin(2 * Math.PI * 1.6 * (n + 1) * (i / N));
+        if (i === 0) pComp.moveTo(x, y);
+        else pComp.lineTo(x, y);
+      }
+    });
+    // The spectrum "recipe card" (bottom) — one stick per ingredient.
+    for (let n = 0; n < amps.length; n++) {
+      if (amps[n] <= 0) continue;
+      const x = ((n + 1) / 13) * w;
+      pBars.moveTo(x, specBase);
+      pBars.lineTo(x, specBase - Math.max(6, 30 * amps[n]));
+    }
+    return { sum: pSum, comps: pComp, bars: pBars };
+  }, [w, h, amps, m, centerY, specBase]);
+
+  return (
+    <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+      <SkLine p1={{ x: 0, y: centerY }} p2={{ x: w, y: centerY }} color="#2c2c33" strokeWidth={1} />
+      <SkLine p1={{ x: 0, y: specBase }} p2={{ x: w, y: specBase }} color="#2c2c33" strokeWidth={1.2} />
+      <Path path={sum} color={WAVE} style="stroke" strokeWidth={2.6} opacity={Math.max(0.08, 1 - m)} />
+      <Path path={comps} color="#6fa8ff" style="stroke" strokeWidth={1.8} opacity={Math.max(0.05, m)} />
+      <Path path={bars} color={WAVE} style="stroke" strokeWidth={4} opacity={m} />
+    </Canvas>
+  );
+}
