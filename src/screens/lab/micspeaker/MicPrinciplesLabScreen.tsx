@@ -59,20 +59,51 @@ const POP_MODES: { key: 'none' | 'pop' | 'foam' | 'blimp'; label: string; pass: 
   { key: 'blimp', label: 'SHOTGUN WINDSHIELD', pass: 0.12, note: 'A full basket creates still air around the mic — the outdoor standard for wind.' },
 ];
 
-// Grip zones (owner ruling 2026-07-29), bottom of the mic → grille:
-// low handle = acceptable-neutral · upper body just BELOW the grille = the
-// CORRECT showcase zone · fingers AT the grille rim = partial cup (orange) ·
-// over the grille = full cup (red). Zone thresholds live in ZONE_AT below.
+// ── Grip zones — DERIVED from the drawn geometry (owner defect ruling
+//    2026-07-29). These numbers are exactly viz.tsx's GRIP_P_CORRECT /
+//    GRIP_P_RIM / GRIP_P_FULL / GRIP_P_DEFAULT. They are duplicated here
+//    rather than imported because this screen must also work on pre-Skia
+//    clients, which never load viz.tsx.
+//
+//    Panel geometry (viz.tsx HandPlacementView, fixed 216-px panel):
+//      grilleR 15 · bodyLen 70 → total 95.8 ≈ 3.2 × the 30-px grille
+//      diameter · grille ball centre y = 73 · grille RIM (the grille/body
+//      joint) y = 83.8 · tail end y = 153.8 · the canonical hand at scale
+//      1.11 is 40.5 px tall = 58 % of the body.
+//    Grip centre travels yC(p) = 130.71 − 57.71·p (p = 0 rests the hand on
+//    the tail, p = 1 centres it on the grille ball), so the gap between the
+//    TOP EDGE of the hand and the rim is clearance(p) = 27.48 − 57.71·p:
+//      clearance > 13.74 (over half the slack still unused) → LOW HANDLE
+//                                                             p < 0.24
+//      0 < clearance ≤ 13.74 — hand fully on the body, top edge just below
+//      the rim, touching nothing                            → CORRECT
+//                                                             p < 0.48
+//      clearance ≤ 0 — the top of the hand has REACHED the rim and
+//      fingertips overlap the ball                          → PARTIAL CUP
+//                                                             p < 0.81
+//      grip CENTRE at/above the rim — hand around the ball  → FULL CUP
+const ZONE_P_CORRECT = 0.24;
+const ZONE_P_RIM = 0.48;
+const ZONE_P_FULL = 0.81;
+/** Default/showcase grip — mid-band inside CORRECT (7.3 px of clearance). */
+const ZONE_P_DEFAULT = 0.35;
+
 const HAND_POSITIONS: { label: string; pos: number; title: string; note: string; good?: boolean }[] = [
   { label: 'LOW HANDLE', pos: 0, title: 'Low grip — acceptable', note: 'Hand at the bottom of the handle. The pattern stays intact, so this grip is fine — but it gives up control of the mic, and on a wireless mic this is where the antenna lives (see MISTAKES).' },
-  { label: 'CORRECT', pos: 0.3, good: true, title: 'Correct grip ✅', note: 'Hand on the upper body, just BELOW the grille — the showcased grip. Intended cardioid pattern, flat response, maximum feedback rejection — the microphone performs as designed.' },
-  { label: 'GRILLE RIM', pos: 0.62, title: 'Partial cup — fingers on the rim', note: 'Fingertips touch the grille edge and start shading the acoustic ports: the pattern begins collapsing, the response grows peaks and dips, feedback becomes more likely, intelligibility drops.' },
+  { label: 'CORRECT', pos: ZONE_P_DEFAULT, good: true, title: 'Correct grip ✅', note: 'Hand on the upper body with its TOP EDGE just below the grille rim — on the body, touching the grille nowhere. Intended cardioid pattern, flat response, maximum feedback rejection — the microphone performs as designed.' },
+  { label: 'GRILLE RIM', pos: 0.62, title: 'Partial cup — fingers on the rim', note: 'The top of the hand has reached the grille rim and fingertips now overlap it, shading the acoustic ports: the pattern begins collapsing, the response grows peaks and dips, feedback becomes more likely, intelligibility drops.' },
   { label: 'FULL CUP', pos: 1, title: 'Cupping the mic ❌', note: 'The hand surrounds the grille: the cardioid collapses toward omni, coloration is strong, feedback susceptibility jumps. Covering the acoustic ports prevents the microphone from operating as intended.' },
 ];
 
-/** pos01 → grip zone (must mirror the tint thresholds in viz). */
+/** pos01 → grip zone (mirrors the tint thresholds in viz exactly). */
 function zoneAt(pos: number): (typeof HAND_POSITIONS)[number] {
-  return pos < 0.16 ? HAND_POSITIONS[0] : pos < 0.45 ? HAND_POSITIONS[1] : pos < 0.82 ? HAND_POSITIONS[2] : HAND_POSITIONS[3];
+  return pos < ZONE_P_CORRECT
+    ? HAND_POSITIONS[0]
+    : pos < ZONE_P_RIM
+      ? HAND_POSITIONS[1]
+      : pos < ZONE_P_FULL
+        ? HAND_POSITIONS[2]
+        : HAND_POSITIONS[3];
 }
 
 const STEREO_TECHS: { key: 'xy' | 'ortf' | 'ab' | 'ms'; label: string; note: string }[] = [
@@ -408,7 +439,8 @@ const CUP_CHECK: CheckSpec = {
 };
 
 function HandSection({ viz, width, help }: SectionProps) {
-  const [pos, setPos] = useState(0.3);
+  // Starts in the CORRECT zone by construction (ZONE_P_CORRECT ≤ 0.35 < ZONE_P_RIM).
+  const [pos, setPos] = useState(ZONE_P_DEFAULT);
   const [why, setWhy] = useState(false);
   const zone = zoneAt(pos);
 
@@ -443,12 +475,14 @@ function HandSection({ viz, width, help }: SectionProps) {
           <LabChip key={p.label} label={p.label} selected={zone.label === p.label} onPress={() => setPos(p.pos)} onLongPress={() => help('hand_position')} />
         ))}
       </View>
-      <Text style={[styles.readout, !zone.good && pos >= 0.45 ? styles.readoutBad : null]}>{zone.title}</Text>
+      <Text style={[styles.readout, !zone.good && pos >= ZONE_P_RIM ? styles.readoutBad : null]}>{zone.title}</Text>
       <Text style={styles.caption}>{zone.note}</Text>
       <View style={styles.chipRow}>
         <LabChip label={why ? 'HIDE — WHY IT HAPPENS ▴' : 'WHY IT HAPPENS ▾'} selected={why} onPress={() => setWhy((v) => !v)} onLongPress={() => help('cupping_why')} />
       </View>
-      {why ? <WhyCutaway viz={viz} width={width} blocked={pos >= 0.45} help={help} /> : null}
+      {/* "Blocked" starts exactly where the hand reaches the rim — the same
+          onset cupMorph() now uses, so the picture and the physics agree. */}
+      {why ? <WhyCutaway viz={viz} width={width} blocked={pos >= ZONE_P_RIM} help={help} /> : null}
       <CheckQuestion spec={CUP_CHECK} />
     </View>
   );
