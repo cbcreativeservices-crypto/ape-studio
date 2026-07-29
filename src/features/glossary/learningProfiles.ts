@@ -49,7 +49,8 @@ export type LabRoute =
   | 'MicLab'
   | 'SpeakerLab'
   | 'TubeLab'
-  | 'DigitalLab';
+  | 'DigitalLab'
+  | 'WaveLab';
 
 /** The four glossary actions (v4 MASTER §6.1). */
 export type GlossaryActionKind = 'hear_it' | 'experiment' | 'watch_it' | 'launch_lab';
@@ -159,6 +160,23 @@ const READY_TERMS_DIGITAL = [
   'Signal-to-noise-and-distortion ratio', 'Full scale', 'Passband', 'Stopband',
 ];
 
+// Wave Physics Laboratory LIVE (2026-07-29, Pillar C launch). DB-verified
+// 2026-07-29 — UNCLAIMED terms only (one profile per term): Comb filter/
+// Comb Filtering stay with FlangerLab, Standing wave/Wavelength/Antinode with
+// BassLab, RT60 with ReverbLab, Echo/Delay with DelayLab, Coverage/Dispersion/
+// Off-Axis with SpeakerLab, Cardioid with MicLab — each already teaches its
+// sense; the Wave lab reinforces them without stealing the link.
+const READY_TERMS_WAVE = [
+  'Reflection', 'Specular reflection', 'Early reflection', 'First Reflection Point',
+  'Absorption', 'Absorption coefficient', 'Diffusion', 'Diffuser', 'Refraction',
+  'Diffraction', 'Interference', 'Constructive Interference', 'Destructive Interference',
+  'Room mode', 'Axial mode', 'Tangential mode', 'Oblique mode', 'Schroeder frequency',
+  'Flutter Echo', 'Haas Effect', 'Precedence effect', 'Directivity', 'Beamwidth',
+  'Line Array', 'Delay alignment', 'Time Alignment', 'Cardioid Subwoofer',
+  'Cardioid subwoofer array', 'Null', 'Wavefront', 'Particle Velocity',
+  'Reverberation', 'Reverberation / Reverb', 'Reverberation time (RT60)', 'Impulse response',
+];
+
 const READY_TERMS_TUBE = [
   'Vacuum tube', 'Valve', 'Triode', 'Tetrode', 'Pentode', 'Cathode', 'Control grid',
   'Screen grid', 'Suppressor grid', 'Anode / Plate', 'Heater', 'Filament', 'Emission',
@@ -231,6 +249,9 @@ const READY: Record<string, LearningProfile> = Object.fromEntries([
   ),
   ...READY_TERMS_DIGITAL.map(
     (t) => [normTerm(t), { lab: 'digital', actions: launch('DigitalLab') } as LearningProfile] as const,
+  ),
+  ...READY_TERMS_WAVE.map(
+    (t) => [normTerm(t), { lab: 'wave', actions: launch('WaveLab') } as LearningProfile] as const,
   ),
 ]);
 

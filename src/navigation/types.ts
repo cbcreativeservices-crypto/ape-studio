@@ -175,6 +175,10 @@ export type RootStackParamList = {
    *  laboratory with its own home + 8 modules. */
   DigitalLab: undefined;
   DigitalModule: { id: import('../screens/lab/digital/modules/registry').DigitalModuleId };
+  /** Wave Physics Laboratory (v4 Pillar C, launch 2026-07-29) — Room Builder
+   *  engine + 15 preset modules, geometric/analytic launch path. */
+  WaveLab: undefined;
+  WaveModule: { id: import('../screens/lab/wave/modules/registry').WaveModuleId };
   /** FOUNDATIONS OF SOUND (owner 2026-07-26) — the FIRST module in the Ear
    *  Training & Audio Lab: a stepped teaching course (Modules 1–4 MVP) + the
    *  free Playground sandbox. Skia-animated (pre-Skia clients degrade

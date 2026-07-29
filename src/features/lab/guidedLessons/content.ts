@@ -1067,6 +1067,58 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     ],
     formula: 'Nyquist = fs/2 · alias = |f − n·fs| (nearest n) · levels = 2ᴺ · DR ≈ 6.02·N + 1.76 dB (theoretical) · data rate = fs × N × channels.',
   },
+
+  // ─────────────── WAVE PHYSICS LABORATORY (Pillar C, 2026-07-29) ───────────
+  wave: {
+    id: 'wave',
+    num: 28,
+    name: 'Wave Physics Laboratory',
+    tier: 'T2',
+    tagline: 'One room engine — reflection, interference, modes, coverage, alignment.',
+    whatItIs:
+      'Spatial acoustics, live: place sources and a listener in a room, change walls and ' +
+      'materials, and watch wavefronts, interference fields, reflections, standing waves, ' +
+      'coverage and delay alignment evolve. All fifteen modules are presets of ONE Room ' +
+      'Builder engine — geometric image-source math plus analytic wave superposition, drawn ' +
+      'honestly as illustrative models (the real-time pressure-field simulation is a future ' +
+      'native release).',
+    controls: [
+      { key: 'room_builder', name: 'Room Builder', definition: 'The engine itself: a room in meters, wall materials, sources you drag, a listener you place. Every module preconfigures this same scene — nothing here is a special case.' },
+      { key: 'layers', name: 'Visual layers', definition: 'PRESSURE = animated wavefronts from every source (and its wall reflections). HEAT = the steady interference field as an SPL color map. RAYS = image-source reflection paths. ARRIVALS = when each copy of the sound reaches the listener. Same physics, four instruments.' },
+      { key: 'reflection', name: 'Reflection', definition: 'Angle in = angle out — measured from the surface NORMAL, not the surface. Each bounce loses energy to the material (√(1−α) in pressure). The reflected path behaves exactly like a mirror-image source behind the wall — a modeling trick, not a real second source.' },
+      { key: 'image_source', name: 'Image source', definition: 'Mirror the source across a wall and the reflection becomes a straight line from the image. It predicts path length, arrival time and level in one construction — and it is why moving a wall moves a comb notch.' },
+      { key: 'absorption', name: 'Absorption', definition: 'Each material converts part of every reflection to heat — α from 0 (mirror) to 1 (open window). α is FREQUENCY-DEPENDENT: porous materials eat highs and pass lows, which is why bass needs thickness, depth or tuned traps.' },
+      { key: 'materials', name: 'Wall materials', definition: 'Concrete, glass, drywall, curtains, carpet, foam, fiberglass, wood, audience — textbook teaching α tables (NOT ISO 354 product data). Swap a wall and watch RT and the reflections change together.' },
+      { key: 'diffusion', name: 'Diffusion', definition: 'A diffuser SCATTERS a reflection in many directions instead of one — energy is preserved, not removed (that is absorption\'s job). Depth sets the lowest frequency it can scatter.' },
+      { key: 'refraction', name: 'Refraction', definition: 'Temperature gradients bend sound: warm-over-cold (evening inversion) curves it back DOWN — why sound carries at night and over water; cold-over-warm curves it up and away. Wind shear adds the upwind/downwind asymmetry.' },
+      { key: 'diffraction', name: 'Diffraction', definition: 'Waves bend around obstacles comparable to their wavelength: a wall shadows the highs but 80 Hz (λ ≈ 4.3 m) wraps right around. The shadow zone is attenuation — mostly of highs — never silence. (Maekawa knife-edge model.)' },
+      { key: 'interference', name: 'Interference', definition: 'Two sources: where path lengths differ by whole wavelengths they ADD (+6 dB coherent); by half-wavelengths they CANCEL. Nulls and lobes are position-AND-frequency specific — move the listener and the map changes.' },
+      { key: 'comb', name: 'Comb filtering', definition: 'Direct sound + one delayed reflection = notches at (2k+1)/2Δt. It is a GEOMETRY problem, not a tone problem: EQ cannot fix it, but moving the mic six inches can.' },
+      { key: 'standing_wave', name: 'Standing waves', definition: 'At mode frequencies the room\'s reflections stack into a stationary pressure pattern: pressure maxima at walls/corners, nulls partway across. Axial (2 walls), tangential (4), oblique (6) — dimension-driven, dominating below the Schroeder frequency.' },
+      { key: 'coverage_pattern', name: 'Coverage & directivity', definition: 'A loudspeaker\'s pattern NARROWS as frequency rises — lows spill everywhere, highs beam. Aim the HF pattern at the audience, not the cabinet at the room.' },
+      { key: 'line_array', name: 'Line array', definition: 'Stacked boxes couple into one tall source: length ≥ wavelength gives vertical control (beaming highs, coupling lows); per-box splay shapes coverage — wrong splay tears holes or fires lobes.' },
+      { key: 'delay_align', name: 'Delay alignment', definition: 'Sub and main arriving at different times carve a null through the crossover. Delay one until the wavefronts land together and the null becomes +6 dB — align in TIME, and check more than one seat.' },
+      { key: 'cardioid_sub', name: 'Cardioid subwoofer', definition: 'Two subs, spacing + delay + polarity chosen so their outputs cancel BEHIND and add IN FRONT. Get the delay wrong and the null flips to the audience side. One sub alone can never do this.' },
+      { key: 'beam_steer', name: 'Beam steering', definition: 'Progressive DSP delays across an array tilt its wavefront — the beam moves, the boxes don\'t. Steer too far and grating lobes spray energy where you didn\'t ask.' },
+      { key: 'echo', name: 'Echo vs reflection', definition: 'A reflection arriving within ~50 ms fuses with the direct sound (precedence/Haas); later and louder, it reads as a discrete ECHO. Distance decides: a wall 10 m away returns at ~58 ms — audible slap.' },
+      { key: 'reverb_field', name: 'Reverberant field', definition: 'Direct → first reflections → early reflections → dense late tail: reverberation is a BUILDUP, not a single thing. Early reflections carry spatial cues; the diffuse tail carries "the room". RT60 describes the tail\'s decay, not everything.' },
+    ],
+    commonMistakes: [
+      'Measuring reflection angles from the surface instead of the normal.',
+      'Thinking absorption and diffusion do the same job — one removes energy, the other redistributes it.',
+      'Trying to EQ away comb filtering or a modal null — both are geometry, fix position/timing.',
+      'Expecting a barrier to block bass — long wavelengths diffract around anything smaller than themselves.',
+      'Believing two sources always sum +6 dB everywhere — only where they arrive in phase.',
+      'Aligning a sub by tape measure alone — processing latency is invisible to the tape.',
+      'Treating the image source as a real loudspeaker rather than a construction that predicts reflections.',
+      'Expecting room modes to matter at 5 kHz — they dominate below the Schroeder frequency.',
+    ],
+    proTips: [
+      'Toggle HEAT and PRESSURE on the same scene: the still heat map is the time-average of the moving wavefronts — connecting those two views IS understanding interference.',
+      'In every module, move the LISTENER before touching any other control — position is the cheapest, most powerful acoustic tool there is.',
+    ],
+    formula: 'Image source: reflection = straight path from the mirrored source. Field: p = Σ (g/r)·e^{i(kr+ωt₀)}. Modes: f = (c/2)·√((n/L)² + (m/W)²). Maekawa: ≈10·log(3+20N), N = 2δ/λ. Sabine: RT60 = 0.161·V/A.',
+  },
 };
 
 /** Lab lessons in spec order (1..16) — for menus/indexes. */

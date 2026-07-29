@@ -62,6 +62,8 @@ import { CalcLabScreen } from '../screens/lab/calc/CalcLabScreen';
 import { CalcWorkspaceScreen } from '../screens/lab/calc/CalcWorkspaceScreen';
 import { DigitalLabHomeScreen } from '../screens/lab/digital/DigitalLabHomeScreen';
 import { DigitalModuleScreen } from '../screens/lab/digital/DigitalModuleScreen';
+import { WaveLabHomeScreen } from '../screens/lab/wave/WaveLabHomeScreen';
+import { WaveModuleScreen } from '../screens/lab/wave/WaveModuleScreen';
 import { FoundationsCourseScreen } from '../screens/lab/foundations/FoundationsCourseScreen';
 import { FoundationsPlaygroundScreen } from '../screens/lab/foundations/FoundationsPlaygroundScreen';
 import { LandingScreen } from '../screens/landing/LandingScreen';
@@ -147,6 +149,8 @@ export function RootNavigator() {
       <Stack.Screen name="CalcWorkspace" component={CalcWorkspaceScreen} />
       <Stack.Screen name="DigitalLab" component={DigitalLabHomeScreen} />
       <Stack.Screen name="DigitalModule" component={DigitalModuleScreen} />
+      <Stack.Screen name="WaveLab" component={WaveLabHomeScreen} />
+      <Stack.Screen name="WaveModule" component={WaveModuleScreen} />
       {/* Foundations of Sound — the Ear Lab's first module (course + sandbox). */}
       <Stack.Screen name="FoundationsCourse" component={FoundationsCourseScreen} />
       <Stack.Screen name="FoundationsPlayground" component={FoundationsPlaygroundScreen} />

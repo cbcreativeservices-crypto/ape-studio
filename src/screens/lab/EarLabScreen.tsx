@@ -145,13 +145,16 @@ const SECTIONS: LabSection[] = [
     ],
   },
   {
+    // Pillar C LIVE (launch 2026-07-29): geometric/analytic Room Builder
+    // engine + 15 preset modules; native FDTD stays the future quality tier.
     title: 'WAVE PHYSICS LABORATORY',
     note: 'Spatial acoustics — one Room Builder engine, 15 modules as presets.',
     entries: [
       {
-        tag: '◎',
-        name: 'Wave Physics Lab',
-        blurb: 'Reflection, absorption, diffusion, interference, coverage, and more.',
+        tag: '27',
+        name: 'Wave Physics Laboratory',
+        blurb: 'Reflection, absorption, diffusion, interference, standing waves, coverage, arrays, delay alignment — live in one room engine.',
+        route: 'WaveLab',
       },
     ],
   },
