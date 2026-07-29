@@ -621,10 +621,20 @@ function M8Panel({ viz, width, tone, help }: PanelProps) {
       onStartShouldSetPanResponder: () => false,
       onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dx) > 4 || Math.abs(g.dy) > 4,
       onPanResponderGrant: (e) => {
-        lastAngRef.current = Math.atan2(e.nativeEvent.locationY - 105, e.nativeEvent.locationX - widthRef.current / 2);
+        const dx = e.nativeEvent.locationX - widthRef.current / 2;
+        const dy = e.nativeEvent.locationY - 105;
+        // Hub dead-zone: near the center, angles are meaningless — a touch
+        // crossing it would read as up to a half-turn (a half-octave lurch).
+        lastAngRef.current = Math.hypot(dx, dy) < 25 ? null : Math.atan2(dy, dx);
       },
       onPanResponderMove: (e) => {
-        const ang = Math.atan2(e.nativeEvent.locationY - 105, e.nativeEvent.locationX - widthRef.current / 2);
+        const dx = e.nativeEvent.locationX - widthRef.current / 2;
+        const dy = e.nativeEvent.locationY - 105;
+        if (Math.hypot(dx, dy) < 25) {
+          lastAngRef.current = null; // re-grab cleanly once clear of the hub
+          return;
+        }
+        const ang = Math.atan2(dy, dx);
         const last = lastAngRef.current;
         lastAngRef.current = ang;
         if (last == null) return;
@@ -1437,7 +1447,7 @@ const styles = StyleSheet.create({
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1.4, color: colors.textPrimary },
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
 
-  // 15 steps now — dots sized so the full row + the Playground link still fit.
+  // 14 steps now — dots sized so the full row + the Playground link still fit.
   dotsRow: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 16, paddingBottom: 6 },
   dot: { width: 7, height: 7, borderRadius: 4, backgroundColor: '#2c2c33' },
   dotActive: { backgroundColor: colors.amber, width: 15 },

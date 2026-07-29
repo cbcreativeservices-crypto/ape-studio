@@ -637,7 +637,10 @@ export function WavelengthRulerView({
   const dots = useDerivedValue(() => {
     const t = clock.value;
     const om = 2 * Math.PI * visHz;
-    const k = (2 * Math.PI) / Math.max(24, lambdaPx);
+    // TRUE lambda — the drawn band spacing must equal the bracket (the badge
+    // promises "horizontal scale is real"). The tiny floor only guards math
+    // pathology; it never engages within the module's 55–880 Hz range.
+    const k = (2 * Math.PI) / Math.max(10, lambdaPx);
     const p = Skia.Path.Make();
     // Displacement capped so tight lambdas never collapse into solid bands.
     const disp = Math.min(9, lambdaPx / 7);
@@ -975,8 +978,10 @@ export function PhaseOverlayView({
   const h = height;
   const midTop = h * 0.27;
   const midBot = h * 0.76;
-  const ampTop = h * 0.18;
-  const ampBot = h * 0.18;
+  // ONE shared per-wave scale: inputs draw at 1× unit, the sum draws the TRUE
+  // addition at the SAME unit — so 0° really is visibly DOUBLE the inputs and
+  // 180° really is flat (the drawn sum is the exact sum, honest by scale).
+  const unit = h * 0.095;
   const CYC = 2.2;
   const phi = (phaseDeg * Math.PI) / 180;
 
@@ -988,9 +993,9 @@ export function PhaseOverlayView({
     for (let i = 0; i <= N; i++) {
       const x = (i / N) * w;
       const th = (i / N) * 2 * Math.PI * CYC;
-      const ya = midTop - ampTop * Math.sin(th);
-      const yb = midTop - ampTop * Math.sin(th + phi);
-      const ys = midBot - ampBot * 0.5 * (Math.sin(th) + Math.sin(th + phi));
+      const ya = midTop - unit * Math.sin(th);
+      const yb = midTop - unit * Math.sin(th + phi);
+      const ys = midBot - unit * (Math.sin(th) + Math.sin(th + phi));
       if (i === 0) {
         A.moveTo(x, ya);
         B.moveTo(x, yb);
@@ -1002,7 +1007,7 @@ export function PhaseOverlayView({
       }
     }
     return { A, B, S };
-  }, [w, midTop, midBot, ampTop, ampBot, phi]);
+  }, [w, midTop, midBot, unit, phi]);
 
   return (
     <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
