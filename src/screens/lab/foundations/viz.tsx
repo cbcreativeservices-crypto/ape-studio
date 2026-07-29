@@ -67,6 +67,31 @@ export function useVizClock(running: boolean): SharedValue<number> {
   return clock;
 }
 
+/** A PHASE clock (radians) for views whose visual rate CHANGES while mounted
+ *  (sliders/drags driving visHz). Computing phase as ω·t with the absolute
+ *  clock would jump by t·Δω on every rate change — after a minute on-screen a
+ *  one-octave drag would spray dozens of phantom revolutions. Integrating
+ *  φ += 2π·rate·dt instead keeps phase CONTINUOUS through any rate change:
+ *  the motion simply speeds up or slows down, which is the whole lesson.
+ *  The rate rides a SharedValue (updated via effect) so the frame worklet
+ *  always reads the latest value — no reliance on callback refresh. */
+export function usePhaseClock(running: boolean, visHz: number): SharedValue<number> {
+  const phase = useSharedValue(0);
+  const rate = useSharedValue(visHz);
+  useEffect(() => {
+    rate.value = visHz;
+  }, [visHz, rate]);
+  const cb = useFrameCallback((info) => {
+    if (info.timeSincePreviousFrame != null) {
+      phase.value += 2 * Math.PI * rate.value * (Math.min(info.timeSincePreviousFrame, 64) / 1000);
+    }
+  }, false);
+  useEffect(() => {
+    cb.setActive(running);
+  }, [running, cb]);
+  return phase;
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Air particles — the "what actually exists" window
 
@@ -495,19 +520,18 @@ export function AnalyticSpectrumView({
 // Same conceptual-model rules as everything above (slowed, badged by the host).
 
 export function RateComparatorView({
-  clock,
+  phaseA,
+  phaseB,
   width,
   height = 132,
-  visHzA,
-  visHzB,
   amp = 0.8,
   active = 'none',
 }: {
-  clock: SharedValue<number>;
+  /** Phase clocks (usePhaseClock) — continuous through pair switches. */
+  phaseA: SharedValue<number>;
+  phaseB: SharedValue<number>;
   width: number;
   height?: number;
-  visHzA: number;
-  visHzB: number;
   amp?: number;
   /** Which side is currently SOUNDING ('a' | 'b' | 'none') — highlighted. */
   active?: 'a' | 'b' | 'none';
@@ -534,40 +558,38 @@ export function RateComparatorView({
   const gys = grid.ys;
 
   // Per-side paths: piston+orbit-hand (stroke) and particles+orbit-dot (fill).
-  const makeSide = (visHz: number, x0: number) => {
+  const makeSide = (phase: SharedValue<number>, x0: number) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const fill = useDerivedValue(() => {
-      const t = clock.value;
-      const om = 2 * Math.PI * visHz;
+      const ph = phase.value;
       const lambda = colW / 1.7;
       const k = (2 * Math.PI) / lambda;
       const p = Skia.Path.Make();
       for (let i = 0; i < gxs.length; i++) {
-        const dx = amp * 6 * Math.sin(om * t - k * gxs[i]);
+        const dx = amp * 6 * Math.sin(ph - k * gxs[i]);
         p.addCircle(x0 + gxs[i] + dx, gys[i], 2);
       }
       // Orbit dot — ONE revolution per cycle (count laps = count cycles).
       const ocx = x0 + colW - 22;
       const ocy = 17;
-      p.addCircle(ocx + 10 * Math.cos(om * t - Math.PI / 2), ocy + 10 * Math.sin(om * t - Math.PI / 2), 3);
+      p.addCircle(ocx + 10 * Math.cos(ph - Math.PI / 2), ocy + 10 * Math.sin(ph - Math.PI / 2), 3);
       return p;
-    }, [clock, visHz, x0, gxs, gys, amp, colW]);
+    }, [phase, x0, gxs, gys, amp, colW]);
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const stroke = useDerivedValue(() => {
-      const t = clock.value;
-      const om = 2 * Math.PI * visHz;
+      const ph = phase.value;
       const p = Skia.Path.Make();
       // Piston (the source): a vertical bar oscillating along the travel axis.
-      const px = x0 + 12 + amp * 7 * Math.sin(om * t);
+      const px = x0 + 12 + amp * 7 * Math.sin(ph);
       p.moveTo(px, 34);
       p.lineTo(px, h - 14);
       return p;
-    }, [clock, visHz, x0, amp, h]);
+    }, [phase, x0, amp, h]);
     return { fill, stroke };
   };
 
-  const a = makeSide(visHzA, 0);
-  const b = makeSide(visHzB, colW + 14);
+  const a = makeSide(phaseA, 0);
+  const b = makeSide(phaseB, colW + 14);
 
   // Static chrome: divider + the two orbit rings.
   const chrome = useMemo(() => {
@@ -597,18 +619,17 @@ export function RateComparatorView({
 export const RULER_ROOM_M = 7;
 
 export function WavelengthRulerView({
-  clock,
+  phase,
   width,
   height = 158,
   freqHz,
-  visHz,
   amp = 0.85,
 }: {
-  clock: SharedValue<number>;
+  /** Phase clock (usePhaseClock) — continuous while the slider drags. */
+  phase: SharedValue<number>;
   width: number;
   height?: number;
   freqHz: number;
-  visHz: number;
   amp?: number;
 }) {
   const w = width;
@@ -635,8 +656,7 @@ export function WavelengthRulerView({
   const gys = grid.ys;
 
   const dots = useDerivedValue(() => {
-    const t = clock.value;
-    const om = 2 * Math.PI * visHz;
+    const ph = phase.value;
     // TRUE lambda — the drawn band spacing must equal the bracket (the badge
     // promises "horizontal scale is real"). The tiny floor only guards math
     // pathology; it never engages within the module's 55–880 Hz range.
@@ -645,11 +665,11 @@ export function WavelengthRulerView({
     // Displacement capped so tight lambdas never collapse into solid bands.
     const disp = Math.min(9, lambdaPx / 7);
     for (let i = 0; i < gxs.length; i++) {
-      const dx = amp * disp * Math.sin(om * t - k * gxs[i]);
+      const dx = amp * disp * Math.sin(ph - k * gxs[i]);
       p.addCircle(gxs[i] + dx, gys[i], 1.9);
     }
     return p;
-  }, [clock, visHz, lambdaPx, gxs, gys, amp]);
+  }, [phase, lambdaPx, gxs, gys, amp]);
 
   // λ bracket (static per freq): measures ONE wavelength of spacing — the
   // moving bands flow through it.
@@ -718,14 +738,14 @@ export function DualDomainView({
   cursor: number;
   running: boolean;
 }) {
-  const clock = useVizClock(running);
+  // Phase clock: continuous through the 110/220 chip switches.
+  const phase = usePhaseClock(running, visHz);
   const w = width;
   const h = 84;
 
   // TOP — pressure at ONE point (the mic, right edge) plotted over TIME.
   const timeTrace = useDerivedValue(() => {
-    const t = clock.value;
-    const om = 2 * Math.PI * visHz;
+    const ph = phase.value;
     const p = Skia.Path.Make();
     const mid = h / 2;
     const a = h * 0.34;
@@ -733,53 +753,50 @@ export function DualDomainView({
     for (let i = 0; i <= N; i++) {
       const x = (i / N) * w;
       // Right edge = now; moving left = further into the past.
-      const y = mid - a * Math.cos(om * t - ((w - x) / w) * 2 * Math.PI * DD_CYC);
+      const y = mid - a * Math.cos(ph - ((w - x) / w) * 2 * Math.PI * DD_CYC);
       if (i === 0) p.moveTo(x, y);
       else p.lineTo(x, y);
     }
     return p;
-  }, [clock, visHz, w]);
+  }, [phase, w]);
   const timeDots = useDerivedValue(() => {
-    const t = clock.value;
-    const om = 2 * Math.PI * visHz;
+    const ph = phase.value;
     const mid = h / 2;
     const a = h * 0.34;
     const p = Skia.Path.Make();
     // The mic itself (right edge, reading "now").
-    p.addCircle(w - 6, mid - a * Math.cos(om * t), 4);
+    p.addCircle(w - 6, mid - a * Math.cos(ph), 4);
     // The linked cursor — cursor c of a cycle back in time.
     const xc = w * (1 - cursor);
-    p.addCircle(xc, mid - a * Math.cos(om * t - cursor * 2 * Math.PI * DD_CYC), 4.5);
+    p.addCircle(xc, mid - a * Math.cos(ph - cursor * 2 * Math.PI * DD_CYC), 4.5);
     return p;
-  }, [clock, visHz, w, cursor]);
+  }, [phase, w, cursor]);
 
   // BOTTOM — pressure along DISTANCE at this instant (source at the left).
   const spaceTrace = useDerivedValue(() => {
-    const t = clock.value;
-    const om = 2 * Math.PI * visHz;
+    const ph = phase.value;
     const p = Skia.Path.Make();
     const mid = h / 2;
     const a = h * 0.34;
     const N = 90;
     for (let i = 0; i <= N; i++) {
       const x = (i / N) * w;
-      const y = mid - a * Math.cos(om * t - (x / w) * 2 * Math.PI * DD_CYC);
+      const y = mid - a * Math.cos(ph - (x / w) * 2 * Math.PI * DD_CYC);
       if (i === 0) p.moveTo(x, y);
       else p.lineTo(x, y);
     }
     return p;
-  }, [clock, visHz, w]);
+  }, [phase, w]);
   const spaceDots = useDerivedValue(() => {
-    const t = clock.value;
-    const om = 2 * Math.PI * visHz;
+    const ph = phase.value;
     const mid = h / 2;
     const a = h * 0.34;
     const p = Skia.Path.Make();
     // Same phase as the time cursor → ALWAYS the same height. That's d = v·t.
     const xc = w * cursor;
-    p.addCircle(xc, mid - a * Math.cos(om * t - cursor * 2 * Math.PI * DD_CYC), 4.5);
+    p.addCircle(xc, mid - a * Math.cos(ph - cursor * 2 * Math.PI * DD_CYC), 4.5);
     return p;
-  }, [clock, visHz, w, cursor]);
+  }, [phase, w, cursor]);
 
   const cursorLineTop = useMemo(() => {
     const p = Skia.Path.Make();
@@ -834,19 +851,18 @@ export const SPIRAL_F0 = 110;
 export const SPIRAL_OCTAVES = 3; // 110 → 880
 
 export function OctaveSpiralView({
-  clock,
+  phase,
   width,
   height = 210,
   freqHz,
-  visHz,
 }: {
-  clock: SharedValue<number>;
+  /** Phase clock (usePhaseClock) — one satellite lap per cycle, CONTINUOUS
+   *  while the drag glides the pitch (the same motif as M5's rate dials:
+   *  higher pitch = visibly faster orbit). */
+  phase: SharedValue<number>;
   width: number;
   height?: number;
   freqHz: number;
-  /** Slowed conceptual rate for the marker's orbit — one lap per cycle, the
-   *  same motif as M5's rate dials (higher pitch = visibly faster orbit). */
-  visHz: number;
 }) {
   const w = width;
   const h = height;
@@ -889,13 +905,12 @@ export function OctaveSpiralView({
 
   // The living part: a pulsing core + a satellite lapping ONCE PER CYCLE.
   const markerAnim = useDerivedValue(() => {
-    const t = clock.value;
-    const om = 2 * Math.PI * visHz;
+    const ph = phase.value;
     const p = Skia.Path.Make();
-    p.addCircle(mx + 13 * Math.cos(om * t - Math.PI / 2), my + 13 * Math.sin(om * t - Math.PI / 2), 3);
-    p.addCircle(mx, my, 4.6 + 1.2 * Math.sin(om * t));
+    p.addCircle(mx + 13 * Math.cos(ph - Math.PI / 2), my + 13 * Math.sin(ph - Math.PI / 2), 3);
+    p.addCircle(mx, my, 4.6 + 1.2 * Math.sin(ph));
     return p;
-  }, [clock, mx, my, visHz]);
+  }, [phase, mx, my]);
 
   return (
     <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
@@ -927,18 +942,21 @@ export function earSensDb(f: number): number {
 }
 
 export function EqualLoudnessView({
-  clock,
+  phase,
   width,
   height = 152,
   freqHz,
-  visHz,
+  level01 = 0.65,
 }: {
-  clock: SharedValue<number>;
+  /** Phase clock (usePhaseClock) — continuous while the sweep drags. */
+  phase: SharedValue<number>;
   width: number;
   height?: number;
   freqHz: number;
-  /** Slowed conceptual rate — the signal strip travels & the dot pulses. */
-  visHz: number;
+  /** 0..1 from the LEVEL slider — the strip's drawn amplitude follows the
+   *  REAL commanded level (constant while you sweep FREQUENCY, which is the
+   *  module's argument; honest when you move the level itself). */
+  level01?: number;
 }) {
   const w = width;
   const h = height;
@@ -980,30 +998,30 @@ export function EqualLoudnessView({
   const stripMid = h - stripH / 2 - 2;
 
   const anim = useDerivedValue(() => {
-    const t = clock.value;
-    const om = 2 * Math.PI * visHz;
+    const ph = phase.value;
     const p = Skia.Path.Make();
     // Pulsing dot riding the sensitivity curve at the tone's frequency.
-    p.addCircle(dotX, dotY, 5.2 + 1.4 * Math.sin(om * t));
+    p.addCircle(dotX, dotY, 5.2 + 1.4 * Math.sin(ph));
     return p;
-  }, [clock, dotX, dotY, visHz]);
+  }, [phase, dotX, dotY]);
 
-  // THE SIGNAL — a traveling wave whose drawn amplitude NEVER changes while
-  // you sweep. That constancy is the module's whole argument.
+  // THE SIGNAL — a traveling wave whose drawn amplitude follows ONLY the
+  // level slider: it never changes while you sweep FREQUENCY (the module's
+  // whole argument), and honestly tracks the level when you move that.
+  const stripAmp = 3.5 + 7.5 * Math.max(0, Math.min(1, level01));
   const strip = useDerivedValue(() => {
-    const t = clock.value;
-    const om = 2 * Math.PI * visHz;
+    const ph = phase.value;
     const p = Skia.Path.Make();
     const N = 110;
     const k = (2 * Math.PI * stripCyc) / w;
     for (let i = 0; i <= N; i++) {
       const x = (i / N) * w;
-      const y = stripMid - 11 * Math.sin(om * t - k * x);
+      const y = stripMid - stripAmp * Math.sin(ph - k * x);
       if (i === 0) p.moveTo(x, y);
       else p.lineTo(x, y);
     }
     return p;
-  }, [clock, w, visHz, stripCyc, stripMid]);
+  }, [phase, w, stripCyc, stripMid, stripAmp]);
 
   return (
     <Canvas style={{ width: w, height: h, backgroundColor: BG }}>

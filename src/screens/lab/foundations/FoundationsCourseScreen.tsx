@@ -496,8 +496,10 @@ function M5Panel({ viz, width, tone, focused, help }: PanelProps) {
   );
 }
 function M5Viz({ viz, width, a, b, active, running }: { viz: VizModule; width: number; a: number; b: number; active: 'a' | 'b' | 'none'; running: boolean }) {
-  const clock = viz.useVizClock(running);
-  return <viz.RateComparatorView clock={clock} width={width} visHzA={visHzFor(a)} visHzB={visHzFor(b)} active={active} />;
+  // Phase clocks — continuous through pair switches (no t·Δω jump).
+  const phaseA = viz.usePhaseClock(running, visHzFor(a));
+  const phaseB = viz.usePhaseClock(running, visHzFor(b));
+  return <viz.RateComparatorView phaseA={phaseA} phaseB={phaseB} width={width} active={active} />;
 }
 
 // ─── M6 — Wavelength: the wave laid across a real 7 m room ──────────────────
@@ -544,8 +546,9 @@ function M6Panel({ viz, width, tone, focused, help }: PanelProps) {
   );
 }
 function M6Viz({ viz, width, f, running }: { viz: VizModule; width: number; f: number; running: boolean }) {
-  const clock = viz.useVizClock(running);
-  return <viz.WavelengthRulerView clock={clock} width={width} freqHz={f} visHz={visHzFor(f)} />;
+  // Phase clock — continuous while the slider drags the frequency.
+  const phase = viz.usePhaseClock(running, visHzFor(f));
+  return <viz.WavelengthRulerView phase={phase} width={width} freqHz={f} />;
 }
 
 // ─── M7 — Time vs space: the same wave on two rulers ────────────────────────
@@ -684,8 +687,10 @@ function M8Panel({ viz, width, tone, focused, help }: PanelProps) {
   );
 }
 function M8Viz({ viz, width, f, running }: { viz: VizModule; width: number; f: number; running: boolean }) {
-  const clock = viz.useVizClock(running);
-  return <viz.OctaveSpiralView clock={clock} width={width} freqHz={f} visHz={visHzFor(f)} />;
+  // Phase clock — the drag glides the rate; phase stays continuous (no
+  // phantom satellite revolutions from t·Δω).
+  const phase = viz.usePhaseClock(running, visHzFor(f));
+  return <viz.OctaveSpiralView phase={phase} width={width} freqHz={f} />;
 }
 
 // ─── M9 — Loudness vs amplitude: the ear-sensitivity curve ──────────────────
@@ -698,8 +703,8 @@ function M9Panel({ viz, width, tone, focused, help }: PanelProps) {
   const sens = viz ? viz.earSensDb(f) : null;
   return (
     <View style={styles.panelCard}>
-      {viz ? <M9Viz viz={viz} width={width} f={f} running={focused} /> : <VizUnavailableCard />}
-      <AnalyticBadge text="SIMPLIFIED SENSITIVITY CURVE — ILLUSTRATION INSPIRED BY EQUAL-LOUDNESS CONTOURS, NOT MEASURED DATA · BOTTOM STRIP = THE SIGNAL, AMPLITUDE CONSTANT (SLOWED)" />
+      {viz ? <M9Viz viz={viz} width={width} f={f} lvl={lvl} running={focused} /> : <VizUnavailableCard />}
+      <AnalyticBadge text="SIMPLIFIED SENSITIVITY CURVE — ILLUSTRATION INSPIRED BY EQUAL-LOUDNESS CONTOURS, NOT MEASURED DATA · BOTTOM STRIP = THE SIGNAL (FOLLOWS LEVEL ONLY, NEVER FREQUENCY · SLOWED)" />
       <DisplayGuideButton onPress={() => help('loudness_curve')} />
       <DragSlider
         value={pos}
@@ -745,9 +750,10 @@ function M9Panel({ viz, width, tone, focused, help }: PanelProps) {
     </View>
   );
 }
-function M9Viz({ viz, width, f, running }: { viz: VizModule; width: number; f: number; running: boolean }) {
-  const clock = viz.useVizClock(running);
-  return <viz.EqualLoudnessView clock={clock} width={width} freqHz={f} visHz={visHzFor(f)} />;
+function M9Viz({ viz, width, f, lvl, running }: { viz: VizModule; width: number; f: number; lvl: number; running: boolean }) {
+  // Phase clock — continuous while the frequency sweep drags.
+  const phase = viz.usePhaseClock(running, visHzFor(f));
+  return <viz.EqualLoudnessView phase={phase} width={width} freqHz={f} level01={lvl} />;
 }
 
 // ─── M10 — Phase: two identical waves + their sum ───────────────────────────
