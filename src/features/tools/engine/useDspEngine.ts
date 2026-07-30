@@ -106,15 +106,22 @@ export function useDspEngine(config: EngineConfig, poll: {
       setState('running');
       setMicActive(true); // mic is now capturing → the feedback interlock arms
       stopPolling();
-      timer.current = setInterval(() => {
-        const p = pollRef.current;
-        setFrames({
-          meter: p.meter ? ApeDsp.getMeterFrame() : null,
-          bands: p.bands ? ApeDsp.getBandsFrame() : null,
-          pitch: p.pitch ? ApeDsp.getPitchFrame() : null,
-          waveform: p.waveform ? ApeDsp.getWaveform() : [],
-        });
-      }, POLL_MS);
+      // Only run the React-state poll if the caller actually wants frames. A
+      // lifecycle-only consumer (poll: {}) drives its own low-latency loop off
+      // ApeDsp.getMeterFrame() directly (responsiveness rule 2026-07-30) and must
+      // NOT eat a 15 Hz whole-screen re-render here.
+      const p0 = pollRef.current;
+      if (p0.meter || p0.bands || p0.pitch || p0.waveform) {
+        timer.current = setInterval(() => {
+          const p = pollRef.current;
+          setFrames({
+            meter: p.meter ? ApeDsp.getMeterFrame() : null,
+            bands: p.bands ? ApeDsp.getBandsFrame() : null,
+            pitch: p.pitch ? ApeDsp.getPitchFrame() : null,
+            waveform: p.waveform ? ApeDsp.getWaveform() : [],
+          });
+        }, POLL_MS);
+      }
     } catch (e) {
       if (gen !== genRef.current) return;
       const msg = e instanceof Error ? e.message : String(e);

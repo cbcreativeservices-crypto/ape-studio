@@ -33,7 +33,7 @@ import { WARNING_INFO, type SplLogPayload } from '../../features/tools/measure/t
 import { colors, fonts } from '../../theme/tokens';
 import { EngineGate } from './EngineGate';
 import { MIC_LIMITS, toolByKey } from './toolsData';
-import type { MeterFrame } from '../../../modules/ape-dsp';
+import { ApeDsp, type MeterFrame } from '../../../modules/ape-dsp';
 import { useToolHelp, HelpHead, DisplayGuideButton } from '../../features/lab/guidedLessons';
 import type { RootStackParamList } from '../../navigation/types';
 
@@ -298,10 +298,13 @@ export function SplMeterScreen({ navigation }: Props) {
   const { help, helpAll, sheet } = useToolHelp('spl');
   const insets = useSafeAreaInsets();
   const tool = toolByKey('spl');
-  const { state, frames, start, stop, lastError, resetPeakHold, resetLeq } = useDspEngine(
-    {},
-    { meter: true },
-  );
+  // Lifecycle-only engine (responsiveness fix 2026-07-30): we do NOT let the
+  // engine poll frames into React state — that 15 Hz whole-screen re-render was
+  // backing up the JS thread and adding a ~1 s "slapback" lag to the meters.
+  // Instead we drive the live meters DIRECTLY off ApeDsp.getMeterFrame() each
+  // animation frame into SharedValues (UI thread), and update the TEXT readouts
+  // on a slow throttle. See the rAF loop below.
+  const { state, start, stop, lastError, resetPeakHold, resetLeq } = useDspEngine({}, {});
 
   // Auto-resume within the SPL ecosystem (owner 2026-07-30): the engine tears
   // the mic down on blur for privacy (useDspEngine), so navigating to the
@@ -364,9 +367,12 @@ export function SplMeterScreen({ navigation }: Props) {
   // Show the tool's meter UI while running OR while manually paused (mic off but
   // still IN the tool) — never collapse to the START card on a manual STOP.
   const showMeter = running || micPaused;
-  // Readouts come ONLY from a live frame — stale frames after STOP are not
-  // shown (measurement-integrity: no value the mic isn't producing right now).
-  const meter = running ? frames.meter : null;
+  // TEXT readouts come from a THROTTLED snapshot of the live frame (~10 Hz) —
+  // plenty for reading numbers, and far cheaper than re-rendering the whole
+  // screen every native tick. The needles/LED do NOT use this (they read the
+  // SharedValues driven by the rAF loop). Stale frames after STOP are cleared.
+  const [displayMeter, setDisplayMeter] = useState<MeterFrame | null>(null);
+  const meter = running ? displayMeter : null;
   // Note: meterWarningFlags raises 'uncalibrated_input' only for OS-PROCESSED
   // input (measurement mode not honored) — that stays a warning even when
   // field-calibrated, because it undermines the calibration itself.
@@ -408,29 +414,62 @@ export function SplMeterScreen({ navigation }: Props) {
   // labels sit OUTSIDE the arc with leader lines.
   const dialW = winW - 32;
   const dialH = Math.round(dialW * 0.92);
-  // The popup meters are fed by pushing the SAME polled frame values into two
-  // SharedValues — no second poll, no duplicated state. RMS = the selected
-  // weighting × response level (set in the effect below); peak = the raw peak
-  // (F1: may exceed 0 dBFS, never clamped). −120 stands in for silence/no-frame.
+  // Live meter drive (responsiveness fix 2026-07-30): two SharedValues the Skia
+  // meters chase on the UI thread. RMS = the selected weighting × response level;
+  // peak = the raw peak (F1: may exceed 0 dBFS, never clamped). −120 = silence.
   const liveRmsDb = useSharedValue(-120);
   const livePeakDb = useSharedValue(-120);
-  // The needle + LED AVERAGE chase the SELECTED weighting × response level (what
-  // the user is metering); peak is the raw peak (F1: may exceed 0 dBFS).
+  // Current control values read by the rAF loop WITHOUT re-subscribing it.
+  const weightingRef = useRef(weighting);
+  weightingRef.current = weighting;
+  const responseRef = useRef(response);
+  responseRef.current = response;
+  const offsetRef = useRef(offset);
+  offsetRef.current = offset;
+  // The critical loop: while running, read the native meter frame DIRECTLY (a
+  // synchronous JSI call — the native analysis thread refreshes it every ~50 ms)
+  // every animation frame and push it straight into the SharedValues. This keeps
+  // the needles/LED on the UI thread's fast path — NO React state, NO whole-screen
+  // re-render — which is what removes the ~1 s "slapback" lag. A slow throttle
+  // (~10 Hz) mirrors the frame into `displayMeter` for the TEXT readouts only.
   useEffect(() => {
-    const lvl = meter ? selectedLevelDb(meter, weighting, response) : -120;
-    liveRmsDb.value = Number.isFinite(lvl) ? lvl : -120;
-    livePeakDb.value = meter && Number.isFinite(meter.peakDb) ? meter.peakDb : -120;
-    // AUTO-RANGE feed: a heavily-smoothed EMA of the measured (estimated) SPL —
-    // dBFS + the calibration/nominal offset — so the auto 0-VU reference can
-    // track ambient and keep the needle on-scale and moving (not pinned).
-    if (meter && Number.isFinite(lvl)) {
-      const splNow = lvl + (offset ?? 100);
-      // Moderately responsive EMA so AUTO actually keeps up with the room
-      // (owner 2026-07-30: "auto needs to work better") — was 0.05 (too sluggish).
-      splEmaRef.current =
-        splEmaRef.current == null ? splNow : splEmaRef.current + (splNow - splEmaRef.current) * 0.15;
+    if (!running) {
+      liveRmsDb.value = -120;
+      livePeakDb.value = -120;
+      return;
     }
-  }, [meter, weighting, response, offset, liveRmsDb, livePeakDb]);
+    let raf = 0;
+    let alive = true;
+    let lastText = 0;
+    const tick = (now: number) => {
+      if (!alive) return;
+      const m = ApeDsp.getMeterFrame();
+      if (m) {
+        const lvl = selectedLevelDb(m, weightingRef.current, responseRef.current);
+        liveRmsDb.value = Number.isFinite(lvl) ? lvl : -120;
+        livePeakDb.value = Number.isFinite(m.peakDb) ? m.peakDb : -120;
+        // AUTO-RANGE feed: a smoothed EMA of the estimated SPL so the auto 0-VU
+        // reference tracks ambient (keeps the needle on-scale and moving).
+        if (Number.isFinite(lvl)) {
+          const splNow = lvl + (offsetRef.current ?? 100);
+          splEmaRef.current =
+            splEmaRef.current == null ? splNow : splEmaRef.current + (splNow - splEmaRef.current) * 0.15;
+        }
+        // Throttle the text-driving state to ~10 Hz.
+        if (now - lastText >= 100) {
+          lastText = now;
+          setDisplayMeter(m);
+        }
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => {
+      alive = false;
+      cancelAnimationFrame(raf);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [running]);
 
   // AUTO range recompute — reads the smoothed EMA a few times a second and parks
   // the 0-VU reference 10 dB ABOVE the current level, so the live signal sits
@@ -492,7 +531,8 @@ export function SplMeterScreen({ navigation }: Props) {
 
   /** SAVE LOG → Saved Measurement Library (spec §7; payload = SplLogPayload). */
   const onSaveLog = useCallback(() => {
-    const m = state === 'running' ? frames.meter : null;
+    // Read the FRESHEST frame directly at save time (no polled React state now).
+    const m = state === 'running' ? ApeDsp.getMeterFrame() : null;
     if (!m) return;
     const saveFlags = meterWarningFlags(m);
     // Without a field calibration the record is explicitly uncalibrated
@@ -537,7 +577,7 @@ export function SplMeterScreen({ navigation }: Props) {
     if (savedTimer.current) clearTimeout(savedTimer.current);
     savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state, frames.meter, weighting, response, offset, cal]);
+  }, [state, weighting, response, offset, cal]);
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
