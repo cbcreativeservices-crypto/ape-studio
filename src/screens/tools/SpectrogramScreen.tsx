@@ -7,27 +7,41 @@
  *  - all levels are dBFS, uncalibrated, and labeled so (never dB SPL);
  *  - the colormap is RELATIVE to the observed maximum over the selected
  *    dynamic range (spec §12 required warning: "Color intensity is relative
- *    to the selected scale." — printed on screen, always);
+ *    to the selected scale." — printed on screen, always); the legend prints
+ *    the exact anchor the colors are mapped to;
  *  - FREEZE stops the scrolling history only; capture keeps running and is
  *    said so on screen — nothing pretends to be paused that isn't;
  *  - capture starts only on the explicit START press; the hook stops capture
  *    on unmount (spec §18).
  *
- * Perf (A13 budget, RN SVG): useDspEngine handles lifecycle + the meter poll;
- * the spectrogram itself polls ApeDsp.getSpectrum() on its OWN 250 ms (4 Hz)
- * interval — a fresh column 4×/s, not 15×/s. Each frame is downsampled to
- * 26 log-spaced cells (50 Hz–16 kHz, max of the FFT bins per cell) and kept
- * in a 44-column rolling history (~11 s). The 26×44 Rect grid renders inside
- * a React.memo component keyed by the history reference, so the 15 Hz meter
- * poll never re-renders the SVG and the 4 Hz column push never rebuilds more
- * than the grid.
+ * HI-RES RASTER (owner directive 2026-07-29) — 128 log-spaced frequency rows
+ * (50 Hz–16 kHz) × 160 time columns at 8 columns/s (125 ms/col ≈ 20 s of
+ * history), MIDI-velocity rainbow colormap (deep blue → cyan → green → yellow
+ * → orange → red; near-silence stays near-black/deep blue), quantized to 32
+ * color buckets.
+ *
+ * Perf-by-construction (A13 budget, RN SVG): a 128×160 per-cell Rect grid
+ * (20,480 nodes rebuilt per poll) would die — instead each COLUMN is a memoized
+ * component that batches its 128 cells into at most 32 <Path> nodes (one per
+ * quantized color bucket present; contiguous equal-bucket runs merge into one
+ * stroke segment — real audio columns typically land at ~6–16 paths). Columns
+ * are keyed by a monotonic id at a fixed virtual x; scrolling is ONE translate
+ * update on the parent <G> per poll, so history columns stay frozen — per-poll
+ * work is: build 1 new column (≤32 small paths), unmount the oldest, move the
+ * <G>. Total steady-state SVG nodes ≈ 160 cols × ~6–16 paths ≈ 1–2.5k
+ * (worst-case bound 160 × 32 = 5,120) + ~8 static grid/frame nodes. History
+ * only rebuilds wholesale when the color anchor re-anchors (±1/−3 dB
+ * hysteresis) or the user changes the dynamic range — a one-time ~20k-run
+ * pass, never per-poll. The 15 Hz meter poll never re-renders the SVG
+ * (React.memo keyed by the history reference); the 8 Hz column push touches
+ * only the pieces above.
  */
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
-import Svg, { Rect } from 'react-native-svg';
+import Svg, { G, Line, Path, Rect } from 'react-native-svg';
 import { ApeDsp, type EngineConfig } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
@@ -43,31 +57,69 @@ type Props = NativeStackScreenProps<RootStackParamList, 'SpectrogramLive'>;
 
 const FFT_SIZE = 4096;
 const FFT_PRESET = 'hann-4096'; // engine analysis window preset (payload/settings id)
-const SPECTRO_POLL_MS = 250; // 4 Hz column cadence — deliberately NOT the meter poll
-const CELLS = 26; // log-spaced frequency cells per column
-const HISTORY_COLS = 44; // rolling columns → 44 × 0.25 s ≈ 11 s
+const SPECTRO_POLL_MS = 125; // 8 Hz column cadence — deliberately NOT the meter poll
+const ROWS = 128; // log-spaced frequency rows per column (hi-res raster)
+const HISTORY_COLS = 160; // rolling columns → 160 × 0.125 s = 20 s
 const TIME_SPAN_SEC = (HISTORY_COLS * SPECTRO_POLL_MS) / 1000;
 const F_MIN = 50;
 const F_MAX = 16000;
-/** Cell floor: a cell whose bins all sit at/below this renders as background
+/** Row floor: a row whose bins all sit at/below this renders as background
  *  and is stored as this value — a stated display floor, never fabricated. */
 const CELL_FLOOR_DB = -120;
 
 const LOG_MIN = Math.log(F_MIN);
 const LOG_SPAN = Math.log(F_MAX) - LOG_MIN;
-/** Geometric cell centers, precomputed once — also the saved bandsHz. */
-const CELL_CENTERS_HZ: number[] = Array.from({ length: CELLS }, (_, i) =>
-  Math.round(Math.exp(LOG_MIN + (LOG_SPAN * (i + 0.5)) / CELLS)),
+/** Geometric row centers, precomputed once — also the saved bandsHz. */
+const CELL_CENTERS_HZ: number[] = Array.from({ length: ROWS }, (_, i) =>
+  Math.round(Math.exp(LOG_MIN + (LOG_SPAN * (i + 0.5)) / ROWS)),
 );
 
-/** Dynamic-range chips — dB below the observed maximum (display scale only;
+/** Dynamic-range chips — dB below the color anchor (display scale only;
  *  no engine setting changes, no settings epoch). */
 const DYN_RANGES = [40, 60, 80] as const;
 
-/** 5-step dB colormap, coldest → hottest (spectrogram purple accent family). */
-const COLORMAP = ['#241040', '#4a1f7a', '#8332c4', '#c95ce8', '#ffe8b0'] as const;
+/** MIDI-velocity rainbow (owner 2026-07-29): near-silence stays near-black /
+ *  very dark blue, then deep blue → cyan → green → yellow → orange → red
+ *  (hue sweep ≈ 240° → 0°, saturated on the dark background). Piecewise linear
+ *  over 8 stops [t, r, g, b]. */
+const MIDI_STOPS = [
+  [0.0, 6, 6, 24],
+  [0.13, 18, 30, 158],
+  [0.28, 32, 104, 224],
+  [0.42, 20, 192, 214],
+  [0.56, 34, 206, 88],
+  [0.72, 250, 222, 56],
+  [0.86, 255, 138, 28],
+  [1.0, 255, 44, 24],
+] as const;
 
-const GRID_H = 208; // grid pixel height; each of the 26 cells is GRID_H/26 tall
+function midiVelocityColor(t: number): string {
+  const x = Math.min(1, Math.max(0, t));
+  let i = 0;
+  while (i < MIDI_STOPS.length - 2 && x > MIDI_STOPS[i + 1][0]) i++;
+  const a = MIDI_STOPS[i];
+  const b = MIDI_STOPS[i + 1];
+  const f = b[0] > a[0] ? (x - a[0]) / (b[0] - a[0]) : 0;
+  const ch = (k: 1 | 2 | 3) => Math.round(a[k] + (b[k] - a[k]) * f);
+  return `rgb(${ch(1)},${ch(2)},${ch(3)})`;
+}
+
+/** ≤32 quantized colors — the per-column path-batching buckets. */
+const COLOR_BUCKETS = 32;
+const BUCKET_COLORS: readonly string[] = Array.from({ length: COLOR_BUCKETS }, (_, i) =>
+  midiVelocityColor((i + 0.5) / COLOR_BUCKETS),
+);
+
+/** Color-anchor hysteresis: history columns are frozen paths, so the anchor
+ *  (the level the top of the colormap maps to) re-anchors — triggering a
+ *  one-time history rebuild — only when the observed max rises >1 dB above it
+ *  or falls ≥3 dB below it. The legend always prints the anchor actually in
+ *  use; OBS MAX always prints the true observed maximum. */
+const ANCHOR_RISE_DB = 1;
+const ANCHOR_FALL_DB = 3;
+
+const GRID_H = 256; // grid pixel height; each of the 128 rows is 2 px tall
+const CELL_H = GRID_H / ROWS;
 const FREQ_LABELS = [
   { hz: 100, text: '100' },
   { hz: 1000, text: '1k' },
@@ -79,20 +131,48 @@ const yForHz = (hz: number) => GRID_H - ((Math.log(hz) - LOG_MIN) / LOG_SPAN) * 
 const fmtDb = (v: number | null | undefined) =>
   v != null && Number.isFinite(v) ? `${v > 0 ? '+' : ''}${v.toFixed(1)}` : '—';
 
-/** Downsample one REAL fine-spectrum frame (dBFS per FFT bin) to the 26
- *  log-spaced cells — max of the bins that land in each cell. Bins outside
- *  50 Hz–16 kHz are ignored; a cell with nothing above the floor stays at
- *  CELL_FLOOR_DB (honest "no energy registered", not a made-up level). */
-function downsampleColumn(spec: Float32Array, sampleRate: number, fftSize: number): number[] {
-  const col = new Array<number>(CELLS).fill(CELL_FLOOR_DB);
+/** Per-row FFT bin ranges for the current (sampleRate, fftSize) — computed
+ *  once per meta change, not per column. Each display row reads the REAL bins
+ *  whose frequencies fall in its log span (max of bins); a low-frequency row
+ *  narrower than one bin reads the single bin containing its center — always
+ *  a real measured bin (the FFT's true resolution repeats across the rows it
+ *  covers), never interpolated or fabricated. */
+function buildRowBins(sampleRate: number, fftSize: number, bins: number): Int32Array {
   const hzPerBin = sampleRate / fftSize;
-  for (let i = 1; i < spec.length; i++) {
-    const f = i * hzPerBin;
-    if (f < F_MIN || f > F_MAX) continue;
-    const c = Math.min(CELLS - 1, Math.floor(((Math.log(f) - LOG_MIN) / LOG_SPAN) * CELLS));
-    if (spec[i] > col[c]) col[c] = spec[i];
+  const map = new Int32Array(ROWS * 2);
+  for (let r = 0; r < ROWS; r++) {
+    const fLo = Math.exp(LOG_MIN + (LOG_SPAN * r) / ROWS);
+    const fHi = Math.exp(LOG_MIN + (LOG_SPAN * (r + 1)) / ROWS);
+    let lo = Math.max(1, Math.ceil(fLo / hzPerBin));
+    let hi = Math.min(bins - 1, Math.floor(fHi / hzPerBin));
+    if (lo > hi) {
+      const c = Math.min(bins - 1, Math.max(1, Math.round(Math.sqrt(fLo * fHi) / hzPerBin)));
+      lo = c;
+      hi = c;
+    }
+    map[r * 2] = lo;
+    map[r * 2 + 1] = hi;
   }
-  return col;
+  return map;
+}
+
+type SpectroColumnData = { id: number; cells: number[]; max: number };
+
+/** Downsample one REAL fine-spectrum frame (dBFS per FFT bin) to the 128
+ *  log-spaced rows via the precomputed bin map. A row with nothing above the
+ *  floor stays at CELL_FLOOR_DB (honest "no energy registered"). */
+function downsampleColumn(spec: Float32Array, rowBins: Int32Array): { cells: number[]; max: number } {
+  const cells = new Array<number>(ROWS);
+  let max = CELL_FLOOR_DB;
+  for (let r = 0; r < ROWS; r++) {
+    let v = -Infinity;
+    const hi = rowBins[r * 2 + 1];
+    for (let i = rowBins[r * 2]; i <= hi; i++) if (spec[i] > v) v = spec[i];
+    const clamped = Number.isFinite(v) && v > CELL_FLOOR_DB ? v : CELL_FLOOR_DB;
+    cells[r] = clamped;
+    if (clamped > max) max = clamped;
+  }
+  return { cells, max };
 }
 
 function StatCell({ label, value, unit, help }: { label: string; value: string; unit?: string; help?: (key: string) => void }) {
@@ -128,48 +208,119 @@ function Chip({ label, active, onPress, a11yLabel }: { label: string; active: bo
   );
 }
 
-/** The 26×44 Rect grid. React.memo keyed by the history REFERENCE: the 15 Hz
+/** Slight stroke overlap so adjacent columns never show background seams. */
+const COL_OVERLAP = 0.35;
+
+/** ONE spectrogram column: its 128 cells batched into ≤32 <Path> nodes (one
+ *  per quantized color bucket present; contiguous equal-bucket runs merge into
+ *  a single M/V stroke segment). memo — a mounted column NEVER rebuilds while
+ *  it scrolls (its x is virtual; the parent <G> translates), only when the
+ *  color anchor or dynamic range changes. Cells at/below the scale floor draw
+ *  nothing — background is the floor. */
+const SpectroColumn = memo(function SpectroColumn({
+  cells,
+  x,
+  colW,
+  anchor,
+  dynRange,
+}: {
+  cells: number[];
+  x: number;
+  colW: number;
+  anchor: number;
+  dynRange: number;
+}) {
+  const floor = anchor - dynRange;
+  const scale = COLOR_BUCKETS / dynRange;
+  const xs = x.toFixed(1);
+  const buckets: (string | undefined)[] = new Array<string | undefined>(COLOR_BUCKETS);
+  let run = -1;
+  let runStart = 0;
+  for (let r = 0; r <= ROWS; r++) {
+    let b = -1;
+    if (r < ROWS) {
+      const v = cells[r];
+      if (v > floor) b = Math.min(COLOR_BUCKETS - 1, Math.floor((v - floor) * scale));
+    }
+    if (b !== run) {
+      if (run >= 0) {
+        const y1 = (GRID_H - runStart * CELL_H).toFixed(1);
+        const y2 = (GRID_H - r * CELL_H).toFixed(1);
+        buckets[run] = (buckets[run] ?? '') + `M${xs} ${y1}V${y2}`;
+      }
+      run = b;
+      runStart = r;
+    }
+  }
+  const out: ReactElement[] = [];
+  for (let b = 0; b < COLOR_BUCKETS; b++) {
+    const d = buckets[b];
+    if (d) out.push(<Path key={b} d={d} stroke={BUCKET_COLORS[b]} strokeWidth={colW + COL_OVERLAP} />);
+  }
+  return <>{out}</>;
+});
+
+/** The 128×160 raster. React.memo keyed by the history REFERENCE: the 15 Hz
  *  meter poll re-renders the parent but props are unchanged, so this SVG only
- *  rebuilds when a new column lands (4 Hz) or the display scale changes.
- *  Cells at/below the scale floor draw NO rect — background is the floor. */
+ *  reconciles when a new column lands (8 Hz) or the scale/anchor changes —
+ *  and reconciling means ONE new memoized column plus a <G> translate. */
 const SpectrogramGrid = memo(function SpectrogramGrid({
   history,
-  observedMax,
+  anchor,
   dynRange,
   width,
 }: {
-  history: number[][];
-  observedMax: number | null;
+  history: SpectroColumnData[];
+  anchor: number | null;
   dynRange: number;
   width: number;
 }) {
-  if (width <= 0 || history.length === 0 || observedMax == null) return null;
-  const floorLevel = observedMax - dynRange;
-  const cellW = width / HISTORY_COLS;
-  const cellH = GRID_H / CELLS;
-  const startCol = HISTORY_COLS - history.length; // newest column at the right edge
+  if (width <= 0 || history.length === 0 || anchor == null) return null;
+  const colW = width / HISTORY_COLS;
+  const newestId = history[history.length - 1].id;
+  const tx = width - (newestId + 1) * colW;
+  const colsPer5s = 5000 / SPECTRO_POLL_MS;
   return (
     <Svg width={width} height={GRID_H}>
-      {history.map((col, t) => {
-        const x = (startCol + t) * cellW;
-        return col.map((v, c) => {
-          if (v <= floorLevel) return null;
-          const step = Math.min(
-            COLORMAP.length - 1,
-            Math.floor(((v - floorLevel) / dynRange) * COLORMAP.length),
-          );
-          return (
-            <Rect
-              key={`${t}-${c}`}
-              x={x}
-              y={GRID_H - (c + 1) * cellH}
-              width={cellW + 0.5}
-              height={cellH + 0.5}
-              fill={COLORMAP[step]}
-            />
-          );
-        });
-      })}
+      {/* Subtle static grid — frequency decades + 5 s time marks (from "now"). */}
+      {FREQ_LABELS.map((l) => (
+        <Line
+          key={l.text}
+          x1={0}
+          x2={width}
+          y1={yForHz(l.hz)}
+          y2={yForHz(l.hz)}
+          stroke="#1c1c26"
+          strokeWidth={1}
+          strokeDasharray="3 5"
+        />
+      ))}
+      {[1, 2, 3].map((k) => (
+        <Line
+          key={k}
+          x1={width - k * colsPer5s * colW}
+          x2={width - k * colsPer5s * colW}
+          y1={0}
+          y2={GRID_H}
+          stroke="#17171f"
+          strokeWidth={1}
+          strokeDasharray="3 5"
+        />
+      ))}
+      {/* All columns live at fixed virtual x; scrolling = this one translate. */}
+      <G x={tx}>
+        {history.map((c) => (
+          <SpectroColumn
+            key={c.id}
+            cells={c.cells}
+            x={(c.id + 0.5) * colW}
+            colW={colW}
+            anchor={anchor}
+            dynRange={dynRange}
+          />
+        ))}
+      </G>
+      <Rect x={0.5} y={0.5} width={width - 1} height={GRID_H - 1} stroke="#26262c" strokeWidth={1} fill="none" />
     </Svg>
   );
 });
@@ -184,14 +335,16 @@ export function SpectrogramScreen({ navigation }: Props) {
   const cfg = useRef<EngineConfig>({ fftSize: FFT_SIZE, spectrumEnabled: true }).current;
   const { state, frames, start, stop, lastError } = useDspEngine(cfg, { meter: true });
 
-  const [history, setHistory] = useState<number[][]>([]);
+  const [history, setHistory] = useState<SpectroColumnData[]>([]);
   const [dynRange, setDynRange] = useState<number>(60);
   const [frozen, setFrozen] = useState(false);
   const frozenRef = useRef(false);
   const [chartW, setChartW] = useState(0);
+  const colIdRef = useRef(0);
+  const rowBinsRef = useRef<{ key: string; map: Int32Array } | null>(null);
 
-  // ---- The spectrogram's OWN 4 Hz poll (not the hook's 15 Hz meter poll).
-  // Reads the current REAL fine spectrum each 250 ms while running; FREEZE
+  // ---- The spectrogram's OWN 8 Hz poll (not the hook's 15 Hz meter poll).
+  // Reads the current REAL fine spectrum each 125 ms while running; FREEZE
   // skips the history push only — capture and polling continue underneath.
   useEffect(() => {
     if (state !== 'running') return;
@@ -200,7 +353,13 @@ export function SpectrogramScreen({ navigation }: Props) {
       const spec = ApeDsp.getSpectrum();
       if (!meta || meta.sampleRate <= 0 || meta.fftSize <= 0 || spec.length === 0) return;
       if (frozenRef.current) return; // display frozen; capture continues
-      const col = downsampleColumn(spec, meta.sampleRate, meta.fftSize);
+      const key = `${meta.sampleRate}|${meta.fftSize}|${spec.length}`;
+      if (!rowBinsRef.current || rowBinsRef.current.key !== key) {
+        rowBinsRef.current = { key, map: buildRowBins(meta.sampleRate, meta.fftSize, spec.length) };
+      }
+      const { cells, max } = downsampleColumn(spec, rowBinsRef.current.map);
+      colIdRef.current += 1;
+      const col: SpectroColumnData = { id: colIdRef.current, cells, max };
       setHistory((h) =>
         h.length >= HISTORY_COLS ? [...h.slice(h.length - HISTORY_COLS + 1), col] : [...h, col],
       );
@@ -208,18 +367,36 @@ export function SpectrogramScreen({ navigation }: Props) {
     return () => clearInterval(id);
   }, [state]);
 
-  /** Observed maximum across the visible history — the colormap's anchor.
-   *  Recomputed only when a column lands (4 Hz); 26×44 numbers is cheap. */
+  /** True observed maximum across the visible history (per-column maxes are
+   *  precomputed at downsample time — 160 comparisons per column push). */
   const observedMax = useMemo(() => {
     let m = -Infinity;
-    for (const col of history) for (const v of col) if (v > m) m = v;
+    for (const c of history) if (c.max > m) m = c.max;
     return Number.isFinite(m) ? m : null;
   }, [history]);
+
+  /** The color anchor the frozen column paths are actually mapped to —
+   *  follows observedMax with rise/fall hysteresis so history rebuilds stay
+   *  rare (see constant docs). The legend prints THIS value. */
+  const [anchor, setAnchor] = useState<number | null>(null);
+  useEffect(() => {
+    if (observedMax == null) {
+      setAnchor(null);
+      return;
+    }
+    setAnchor((a) =>
+      a == null || observedMax > a + ANCHOR_RISE_DB || a - observedMax >= ANCHOR_FALL_DB
+        ? observedMax
+        : a,
+    );
+  }, [observedMax]);
 
   const onStart = useCallback(() => {
     // Fresh run = fresh timeline: stale columns from a previous run would lie
     // about time continuity across the stop gap.
     setHistory([]);
+    setAnchor(null);
+    colIdRef.current = 0;
     frozenRef.current = false;
     setFrozen(false);
     void start();
@@ -260,7 +437,7 @@ export function SpectrogramScreen({ navigation }: Props) {
       warning_flags: flags,
       data_payload: {
         kind: 'spectrogram_snapshot',
-        grid: history.map((col) => [...col]),
+        grid: history.map((c) => [...c.cells]),
         bandsHz: [...CELL_CENTERS_HZ],
         timeStepSec: SPECTRO_POLL_MS / 1000,
         dynamicRangeDb: dynRange,
@@ -338,7 +515,7 @@ export function SpectrogramScreen({ navigation }: Props) {
                 >
                   <SpectrogramGrid
                     history={history}
-                    observedMax={observedMax}
+                    anchor={anchor}
                     dynRange={dynRange}
                     width={chartW}
                   />
@@ -350,17 +527,20 @@ export function SpectrogramScreen({ navigation }: Props) {
 
               {/* Time axis note (spec §12: time is horizontal, newest right). */}
               <Text style={styles.timeLine}>
-                time → · ~{TIME_SPAN_SEC.toFixed(0)} s history · {(SPECTRO_POLL_MS / 1000).toFixed(2)} s per column
+                time → · ~{TIME_SPAN_SEC.toFixed(0)} s history · {Math.round(1000 / SPECTRO_POLL_MS)} col/s · {ROWS} freq rows
               </Text>
 
-              {/* Color scale legend — anchored to the OBSERVED max. */}
+              {/* Color-scale legend strip — dark → blue → … → red, with the dB
+                  endpoints of the anchor actually mapped (see anchor docs). */}
               <View style={styles.legendRow}>
-                {COLORMAP.map((c) => (
-                  <View key={c} style={[styles.swatch, { backgroundColor: c }]} />
-                ))}
+                <View style={styles.legendStrip}>
+                  {BUCKET_COLORS.map((c, i) => (
+                    <View key={i} style={{ flex: 1, backgroundColor: c }} />
+                  ))}
+                </View>
                 <Text style={styles.legendText}>
-                  {observedMax != null
-                    ? `${fmtDb(observedMax - dynRange)} → ${fmtDb(observedMax)} dBFS`
+                  {anchor != null
+                    ? `${fmtDb(anchor - dynRange)} → ${fmtDb(anchor)} dBFS`
                     : '—'}
                 </Text>
               </View>
@@ -491,7 +671,7 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     textAlign: 'right',
   },
-  chartArea: { flex: 1, height: GRID_H, backgroundColor: '#0b0b10', borderRadius: 4, overflow: 'hidden' },
+  chartArea: { flex: 1, height: GRID_H, backgroundColor: '#07070d', borderRadius: 4, overflow: 'hidden' },
   waitingText: {
     position: 'absolute',
     top: GRID_H / 2 - 9,
@@ -504,10 +684,16 @@ const styles = StyleSheet.create({
   },
   timeLine: { fontFamily: fonts.mono, fontSize: 12, color: colors.textMuted },
 
-  // Colormap legend.
-  legendRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  swatch: { width: 18, height: 10, borderRadius: 2 },
-  legendText: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSubAlt, marginLeft: 6 },
+  // Colormap legend — continuous quantized strip (dark → blue → … → red).
+  legendRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  legendStrip: {
+    flex: 1,
+    flexDirection: 'row',
+    height: 10,
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  legendText: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSubAlt },
 
   unitLine: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSubAlt },
   scaleNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSubAlt },

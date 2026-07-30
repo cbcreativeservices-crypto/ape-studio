@@ -604,20 +604,33 @@ export function SpectrogramPatternView(p: {
 // back-to-front with an OPAQUE fill so nearer slices occlude farther ones —
 // the classic hidden-line CSD look. All geometry frozen in useMemo; the
 // build → hold → collapse loop animates ONLY per-slice opacity windows.
+//
+// RE-SKIN per the owner's reference CSD screenshot (2026-07-29), MIRRORED
+// left-right — the reference recedes upper-LEFT, ours keeps its upper-RIGHT
+// recession and adopts the rest of the grammar:
+//   • frequency labels across the TOP (30 · 120 · 440 · 1.6k · 6k · 20k) with
+//     thin white posts rising from the front edge, and floor guide lines
+//     running into the depth parallel to the recession;
+//   • labeled 1-SECOND floor division lines (1 / 2 / 3 Sec) across the 3 s
+//     span — the ridges cross them during the collapse, making time visible;
+//   • HEIGHT-GRADED heat fills: deep red base → orange → yellow → white-hot
+//     ridge peaks per slice, with depth dimming toward a cool dark;
+//   • the front slice's spectrum re-drawn as a green 2-D silhouette standing
+//     on the outer side plane, opacity-synced to the front slice.
+// Math (waterfallSpectrumDb / waterfallRt), the 56×140 geometry, occlusion,
+// memoization, and the animation architecture are all unchanged.
 
 const WF_SLICES = 56;
-const WF_T_MAX = 2.4; // seconds spanned front (t=0) → back
+// 3.0 s front→back (owner 2026-07-29, reference CSD): a round span so the
+// 1-second floor division lines land on 1 / 2 / 3 Sec exactly.
+const WF_T_MAX = 3.0; // seconds spanned front (t=0) → back
+const WF_T_DIVISIONS = [1, 2, 3]; // labeled 1-second floor division lines
 const WF_DB_TOP = 12;
 const WF_DB_FLOOR = -60;
 const WF_DB_SPAN = WF_DB_TOP - WF_DB_FLOOR; // 72 dB of mountain height
 // Animation timeline as fractions of one phase-clock cycle.
 const WF_GROW_END = 0.4; // Phase A: impulse flash + grow backward
 const WF_HOLD_END = 0.58; // Phase B: hold the full range
-// Recency-graded slice strokes: front = white-hot amber, back = cool dim blue.
-const WF_FRONT_RGB: [number, number, number] = [255, 233, 192];
-const WF_MID_RGB: [number, number, number] = [255, 176, 64];
-const WF_BACK_RGB: [number, number, number] = [58, 84, 128];
-const BG_RGB: [number, number, number] = [12, 12, 15];
 
 function mixRgb(
   a: [number, number, number],
@@ -632,8 +645,28 @@ function mixRgb(
   ];
 }
 const rgbStr = (c: [number, number, number]) => `rgb(${c[0]},${c[1]},${c[2]})`;
-const wfStrokeRgb = (cum: number): [number, number, number] =>
-  cum < 0.45 ? mixRgb(WF_FRONT_RGB, WF_MID_RGB, cum / 0.45) : mixRgb(WF_MID_RGB, WF_BACK_RGB, (cum - 0.45) / 0.55);
+
+// HEIGHT-GRADED HEAT (owner 2026-07-29, reference CSD screenshot): every
+// slice carries the same vertical amplitude ramp — deep red at the base →
+// orange → yellow → white-hot at ridge peaks. The gradient is anchored to the
+// slice's FULL amplitude range (yTop…yBase), so a ridge only reaching halfway
+// up only reaches the orange band: color = height. DEPTH then dims: older
+// slices mix toward a cool dark, so the front is hot and the back recedes.
+// All stops stay OPAQUE — the hidden-line occlusion depends on opaque fills.
+const WF_HEAT_STOPS: { pos: number; rgb: [number, number, number] }[] = [
+  { pos: 0, rgb: [255, 246, 214] }, // white-hot — ridge peaks
+  { pos: 0.3, rgb: [255, 205, 66] }, // yellow
+  { pos: 0.62, rgb: [244, 116, 28] }, // orange
+  { pos: 1, rgb: [118, 16, 14] }, // deep red — the base
+];
+const WF_HEAT_POS = WF_HEAT_STOPS.map((s) => s.pos);
+/** Cool dark the depth dimming mixes toward (older = cooler + darker). */
+const WF_COOL_DARK: [number, number, number] = [15, 18, 30];
+/** Ridge-line stroke base (white-hot), dimmed with depth like the fill. */
+const WF_STROKE_RGB: [number, number, number] = [255, 238, 196];
+/** The 2-D side-profile silhouette of the CURRENT (front) slice — the green
+ *  curve of the reference, standing on the outer side plane. */
+const SIDE_GREEN = '#7dd87d';
 
 /** Frequency grid: 128 log-spaced points 20 Hz → 20 kHz PLUS exact feature
  *  frequencies (±0.014-decade flanks) so the engine's narrow ridges — the
@@ -659,10 +692,12 @@ type WfSliceGeo = {
   fill: SkPathT;
   stroke: SkPathT;
   strokeColor: string;
-  fillTop: string;
+  /** The height-graded heat ramp (WF_HEAT_STOPS depth-dimmed for this slice),
+   *  anchored yTop (white-hot peaks) → yBase (deep red base). */
+  fillColors: string[];
   swid: number;
   strokeOpacity: number;
-  yTop: number; // top anchor of the height-tint gradient
+  yTop: number; // top anchor of the height-heat gradient (full-amp ceiling)
   yBase: number; // this slice's own baseline
 };
 
@@ -694,12 +729,14 @@ function WfSlice({
   }, [phase, animate, index]);
   return (
     <Group opacity={op}>
-      {/* Opaque fill = hidden-line occlusion + per-vertex height tint. */}
+      {/* Opaque fill = hidden-line occlusion + the height-graded heat ramp
+          (deep red base → orange → yellow → white-hot peaks, depth-dimmed). */}
       <Path path={slice.fill}>
         <LinearGradient
           start={vec(0, slice.yTop)}
           end={vec(0, slice.yBase)}
-          colors={[slice.fillTop, BG]}
+          colors={slice.fillColors}
+          positions={WF_HEAT_POS}
         />
       </Path>
       <Path
@@ -715,13 +752,19 @@ function WfSlice({
   );
 }
 
+// Frequency stations per the owner's reference CSD (30 · 120 · 440 · 1.6k ·
+// 6k · 20k), labeled across the TOP edge with thin white posts rising from
+// the front edge and floor guide lines running into the depth.
 const WF_FRONT_LABELS: { f: number; label: string }[] = [
-  { f: 100, label: '100' },
-  { f: 250, label: '250' },
-  { f: 1000, label: '1k' },
-  { f: 4000, label: '4k' },
-  { f: 10000, label: '10k' },
+  { f: 30, label: '30' },
+  { f: 120, label: '120' },
+  { f: 440, label: '440' },
+  { f: 1600, label: '1.6k' },
+  { f: 6000, label: '6k' },
+  { f: 20000, label: '20k' },
 ];
+/** Top edge of the frequency posts / bottom of the top label strip. */
+const WF_POST_TOP = 14;
 
 /** M7 ⭐ — the WATERFALL (CSD-style pseudo-3D): X=frequency, Y=amplitude,
  *  Z=time receding. Impulse → mountain range → collapse, animated on the
@@ -778,32 +821,85 @@ export function WaterfallView(p: {
       }
       fill.lineTo(ox + sw, oy);
       fill.close();
-      const strokeRgb = wfStrokeRgb(cum);
+      // Height-graded heat, depth-dimmed: the deeper (older) the slice, the
+      // further every stop mixes toward the cool dark — front hot, back cool.
+      const dim = 0.62 * cum;
       slices.push({
         fill,
         stroke,
-        strokeColor: rgbStr(strokeRgb),
-        fillTop: rgbStr(mixRgb(strokeRgb, BG_RGB, 0.74)), // opaque height tint
+        strokeColor: rgbStr(mixRgb(WF_STROKE_RGB, WF_COOL_DARK, 0.7 * cum)),
+        fillColors: WF_HEAT_STOPS.map((st) => rgbStr(mixRgb(st.rgb, WF_COOL_DARK, dim))),
         swid: 1.7 - 0.8 * cum,
         strokeOpacity: 1 - 0.4 * cum,
         yTop: oy - amp,
         yBase: oy,
       });
     }
-    return { slices, xL0, frontW, dxTot, dyTot, baseY, ampH };
+    // THE 2-D SIDE PROFILE (the reference's green curve): the CURRENT (front,
+    // t=0) slice's spectrum re-drawn as a flat silhouette standing on the
+    // OUTER SIDE PLANE — the plane where the front slice's right end meets
+    // the receding time axis. Frequency runs along the recession direction;
+    // height is the same a01 × (depth-shrunk) amplitude the slices use. One
+    // fill + one stroke, derived from the already-computed spec[] — cheap.
+    const xR0 = xL0 + frontW;
+    const sideFill = Skia.Path.Make();
+    const sideStroke = Skia.Path.Make();
+    sideFill.moveTo(xR0, baseY);
+    for (let k = 0; k < WF_FREQS.length; k++) {
+      const a01 = Math.max(0, Math.min(1, (spec[k] - WF_DB_FLOOR) / WF_DB_SPAN));
+      const u = lgF[k];
+      const bx = xR0 + dxTot * u;
+      const by = baseY - dyTot * u;
+      const yv = by - a01 * ampH * (1 - 0.18 * u);
+      if (k === 0) sideStroke.moveTo(bx, yv);
+      else sideStroke.lineTo(bx, yv);
+      sideFill.lineTo(bx, yv);
+    }
+    sideFill.lineTo(xR0 + dxTot, baseY - dyTot);
+    sideFill.close();
+    // 1-SECOND FLOOR DIVISION LINES (owner 2026-07-29, reference CSD): one
+    // line across the floor at every whole second of the 3 s span, receding
+    // with the perspective, each labeled at its right end — the ridges cross
+    // them during the collapse, so the viewer SEES time going by.
+    const timeMarks = WF_T_DIVISIONS.map((tSec) => {
+      const iF = (tSec / WF_T_MAX) * (WF_SLICES - 1);
+      const cum = norm > 0 ? (1 - Math.pow(q, iF)) / norm : 0;
+      const x0 = xL0 + dxTot * cum;
+      const y = baseY - dyTot * cum;
+      return { t: tSec, x0, x1: x0 + frontW * (1 - 0.2 * cum), y };
+    });
+    return { slices, xL0, frontW, dxTot, dyTot, baseY, ampH, sideFill, sideStroke, timeMarks };
   }, [o.room, o.damping01, o.eqBoostDb, o.qRing, o.reverb, w, h]);
 
-  // Fine axis annotations: front-edge freq ticks + baseline, the TIME depth
-  // arrow along the recession, the dB height reference.
+  // Fine axis annotations (all static memo geometry): front-edge freq ticks +
+  // baseline, thin white POSTS rising from the front edge to the top label
+  // strip, floor GUIDE LINES running into the depth parallel to the
+  // recession, the 1-second floor DIVISION LINES, the TIME depth arrow, the
+  // dB height reference.
   const axes = useMemo(() => {
     const ticks = Skia.Path.Make();
+    const posts = Skia.Path.Make();
+    const depthGuides = Skia.Path.Make();
     for (const { f } of WF_FRONT_LABELS) {
       const x = geo.xL0 + lgFrac(f) * geo.frontW;
       ticks.moveTo(x, geo.baseY + 2);
       ticks.lineTo(x, geo.baseY + 6);
+      // Vertical tick post rising from the front edge (reference's thin
+      // white posts) up to the top-edge frequency labels.
+      posts.moveTo(x, geo.baseY);
+      posts.lineTo(x, WF_POST_TOP);
+      // Floor guide line running INTO the depth, parallel to the recession.
+      depthGuides.moveTo(x, geo.baseY);
+      depthGuides.lineTo(geo.xL0 + geo.dxTot + lgFrac(f) * geo.frontW * 0.8, geo.baseY - geo.dyTot);
     }
     ticks.moveTo(geo.xL0, geo.baseY);
     ticks.lineTo(geo.xL0 + geo.frontW, geo.baseY);
+    // 1-second division lines across the floor (labels are RN text below).
+    const timeLines = Skia.Path.Make();
+    for (const m of geo.timeMarks) {
+      timeLines.moveTo(m.x0, m.y);
+      timeLines.lineTo(m.x1, m.y);
+    }
     const ax0 = geo.xL0 + geo.frontW + 10;
     const ay0 = geo.baseY - 2;
     const ax1 = ax0 + geo.dxTot * 0.9;
@@ -827,8 +923,23 @@ export function WaterfallView(p: {
       ref.lineTo(rx, y);
       dbTickYs.push({ dbV, y });
     }
-    return { ticks, arrow, ref, ax0, ay0, ax1, ay1, dbTickYs };
+    return { ticks, posts, depthGuides, timeLines, arrow, ref, ax0, ay0, ax1, ay1, dbTickYs };
   }, [geo]);
+
+  // The side profile is worklet-opacity-synced to the FRONT slice (index 0):
+  // it appears with the first slice of each build and melts last — it IS the
+  // live 2-D spectrum view of whatever the front slice currently shows.
+  const sideOp = useDerivedValue(() => {
+    if (!animate) return 1;
+    const u = (((phase.value / TAU) % 1) + 1) % 1;
+    if (u < WF_GROW_END) {
+      const g = easeInOutW(u / WF_GROW_END) * WF_SLICES;
+      return Math.max(0, Math.min(1, g));
+    }
+    if (u < WF_HOLD_END) return 1;
+    const c = easeInOutW((u - WF_HOLD_END) / (1 - WF_HOLD_END)) * WF_SLICES;
+    return Math.max(0, Math.min(1, WF_SLICES - c));
+  }, [phase, animate]);
 
   // Impulse flash: the front slice flares white as each build cycle begins.
   const flashOp = useDerivedValue(() => {
@@ -841,19 +952,39 @@ export function WaterfallView(p: {
     <View style={{ width: w, height: h }}>
       <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
         <Path path={axes.ref} color={GRID} style="stroke" strokeWidth={1.1} />
+        {/* Floor grammar UNDER the mountains: depth guide lines + the labeled
+            1-second division lines — ridges cross them as time goes by. */}
+        <Path path={axes.depthGuides} color="#3a3e49" style="stroke" strokeWidth={1} />
+        <Path path={axes.timeLines} color="#565b68" style="stroke" strokeWidth={1.1} />
         <Path path={axes.arrow} color="#4b4e58" style="stroke" strokeWidth={1.2} strokeCap="round" />
         {/* The mountain range: BACK-TO-FRONT so opaque fills occlude. */}
         {Array.from({ length: WF_SLICES }, (_, k) => {
           const i = WF_SLICES - 1 - k;
           return <WfSlice key={i} slice={geo.slices[i]} index={i} phase={phase} animate={animate} />;
         })}
+        {/* The 2-D side profile (reference's green curve): the front slice's
+            spectrum standing on the outer side plane, front-slice-synced. */}
+        <Group opacity={sideOp}>
+          <Path path={geo.sideFill} color={withAlpha(SIDE_GREEN, 0.16)} />
+          <Path
+            path={geo.sideStroke}
+            color={SIDE_GREEN}
+            style="stroke"
+            strokeWidth={1.6}
+            strokeJoin="round"
+            opacity={0.9}
+          />
+        </Group>
         {/* Phase A impulse flash on the front slice. */}
         <Path path={geo.slices[0].stroke} color="#ffffff" style="stroke" strokeWidth={2.6} opacity={flashOp}>
           <BlurMask blur={5} style="normal" />
         </Path>
+        {/* Thin white frequency posts OVER the range (reference grammar). */}
+        <Path path={axes.posts} color="#ffffff" style="stroke" strokeWidth={1} opacity={0.2} />
         <Path path={axes.ticks} color={GRID} style="stroke" strokeWidth={1.2} />
       </Canvas>
-      {/* Frequency labels along the front edge. */}
+      {/* Frequency labels across the TOP edge, one per post (reference,
+          mirrored left-right: ours recedes upper-RIGHT). */}
       {WF_FRONT_LABELS.map((d) => (
         <RNText
           key={`f${d.f}`}
@@ -861,7 +992,7 @@ export function WaterfallView(p: {
             position: 'absolute',
             left: Math.max(0, Math.min(w - 30, geo.xL0 + lgFrac(d.f) * geo.frontW - 15)),
             width: 30,
-            top: geo.baseY + 7,
+            top: 2,
             textAlign: 'center',
             ...axisText,
           }}
@@ -869,11 +1000,26 @@ export function WaterfallView(p: {
           {d.label}
         </RNText>
       ))}
-      <RNText
-        style={{ position: 'absolute', left: 1, top: geo.baseY + 7, width: 26, textAlign: 'center', ...teachText }}
-      >
+      <RNText style={{ position: 'absolute', left: 1, top: 2, width: 24, textAlign: 'left', ...teachText }}>
         Hz
       </RNText>
+      {/* 1-second division labels riding the right ends of the floor lines. */}
+      {geo.timeMarks.map((m) => (
+        <RNText
+          key={`t${m.t}`}
+          style={{
+            position: 'absolute',
+            left: Math.max(0, Math.min(w - 36, m.x1 + 5)),
+            width: 36,
+            top: m.y - 4,
+            fontFamily: fonts.mono,
+            fontSize: 7.5,
+            color: AXIS_TEXT,
+          }}
+        >
+          {`${m.t} Sec`}
+        </RNText>
+      ))}
       {/* TIME depth arrow labels. */}
       <RNText
         style={{

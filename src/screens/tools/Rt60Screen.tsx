@@ -18,11 +18,19 @@
  *    baselined at arm), so a clipped first take can't poison a clean re-take.
  *  - A DONE result is retained on screen until RE-ARM — capture restarts
  *    (library round-trip, route change, watchdog) can't silently destroy it.
+ *
+ * Visual pass 2026-07-29 (standards rule 2 — abstract data styled, never
+ * hairline-on-black; measurement flow and native calls untouched): the decay
+ * curve gets a glow stroke + gradient underfill inside a plot frame, the
+ * −5/−25/−35 fit-region markers render as dashed amber, the RT60 headline is
+ * a house instrument readout (mono digits, glow), octave-band results are lit
+ * vs pending cells, and the armed/recording panel carries a status lamp and a
+ * live input-level bar (the SAME meter value already printed below it).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Svg, { Line, Polyline, Text as SvgText } from 'react-native-svg';
+import Svg, { Defs, Line, LinearGradient, Path, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
 import { ApeDsp, type Rt60Band, type Rt60Frame } from '../../../modules/ape-dsp';
@@ -46,6 +54,13 @@ const CURVE_FLOOR_DB = -60;
  *  its R² missed the >0.90 quality bar — a different failure than range. */
 const T20_RANGE_DB = 35;
 
+// Visual standards 2026-07-29 rule 2 — chart chrome. Copied locally from the
+// fxViz grammar (shared idiom, not a cross-feature import).
+const PLOT_BG = '#0c0c0f';
+const PLOT_FRAME = '#262b36';
+const DECAY_GREEN = '#5bff85'; // measured decay trace (house green)
+const TICK_TEXT = '#8f8f8f';
+
 /** §13 discipline lines — always visible with results (spec Required warnings). */
 const DISCIPLINE = [
   'RT60 varies by frequency band.',
@@ -64,20 +79,25 @@ const fitR2 = (b: Rt60Band): number => (b.t30Rt60Sec > 0 ? b.t30R2 : b.t20R2);
 /** Invalid because the fit ran but was too poor (vs insufficient range). */
 const poorFit = (b: Rt60Band): boolean => !b.valid && b.decayRangeDb > T20_RANGE_DB;
 
-/** Broadband Schroeder decay curve (0 → −60 dB window) with the fit levels. */
+/** Broadband Schroeder decay curve (0 → −60 dB window): glow-stroked trace
+ *  with a gradient underfill, dashed-amber −5/−25/−35 fit-region markers
+ *  (T20 reads −5→−25, T30 −5→−35), plot frame behind. Same real curve, same
+ *  downsample, same caption — 2026-07-29 restyle only. */
 function DecayCurve({ curveDb, stepSec }: { curveDb: number[]; stepSec: number }) {
-  const points = useMemo(() => {
-    if (curveDb.length < 2) return '';
-    // Downsample to ≤160 points for the polyline (ceil so the cap holds).
+  const { linePath, fillPath } = useMemo(() => {
+    if (curveDb.length < 2) return { linePath: '', fillPath: '' };
+    // Downsample to ≤160 points for the path (ceil so the cap holds).
     const stride = Math.max(1, Math.ceil(curveDb.length / 160));
-    const pts: string[] = [];
+    let d = '';
+    let lastX = 0;
     for (let i = 0; i < curveDb.length; i += stride) {
       const x = (i / (curveDb.length - 1)) * CURVE_W;
       const db = Math.max(CURVE_FLOOR_DB, Math.min(0, curveDb[i]));
       const y = (db / CURVE_FLOOR_DB) * CURVE_H;
-      pts.push(`${x.toFixed(1)},${y.toFixed(1)}`);
+      d += `${d ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`;
+      lastX = x;
     }
-    return pts.join(' ');
+    return { linePath: d, fillPath: `${d}L${lastX.toFixed(1)} ${CURVE_H - 1} L1 ${CURVE_H - 1}Z` };
   }, [curveDb]);
   const totalSec = curveDb.length * stepSec;
   const yFor = (db: number) => (db / CURVE_FLOOR_DB) * CURVE_H;
@@ -85,20 +105,85 @@ function DecayCurve({ curveDb, stepSec }: { curveDb: number[]; stepSec: number }
   return (
     <View style={styles.curvePanel}>
       <Svg width="100%" height={CURVE_H + 18} viewBox={`0 0 ${CURVE_W} ${CURVE_H + 18}`}>
-        {/* Fit-region gridlines: −5 / −25 / −35 dB (T20/T30 bounds). */}
+        <Defs>
+          <LinearGradient id="rt60DecayFill" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0" stopColor={DECAY_GREEN} stopOpacity={0.26} />
+            <Stop offset="1" stopColor={DECAY_GREEN} stopOpacity={0} />
+          </LinearGradient>
+        </Defs>
+        {/* Plot frame — rounded panel + hairline (shared chart chrome). */}
+        <Rect x={0} y={0} width={CURVE_W} height={CURVE_H} rx={8} fill={PLOT_BG} />
+        <Rect
+          x={0.5}
+          y={0.5}
+          width={CURVE_W - 1}
+          height={CURVE_H - 1}
+          rx={7.5}
+          stroke={PLOT_FRAME}
+          strokeWidth={1}
+          fill="none"
+        />
+        {/* Fit-region markers: −5 / −25 / −35 dB (T20/T30 bounds) — dashed amber. */}
         {[-5, -25, -35].map((db) => (
-          <Line key={db} x1={0} y1={yFor(db)} x2={CURVE_W} y2={yFor(db)} stroke="#26262c" strokeWidth={1} />
+          <Line
+            key={db}
+            x1={2}
+            y1={yFor(db)}
+            x2={CURVE_W - 2}
+            y2={yFor(db)}
+            stroke={colors.amber}
+            strokeOpacity={0.45}
+            strokeWidth={0.9}
+            strokeDasharray="5 4"
+          />
         ))}
         {[-5, -25, -35].map((db) => (
-          <SvgText key={`t${db}`} x={CURVE_W - 2} y={yFor(db) - 2} fontSize={7} fill="#6b6b6b" textAnchor="end">
+          <SvgText
+            key={`t${db}`}
+            x={CURVE_W - 5}
+            y={yFor(db) - 3}
+            fontSize={8}
+            fontFamily={fonts.mono}
+            fill={colors.amberLabel}
+            textAnchor="end"
+          >
             {db} dB
           </SvgText>
         ))}
-        {points ? <Polyline points={points} fill="none" stroke="#5bff85" strokeWidth={1.6} /> : null}
-        <SvgText x={2} y={CURVE_H + 12} fontSize={7} fill="#6b6b6b">
+        {/* Measured decay: gradient underfill, then glow halo + crisp core. */}
+        {fillPath ? <Path d={fillPath} fill="url(#rt60DecayFill)" /> : null}
+        {linePath ? (
+          <>
+            <Path
+              d={linePath}
+              fill="none"
+              stroke={DECAY_GREEN}
+              strokeWidth={5.5}
+              strokeOpacity={0.18}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <Path
+              d={linePath}
+              fill="none"
+              stroke={DECAY_GREEN}
+              strokeWidth={1.8}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </>
+        ) : null}
+        <SvgText x={2} y={CURVE_H + 13} fontSize={8} fontFamily={fonts.mono} fill={TICK_TEXT}>
           0 s
         </SvgText>
-        <SvgText x={CURVE_W - 2} y={CURVE_H + 12} fontSize={7} fill="#6b6b6b" textAnchor="end">
+        <SvgText
+          x={CURVE_W - 2}
+          y={CURVE_H + 13}
+          fontSize={8}
+          fontFamily={fonts.mono}
+          fill={TICK_TEXT}
+          textAnchor="end"
+        >
           {totalSec.toFixed(1)} s
         </SvgText>
       </Svg>
@@ -240,6 +325,12 @@ export function Rt60Screen({ navigation }: Props) {
     savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
   };
 
+  /** Input-level bar geometry (armed/recording panel): the SAME zFastDb value
+   *  printed in the line below it, mapped −60…0 dBFS → 0…100% — a visual of
+   *  an existing readout, not a new measurement. */
+  const levelPct = meter ? Math.max(0, Math.min(100, ((meter.zFastDb + 60) / 60) * 100)) : 0;
+  const TRIGGER_PCT = ((-35 + 60) / 60) * 100; // the ~−35 dBFS arm trigger
+
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.header}>
@@ -257,8 +348,10 @@ export function Rt60Screen({ navigation }: Props) {
           <EngineGate state={state} lastError={lastError} />
         ) : showResults && broadband ? (
           <>
-            {/* Headline — method + ITS fit's R², always labeled (spec §13). */}
+            {/* Headline — method + ITS fit's R², always labeled (spec §13).
+                House instrument readout: framed panel, mono digits, glow. */}
             <Pressable style={styles.readout} onLongPress={() => help('rt60')} delayLongPress={260}>
+              <Text style={styles.readoutEyebrow}>BROADBAND DECAY</Text>
               <Text style={[styles.readoutValue, !broadband.valid && styles.readoutInvalid]}>
                 {broadband.valid
                   ? fmtSec(headlineMethod === 'T30' ? broadband.t30Rt60Sec : broadband.t20Rt60Sec)
@@ -285,7 +378,8 @@ export function Rt60Screen({ navigation }: Props) {
             )}
             <DisplayGuideButton onPress={helpAll} />
 
-            {/* Octave bands (spec §13 View 3): per-band method labels, honest gaps. */}
+            {/* Octave bands (spec §13 View 3): per-band method labels, honest
+                gaps — lit cells for valid fits, dim pending cells otherwise. */}
             <HelpHead title="OCTAVE BANDS" onHelp={() => help('band')} style={styles.groupHead} />
             <Pressable onLongPress={() => help('band')} delayLongPress={260}>
             <View style={styles.bandTable}>
@@ -297,15 +391,16 @@ export function Rt60Screen({ navigation }: Props) {
               </View>
               {octaves.map((b) => {
                 const tag = fitOf(b);
-                const v = b.valid && tag ? (tag === 'T30' ? b.t30Rt60Sec : b.t20Rt60Sec) : 0;
+                const lit = b.valid && tag != null;
+                const v = lit && tag ? (tag === 'T30' ? b.t30Rt60Sec : b.t20Rt60Sec) : 0;
                 return (
-                  <View key={b.bandHz} style={styles.bandRow}>
+                  <View key={b.bandHz} style={[styles.bandRow, lit ? styles.bandRowLit : styles.bandRowDim]}>
                     <Text style={[styles.bandCell, { flex: 1.2, color: colors.textPrimary }]}>
                       {b.bandHz >= 1000 ? `${b.bandHz / 1000} kHz` : `${b.bandHz} Hz`}
                     </Text>
-                    {b.valid && tag ? (
+                    {lit && tag ? (
                       <>
-                        <Text style={styles.bandCell}>
+                        <Text style={[styles.bandCell, styles.bandCellLit]}>
                           {fmtSec(v)} <Text style={styles.bandTag}>{tag}</Text>
                         </Text>
                         <Text style={styles.bandCell}>{b.edtSec > 0 ? fmtSec(b.edtSec) : '—'}</Text>
@@ -383,11 +478,19 @@ export function Rt60Screen({ navigation }: Props) {
           </>
         ) : (
           <>
-            {/* Armed / recording guidance. */}
+            {/* Armed / recording guidance — status lamp + live level bar. */}
             <View style={[styles.stagePanel, rtState === 2 && styles.stagePanelHot]}>
-              <Text style={styles.stageTitle}>
-                {rtState === 2 ? 'RECORDING — HOLD STILL' : rtState === 1 ? 'ARMED — MAKE THE SOUND' : 'READY'}
-              </Text>
+              <View style={styles.stageTitleRow}>
+                <View
+                  style={[
+                    styles.stageDot,
+                    rtState === 2 ? styles.stageDotHot : rtState === 1 ? styles.stageDotArmed : null,
+                  ]}
+                />
+                <Text style={styles.stageTitle}>
+                  {rtState === 2 ? 'RECORDING — HOLD STILL' : rtState === 1 ? 'ARMED — MAKE THE SOUND' : 'READY'}
+                </Text>
+              </View>
               <Text style={styles.stageBody}>
                 {rtState === 2
                   ? 'Capturing 3.5 seconds of decay. Keep quiet and keep the phone still.'
@@ -396,9 +499,22 @@ export function Rt60Screen({ navigation }: Props) {
                     : 'Arm the capture, then make one loud, short sound.'}
               </Text>
               {meter && (
-                <Text style={styles.levelLine}>
-                  input level {meter.zFastDb.toFixed(1)} dBFS · uncalibrated approximate
-                </Text>
+                <>
+                  <View style={styles.levelTrack}>
+                    <View
+                      style={[
+                        styles.levelFill,
+                        rtState === 2 && styles.levelFillHot,
+                        { width: `${levelPct}%` },
+                      ]}
+                    />
+                    {/* ~−35 dBFS trigger mark (the value the copy states). */}
+                    <View style={[styles.levelTrigger, { left: `${TRIGGER_PCT}%` }]} />
+                  </View>
+                  <Text style={styles.levelLine}>
+                    input level {meter.zFastDb.toFixed(1)} dBFS · uncalibrated approximate
+                  </Text>
+                </>
               )}
             </View>
             <View style={styles.controls}>
@@ -453,16 +569,79 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(91,255,133,.45)',
     backgroundColor: '#0d1710',
     padding: 16,
-    gap: 7,
+    gap: 8,
   },
   stagePanelHot: { borderColor: 'rgba(255,141,122,.6)', backgroundColor: '#1c0f0b' },
+  stageTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  stageDot: { width: 9, height: 9, borderRadius: 4.5, backgroundColor: '#3a3f3a' },
+  stageDotArmed: {
+    backgroundColor: '#5bff85',
+    shadowColor: '#5bff85',
+    shadowOpacity: 0.9,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 0 },
+    elevation: 4,
+  },
+  stageDotHot: {
+    backgroundColor: '#ff6b5e',
+    shadowColor: '#ff6b5e',
+    shadowOpacity: 0.9,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 0 },
+    elevation: 4,
+  },
   stageTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.6, color: colors.textPrimary },
   stageBody: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19.5, color: colors.textSecondary },
+
+  // Live input-level bar — a visual of the zFastDb readout printed below it.
+  levelTrack: {
+    height: 7,
+    borderRadius: 3.5,
+    backgroundColor: '#101216',
+    borderWidth: 1,
+    borderColor: '#22262e',
+    overflow: 'hidden',
+  },
+  levelFill: { height: '100%', borderRadius: 3.5, backgroundColor: 'rgba(91,255,133,.75)' },
+  levelFillHot: { backgroundColor: 'rgba(255,141,122,.8)' },
+  levelTrigger: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    width: 2,
+    backgroundColor: 'rgba(255,198,77,.85)',
+  },
   levelLine: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub },
 
-  readout: { alignItems: 'center', gap: 3, marginTop: 2 },
-  readoutValue: { fontFamily: fonts.oswaldBold, fontSize: 46, color: '#5bff85', letterSpacing: 1 },
-  readoutInvalid: { color: '#ff8d7a', fontSize: 30 },
+  // Headline instrument readout (2026-07-29 restyle — same values/labels).
+  readout: {
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 2,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#131316',
+    paddingVertical: 16,
+    paddingHorizontal: 12,
+  },
+  readoutEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.8, color: colors.amberLabel },
+  readoutValue: {
+    fontFamily: fonts.mono,
+    fontSize: 44,
+    color: '#5bff85',
+    letterSpacing: 1,
+    textShadowColor: 'rgba(91,255,133,.45)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 14,
+  },
+  readoutInvalid: {
+    color: '#ff8d7a',
+    fontSize: 30,
+    textShadowColor: 'rgba(255,141,122,.4)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 12,
+  },
   readoutMethod: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 11,
@@ -488,8 +667,20 @@ const styles = StyleSheet.create({
   bandTable: { borderRadius: 10, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', overflow: 'hidden' },
   bandRowHead: { flexDirection: 'row', paddingVertical: 8, paddingHorizontal: 12, backgroundColor: '#0e0e10' },
   bandCellHead: { flex: 1, fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.2, color: colors.textSub },
-  bandRow: { flexDirection: 'row', paddingVertical: 9, paddingHorizontal: 12, borderTopWidth: 1, borderTopColor: '#1c1c20' },
+  bandRow: {
+    flexDirection: 'row',
+    paddingVertical: 9,
+    paddingHorizontal: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#1c1c20',
+    borderLeftWidth: 3,
+  },
+  // Lit vs pending cells (2026-07-29): valid fits carry the green rail + tint;
+  // invalid bands stay dim with their honest reason line.
+  bandRowLit: { borderLeftColor: 'rgba(91,255,133,.55)', backgroundColor: 'rgba(91,255,133,.04)' },
+  bandRowDim: { borderLeftColor: '#26262c' },
   bandCell: { flex: 1, fontFamily: fonts.mono, fontSize: 12.5, color: colors.textSecondary },
+  bandCellLit: { color: '#5bff85' },
   bandTag: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, color: colors.amberLabel },
   bandInvalid: { color: '#8a8a8a', fontStyle: 'italic', fontFamily: fonts.barlowRegular },
 

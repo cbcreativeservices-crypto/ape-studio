@@ -1,9 +1,16 @@
 /**
  * WaveformScreen — Waveform Viewer LIVE oscilloscope view (spec of record
  * docs/APE_AUDIO_TOOLS_SPEC_2026_07_23.md §11 View 1; engine build 2026-07-23).
- * Min/max envelope columns from the engine's waveform buckets (50 ms each,
- * newest at right), RMS energy band at lower opacity, red clip ticks, centered
- * zero line, ±1 amplitude marks.
+ * Min/max envelope from the engine's waveform buckets (50 ms each, newest at
+ * right) drawn as a gradient-filled area with a glow edge, RMS energy core,
+ * red clip ticks, styled center line + dB grid, ±1 amplitude marks.
+ *
+ * Owner directive 2026-07-29: zoom chips ×1/×2/×4/×6 (DEFAULT ×4) and an
+ * adjustable time window (DEFAULT 5 s). The owner asked for 2–7 s, but the
+ * native engine ring (WaveEnvelope: 50 ms × 120 buckets, both bridges cap at
+ * kMaxWaveBuckets = 120) holds exactly 6.0 s of REAL history — so the control
+ * honestly tops out at 6 s and says so on screen; we never draw fabricated
+ * history (measurement-tools §1.7).
  *
  * Integrity:
  *  - NO simulated readings — anything drawn comes from ApeDsp.getWaveform()
@@ -14,9 +21,11 @@
  *  - All levels are dBFS and UNCALIBRATED — labeled so, never shown as SPL.
  *  - Peak may exceed 0 dBFS and samples may exceed ±1 (finding F1): the peak
  *    readout never clamps, and the display autoscales to the observed max.
- *  - Vertical zoom is display scaling ONLY, with the spec §11 honesty line
- *    shown whenever zoom is engaged.
- *  - FREEZE holds the drawn buckets; capture (and the live meter) continue.
+ *  - Vertical zoom AND the time window are display scaling ONLY, with the
+ *    spec §11 honesty line shown whenever zoom is engaged.
+ *  - FREEZE holds the drawn buckets (the FULL 6 s engine history is held, so
+ *    the window control keeps slicing real data while frozen); capture (and
+ *    the live meter) continue.
  *  - SAVE SNAPSHOT stores the envelope as NUMBERS (never audio) with the same
  *    quality flags shown live (spec §6/§7).
  */
@@ -24,7 +33,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import Svg, { Line, Path, Text as SvgText } from 'react-native-svg';
+import Svg, { Defs, Line, LinearGradient, Path, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import * as Crypto from 'expo-crypto';
 import { ApeDsp, type WaveBucket } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
@@ -39,17 +48,27 @@ import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'WaveformLive'>;
 
-/** Display window: ~120 × 50 ms buckets ≈ 6 s of history, newest at right. */
-const MAX_BUCKETS = 120;
 const BUCKET_SEC = 0.05;
+/** The native ring's REAL capacity: 50 ms × 120 = 6.0 s (WaveEnvelope.hpp,
+ *  kMaxWaveBuckets on both bridges). The window control caps here — honest. */
+const ENGINE_HISTORY_BUCKETS = 120;
+const ENGINE_HISTORY_SEC = ENGINE_HISTORY_BUCKETS * BUCKET_SEC;
 const PANEL_H = 240;
 /** Vertical inset of the drawable area (leaves the clip-tick lane at top). */
 const PAD_V = 16;
 /** Scope trace + accents (waveform tool tint — teal, toolsData). */
 const TRACE = '#5fd9c4';
 
-const ZOOMS = [1, 2, 4] as const;
+/** Vertical zoom chips — owner 2026-07-29: ×6 added, DEFAULT ×4. */
+const ZOOMS = [1, 2, 4, 6] as const;
 type Zoom = (typeof ZOOMS)[number];
+const DEFAULT_ZOOM: Zoom = 4;
+
+/** Time-window chips (seconds of history shown) — owner asked 2–7 s, engine
+ *  history caps at 6 s (see ENGINE_HISTORY_BUCKETS), DEFAULT 5 s. */
+const WINDOWS = [2, 3, 4, 5, 6] as const;
+type WindowSec = (typeof WINDOWS)[number];
+const DEFAULT_WINDOW: WindowSec = 5;
 
 /** Honest dBFS formatting — NEVER clamps; peak can exceed 0 dBFS (F1). */
 const fmtDb = (v: number | undefined | null) =>
@@ -64,8 +83,10 @@ export function WaveformScreen({ navigation }: Props) {
   );
 
   const [panelW, setPanelW] = useState(0);
-  const [zoom, setZoom] = useState<Zoom>(1);
-  // FREEZE: non-null = the buckets held on screen. Capture continues (spec §11
+  const [zoom, setZoom] = useState<Zoom>(DEFAULT_ZOOM);
+  const [windowSec, setWindowSec] = useState<WindowSec>(DEFAULT_WINDOW);
+  // FREEZE: non-null = the FULL engine history held on screen (so the window
+  // control still slices real data while frozen). Capture continues (spec §11
   // freeze control) — only the drawing stops updating.
   const [frozen, setFrozen] = useState<WaveBucket[] | null>(null);
   const [justSaved, setJustSaved] = useState(false);
@@ -81,11 +102,18 @@ export function WaveformScreen({ navigation }: Props) {
   // getWaveform() is newest-first → reverse so index 0 is oldest, drawn
   // leftmost, newest at the right edge (oscilloscope convention, §11 View 1).
   const liveBuckets = useMemo(
-    () => frames.waveform.slice(0, MAX_BUCKETS).reverse(),
+    () => frames.waveform.slice(0, ENGINE_HISTORY_BUCKETS).reverse(),
     [frames.waveform],
   );
-  const displayBuckets = frozen ?? liveBuckets;
-  const windowSec = displayBuckets.length * BUCKET_SEC;
+  const windowBuckets = Math.round(windowSec / BUCKET_SEC);
+  const source = frozen ?? liveBuckets;
+  /** The buckets actually on screen: the newest `windowBuckets` of the real
+   *  history — a shorter run early in capture simply shows what exists. */
+  const displayBuckets = useMemo(
+    () => source.slice(Math.max(0, source.length - windowBuckets)),
+    [source, windowBuckets],
+  );
+  const shownSec = displayBuckets.length * BUCKET_SEC;
 
   const meter = frames.meter;
   // Live quality flags (spec §6) — the SAME flags get stored on save.
@@ -108,12 +136,12 @@ export function WaveformScreen({ navigation }: Props) {
       id: Crypto.randomUUID(),
       tool_type: 'waveform',
       created_at: new Date().toISOString(),
-      title: `Waveform — ${windowSec.toFixed(1)} s · peak ${fmtDb(meter.peakDb)} dBFS`,
+      title: `Waveform — ${shownSec.toFixed(1)} s · peak ${fmtDb(meter.peakDb)} dBFS`,
       notes: '',
       input_device: 'Device microphone (uncalibrated)',
       calibration_status: 'not_applicable',
       sample_rate: ApeDsp.getInfo()?.sampleRate ?? null,
-      measurement_settings: { bucket_ms: 50, zoom },
+      measurement_settings: { bucket_ms: 50, zoom, window_sec: windowSec },
       quality_state: evaluateQuality(flags),
       warning_flags: flags,
       data_payload: {
@@ -128,9 +156,13 @@ export function WaveformScreen({ navigation }: Props) {
     setJustSaved(true);
     if (savedTimer.current) clearTimeout(savedTimer.current);
     savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
-  }, [meter, displayBuckets, windowSec, zoom, flags]);
+  }, [meter, displayBuckets, shownSec, zoom, windowSec, flags]);
 
   // ---- Scope geometry (pure display math over REAL buckets) ----------------
+  // Builds: a closed min/max envelope area (gradient fill), the envelope
+  // outline (drawn twice — wide translucent glow + crisp edge), a closed ±RMS
+  // energy core, and the red clip-tick lane. ~15 SVG nodes total, rebuilt at
+  // the 15 Hz poll — bounded and cheap.
   const scope = useMemo(() => {
     const n = displayBuckets.length;
     if (n === 0 || panelW <= 0) return null;
@@ -146,10 +178,13 @@ export function WaveformScreen({ navigation }: Props) {
     const rawY = (v: number) => half - (v * zoom * usable) / scaleMax;
     // Zoomed traces clip at the panel edge (display only — zoom is not gain).
     const y = (v: number) => Math.min(PANEL_H - 2, Math.max(2, rawY(v)));
-    const colW = panelW / MAX_BUCKETS;
+    const colW = panelW / windowBuckets;
 
-    let env = '';
-    let rms = '';
+    let top = ''; // max edge, oldest → newest
+    let bottomFwd = ''; // min edge, oldest → newest (outline)
+    let bottomRev = ''; // min edge, newest → oldest (closes the area)
+    let rmsTop = '';
+    let rmsRev = '';
     let clip = '';
     for (let i = 0; i < n; i++) {
       const b = displayBuckets[i];
@@ -157,26 +192,34 @@ export function WaveformScreen({ navigation }: Props) {
       let y1 = y(b.max);
       let y2 = y(b.min);
       if (y2 - y1 < 1) {
-        // Hairline floor so near-silence still draws a visible 1px column.
+        // Hairline floor so near-silence still draws a visible 1px band.
         y1 -= 0.5;
         y2 += 0.5;
       }
-      env += `M${x},${y1.toFixed(1)}L${x},${y2.toFixed(1)}`;
-      rms += `M${x},${y(b.rms).toFixed(1)}L${x},${y(-b.rms).toFixed(1)}`;
+      const cmd = i === 0 ? 'M' : 'L';
+      top += `${cmd}${x},${y1.toFixed(1)}`;
+      bottomFwd += `${cmd}${x},${y2.toFixed(1)}`;
+      bottomRev = `L${x},${y2.toFixed(1)}` + bottomRev;
+      rmsTop += `${cmd}${x},${y(b.rms).toFixed(1)}`;
+      rmsRev = `L${x},${y(-b.rms).toFixed(1)}` + rmsRev;
       if (b.clipped) clip += `M${x},4L${x},12`;
     }
     return {
-      env,
-      rms,
+      area: top + bottomRev + 'Z',
+      outline: top + bottomFwd,
+      rmsArea: rmsTop + rmsRev + 'Z',
       clip,
       observed,
       scaleMax,
-      strokeW: Math.max(1, colW * 0.8),
+      clipW: Math.max(1.5, colW * 0.8),
       yPlus1: y(1),
       yMinus1: y(-1),
       oneVisible: rawY(1) >= 2 && rawY(-1) <= PANEL_H - 2,
+      yHalfP: y(0.5),
+      yHalfM: y(-0.5),
+      halfVisible: rawY(0.5) >= 2 && rawY(-0.5) <= PANEL_H - 2,
     };
-  }, [displayBuckets, panelW, zoom]);
+  }, [displayBuckets, panelW, zoom, windowBuckets]);
 
   const running = state === 'running';
   const half = PANEL_H / 2;
@@ -232,6 +275,14 @@ export function WaveformScreen({ navigation }: Props) {
               >
                 {panelW > 0 ? (
                   <Svg width={panelW} height={PANEL_H}>
+                    <Defs>
+                      {/* Envelope fill — bright toward the peaks, airy center. */}
+                      <LinearGradient id="wfFill" x1="0" y1="0" x2="0" y2="1">
+                        <Stop offset="0" stopColor={TRACE} stopOpacity={0.38} />
+                        <Stop offset="0.5" stopColor={TRACE} stopOpacity={0.08} />
+                        <Stop offset="1" stopColor={TRACE} stopOpacity={0.38} />
+                      </LinearGradient>
+                    </Defs>
                     {/* ±1 reference lines + marks (hidden if zoomed off-panel). */}
                     {scope?.oneVisible ? (
                       <>
@@ -245,29 +296,46 @@ export function WaveformScreen({ navigation }: Props) {
                         </SvgText>
                       </>
                     ) : null}
-                    {/* Zero line — centered, always visible (§11). */}
-                    <Line x1={0} x2={panelW} y1={half} y2={half} stroke="#4a4a50" strokeWidth={1} />
+                    {/* −6 dB (±0.5) grid lines — subtler weight than ±1. */}
+                    {scope?.halfVisible ? (
+                      <>
+                        <Line x1={0} x2={panelW} y1={scope.yHalfP} y2={scope.yHalfP} stroke={colors.hairlineDim} strokeDasharray="2 6" />
+                        <Line x1={0} x2={panelW} y1={scope.yHalfM} y2={scope.yHalfM} stroke={colors.hairlineDim} strokeDasharray="2 6" />
+                        <SvgText x={panelW - 40} y={scope.yHalfP - 4} fill={colors.textMuted} fontSize={12} fontFamily={fonts.mono}>
+                          -6dB
+                        </SvgText>
+                      </>
+                    ) : null}
+                    {/* Zero line — centered, always visible (§11), teal-tinted. */}
+                    <Line x1={0} x2={panelW} y1={half} y2={half} stroke="#3e5852" strokeWidth={1} />
                     <SvgText x={4} y={half - 4} fill={colors.textSub} fontSize={12} fontFamily={fonts.mono}>
                       0
                     </SvgText>
                     {scope ? (
                       <>
-                        {/* RMS energy band under the peak envelope. */}
-                        <Path d={scope.rms} stroke={TRACE} opacity={0.32} strokeWidth={scope.strokeW} />
-                        <Path d={scope.env} stroke={TRACE} opacity={0.9} strokeWidth={scope.strokeW} />
+                        {/* Min/max envelope — gradient-filled area… */}
+                        <Path d={scope.area} fill="url(#wfFill)" />
+                        {/* …RMS energy core… */}
+                        <Path d={scope.rmsArea} fill={TRACE} opacity={0.3} />
+                        {/* …and the envelope edge: wide translucent glow pass,
+                            then the crisp trace on top. */}
+                        <Path d={scope.outline} stroke={TRACE} opacity={0.2} strokeWidth={4.5} fill="none" strokeLinejoin="round" />
+                        <Path d={scope.outline} stroke={TRACE} opacity={0.95} strokeWidth={1.5} fill="none" strokeLinejoin="round" />
                         {/* Clipped buckets — red ticks in the top lane. */}
                         {scope.clip !== '' ? (
-                          <Path d={scope.clip} stroke={colors.red} strokeWidth={scope.strokeW} />
+                          <Path d={scope.clip} stroke={colors.red} strokeWidth={scope.clipW} />
                         ) : null}
                       </>
                     ) : null}
+                    {/* Frame. */}
+                    <Rect x={0.5} y={0.5} width={panelW - 1} height={PANEL_H - 1} stroke="#26262c" strokeWidth={1} fill="none" />
                   </Svg>
                 ) : null}
                 {frozen ? <Text style={styles.frozenBadge}>FROZEN</Text> : null}
               </View>
               {/* Time axis + honest scale disclosure. */}
               <View style={styles.axisRow}>
-                <Text style={styles.axisText}>−{windowSec.toFixed(1)} s</Text>
+                <Text style={styles.axisText}>−{shownSec.toFixed(1)} s</Text>
                 {scope && scope.observed > 1 ? (
                   <Text style={styles.axisText}>scale ±{scope.scaleMax.toFixed(2)}</Text>
                 ) : null}
@@ -277,6 +345,7 @@ export function WaveformScreen({ navigation }: Props) {
 
             {/* Vertical zoom (display scaling ONLY) + freeze. */}
             <View style={styles.chipRow}>
+              <Text style={styles.rowLabel}>ZOOM</Text>
               {ZOOMS.map((z) => (
                 <Pressable
                   key={z}
@@ -302,10 +371,32 @@ export function WaveformScreen({ navigation }: Props) {
                 </Text>
               </Pressable>
             </View>
+
+            {/* Time window (display history length — real buckets only). */}
+            <View style={styles.chipRow}>
+              <Text style={styles.rowLabel}>WINDOW</Text>
+              {WINDOWS.map((w) => (
+                <Pressable
+                  key={w}
+                  style={[styles.chip, windowSec === w && styles.chipActive]}
+                  onPress={() => setWindowSec(w)}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: windowSec === w }}
+                  accessibilityLabel={`Time window ${w} seconds`}
+                >
+                  <Text style={[styles.chipText, windowSec === w && styles.chipTextActive]}>{w}s</Text>
+                </Pressable>
+              ))}
+            </View>
             {zoom > 1 ? (
               // Required §11 honesty line — visible whenever zoom is engaged.
               <Text style={styles.liveWarn}>Vertical zoom changes display size, not audio level.</Text>
             ) : null}
+            <Text style={styles.settingsNote}>
+              Zoom and window change the display only — capture keeps running unchanged. The engine
+              keeps {ENGINE_HISTORY_SEC.toFixed(0)} s of real waveform history, so the window tops
+              out at {ENGINE_HISTORY_SEC.toFixed(0)} s.
+            </Text>
 
             {/* Live readouts — real meter frame only; peak NEVER clamped (F1). */}
             <View style={styles.statGrid}>
@@ -323,7 +414,7 @@ export function WaveformScreen({ navigation }: Props) {
               <Pressable style={styles.statCell} onLongPress={() => help('window')} delayLongPress={260}>
                 <Text style={styles.statLabel}>WINDOW</Text>
                 <Text style={styles.statValue}>
-                  {windowSec.toFixed(1)}
+                  {shownSec.toFixed(1)}
                   <Text style={styles.statUnit}> s</Text>
                 </Text>
               </Pressable>
@@ -401,7 +492,7 @@ const styles = StyleSheet.create({
     padding: 10,
     gap: 6,
   },
-  scopeSurface: { height: PANEL_H, borderRadius: 6, overflow: 'hidden', backgroundColor: '#0a0a0c' },
+  scopeSurface: { height: PANEL_H, borderRadius: 6, overflow: 'hidden', backgroundColor: '#07090b' },
   frozenBadge: {
     position: 'absolute',
     top: 6,
@@ -414,8 +505,16 @@ const styles = StyleSheet.create({
   axisRow: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 2 },
   axisText: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub },
 
-  // Zoom / freeze chips.
-  chipRow: { flexDirection: 'row', gap: 10 },
+  // Zoom / window / freeze chip rows.
+  chipRow: { flexDirection: 'row', gap: 10, alignItems: 'stretch' },
+  rowLabel: {
+    width: 56,
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 12,
+    letterSpacing: 1.4,
+    color: colors.textSub,
+    alignSelf: 'center',
+  },
   chip: {
     flex: 1,
     borderRadius: 10,
@@ -424,6 +523,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#161616',
     paddingVertical: 11,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   chipWide: { flex: 1.6 },
   chipActive: { borderColor: 'rgba(95,217,196,.6)', backgroundColor: '#10171a' },
@@ -431,6 +531,7 @@ const styles = StyleSheet.create({
   chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.2, color: colors.textSecondary },
   chipTextActive: { color: TRACE },
   chipTextFrozen: { color: colors.cyanBright },
+  settingsNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textMuted },
 
   // Readouts.
   statGrid: { flexDirection: 'row', gap: 10 },

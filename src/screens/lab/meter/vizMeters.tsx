@@ -63,6 +63,16 @@ const RES = 240;
 
 type SkPathT = ReturnType<typeof Skia.Path.Make>;
 
+/** OPTIONAL live drive for the meter faces (SPL popup, 2026-07-29): when
+ *  present the meter follows these SharedValues instead of a teaching buffer —
+ *  the teaching-signal path is untouched when absent. Values are dBFS (peak
+ *  may exceed 0 dBFS — finding F1; −Infinity/NaN in silence are safe). Drive
+ *  `phase` at 1/loopSeconds Hz so the ballistics integrate wall-clock time. */
+export type LiveMeterDrive = {
+  rmsDb: SharedValue<number>;
+  peakDb: SharedValue<number>;
+};
+
 function withAlpha(hex: string, a: number): string {
   const r = parseInt(hex.slice(1, 3), 16);
   const g = parseInt(hex.slice(3, 5), 16);
@@ -346,13 +356,22 @@ export function WaveformView(p: {
 export function PeakMeterView(p: {
   width: number;
   height?: number;
-  signal: SignalKey;
+  /** Teaching signal — required when `live` is absent; ignored when present. */
+  signal?: SignalKey;
   gain?: number;
   phase: SharedValue<number>;
+  /** Live drive (additive 2026-07-29): both columns follow live peakDb (the
+   *  phone mic is mono — columns read M/M, not L/R). */
+  live?: LiveMeterDrive;
+  /** Wall-seconds one phase-clock loop represents (live ballistics scale). */
+  loopSeconds?: number;
 }) {
   const w = p.width;
   const h = p.height ?? 190;
   const gain = p.gain ?? 1;
+  const sig: SignalKey = p.signal ?? 'sine';
+  const livePeak = p.live ? p.live.peakDb : undefined;
+  const LOOP = p.loopSeconds ?? 4;
 
   // Rack-gear layout: brushed panel, inset bezel well, two LED columns with a
   // tick/label gutter between them.
@@ -378,7 +397,7 @@ export function PeakMeterView(p: {
   const E = useMemo(() => {
     const n = 2048;
     const mk = (seed: number, gDb: number, shift: number) => {
-      const buf = renderSignal(p.signal, n, seed);
+      const buf = renderSignal(sig, n, seed);
       const g = gain * Math.pow(10, gDb / 20);
       const win = Math.max(8, Math.floor(n / 48));
       const pk = new Array<number>(RES);
@@ -429,9 +448,9 @@ export function PeakMeterView(p: {
       if (L.pk[i] >= -0.05 || R.pk[i] >= -0.05) ov = 1;
       over[i] = ov;
     }
-    const crest = crestDb(renderSignal(p.signal, n, 1).map((v) => v * gain));
+    const crest = crestDb(renderSignal(sig, n, 1).map((v) => v * gain));
     return { envL: L.env, envR: R.env, holdL: L.hold, holdR: R.hold, over, crest };
-  }, [p.signal, gain]);
+  }, [sig, gain]);
 
   // Static geometry: unlit LED stacks per zone, scale ticks, bezel well.
   const G = useMemo(() => {
@@ -464,12 +483,48 @@ export function PeakMeterView(p: {
   const holdR = E.holdR;
   const overArr = E.over;
 
+  // ── Live ballistics (only when `live` is present): instantaneous attack,
+  // ~37 dB/s release (matching the teaching envelope), floating 1 s hold with
+  // slow decay, and an OVER latch lit for 1.5 s past the last ≥0 dBFS peak.
+  // dt comes from the phase-clock delta, exactly like the VU worklet below.
+  const lEnv = useSharedValue(-120);
+  const lHold = useSharedValue(-120);
+  const lHoldAge = useSharedValue(0);
+  const lOverPh = useSharedValue(-1e9);
+  const lLastPh = useSharedValue(-1);
+  const liveEnv = useDerivedValue(() => {
+    if (!livePeak) return -120;
+    const ph = p.phase.value;
+    let dt = 0;
+    if (lLastPh.value >= 0) {
+      let d = ph - lLastPh.value;
+      if (d < 0) d = 0;
+      dt = (d / (Math.PI * 2)) * LOOP;
+      if (dt > 0.08) dt = 0.08;
+    }
+    lLastPh.value = ph;
+    const raw = livePeak.value;
+    // −Infinity/NaN (silence before any signal) settle honestly to the floor.
+    const pk = raw === raw && raw > -120 ? Math.min(6, raw) : -120;
+    const e = Math.max(pk, lEnv.value - 37 * dt);
+    lEnv.value = e;
+    if (pk >= lHold.value) {
+      lHold.value = pk;
+      lHoldAge.value = 0;
+    } else {
+      lHoldAge.value += dt;
+      if (lHoldAge.value > 1) lHold.value = Math.max(-120, lHold.value - 12 * dt);
+    }
+    if (pk >= -0.05) lOverPh.value = ph;
+    return e;
+  }, [p.phase, livePeak, LOOP]);
+
   // Per-frame: three zone paths (both channels each), the hold caps, and the
   // OVER lamp opacity — 5 fixed animated bindings, worklet-only.
   const litGreen = useDerivedValue(() => {
     const idx = Math.min(RES - 1, Math.floor(frac01(p.phase.value) * RES));
     const pth = Skia.Path.Make();
-    const lv: [number, number] = [envL[idx], envR[idx]];
+    const lv: [number, number] = livePeak ? [liveEnv.value, liveEnv.value] : [envL[idx], envR[idx]];
     const xs: [number, number] = [colLx, colRx];
     for (let ch = 0; ch < 2; ch++) {
       for (let i = 0; i < 66; i++) {
@@ -481,12 +536,12 @@ export function PeakMeterView(p: {
       }
     }
     return pth;
-  }, [p.phase, envL, envR]);
+  }, [p.phase, envL, envR, livePeak, liveEnv]);
 
   const litAmber = useDerivedValue(() => {
     const idx = Math.min(RES - 1, Math.floor(frac01(p.phase.value) * RES));
     const pth = Skia.Path.Make();
-    const lv: [number, number] = [envL[idx], envR[idx]];
+    const lv: [number, number] = livePeak ? [liveEnv.value, liveEnv.value] : [envL[idx], envR[idx]];
     const xs: [number, number] = [colLx, colRx];
     for (let ch = 0; ch < 2; ch++) {
       for (let i = 0; i < 66; i++) {
@@ -499,12 +554,12 @@ export function PeakMeterView(p: {
       }
     }
     return pth;
-  }, [p.phase, envL, envR]);
+  }, [p.phase, envL, envR, livePeak, liveEnv]);
 
   const litRed = useDerivedValue(() => {
     const idx = Math.min(RES - 1, Math.floor(frac01(p.phase.value) * RES));
     const pth = Skia.Path.Make();
-    const lv: [number, number] = [envL[idx], envR[idx]];
+    const lv: [number, number] = livePeak ? [liveEnv.value, liveEnv.value] : [envL[idx], envR[idx]];
     const xs: [number, number] = [colLx, colRx];
     for (let ch = 0; ch < 2; ch++) {
       for (let i = 0; i < 66; i++) {
@@ -516,21 +571,25 @@ export function PeakMeterView(p: {
       }
     }
     return pth;
-  }, [p.phase, envL, envR]);
+  }, [p.phase, envL, envR, livePeak, liveEnv]);
 
   const caps = useDerivedValue(() => {
     const idx = Math.min(RES - 1, Math.floor(frac01(p.phase.value) * RES));
     const pth = Skia.Path.Make();
-    const hL = Math.max(-59, Math.min(0.4, holdL[idx]));
-    const hR = Math.max(-59, Math.min(0.4, holdR[idx]));
+    const hL = Math.max(-59, Math.min(0.4, livePeak ? lHold.value : holdL[idx]));
+    const hR = Math.max(-59, Math.min(0.4, livePeak ? lHold.value : holdR[idx]));
     pth.addRect(Skia.XYWHRect(colLx, barBot - ((hL + 60) / 60) * span - 1.2, colWpx, 2.4));
     pth.addRect(Skia.XYWHRect(colRx, barBot - ((hR + 60) / 60) * span - 1.2, colWpx, 2.4));
     return pth;
-  }, [p.phase, holdL, holdR]);
+  }, [p.phase, holdL, holdR, livePeak]);
 
   const overO = useDerivedValue(() => {
+    if (livePeak) {
+      const secs = ((p.phase.value - lOverPh.value) / (Math.PI * 2)) * LOOP;
+      return secs >= 0 && secs < 1.5 ? 1 : 0;
+    }
     return overArr[Math.min(RES - 1, Math.floor(frac01(p.phase.value) * RES))];
-  }, [p.phase, overArr]);
+  }, [p.phase, overArr, livePeak, LOOP]);
 
   return (
     <View style={{ width: w, height: h }}>
@@ -578,16 +637,16 @@ export function PeakMeterView(p: {
         </Lbl>
       ))}
       <Lbl x={colLx + colWpx / 2 - 10} y={barBot + 6} w={20} size={8} color="#9aa0ac">
-        L
+        {p.live ? 'M' : 'L'}
       </Lbl>
       <Lbl x={colRx + colWpx / 2 - 10} y={barBot + 6} w={20} size={8} color="#9aa0ac">
-        R
+        {p.live ? 'M' : 'R'}
       </Lbl>
       <Lbl x={w / 2 - 16} y={barBot + 6} w={32} size={6.5}>
         dBFS
       </Lbl>
-      <Lbl x={10} y={h - 13} w={120} align="left" size={7}>
-        {`CREST ${E.crest.toFixed(1)} dB`}
+      <Lbl x={10} y={h - 13} w={140} align="left" size={7}>
+        {p.live ? 'LIVE INPUT · MONO' : `CREST ${E.crest.toFixed(1)} dB`}
       </Lbl>
     </View>
   );
@@ -601,7 +660,8 @@ export function PeakMeterView(p: {
 export function VuMeterView(p: {
   width: number;
   height?: number;
-  signal: SignalKey;
+  /** Teaching signal — required when `live` is absent; ignored when present. */
+  signal?: SignalKey;
   gain?: number;
   phase: SharedValue<number>;
   /** Also draw a fast peak LED beside the face (the peak-vs-average lesson). */
@@ -610,6 +670,12 @@ export function VuMeterView(p: {
   loopSeconds?: number;
   /** Linear RMS that reads 0 VU (illustrative calibration). */
   rms0?: number;
+  /** Live drive (additive 2026-07-29): the SAME 300 ms vuStep ballistics chase
+   *  live rmsDb; the peak LED follows live peakDb (lights ≥ −3 dBFS). */
+  live?: LiveMeterDrive;
+  /** dBFS that reads 0 VU in live mode (default −18 — a stated convention,
+   *  NOT a calibrated 0 VU = +4 dBu reference). */
+  live0Db?: number;
 }) {
   const w = p.width;
   const h = p.height ?? 230;
@@ -617,6 +683,10 @@ export function VuMeterView(p: {
   const showLed = p.showPeakLed ?? false;
   const LOOP = p.loopSeconds ?? 4;
   const RMS0 = p.rms0 ?? 0.42;
+  const sig: SignalKey = p.signal ?? 'sine';
+  const liveRms = p.live ? p.live.rmsDb : undefined;
+  const livePeak = p.live ? p.live.peakDb : undefined;
+  const LIVE0 = p.live0Db ?? -18;
 
   // Face geometry: pivot low-center, scale arc spanning ±48°. Deflection is
   // linear in VOLTAGE (10^(dB/20), full scale at +3) — which is exactly why 0
@@ -698,7 +768,7 @@ export function VuMeterView(p: {
   // ── Precomputed loop series: windowed RMS (needle target) + peak LED ──────
   const B = useMemo(() => {
     const n = 2048;
-    const buf = renderSignal(p.signal, n).map((v) => v * gain);
+    const buf = renderSignal(sig, n).map((v) => v * gain);
     const winR = Math.max(16, Math.floor(n / 16));
     const rms = new Array<number>(RES);
     for (let i = 0; i < RES; i++) {
@@ -722,7 +792,7 @@ export function VuMeterView(p: {
       }
     }
     return { rms, led };
-  }, [p.signal, gain]);
+  }, [sig, gain]);
 
   const rmsArr = B.rms;
   const ledArr = B.led;
@@ -736,6 +806,7 @@ export function VuMeterView(p: {
   const nx = useSharedValue(0);
   const nv = useSharedValue(0);
   const lastPh = useSharedValue(-1);
+  const litPh = useSharedValue(-1e9);
 
   const needleRad = useDerivedValue(() => {
     const ph = p.phase.value;
@@ -748,7 +819,15 @@ export function VuMeterView(p: {
     }
     lastPh.value = ph;
     const f = frac01(ph);
-    const target = rmsArr[Math.min(RES - 1, Math.floor(f * RES))];
+    // Live mode: the SAME integrator chases the live RMS SharedValue — dBFS
+    // mapped so LIVE0 dBFS reads 0 VU (−Infinity/NaN silence → needle rest).
+    let target: number;
+    if (liveRms) {
+      const d = liveRms.value;
+      target = d === d && d > -120 ? RMS0 * Math.pow(10, (Math.min(12, d) - LIVE0) / 20) : 0;
+    } else {
+      target = rmsArr[Math.min(RES - 1, Math.floor(f * RES))];
+    }
     // meterEngine.vuStep math — tc = 0.3 s:
     const a = 1 - Math.exp(-dt / 0.3);
     vuVal.value = vuVal.value + (target - vuVal.value) * a;
@@ -760,7 +839,7 @@ export function VuMeterView(p: {
     if (pct < -0.015) pct = -0.015;
     if (pct > 1.06) pct = 1.06;
     return (-48 + 96 * pct) * (Math.PI / 180);
-  }, [p.phase, rmsArr, LOOP, RMS0]);
+  }, [p.phase, rmsArr, LOOP, RMS0, liveRms, LIVE0]);
 
   // Tapered needle + counterweight tail, rebuilt in WORLD coordinates per
   // frame (house rule: geometry in worklets, no animated CTM).
@@ -809,8 +888,16 @@ export function VuMeterView(p: {
   }, [needleRad]);
 
   const ledO = useDerivedValue(() => {
+    if (livePeak) {
+      // Fast LED follows live peakDb: lights at ≥ −3 dBFS, ~350 ms afterglow.
+      const ph = p.phase.value;
+      const pk = livePeak.value;
+      if (pk === pk && pk >= -3) litPh.value = ph;
+      const secs = ((ph - litPh.value) / (Math.PI * 2)) * LOOP;
+      return secs >= 0 && secs < 0.35 ? 1 - secs / 0.35 : 0;
+    }
     return ledArr[Math.min(RES - 1, Math.floor(frac01(p.phase.value) * RES))];
-  }, [p.phase, ledArr]);
+  }, [p.phase, ledArr, livePeak, LOOP]);
 
   const ledX = fx + fw - 22;
   const ledY = fy + 20;
@@ -1610,5 +1697,48 @@ export function ScopeView(p: {
         </Lbl>
       ) : null}
     </View>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// VuGlyph — tiny static VU face for buttons/affordances
+
+/** Miniature VU-meter glyph (~40 px): cream face, arc, red zone, needle —
+ *  reads as a tiny VU at a glance. Static (no clock); the SPL screen uses it
+ *  as its full-screen-VU popup opener (2026-07-29). */
+export function VuGlyph({ size = 40 }: { size?: number }) {
+  const w = size;
+  const h = Math.round(size * 0.78);
+  const G = useMemo(() => {
+    const cx = w / 2;
+    const py = h - 4;
+    const R = h * 0.62;
+    const bezel = Skia.Path.Make();
+    bezel.addRRect(Skia.RRectXY(Skia.XYWHRect(0, 0, w, h), 5, 5));
+    const face = Skia.Path.Make();
+    face.addRRect(Skia.RRectXY(Skia.XYWHRect(2, 2, w - 4, h - 4), 3.5, 3.5));
+    const arcOf = (a0: number, a1: number) => {
+      const pth = Skia.Path.Make();
+      pth.addArc(Skia.XYWHRect(cx - R, py - R, 2 * R, 2 * R), a0 - 90, a1 - a0);
+      return pth;
+    };
+    const arcB = arcOf(-48, 20);
+    const arcR = arcOf(20, 48);
+    const nA = 14 * DEG;
+    const needle = Skia.Path.Make();
+    needle.moveTo(cx, py);
+    needle.lineTo(cx + Math.sin(nA) * (R + 1.5), py - Math.cos(nA) * (R + 1.5));
+    return { bezel, face, arcB, arcR, needle, cx, py };
+  }, [w, h]);
+  return (
+    <Canvas style={{ width: w, height: h }}>
+      <Path path={G.bezel} color="#1b1c22" />
+      <Path path={G.bezel} color="#000000" style="stroke" strokeWidth={1} opacity={0.7} />
+      <Path path={G.face} color="#f0e0b4" />
+      <Path path={G.arcB} color="#2b2317" style="stroke" strokeWidth={1.6} />
+      <Path path={G.arcR} color="#c9382e" style="stroke" strokeWidth={2.6} />
+      <Path path={G.needle} color="#17130c" style="stroke" strokeWidth={1.3} />
+      <Circle cx={G.cx} cy={G.py} r={1.8} color="#17130c" />
+    </Canvas>
   );
 }

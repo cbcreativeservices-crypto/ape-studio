@@ -45,23 +45,26 @@ function gainAt(a: number, b: number, deg: number): number {
 
 // ── POLAR: free source positioning with a COLLISION FLOOR (owner 2026-07-29)
 // The source used to be pinned to a fixed radius and blocked from approaching
-// the mic. It is now the HEAD icon, draggable ANYWHERE on the canvas, and the
-// only restriction is that its silhouette may not INTERSECT the mic's — it may
-// come right up next to it. Solved here (not in viz.tsx) because this screen
-// must also run on pre-Skia clients, which never load viz.tsx; the numbers
-// mirror viz.tsx's POLAR_MIC_* / HEAD_COLLIDERS exactly.
+// the mic. It is now the CLAVES icon (owner 2026-07-29), draggable ANYWHERE on
+// the canvas, and the only restriction is that its silhouette may not INTERSECT
+// the mic's — it may come right up next to it. Solved here (not in viz.tsx)
+// because this screen must also run on pre-Skia clients, which never load
+// viz.tsx; the numbers mirror viz.tsx's CLAVES_COLLIDERS / clavesScaleForMic
+// exactly. Claves do NOT rotate — the crossing point is the acoustic origin,
+// so colliders place directly (no face-angle rotation).
 const POLAR_H = 230; // PolarPatternView's default canvas height
 const POLAR_GR = 8; // grille radius
 const POLAR_LEN = 37; // body length
 const POLAR_MIC_DY = -6; // grille centre offset from the canvas centre
-/** headScaleForMic(): a 23 cm head against the 16 cm mic actually drawn. */
-const POLAR_HEAD_S = ((1.72 * POLAR_GR + POLAR_LEN) * (23 / 16)) / 45.6;
-/** The head silhouette as three circles in head units, head frame
- *  (origin = the mouth, +x = the facing direction). */
-const HEAD_CIRCLES: [number, number, number][] = [
-  [-14, -20, 20],
-  [-4, -10, 13],
-  [4, -2, 10],
+/** clavesScaleForMic(): a 20 cm clave against the 16 cm mic actually drawn
+ *  (canon length 44 units). Mirrors viz.tsx clavesScaleForMic exactly. */
+const POLAR_CLAVES_S = ((1.72 * POLAR_GR + POLAR_LEN) * (20 / 16)) / 44;
+/** The claves silhouette as three circles in icon units (origin = the crossing
+ *  = the acoustic origin; the icon never rotates). Mirrors CLAVES_COLLIDERS. */
+const CLAVES_CIRCLES: [number, number, number][] = [
+  [0, 0, 10],
+  [10.9, 15.6, 8],
+  [-10.9, 15.6, 8],
 ];
 
 /** Signed distance from a point to the mic's rounded-rect silhouette. */
@@ -78,9 +81,10 @@ function micSdf(px: number, py: number, cx: number, cy: number): number {
 }
 
 /**
- * Collision FLOOR (not a keep-out radius): push the head out along the
- * mic→head axis just far enough that no part of its silhouette overlaps the
- * mic. Touching is allowed; intersecting is not.
+ * Collision FLOOR (not a keep-out radius): push the claves out along the
+ * mic→source axis just far enough that no part of its silhouette overlaps the
+ * mic. Touching is allowed; intersecting is not. The claves icon does not
+ * rotate, so colliders place directly (no face-angle transform).
  */
 function clampPolarSource(x: number, y: number, w: number): { x: number; y: number } {
   const cx = w / 2;
@@ -89,14 +93,11 @@ function clampPolarSource(x: number, y: number, w: number): { x: number; y: numb
   let px = Math.max(2, Math.min(w - 2, x));
   let py = Math.max(2, Math.min(POLAR_H - 2, y));
   for (let iter = 0; iter < 4; iter++) {
-    const face = Math.atan2(cy + POLAR_MIC_DY - py, cx - px); // head faces the mic
-    const cs = Math.cos(face);
-    const sn = Math.sin(face);
     let worst = 0;
-    for (const [u, v, r] of HEAD_CIRCLES) {
-      const wx = px + (u * cs - v * sn) * POLAR_HEAD_S;
-      const wy = py + (u * sn + v * cs) * POLAR_HEAD_S;
-      worst = Math.max(worst, r * POLAR_HEAD_S - micSdf(wx, wy, cx, cy));
+    for (const [u, v, r] of CLAVES_CIRCLES) {
+      const wx = px + u * POLAR_CLAVES_S;
+      const wy = py + v * POLAR_CLAVES_S;
+      worst = Math.max(worst, r * POLAR_CLAVES_S - micSdf(wx, wy, cx, cy));
     }
     if (worst <= 0.25) break;
     let dx = px - cx;

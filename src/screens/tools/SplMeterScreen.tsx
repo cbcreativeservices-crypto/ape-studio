@@ -15,12 +15,14 @@
  *  - Capture starts only on the explicit START press; the hook stops capture
  *    on unmount (§18: no DSP behind a closed screen).
  */
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSharedValue, type SharedValue } from 'react-native-reanimated';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
 import { GlassButton } from '../../components/GlassButton';
+import { requireVizMeters, type VizMetersModule } from '../lab/meter/skiaGate';
 import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
 import { setSplCalibration, useSplCalibration } from '../../features/tools/measure/calibrationStore';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
@@ -57,6 +59,53 @@ const fmtElapsed = (sec: number) => {
   const s = Math.floor(sec);
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 };
+
+/** Wall-seconds one phase-clock loop represents inside the VU popup — the
+ *  clock runs at 1/VU_LOOP Hz so the ballistics integrate real time. */
+const VU_LOOP = 4;
+
+/** The popup's Skia meters (mounted only while the popup is open AND the viz
+ *  module gate passed): the flagship VU face + the 66-segment LED bar, both
+ *  live-driven by the screen's polled RMS/peak SharedValues. */
+function VuPopupMeters({
+  viz,
+  rmsDb,
+  peakDb,
+  width,
+}: {
+  viz: VizMetersModule;
+  rmsDb: SharedValue<number>;
+  peakDb: SharedValue<number>;
+  width: number;
+}) {
+  const phase = viz.usePhaseClock(true, 1 / VU_LOOP);
+  const live = useMemo(() => ({ rmsDb, peakDb }), [rmsDb, peakDb]);
+  return (
+    <View style={{ gap: 14 }}>
+      <viz.VuMeterView
+        width={width}
+        height={Math.min(300, Math.round(width * 0.64))}
+        phase={phase}
+        live={live}
+        showPeakLed
+        loopSeconds={VU_LOOP}
+      />
+      <viz.PeakMeterView width={width} height={220} phase={phase} live={live} loopSeconds={VU_LOOP} />
+    </View>
+  );
+}
+
+/** Plain-RN mini-VU fallback for pre-Skia clients (cream face, red zone,
+ *  tilted needle) — the opener must read as a tiny VU even without Skia. */
+function VuGlyphFallback() {
+  return (
+    <View style={styles.vuGlyphFace}>
+      <View style={styles.vuGlyphArc} />
+      <View style={styles.vuGlyphRed} />
+      <View style={styles.vuGlyphNeedle} />
+    </View>
+  );
+}
 
 function Chip({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
   return (
@@ -115,6 +164,23 @@ export function SplMeterScreen({ navigation }: Props) {
   // input (measurement mode not honored) — that stays a warning even when
   // field-calibrated, because it undermines the calibration itself.
   const flags = meterWarningFlags(meter);
+
+  // ── Full-screen VU popup (owner directive 2026-07-29) ─────────────────────
+  // Skia meters load ONLY through the meter gate (§1.7 honest fallback).
+  const viz = useMemo(() => requireVizMeters(), []);
+  const [vuOpen, setVuOpen] = useState(false);
+  const { width: winW } = useWindowDimensions();
+  const vuMeterW = Math.min(560, winW - 32);
+  // The popup meters are fed by pushing the SAME polled frame values into two
+  // SharedValues — no second poll, no duplicated state. RMS = Z-weighted FAST
+  // (the frame's unweighted RMS-style level); peak = the raw peak (F1: may
+  // exceed 0 dBFS, never clamped). −120 stands in for silence/no-frame.
+  const liveRmsDb = useSharedValue(-120);
+  const livePeakDb = useSharedValue(-120);
+  useEffect(() => {
+    liveRmsDb.value = meter && Number.isFinite(meter.zFastDb) ? meter.zFastDb : -120;
+    livePeakDb.value = meter && Number.isFinite(meter.peakDb) ? meter.peakDb : -120;
+  }, [meter, liveRmsDb, livePeakDb]);
 
   /** SAVE LOG → Saved Measurement Library (spec §7; payload = SplLogPayload). */
   const onSaveLog = useCallback(() => {
@@ -175,6 +241,16 @@ export function SplMeterScreen({ navigation }: Props) {
           <Text style={styles.title}>{tool.name.toUpperCase()}</Text>
           {tool.subtitle ? <Text style={styles.subtitle}>{tool.subtitle}</Text> : null}
         </View>
+        {/* Mini-VU opener → the full-screen VU popup (owner 2026-07-29). */}
+        <Pressable
+          style={styles.vuOpenBtn}
+          onPress={() => setVuOpen(true)}
+          accessibilityRole="button"
+          accessibilityLabel="Open full-screen VU meter"
+        >
+          {viz ? <viz.VuGlyph size={38} /> : <VuGlyphFallback />}
+          <Text style={styles.vuOpenLabel}>VU</Text>
+        </Pressable>
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll}>
@@ -420,6 +496,189 @@ export function SplMeterScreen({ navigation }: Props) {
           </Text>
         </View>
       </ScrollView>
+
+      {/* ── Full-screen VU popup: live meters + mirrored readouts/controls ──
+          Same state, same handlers — the meter keeps running; nothing here is
+          a second copy of the measurement. ✕ (top right) closes. */}
+      <Modal
+        visible={vuOpen}
+        animationType="fade"
+        statusBarTranslucent
+        onRequestClose={() => setVuOpen(false)}
+      >
+        <View style={[styles.vuModalRoot, { paddingTop: insets.top + 8 }]}>
+          <View style={styles.vuModalHead}>
+            <Text style={styles.vuModalTitle}>{`${tool.name.toUpperCase()} · VU`}</Text>
+            <Pressable
+              onPress={() => setVuOpen(false)}
+              hitSlop={14}
+              accessibilityRole="button"
+              accessibilityLabel="Close"
+            >
+              <Text style={styles.vuClose}>✕</Text>
+            </Pressable>
+          </View>
+          <ScrollView contentContainerStyle={styles.vuScroll}>
+            <EngineGate state={state} lastError={lastError} />
+
+            {(state === 'idle' || state === 'starting') && (
+              <>
+                <Text style={styles.intro}>
+                  Start the meter to drive the VU. The microphone captures only while the meter
+                  runs.
+                </Text>
+                <GlassButton
+                  label={state === 'starting' ? 'STARTING…' : 'START METER'}
+                  tint="orange"
+                  disabled={state === 'starting'}
+                  onPress={() => void start()}
+                />
+              </>
+            )}
+
+            {running &&
+              (viz ? (
+                <VuPopupMeters viz={viz} rmsDb={liveRmsDb} peakDb={livePeakDb} width={vuMeterW} />
+              ) : (
+                /* Honest gate for pre-Skia clients (§1.7): readouts stay live. */
+                <View style={styles.vuUnavailCard}>
+                  <Text style={styles.vuUnavailTitle}>VU DISPLAY NEEDS THE NEW DEV BUILD</Text>
+                  <Text style={styles.vuUnavailBody}>
+                    This dev client predates the graphics engine the VU face renders on. The
+                    digital readouts below are fully live — install the newest dev build to see
+                    the needle.
+                  </Text>
+                </View>
+              ))}
+
+            {/* House honesty line: the needle rides raw dBFS — a phone VU is
+                not a calibrated 0 VU = +4 dBu reference. */}
+            <Text style={styles.vuBadge}>
+              NEEDLE: dBFS · UNCALIBRATED — 0 VU here = −18 dBFS by convention, not a calibrated
+              0 VU = +4 dBu reference
+            </Text>
+
+            {running && (
+              <>
+                {/* Mirrored digital readout (same shown()/unitLabel math). */}
+                <View style={styles.readoutCard}>
+                  <Text style={styles.readoutEyebrow}>
+                    {`L${weighting}${response === 'fast' ? 'F' : 'S'} · ${weighting}-WEIGHTED · ${response.toUpperCase()}`}
+                  </Text>
+                  <Text style={styles.readoutValue}>
+                    {meter ? fmtDb(shown(selectedLevelDb(meter, weighting, response))) : '—'}
+                  </Text>
+                  <Text style={styles.readoutSub}>{unitLabel}</Text>
+                </View>
+
+                {/* Mirrored weighting × response controls (same setters). */}
+                <View style={styles.chipsRow}>
+                  <View style={styles.chipGroup}>
+                    <Text style={styles.chipGroupLabel}>WEIGHTING</Text>
+                    <View style={styles.chipSet}>
+                      {WEIGHTINGS.map((w) => (
+                        <Chip key={w} label={w} selected={weighting === w} onPress={() => setWeighting(w)} />
+                      ))}
+                    </View>
+                  </View>
+                  <View style={styles.chipGroup}>
+                    <Text style={styles.chipGroupLabel}>RESPONSE</Text>
+                    <View style={styles.chipSet}>
+                      {RESPONSES.map((r) => (
+                        <Chip key={r} label={r.toUpperCase()} selected={response === r} onPress={() => setResponse(r)} />
+                      ))}
+                    </View>
+                  </View>
+                </View>
+
+                {/* Mirrored PEAK / PEAK HOLD + reset (raw dBFS, F1 red ≥ 0). */}
+                <View style={styles.peakRow}>
+                  <View style={styles.peakCell}>
+                    <Text style={styles.cellLabel}>PEAK (dBFS)</Text>
+                    <Text style={[styles.cellValue, meter != null && meter.peakDb >= 0 && styles.cellValueHot]}>
+                      {meter ? fmtDb(meter.peakDb) : '—'}
+                    </Text>
+                  </View>
+                  <View style={styles.peakCell}>
+                    <Text style={styles.cellLabel}>PEAK HOLD (dBFS)</Text>
+                    <Text style={[styles.cellValue, meter != null && meter.peakHoldDb >= 0 && styles.cellValueHot]}>
+                      {meter ? fmtDb(meter.peakHoldDb) : '—'}
+                    </Text>
+                  </View>
+                  <Pressable
+                    style={styles.ctrlBtnSmall}
+                    onPress={resetPeakHold}
+                    accessibilityRole="button"
+                    accessibilityLabel="Reset peak hold"
+                  >
+                    <Text style={styles.ctrlText}>RESET{'\n'}PEAK</Text>
+                  </Pressable>
+                </View>
+
+                {/* Mirrored live quality warnings (same flags as on save). */}
+                {flags.map((f) => (
+                  <Text key={f} style={styles.liveWarn}>
+                    ⚠ {WARNING_INFO[f].message} {WARNING_INFO[f].hint}
+                  </Text>
+                ))}
+
+                {/* Mirrored session log + save (same handlers). */}
+                <View style={styles.logCard}>
+                  <Text style={styles.sectionHead}>SESSION LOG</Text>
+                  <View style={styles.logRow}>
+                    <View style={styles.logCell}>
+                      <Text style={styles.cellLabel}>Leq(A)</Text>
+                      <Text style={styles.cellValue}>{meter ? fmtDb(shown(meter.leqADb)) : '—'}</Text>
+                    </View>
+                    <View style={styles.logCell}>
+                      <Text style={styles.cellLabel}>Leq(Z)</Text>
+                      <Text style={styles.cellValue}>{meter ? fmtDb(shown(meter.leqZDb)) : '—'}</Text>
+                    </View>
+                    <View style={styles.logCell}>
+                      <Text style={styles.cellLabel}>ELAPSED</Text>
+                      <Text style={styles.cellValue}>{meter ? fmtElapsed(meter.elapsedSec) : '—'}</Text>
+                    </View>
+                  </View>
+                  <Text style={styles.logNote}>
+                    Leq = equivalent continuous level over the session · {unitLabel}
+                  </Text>
+                  <View style={styles.controls}>
+                    <Pressable
+                      style={styles.ctrlBtn}
+                      onPress={resetLeq}
+                      accessibilityRole="button"
+                      accessibilityLabel="Reset log"
+                    >
+                      <Text style={styles.ctrlText}>RESET LOG</Text>
+                    </Pressable>
+                    <Pressable
+                      style={[styles.ctrlBtn, justSaved && styles.ctrlBtnSaved, !meter && styles.ctrlBtnDisabled]}
+                      onPress={onSaveLog}
+                      disabled={!meter}
+                      accessibilityRole="button"
+                      accessibilityState={{ disabled: !meter }}
+                      accessibilityLabel="Save log"
+                    >
+                      <Text style={[styles.ctrlText, justSaved && styles.ctrlTextSaved]}>
+                        {justSaved ? 'SAVED ✓' : 'SAVE LOG'}
+                      </Text>
+                    </Pressable>
+                  </View>
+                </View>
+
+                <GlassButton
+                  label="STOP"
+                  tint="orange"
+                  onPress={() => {
+                    stop();
+                    setVuOpen(false);
+                  }}
+                />
+              </>
+            )}
+          </ScrollView>
+        </View>
+      </Modal>
       {sheet}
     </View>
   );
@@ -559,4 +818,68 @@ const styles = StyleSheet.create({
 
   micLimits: { gap: 6, marginTop: 6 },
   bullet: { fontFamily: fonts.barlowRegular, fontSize: 14.5, lineHeight: 21, color: colors.textSecondary },
+
+  // Mini-VU opener (header, right-aligned) + plain-RN fallback glyph.
+  vuOpenBtn: { marginLeft: 'auto', alignItems: 'center', gap: 1, paddingHorizontal: 4, paddingVertical: 2 },
+  vuOpenLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1.6, color: colors.textSub },
+  vuGlyphFace: {
+    width: 38,
+    height: 30,
+    borderRadius: 5,
+    borderWidth: 2,
+    borderColor: '#1b1c22',
+    backgroundColor: '#f0e0b4',
+    overflow: 'hidden',
+  },
+  vuGlyphArc: {
+    position: 'absolute',
+    left: 5,
+    right: 5,
+    top: 6,
+    height: 14,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    borderTopWidth: 2,
+    borderColor: '#2b2317',
+  },
+  vuGlyphRed: { position: 'absolute', right: 5, top: 4, width: 8, height: 4, backgroundColor: '#c9382e', transform: [{ rotate: '24deg' }] },
+  vuGlyphNeedle: {
+    position: 'absolute',
+    left: 16,
+    bottom: 2,
+    width: 2,
+    height: 20,
+    backgroundColor: '#17130c',
+    transform: [{ rotate: '14deg' }],
+  },
+
+  // Full-screen VU popup.
+  vuModalRoot: { flex: 1, backgroundColor: '#0c0c0f' },
+  vuModalHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingBottom: 8,
+  },
+  vuModalTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 1.6, color: colors.textPrimary },
+  vuClose: { fontFamily: fonts.oswaldSemiBold, fontSize: 22, color: colors.textSecondary, padding: 4 },
+  vuScroll: { padding: 16, paddingBottom: 40, gap: 14, alignItems: 'stretch' },
+  vuBadge: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 9,
+    letterSpacing: 1,
+    lineHeight: 13,
+    color: colors.textSub,
+  },
+  vuUnavailCard: {
+    gap: 6,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#131316',
+    padding: 14,
+  },
+  vuUnavailTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.2, color: colors.textSecondary },
+  vuUnavailBody: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSub },
 });

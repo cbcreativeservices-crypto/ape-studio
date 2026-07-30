@@ -443,6 +443,151 @@ function FrontHead({
   );
 }
 
+/**
+ * CLAVES — CLEAN LINE-ART ICON (owner 2026-07-29, reference art supplied):
+ * two crossed cylindrical percussion sticks with three small "click" strokes
+ * radiating from the crossing point. THE sound source of the POLAR section —
+ * claves are the classic point-ish acoustic source, and unlike a talker they
+ * have NO facing direction, so the icon never rotates toward the mic.
+ *
+ * ORIGIN = THE CROSSING POINT of the two sticks, exactly — the click happens
+ * there, so the crossing IS the acoustic origin the polar math measures from.
+ * Canon, in claves units (× s): each stick is 44 long × 6.8 wide, crossed at
+ * ±35° from vertical NEAR THE UPPER THIRD (14 above the crossing, 30 below),
+ * rounded caps both ends, an elliptical end-cap hint at each LOWER end (the
+ * cylinder's visible end face), and three short click strokes fanned above
+ * the crossing. Same language as the head icons: ONE uniform stroke scaling
+ * with s, rounded caps, light neutral LINE, no fill — except the established
+ * dark readability plate where the icon sits over a heat-map field.
+ */
+const CLAVES_ANGLE = (35 * Math.PI) / 180;
+const CLAVES_UP = 14; //  stick length above the crossing, claves units
+const CLAVES_DOWN = 30; // stick length below the crossing, claves units
+/** Full drawn stick length in claves units (the sizing canon). */
+const CLAVES_CANON_L = CLAVES_UP + CLAVES_DOWN;
+const CLAVES_CM = 20; // a real clave is ~20 cm long
+/** TRUE proportion: the claves scale that matches a 20 cm clave to the 16 cm
+ *  mic drawn with (grilleR, bodyLen) at this call site. */
+export function clavesScaleForMic(grilleR: number, bodyLen: number): number {
+  return (micTotalLen(grilleR, bodyLen) * (CLAVES_CM / MIC_CM)) / CLAVES_CANON_L;
+}
+
+function buildClaves(s: number): { lines: SkPathT; plate: SkPathT } {
+  const hw = 3.4 * s; // stick half-width
+  const k = hw * 1.33; // cubic ≈ semicircular rounded cap
+  // One stick: a rounded-end bar along ±CLAVES_ANGLE from vertical, appended
+  // as a single closed outline (up-cap → far edge → down-cap → near edge).
+  const stick = (p: SkPathT, sgn: 1 | -1) => {
+    const dx = Math.sin(CLAVES_ANGLE) * sgn; // unit axis, pointing DOWN-stick
+    const dy = Math.cos(CLAVES_ANGLE);
+    const nx = -dy; // unit normal
+    const ny = dx;
+    const tX = -CLAVES_UP * s * dx;
+    const tY = -CLAVES_UP * s * dy;
+    const bX = CLAVES_DOWN * s * dx;
+    const bY = CLAVES_DOWN * s * dy;
+    p.moveTo(tX + nx * hw, tY + ny * hw);
+    p.cubicTo(
+      tX + nx * hw - dx * k, tY + ny * hw - dy * k,
+      tX - nx * hw - dx * k, tY - ny * hw - dy * k,
+      tX - nx * hw, tY - ny * hw,
+    ); // rounded top cap
+    p.lineTo(bX - nx * hw, bY - ny * hw);
+    p.cubicTo(
+      bX - nx * hw + dx * k, bY - ny * hw + dy * k,
+      bX + nx * hw + dx * k, bY + ny * hw + dy * k,
+      bX + nx * hw, bY + ny * hw,
+    ); // rounded bottom cap
+    p.close();
+  };
+  const lines = Skia.Path.Make();
+  const plate = Skia.Path.Make();
+  for (const sgn of [1, -1] as const) {
+    stick(lines, sgn);
+    stick(plate, sgn); // the plate is the same two silhouettes, filled dark
+    // Elliptical end-cap hint at the LOWER end: an open arc across the stick
+    // just above the tip, bulging back UP the stick — the visible near edge
+    // of the cylinder's end face (per the reference's line-art language).
+    const dx = Math.sin(CLAVES_ANGLE) * sgn;
+    const dy = Math.cos(CLAVES_ANGLE);
+    const nx = -dy;
+    const ny = dx;
+    const ex = (CLAVES_DOWN - 0.8) * s * dx;
+    const ey = (CLAVES_DOWN - 0.8) * s * dy;
+    lines.moveTo(ex + nx * hw * 0.94, ey + ny * hw * 0.94);
+    lines.quadTo(ex - dx * hw * 1.15, ey - dy * hw * 1.15, ex - nx * hw * 0.94, ey - ny * hw * 0.94);
+  }
+  // The CLICK: three short strokes radiating from the crossing point, fanned
+  // in the gap above the two upper stick ends (they clear the 14-unit tips).
+  for (const aDeg of [-22, 0, 22]) {
+    const a = (aDeg * Math.PI) / 180;
+    const ux = Math.sin(a);
+    const uy = -Math.cos(a);
+    lines.moveTo(ux * 17 * s, uy * 17 * s);
+    lines.lineTo(ux * 23 * s, uy * 23 * s);
+  }
+  return { lines, plate };
+}
+
+/** CLAVES icon — the polar section's draggable source. No `angleRad`: claves
+ *  don't face anything; the crossing point (the origin) is the acoustic
+ *  origin, so callers position it and nothing else. Stroke width scales with
+ *  `scale` (never absolute px), rounded caps/joins; `tint` rides the stroke
+ *  as the state accent; `plate` = the dark interior over heat-map fields. */
+function Claves({
+  x,
+  y,
+  scale,
+  tint,
+  glow,
+  plate,
+}: {
+  x: number;
+  y: number;
+  scale: number;
+  tint: string;
+  glow?: boolean;
+  plate?: boolean;
+}) {
+  const parts = useMemo(() => buildClaves(scale), [scale]);
+  const lw = 1.55 * scale;
+  return (
+    <Group transform={[{ translateX: x }, { translateY: y }]}>
+      {plate ? <Path path={parts.plate} color={HEAD_PLATE} /> : null}
+      {glow ? (
+        <Path
+          path={parts.lines}
+          color={tint}
+          style="stroke"
+          strokeWidth={lw * 3.4}
+          strokeCap="round"
+          strokeJoin="round"
+          opacity={0.3}
+        >
+          <BlurMask blur={3 * scale} style="normal" />
+        </Path>
+      ) : null}
+      <Path
+        path={parts.lines}
+        color={LINE}
+        style="stroke"
+        strokeWidth={lw}
+        strokeCap="round"
+        strokeJoin="round"
+      />
+      <Path
+        path={parts.lines}
+        color={tint}
+        style="stroke"
+        strokeWidth={lw}
+        strokeCap="round"
+        strokeJoin="round"
+        opacity={0.34}
+      />
+    </Group>
+  );
+}
+
 /** Head-and-shoulders bust appended to `p`; `x` = center, `y` = base line.
  *  ONE closed contour (shoulders → neck → jaw → cranium → back down) so the
  *  caller's dark outline stroke traces a single crisp silhouette with no
@@ -1004,25 +1149,31 @@ function usePolarFieldBuckets(
   }, [w, h, cx, cy, R, a, b]);
 }
 
-// ── POLAR: the head IS the source, positioned FREELY (owner 2026-07-29) ─────
-// The old build pinned the source to a fixed radius and kept a large keep-out
-// zone around the mic, so it could never come close. Now the head is dragged
-// anywhere on the canvas and the ONLY restriction is that its silhouette may
-// not INTERSECT the mic's — it may sit right up against it. The collision
-// floor is solved in the host screen (which must also work on pre-Skia
-// clients), against the geometry constants published here.
+// ── POLAR: the CLAVES are the source, positioned FREELY (owner 2026-07-29,
+// reference art supplied) ────────────────────────────────────────────────────
+// The draggable source of the polar section is the crossed-claves icon — the
+// crossing point (where the click happens) IS the acoustic origin the polar
+// math measures from. Claves don't "face" anything, so the icon never rotates
+// toward the mic. It is dragged anywhere on the canvas and the ONLY
+// restriction is that its silhouette may not INTERSECT the mic's — it may sit
+// right up against it. The collision floor is solved in the host screen
+// (which must also work on pre-Skia clients), against the geometry constants
+// published here. The profile head stays in use in every OTHER section
+// (distance / proximity / off-axis …) — only the polar source changed.
 /** Grille radius / body length of the polar scene's mic. */
 export const POLAR_MIC_GR = 8;
 export const POLAR_MIC_LEN = 37;
 /** Mic grille-centre offset from the canvas centre, in px. */
 export const POLAR_MIC_DY = -6;
-/** The head silhouette as three collision circles, in HEAD UNITS, in the
- *  head's own frame (origin = the mouth, +x = the facing direction): cranium,
- *  mid-face, nose/chin. Multiply by headScaleForMic(POLAR_MIC_GR, …). */
-export const HEAD_COLLIDERS: { u: number; v: number; r: number }[] = [
-  { u: -14, v: -20, r: 20 },
-  { u: -4, v: -10, r: 13 },
-  { u: 4, v: -2, r: 10 },
+/** The claves silhouette as three collision circles, in CLAVES UNITS, in the
+ *  icon's own UNROTATED frame (origin = the crossing point, +y down as
+ *  drawn — the icon never rotates): one over the crossing (covers both upper
+ *  stick halves) and one along each stick's lower half. Multiply by
+ *  clavesScaleForMic(POLAR_MIC_GR, POLAR_MIC_LEN). */
+export const CLAVES_COLLIDERS: { u: number; v: number; r: number }[] = [
+  { u: 0, v: 0, r: 10 },
+  { u: 10.9, v: 15.6, r: 8 },
+  { u: -10.9, v: 15.6, r: 8 },
 ];
 
 export function PolarPatternView({
@@ -1075,13 +1226,13 @@ export function PolarPatternView({
 
   // Source position + its pickup gain (plain JS — captured by the worklet).
   // The polar math is UNCHANGED: θ is still measured from the mic's front
-  // axis (up); only where the source may sit has changed.
+  // axis (up); only WHAT sits at the source has changed. The claves' crossing
+  // point IS the source position — no facing/rotation (claves don't face).
   const sx = srcX;
   const sy = srcY;
-  const gy = cy + POLAR_MIC_DY; // the grille centre the head aims at
+  const gy = cy + POLAR_MIC_DY; // the grille centre the pickup line runs to
   const thSrc = Math.atan2(sx - cx, -(sy - gy));
   const gain = polarGain(a, b, thSrc);
-  const faceAngle = Math.atan2(gy - sy, cx - sx); // head faces the mic
 
   const pickupLine = useMemo(() => {
     const p = Skia.Path.Make();
@@ -1127,19 +1278,18 @@ export function PolarPatternView({
       />
       {/* The mic itself, front axis up (1.72·8 + 37 ≈ 3.2 × the 16-px grille). */}
       <HandheldMic x={cx} y={gy} angleDeg={0} grilleR={POLAR_MIC_GR} bodyLen={POLAR_MIC_LEN} />
-      {/* THE SOURCE: a head in profile, mouth toward the mic, in TRUE human
-          proportion to it (23 cm head vs 16 cm mic) and free to be dragged
-          right up next to the grille. Plated so the line art stays readable
-          over the heat field. */}
-      <ProfileHead
+      {/* THE SOURCE: crossed claves (owner reference art), the click point —
+          the crossing — sitting exactly at the source position, in TRUE
+          proportion to the mic (20 cm clave vs 16 cm mic) and free to be
+          dragged right up next to the grille. Never rotated (claves don't
+          face); plated so the line art stays readable over the heat field. */}
+      <Claves
         x={sx}
         y={sy}
-        angleRad={faceAngle}
-        scale={headScaleForMic(POLAR_MIC_GR, POLAR_MIC_LEN)}
+        scale={clavesScaleForMic(POLAR_MIC_GR, POLAR_MIC_LEN)}
         tint={ACCENT_GREEN}
         glow
         plate
-        speaking
       />
     </Canvas>
   );
