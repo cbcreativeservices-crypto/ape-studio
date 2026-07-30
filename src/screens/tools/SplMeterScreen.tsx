@@ -207,7 +207,7 @@ function VuHero({
 /** RANGE — the environmental SPL that reads 0 VU. The VU shows the signal
  *  RELATIVE to this reference (current SPL − RANGE), so RANGE centres the meter
  *  on the room's noise level. Default 100 dB. AUTO (below) tracks ambient. */
-const RANGE_VALUES = [40, 60, 80, 100, 120] as const;
+const RANGE_VALUES = [40, 60, 80, 100] as const;
 
 // Circle-gauge zone palette (matches SplDialView's darkened arc colors) — used to
 // tint the live centre readout so the number turns the colour of the zone it sits
@@ -258,11 +258,16 @@ function Chip({
   selected,
   onPress,
   compact,
+  bigGlyph,
+  accessibilityLabel,
 }: {
   label: string;
   selected: boolean;
   onPress: () => void;
   compact?: boolean;
+  /** Render the label larger (e.g. the ∞ peak-hold glyph, too small otherwise). */
+  bigGlyph?: boolean;
+  accessibilityLabel?: string;
 }) {
   return (
     <Pressable
@@ -270,9 +275,16 @@ function Chip({
       onPress={onPress}
       accessibilityRole="button"
       accessibilityState={{ selected }}
-      accessibilityLabel={label}
+      accessibilityLabel={accessibilityLabel ?? label}
     >
-      <Text style={[styles.chipText, compact && styles.chipTextCompact, selected && styles.chipTextSelected]}>
+      <Text
+        style={[
+          styles.chipText,
+          compact && styles.chipTextCompact,
+          bigGlyph && styles.chipTextGlyph,
+          selected && styles.chipTextSelected,
+        ]}
+      >
         {label}
       </Text>
     </Pressable>
@@ -364,6 +376,9 @@ export function SplMeterScreen({ navigation }: Props) {
   // Circle-meter label mode (owner 2026-07-30): STUDIO (control-room sweet-spot)
   // vs SPL (reference sounds). The node point rides the same arc in both.
   const [dialMode, setDialMode] = useState<DialMode>('studio');
+  // Collapsible circle-meter (owner 2026-07-30): minimize the gauge to bring the
+  // session log + calibration higher on the screen.
+  const [gaugeOpen, setGaugeOpen] = useState(true);
   const { width: winW } = useWindowDimensions();
   // TOP area (owner 2026-07-30): a LEFT column holds the VU plus the RANGE /
   // WEIGHTING / PEAK-HOLD controls; a thin TALL LED meter runs down the RIGHT,
@@ -378,7 +393,7 @@ export function SplMeterScreen({ navigation }: Props) {
   // Below the top area: the SPL gauge gets its OWN FULL-WIDTH row so its callout
   // labels sit OUTSIDE the arc with leader lines.
   const dialW = winW - 32;
-  const dialH = Math.round(dialW * 0.82);
+  const dialH = Math.round(dialW * 0.92);
   // The popup meters are fed by pushing the SAME polled frame values into two
   // SharedValues — no second poll, no duplicated state. RMS = the selected
   // weighting × response level (set in the effect below); peak = the raw peak
@@ -432,8 +447,9 @@ export function SplMeterScreen({ navigation }: Props) {
   // 0 VU is RANGE − splOffset. In AUTO the reference is the slow-tracked ambient.
   const rangeRef = rangeAuto ? autoRangeDb : rangeDb; // SPL that reads 0 VU
   const vuLive0 = rangeRef - splOffset;
-  // Printed TOP-LEFT on the VU face.
-  const vuRangeText = rangeAuto ? `AUTO ${rangeRef}` : `RANGE ${rangeRef}`;
+  // Printed TOP-LEFT on the VU face (owner 2026-07-30): the weighting + response
+  // in use (the RANGE now lives in the blue in-arc brackets and the chip row).
+  const vuRangeText = `${weighting} · ${response === 'fast' ? 'FAST' : 'SLOW'}`;
   // SPL bracket printed inside the arc (BLUE — the 0 value equals the blue RANGE
   // button): low number at −20 (= RANGE − 20), high at 0 (= RANGE).
   const vuBrackets = {
@@ -929,7 +945,15 @@ export function SplMeterScreen({ navigation }: Props) {
                       <Text style={styles.chipGroupLabel}>PEAK HOLD</Text>
                       <View style={styles.chipSetWrap}>
                         {HOLD_MODES.map((m) => (
-                          <Chip key={m} label={holdLabel(m)} compact selected={holdMode === m} onPress={() => setHoldMode(m)} />
+                          <Chip
+                            key={m}
+                            label={holdLabel(m)}
+                            accessibilityLabel={m === 'inf' ? 'Infinite peak hold' : `Peak hold ${holdLabel(m)}`}
+                            bigGlyph={m === 'inf'}
+                            compact
+                            selected={holdMode === m}
+                            onPress={() => setHoldMode(m)}
+                          />
                         ))}
                         <Pressable
                           style={[styles.ctrlBtn, styles.holdResetBtnSm]}
@@ -947,9 +971,19 @@ export function SplMeterScreen({ navigation }: Props) {
                   ) : null}
                 </View>
 
-                {/* 4 — The round SPL "Noise'o'Meter" gauge (full-width row, external
-                    callout labels + live centre readout). */}
-                {viz ? (
+                {/* 4 — The round SPL gauge — COLLAPSIBLE (owner 2026-07-30) so the
+                    session log + calibration can sit higher when it's minimized. */}
+                <Pressable
+                  style={styles.gaugeToggle}
+                  onPress={() => setGaugeOpen((o) => !o)}
+                  accessibilityRole="button"
+                  accessibilityState={{ expanded: gaugeOpen }}
+                  accessibilityLabel={gaugeOpen ? 'Collapse SPL gauge' : 'Expand SPL gauge'}
+                >
+                  <Text style={styles.gaugeToggleText}>SPL REFERENCE GAUGE</Text>
+                  <Text style={styles.gaugeToggleChevron}>{gaugeOpen ? '▾' : '▸'}</Text>
+                </Pressable>
+                {gaugeOpen && viz ? (
                   <VuHero
                     viz={viz}
                     live={live}
@@ -1005,6 +1039,11 @@ export function SplMeterScreen({ navigation }: Props) {
                     </Pressable>
                   </View>
                 </View>
+
+                {/* STOP — moved ABOVE calibration / below the session log (owner
+                    2026-07-30). Turns the mic OFF but STAYS in the VU screen; the
+                    same control flips to START to turn the mic back on. */}
+                <GlassButton label="STOP · MIC OFF" tint="orange" onPress={stopMeter} />
 
                 {/* 8 — Field calibration (ruling R1) — same store as the screen, so
                     the gauge's SPL scale updates the instant it is set/cleared. */}
@@ -1109,18 +1148,12 @@ export function SplMeterScreen({ navigation }: Props) {
                   </Text>
                 </View>
 
-                {/* Amber live-quality warnings — moved to the very bottom, below
-                    control-room monitoring (owner 2026-07-30). */}
+                {/* Amber live-quality warnings — below control-room monitoring. */}
                 {flags.map((f) => (
                   <Text key={f} style={styles.liveWarn}>
                     ⚠ {WARNING_INFO[f].message} {WARNING_INFO[f].hint}
                   </Text>
                 ))}
-
-                {/* STOP turns the mic OFF but STAYS in the VU screen (owner
-                    2026-07-30); the same control below flips to START to turn the
-                    mic back on without leaving. */}
-                <GlassButton label="STOP · MIC OFF" tint="orange" onPress={stopMeter} />
               </>
             )}
           </ScrollView>
@@ -1162,6 +1195,8 @@ const styles = StyleSheet.create({
   chipSelected: { borderColor: 'rgba(255,138,30,.65)', backgroundColor: '#1a1207' },
   chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1, color: colors.textSecondary },
   chipTextCompact: { fontSize: 11.5, letterSpacing: 0.6 },
+  // Bigger glyph (the ∞ peak-hold symbol is illegible at chip size otherwise).
+  chipTextGlyph: { fontSize: 19, lineHeight: 20 },
   chipTextSelected: { color: colors.orange },
 
   // Big readout card.
@@ -1357,6 +1392,21 @@ const styles = StyleSheet.create({
   rangeChipTextSelected: { color: '#e4edff' },
   rangeChipAuto: { width: 46 },
   rangeNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted },
+
+  // Collapsible SPL-gauge toggle bar.
+  gaugeToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#2b2b31',
+    backgroundColor: '#141416',
+    paddingVertical: 9,
+    paddingHorizontal: 14,
+  },
+  gaugeToggleText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.textSecondary },
+  gaugeToggleChevron: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, color: colors.textSub },
 
   // STUDIO / SPL chooser — pinned to the TOP-LEFT corner of the circle meter.
   dialModeCorner: { position: 'absolute', top: 6, left: 6, flexDirection: 'row', gap: 6, zIndex: 2 },

@@ -932,25 +932,34 @@ export function VuMeterView(p: {
   }, [needleRad]);
 
   const ledO = useDerivedValue(() => {
+    // Over-range PEG (owner 2026-07-30): when the needle is parked at/over the +3
+    // end of the scale (pct ≥ 1 ⇒ nx ≥ RMS0·1.4125), force the PEAK dot fully lit —
+    // so a pegged needle always reads as "pegged + peak". This rides ON TOP of the
+    // normal peak-LED behaviour below.
+    const pegged = nx.value >= RMS0 * 1.4125;
     if (livePeak) {
       // Fast LED follows live peakDb: lights at ≥ −3 dBFS, ~350 ms afterglow.
       const ph = p.phase.value;
       const pk = livePeak.value;
       if (pk === pk && pk >= -3) litPh.value = ph;
       const secs = ((ph - litPh.value) / (Math.PI * 2)) * LOOP;
-      return secs >= 0 && secs < 0.35 ? 1 - secs / 0.35 : 0;
+      const led = secs >= 0 && secs < 0.35 ? 1 - secs / 0.35 : 0;
+      return pegged ? 1 : led;
     }
-    return ledArr[Math.min(RES - 1, Math.floor(frac01(p.phase.value) * RES))];
-  }, [p.phase, ledArr, livePeak, LOOP]);
+    const led = ledArr[Math.min(RES - 1, Math.floor(frac01(p.phase.value) * RES))];
+    return pegged ? 1 : led;
+  }, [p.phase, ledArr, livePeak, LOOP, nx, RMS0]);
 
   const ledX = fx + fw - 22;
   const ledY = fy + 20;
-  // VU wordmark seat (owner 2026-07-30): the needle TIP traces a circle of radius
-  // tipR (= the blade length, R·0.92). At the vertical the blade reaches y = py −
-  // tipR, so the wordmark's BOTTOM is pinned a hair ABOVE that arc — the needle
-  // tip only grazes the boundary and never crosses the letters at any deflection.
-  const wmSize = 22;
-  const wmBottomY = py - R * 0.92 - 2;
+  // VU wordmark seat (owner 2026-07-30, revised): the wordmark lives in the OPEN
+  // BAND between the top scale-number arc and the needle-tip arc. The topmost
+  // numeral (−3, at the vertical) has its ink bottom near py − R − 13; the needle
+  // tip traces a circle of radius R·0.92 (peaks at py − 0.92·R at the vertical).
+  // Seat "VU" fully inside that band: pin its BOTTOM 3 px above the needle-tip arc
+  // and size it so its TOP still clears the numeral row (shrinking on small faces).
+  const wmSize = Math.min(20, Math.max(14, Math.round(0.08 * R + 7)));
+  const wmBottomY = py - R * 0.92 - 3;
   const wmTopY = wmBottomY - wmSize;
   return (
     <View style={{ width: w, height: h }}>
@@ -2069,7 +2078,7 @@ export function SplDialView(p: {
       const a = angOf(spl);
       return { x: cx + Math.sin(a) * arcR, y: cy - Math.cos(a) * arcR };
     };
-    const lineH = 15; // item 6: more line-to-line breathing room
+    const lineH = 14; // line-to-line breathing room within a callout block
     type CoLine = { t: string; size: number; color: string; ls?: number };
     // `color` = the zone colour that tints this callout's leader + anchor dot.
     type CoDef = { spl: number; color: string; lines: CoLine[] };
@@ -2104,64 +2113,99 @@ export function SplDialView(p: {
             { spl: 90, color: Z_ORANGE, lines: [ { t: 'IMPACT CHECK', size: 12.5, color: Z_ORANGE, ls: 0.3 }, { t: '85–95 dB SPL · brief', size: 9.5, color: inkDim } ] },
           ];
 
-    // Place each label centre on the ray through its anchor, at radius labelR —
-    // clear OUTSIDE the arc ring. Side (L/C/R) follows the ray's horizontal sign
-    // so text hugs the correct margin (left = right-aligned, right = left-aligned,
-    // near-top = centred).
-    const gap = Math.max(30, Rface * 0.5);
-    const labelR = arcR + gap;
-    const bw = Math.min(Math.round(w * 0.44), 132);
-    const clampX = (x: number) => Math.max(4, Math.min(w - bw - 4, x));
-    type Placed = {
-      spl: number; color: string; lines: CoLine[];
-      side: 'L' | 'C' | 'R'; align: 'left' | 'center' | 'right';
-      bx: number; bw: number; ty: number; th: number; innerX: number; ax: number; ay: number;
+    // THREE horizontally-DISJOINT columns (owner 2026-07-30 v3): a LEFT margin
+    // column, a CENTER band that lives strictly BETWEEN the columns (over the top
+    // of the arc), and a RIGHT margin column. Because the three x-ranges never
+    // overlap, a callout box can only ever collide with another box in its OWN
+    // column — so a single per-column vertical stack fully de-collides everything,
+    // and no box can touch the arc ring or the dial numerals (which all sit inside
+    // the center band, well below where the center callouts are seated).
+    //
+    // Vertical position follows the anchor's ray (labels ring the arc top→bottom);
+    // horizontal position is pinned to the column so text always clears the arc.
+    const arcOuter = arcR + wArc / 2;      // outer edge of the coloured arc stroke
+    const edgePad = 4;
+    const colPad = 8;                       // clearance from the arc to a side column
+    const leftInner = cx - arcOuter - colPad;   // right edge of the LEFT column
+    const rightInner = cx + arcOuter + colPad;  // left edge of the RIGHT column
+    const centerHalf = Math.min((rightInner - leftInner) / 2, 74);
+    const labelR = arcOuter + Math.max(26, Rface * 0.42); // ray radius for vertical
+    const CENTER_SIN = 0.2;                 // |sin| below this ⇒ a top-centre anchor
+    // Keep every callout below the top caption/title block and above the bottom.
+    const topLimit = topTextH + 12;
+    const botLimit = h - 6;
+    const minGap = 7;
+
+    type Col = 'L' | 'C' | 'R';
+    type Item = {
+      def: CoDef; sn: number; cs: number; col: Col; th: number; ly: number;
+      ty: number; bx: number; bw: number; align: 'left' | 'center' | 'right';
+      innerX: number; ax: number; ay: number;
     };
-    const placed: Placed[] = defs.map((d) => {
+    const items: Item[] = defs.map((d) => {
       const a = angOf(d.spl);
       const sn = Math.sin(a);
       const cs = Math.cos(a);
-      const lx = cx + sn * labelR;
-      const ly = cy - cs * labelR;
-      const th = d.lines.length * lineH;
       const an = anchor(d.spl);
-      const side: 'L' | 'C' | 'R' = sn < -0.15 ? 'L' : sn > 0.15 ? 'R' : 'C';
-      let bx: number;
-      let align: 'left' | 'center' | 'right';
-      let innerX: number;
-      if (side === 'L') { align = 'right'; bx = clampX(lx - bw); innerX = bx + bw; }
-      else if (side === 'R') { align = 'left'; bx = clampX(lx); innerX = bx; }
-      else { align = 'center'; bx = clampX(lx - bw / 2); innerX = lx; }
-      return { spl: d.spl, color: d.color, lines: d.lines, side, align, bx, bw, ty: ly - th / 2, th, innerX, ax: an.x, ay: an.y };
+      const col: Col = Math.abs(sn) < CENTER_SIN ? 'C' : sn < 0 ? 'L' : 'R';
+      return {
+        def: d, sn, cs, col, th: d.lines.length * lineH, ly: cy - cs * labelR,
+        ty: 0, bx: 0, bw: 0, align: 'center', innerX: 0, ax: an.x, ay: an.y,
+      };
     });
 
-    // Vertical de-collision per side (≥ minGap between stacked boxes), clamped to
-    // the component. The leaders (built after) still terminate on the true anchor.
-    const minGap = 8;
-    const topLimit = 6;
-    const botLimit = h - 4;
-    for (const s of ['L', 'C', 'R'] as const) {
-      const grp = placed.filter((p2) => p2.side === s).sort((a, b) => a.ty - b.ty);
-      for (let i = 0; i < grp.length; i++) {
-        if (grp[i].ty < topLimit) grp[i].ty = topLimit;
-        if (i > 0) {
-          const minTy = grp[i - 1].ty + grp[i - 1].th + minGap;
-          if (grp[i].ty < minTy) grp[i].ty = minTy;
+    // A crowded top-centre (≥ 2 near-vertical anchors, e.g. STUDIO's 72 & 79) can
+    // neither stack cleanly (too little room above the arc) nor sit side-by-side
+    // (labels too wide) — so fan the pair back out to the side columns by sign.
+    const centred = items.filter((i) => i.col === 'C');
+    if (centred.length >= 2) for (const i of centred) i.col = i.sn < 0 ? 'L' : 'R';
+
+    // Horizontal box per column: LEFT right-aligned to leftInner, RIGHT left-aligned
+    // from rightInner, CENTER centred over the arc top. The leader always starts at
+    // the box edge nearest the dial (innerX) so no leader crosses another box.
+    for (const i of items) {
+      if (i.col === 'L') { i.align = 'right'; i.bx = edgePad; i.bw = leftInner - edgePad; i.innerX = leftInner; }
+      else if (i.col === 'R') { i.align = 'left'; i.bx = rightInner; i.bw = w - edgePad - rightInner; i.innerX = rightInner; }
+      else { i.align = 'center'; i.bw = centerHalf * 2; i.bx = cx - centerHalf; i.innerX = cx; }
+    }
+
+    // Per-column vertical stack: seat each box at its ray height, then push any
+    // overlap downward (≥ minGap); if the stack runs past the bottom, shift it up
+    // as a whole (never above topLimit). Columns are disjoint in x, so this is the
+    // ONLY de-collision needed.
+    for (const c of ['L', 'C', 'R'] as const) {
+      const grp = items.filter((i) => i.col === c).sort((a, b) => a.ly - b.ly);
+      let prevBot = topLimit;
+      for (const i of grp) {
+        let ty = i.ly - i.th / 2;
+        if (ty < prevBot) ty = prevBot;
+        i.ty = ty;
+        prevBot = ty + i.th + minGap;
+      }
+      const last = grp[grp.length - 1];
+      if (last) {
+        const over = last.ty + last.th - botLimit;
+        if (over > 0) {
+          let shift = over;
+          if (grp[0].ty - shift < topLimit) shift = grp[0].ty - topLimit;
+          if (shift > 0) for (const i of grp) i.ty -= shift;
         }
-        if (grp[i].ty + grp[i].th > botLimit) grp[i].ty = botLimit - grp[i].th;
       }
     }
 
-    const laid = placed.map((p2) => {
-      const midY = p2.ty + p2.th / 2;
-      const fromX = p2.innerX;
-      const fromY = p2.side === 'C' ? p2.ty + p2.th : midY;
+    const laid = items.map((i) => {
+      const midY = i.ty + i.th / 2;
+      const fromX = i.innerX;
+      const fromY = i.col === 'C' ? i.ty + i.th : midY;
       const leaderPath = Skia.Path.Make();
       leaderPath.moveTo(fromX, fromY);
-      leaderPath.lineTo(p2.ax, p2.ay);
+      leaderPath.lineTo(i.ax, i.ay);
       const dotPath = Skia.Path.Make();
-      dotPath.addCircle(p2.ax, p2.ay, 2.8);
-      return { ...p2, lineH, leaderPath, dotPath };
+      dotPath.addCircle(i.ax, i.ay, 2.8);
+      return {
+        spl: i.def.spl, color: i.def.color, lines: i.def.lines,
+        align: i.align, bx: i.bx, bw: i.bw, ty: i.ty, lineH, leaderPath, dotPath,
+      };
     });
     return { items: laid };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -2276,18 +2320,22 @@ export function SplDialView(p: {
           (y≈34) so nothing sits at the bottom anymore. */}
       {mode === 'studio' ? (
         <>
-          <Lbl x={0} y={34} w={w} size={15} font={fonts.oswaldSemiBold} ls={3} color={ink}>
-            dB SPL
+          {/* Item 6: two-line centered title matching the SPL / OPTIMAL modes. */}
+          <Lbl x={0} y={34} w={w} size={15} font={fonts.oswaldSemiBold} ls={2} color={ink}>
+            STUDIO MONITORING
           </Lbl>
-          <Lbl x={0} y={58} w={w} size={11} font={fonts.oswaldSemiBold} ls={0.4} color={inkDim}>
+          <Lbl x={0} y={57} w={w} size={12} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
+            dB SPL(C) · MIXING LEVELS
+          </Lbl>
+          <Lbl x={0} y={75} w={w} size={11} font={fonts.oswaldSemiBold} ls={0.4} color={inkDim}>
             CHECK 85–95 · WORK 70–75 · DETAIL 60–65
           </Lbl>
-          <Lbl x={0} y={76} w={w} size={12} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
+          <Lbl x={0} y={91} w={w} size={11} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
             C-WEIGHTED · SLOW
           </Lbl>
           {/* ESTIMATED badge (uncalibrated) — never a certified reading (§1.7). */}
           {!p.calibrated ? (
-            <Lbl x={0} y={96} w={w} size={9} font={fonts.oswaldSemiBold} ls={0.6} color={RED_INK}>
+            <Lbl x={0} y={107} w={w} size={9} font={fonts.oswaldSemiBold} ls={0.6} color={RED_INK}>
               ESTIMATED · UNCALIBRATED
             </Lbl>
           ) : null}
