@@ -858,12 +858,13 @@ export function VuMeterView(p: {
     } else {
       target = rmsArr[Math.min(RES - 1, Math.floor(f * RES))];
     }
-    // Fast integrator — tc = 0.10 s (owner 2026-07-30: needle must track quickly):
-    const a = 1 - Math.exp(-dt / 0.1);
+    // Integrator — tc = 0.20 s (owner 2026-07-30: slowed back HALF of the earlier
+    // 0.30→0.10 speed-up, a middle ground):
+    const a = 1 - Math.exp(-dt / 0.2);
     vuVal.value = vuVal.value + (target - vuVal.value) * a;
-    // Stiffened under-damped follower (spring/damping raised proportionally so it
-    // catches up fast without ringing).
-    const acc = (vuVal.value - nx.value) * 700 - nv.value * 38;
+    // Under-damped follower at the midpoint of the earlier stiffening (so it
+    // catches up at a moderate pace without ringing).
+    const acc = (vuVal.value - nx.value) * 520 - nv.value * 33;
     nv.value = nv.value + acc * dt;
     nx.value = nx.value + nv.value * dt;
     let pct = nx.value / (RMS0 * 1.4125);
@@ -1011,13 +1012,14 @@ export function VuMeterView(p: {
         </Lbl>
       ))}
       {/* SPL-span brackets on the INNER side of the arc (SPL popup): lowText at the
-          −20 mark, highText at the 0 mark — the SPL range mapped onto the VU. */}
+          −20 mark, highText at the 0 mark — the SPL range mapped onto the VU. Drawn
+          in BLUE (owner 2026-07-30) to match the blue RANGE buttons that set them. */}
       {p.scaleBrackets != null ? (
         <>
-          <Lbl x={G.brLow.x - 24} y={G.brLow.y - 5} w={48} size={9.5} font={fonts.oswaldSemiBold} ls={0.3} color="#2e2618">
+          <Lbl x={G.brLow.x - 24} y={G.brLow.y - 5} w={48} size={9.5} font={fonts.oswaldSemiBold} ls={0.3} color="#1f5fd0">
             {p.scaleBrackets.lowText}
           </Lbl>
-          <Lbl x={G.brHigh.x - 24} y={G.brHigh.y - 5} w={48} size={9.5} font={fonts.oswaldSemiBold} ls={0.3} color="#2e2618">
+          <Lbl x={G.brHigh.x - 24} y={G.brHigh.y - 5} w={48} size={9.5} font={fonts.oswaldSemiBold} ls={0.3} color="#1f5fd0">
             {p.scaleBrackets.highText}
           </Lbl>
         </>
@@ -1827,6 +1829,11 @@ export function SplDialView(p: {
    *  2026-07-30), with a small "dB SPL" sub-label under it. The caller formats it
    *  each frame. Absent ⇒ nothing drawn in the centre. */
   centerText?: string;
+  /** Dynamic colour for the big centre dB SPL readout (owner 2026-07-30): the
+   *  parent passes the LIVE zone colour so the number turns green/amber/orange/red
+   *  as the level moves through the arc's colour zones. Absent ⇒ dark ink. The
+   *  small "dB SPL" sub-label stays neutral dark ink regardless. */
+  centerColor?: string;
 }) {
   const w = p.width;
   const h = p.height ?? Math.round(w * 1.02);
@@ -1848,8 +1855,13 @@ export function SplDialView(p: {
   const plateR = 14; // plate corner radius
   const topPad = 6;
   const bottomTextH = Math.max(96, Math.round(h * 0.3)); // reserved text band
-  const Rface = Math.max(40, Math.min(w / 2 - 6, (h - bottomTextH) / 2 - 3));
-  const cy = Rface + topPad; // pivot = face centre, near the TOP of the plate
+  // B2 (owner 2026-07-30): dial shrunk to ~72% of the fit radius, opening MORE
+  // horizontal room in the side margins for the callout labels.
+  const Rface = 0.72 * Math.max(40, Math.min(w / 2 - 6, (h - bottomTextH) / 2 - 3));
+  // B9 (owner 2026-07-30): drop the pivot LOWER — more vertically centred in the
+  // dial region, but biased so a little MORE room sits below the face than above.
+  const dialRegionH = h - bottomTextH;
+  const cy = topPad + Rface + Math.max(0, dialRegionH - 2 * Rface - topPad) * 0.4;
   const Rs = Rface / 1.28; // scale (tick) radius
   const wArc = Math.max(6, Rface * 0.09); // colored loudness-arc thickness
   const splPct = (spl: number) => (spl - SPL_MIN) / SPAN;
@@ -1989,15 +2001,18 @@ export function SplDialView(p: {
   }, [needleRad]);
 
   const ink = '#1c1c1c';
-  const inkDim = '#6a6250';
+  // B1 (owner 2026-07-30): light-gray theme — the old mid-gray inkDim (#6a6250)
+  // washed out on gray, so it goes DARKER for clear contrast.
+  const inkDim = '#3f3a30';
   const RED_INK = '#b3271e';
-  // Zone palette — darkened to read on the WHITE face (owner 2026-07-30). Used for
-  // BOTH the arc strokes and the zone-matched callout labels + leaders.
+  // Zone palette — darkened to read on the LIGHT-GRAY face (owner 2026-07-30).
+  // Used for BOTH the arc strokes and the zone-matched callout labels + leaders.
   const Z_GREEN = '#1f7a34';
   const Z_AMBER = '#b8860b';
   const Z_ORANGE = '#c9631a';
   const Z_RED = '#b3271e';
-  const Z_GREY = '#8a8f99';
+  // Dim/grey studio zone — darkened so the below-sweet-spot arc still reads on gray.
+  const Z_GREY = '#6b7078';
 
   // ── CALLOUT LABELS (owner 2026-07-30 redesign): every descriptive/reference
   // label lives OUTSIDE the arc in the wide side margins — left margin = low SPL,
@@ -2009,40 +2024,58 @@ export function SplDialView(p: {
   // the size or the label mode changes.
   const CO = useMemo(() => {
     const arcR = Rs + 2;
+    // B3: the leader endpoint is EXACTLY angOf(spl) on the arc line — the dB in
+    // each label IS this anchor's spl, so the hairline lands right on its numeral.
     const anchor = (spl: number) => {
       const a = angOf(spl);
       return { x: cx + Math.sin(a) * arcR, y: cy - Math.cos(a) * arcR };
     };
+    // B4: labels live OUTSIDE the arc in the side margins, a clear 12 px gap from
+    // the ring; the leaders bridge that gap. Left margin holds a right/centred
+    // block, right margin a left/centred block.
     const leftInnerX = Math.round(cx - arcR - 12);
     const rightInnerX = Math.round(cx + arcR + 12);
+    const leftBx = 6;
+    const leftBw = Math.max(52, leftInnerX - 6 - 6);
+    const rightBx = rightInnerX + 4;
+    const rightBw = Math.max(52, w - rightBx - 6);
+    const lineH = 13;
     type CoLine = { t: string; size: number; color: string; ls?: number };
-    // `color` = the zone colour that tints this callout's leader + anchor dot AND
-    // its primary line — "text colours match their area colours" (owner 2026-07-30).
+    // `color` = the zone colour that tints this callout's leader + anchor dot.
+    // ty is derived from cy/Rface so slots track the (smaller, lower) dial. Slots
+    // are ordered to match each anchor's height so leaders never cross.
     type CoItem = { side: 'L' | 'R'; spl: number; ty: number; color: string; lines: CoLine[] };
     const items: CoItem[] =
       mode === 'spl'
         ? [
-            { side: 'R', spl: 79, ty: 14, color: Z_AMBER, lines: [ { t: 'STUDIO LISTENING', size: 12, color: Z_AMBER, ls: 0.2 }, { t: '~79 dBC', size: 10, color: inkDim } ] },
-            { side: 'R', spl: 95, ty: 64, color: Z_ORANGE, lines: [ { t: 'CONCERT', size: 13, color: Z_ORANGE, ls: 0.3 }, { t: '~95 dBC', size: 10, color: inkDim } ] },
-            { side: 'R', spl: 110, ty: 116, color: Z_RED, lines: [ { t: '100+ dB', size: 13, color: Z_RED, ls: 0.3 }, { t: 'UNSAFE >15 MIN/DAY', size: 9.5, color: Z_RED } ] },
-            { side: 'L', spl: 60, ty: 32, color: Z_GREEN, lines: [ { t: 'CONVERSATION', size: 13, color: Z_GREEN, ls: 0.3 }, { t: '~60 dBA', size: 10, color: inkDim } ] },
-            { side: 'L', spl: 37, ty: 104, color: Z_GREEN, lines: [ { t: 'QUIET ROOM', size: 13, color: Z_GREEN, ls: 0.3 }, { t: '35–40 dBA', size: 10, color: inkDim } ] },
+            // Reference sounds (unchanged content) — precision + centred subtitles.
+            { side: 'R', spl: 79, ty: cy - Rface * 0.66, color: Z_AMBER, lines: [ { t: 'STUDIO LISTENING', size: 11, color: Z_AMBER, ls: 0.2 }, { t: '~79 dBC', size: 10, color: inkDim } ] },
+            { side: 'R', spl: 95, ty: cy - Rface * 0.12, color: Z_ORANGE, lines: [ { t: 'CONCERT', size: 13, color: Z_ORANGE, ls: 0.3 }, { t: '~95 dBC', size: 10, color: inkDim } ] },
+            { side: 'R', spl: 110, ty: cy + Rface * 0.34, color: Z_RED, lines: [ { t: '100+ dB', size: 13, color: Z_RED, ls: 0.3 }, { t: 'UNSAFE >15 MIN/DAY', size: 9, color: Z_RED } ] },
+            { side: 'L', spl: 60, ty: cy - Rface * 0.62, color: Z_GREEN, lines: [ { t: 'CONVERSATION', size: 13, color: Z_GREEN, ls: 0.3 }, { t: '~60 dBA', size: 10, color: inkDim } ] },
+            { side: 'L', spl: 37, ty: cy + Rface * 0.14, color: Z_GREEN, lines: [ { t: 'QUIET ROOM', size: 13, color: Z_GREEN, ls: 0.3 }, { t: '35–40 dBA', size: 10, color: inkDim } ] },
           ]
         : [
-            { side: 'R', spl: 82, ty: 12, color: Z_GREEN, lines: [ { t: 'SWEET SPOT', size: 13, color: Z_GREEN, ls: 0.3 }, { t: '79 / 82 / 85 dB(C)', size: 10, color: inkDim }, { t: 'SM · MD · LG', size: 10, color: inkDim } ] },
-            { side: 'R', spl: 100, ty: 104, color: Z_RED, lines: [ { t: 'HEARING', size: 13, color: Z_RED, ls: 0.3 }, { t: 'RISK', size: 13, color: Z_RED, ls: 0.3 } ] },
-            { side: 'L', spl: 55, ty: 52, color: Z_GREY, lines: [ { t: 'BASS LESS', size: 12, color: inkDim, ls: 0.3 }, { t: 'ACCURATE', size: 12, color: inkDim, ls: 0.3 } ] },
+            // B6: four long-term mixing bands. Lower dB on the LEFT (going up),
+            // higher dB on the RIGHT — leaders don't cross. First three green, the
+            // brief IMPACT CHECK orange.
+            { side: 'L', spl: 72, ty: cy - Rface * 0.62, color: Z_GREEN, lines: [ { t: 'GENERAL EDITING', size: 12, color: Z_GREEN, ls: 0.2 }, { t: '70–75 dB SPL', size: 10, color: inkDim } ] },
+            { side: 'L', spl: 62, ty: cy - Rface * 0.04, color: Z_GREEN, lines: [ { t: 'BACKGROUND · DETAIL', size: 10.5, color: Z_GREEN, ls: 0.1 }, { t: '60–65 dB SPL', size: 10, color: inkDim } ] },
+            { side: 'R', spl: 79, ty: cy - Rface * 0.62, color: Z_GREEN, lines: [ { t: 'CRITICAL BALANCE', size: 12, color: Z_GREEN, ls: 0.2 }, { t: '79 dB SPL C', size: 10, color: inkDim } ] },
+            { side: 'R', spl: 90, ty: cy - Rface * 0.02, color: Z_ORANGE, lines: [ { t: 'IMPACT CHECK', size: 13, color: Z_ORANGE, ls: 0.3 }, { t: '85–95 dB SPL · brief', size: 9.5, color: inkDim } ] },
           ];
     const laid = items.map((it) => {
+      const bx = it.side === 'L' ? leftBx : rightBx;
+      const bw = it.side === 'L' ? leftBw : rightBw;
       const innerX = it.side === 'L' ? leftInnerX : rightInnerX;
       const a = anchor(it.spl);
-      const midY = it.ty + it.lines.length * 6 + 2;
+      const midY = it.ty + (it.lines.length * lineH) / 2;
       const leaderPath = Skia.Path.Make();
       leaderPath.moveTo(innerX, midY);
       leaderPath.lineTo(a.x, a.y);
       const dotPath = Skia.Path.Make();
       dotPath.addCircle(a.x, a.y, 2.8);
-      return { ...it, innerX, ax: a.x, ay: a.y, leaderPath, dotPath };
+      return { ...it, bx, bw, innerX, ty: it.ty, lineH, ax: a.x, ay: a.y, leaderPath, dotPath };
     });
     return { items: laid, leftInnerX, rightInnerX };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -2051,12 +2084,12 @@ export function SplDialView(p: {
   return (
     <View style={{ width: w, height: h }}>
       <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
-        {/* A1 — WHITE rounded-rect PLATE (owner 2026-07-30: dark gradient plate
-            removed; round housing + screws already gone). */}
-        <Path path={G.plate} color="#ffffff" />
-        <Path path={G.plate} color="#e0e0e0" style="stroke" strokeWidth={1} opacity={0.9} />
-        {/* Near-white face (UPPER portion). */}
-        <Path path={G.face} color="#fafafa" />
+        {/* A1/B1 — LIGHT-GRAY rounded-rect PLATE (owner 2026-07-30: was white).
+            Flat and clean; the slightly-lighter gray face sits in the upper part. */}
+        <Path path={G.plate} color="#e6e6ea" />
+        <Path path={G.plate} color="#d2d2d8" style="stroke" strokeWidth={1} opacity={0.9} />
+        {/* Light-gray face (UPPER portion), a touch lighter than the plate. */}
+        <Path path={G.face} color="#f0f0f3" />
         {/* A3 — MAIN arc conveys each MODE's ranges (zone palette darkened to read
             on white). STUDIO: dim below the sweet spot, GREEN 79–85 dB(C), RED
             above. SPL: green→amber→orange→red loudness with 100+ emphasised red. */}
@@ -2096,8 +2129,8 @@ export function SplDialView(p: {
         </Path>
         <Path path={nodeCore} color="#2e2618" />
         <Path path={nodeCore} color="#fff5d8" style="stroke" strokeWidth={1.4} opacity={0.95} />
-        {/* Face edge: subtle light ring (dark bezel removed for the white look). */}
-        <Path path={G.face} color="#d0d0d0" style="stroke" strokeWidth={1.4} opacity={0.9} />
+        {/* Face edge: subtle ring, a shade darker than the gray face for definition. */}
+        <Path path={G.face} color="#c8c8d0" style="stroke" strokeWidth={1.4} opacity={0.9} />
       </Canvas>
 
       {/* A2 — Printed numerals (larger + bold, red at 100+). */}
@@ -2111,15 +2144,17 @@ export function SplDialView(p: {
           guidance label sits cleanly in a side margin, right-aligned on the left,
           left-aligned on the right, connected inward to its exact dB on the arc by
           the leader hairlines drawn in the Canvas above. */}
+      {/* B5: each callout is a CENTRED block — the title on top, the dB subtitle
+          centred directly beneath it (both share the block's centre). */}
       {CO.items.map((it, idx) => (
         <View key={`co${idx}`}>
           {it.lines.map((ln, i) => (
             <Lbl
               key={i}
-              x={it.side === 'L' ? 6 : it.innerX + 4}
-              y={it.ty + i * 13}
-              w={it.side === 'L' ? it.innerX - 10 : w - (it.innerX + 4) - 6}
-              align={it.side === 'L' ? 'right' : 'left'}
+              x={it.bx}
+              y={Math.round(it.ty + i * it.lineH)}
+              w={it.bw}
+              align="center"
               size={ln.size}
               font={fonts.oswaldSemiBold}
               ls={ln.ls}
@@ -2137,7 +2172,10 @@ export function SplDialView(p: {
           nothing drawn. */}
       {p.centerText != null ? (
         <>
-          <Lbl x={0} y={cy - 21} w={w} size={30} font={fonts.oswaldSemiBold} color={ink}>
+          {/* B7: the big centre number takes the LIVE zone colour when provided
+              (green/amber/orange/red as the level crosses the arc zones); dark ink
+              otherwise. The "dB SPL" sub-label stays neutral dark ink. */}
+          <Lbl x={0} y={cy - 21} w={w} size={30} font={fonts.oswaldSemiBold} color={p.centerColor ?? ink}>
             {p.centerText}
           </Lbl>
           <Lbl x={0} y={cy + 15} w={w} size={10} font={fonts.oswaldSemiBold} ls={1.5} color={inkDim}>
@@ -2169,7 +2207,7 @@ export function SplDialView(p: {
 
       {/* ESTIMATED badge (uncalibrated) — never a certified reading (§1.7). */}
       {!p.calibrated ? (
-        <Lbl x={0} y={cy + Rface + 66} w={w} size={12} font={fonts.oswaldSemiBold} ls={0.6} color={RED_INK}>
+        <Lbl x={0} y={cy + Rface + 66} w={w} size={9} font={fonts.oswaldSemiBold} ls={0.6} color={RED_INK}>
           ESTIMATED · UNCALIBRATED
         </Lbl>
       ) : null}

@@ -139,6 +139,7 @@ function VuHero({
   dialMode,
   onDialMode,
   centerText,
+  centerColor,
 }: {
   viz: VizMetersModule;
   live: LiveMeterDrive;
@@ -149,12 +150,14 @@ function VuHero({
   dialMode: 'studio' | 'spl';
   onDialMode: (m: 'studio' | 'spl') => void;
   centerText: string;
+  centerColor?: string;
 }) {
   const phase = viz.usePhaseClock(true, 1 / VU_LOOP);
   return (
-    // SPL gauge — its OWN full-width row so labels sit outside the arc. The LED
-    // moved up to share the top row with the VU (owner 2026-07-30).
-    <View style={{ width: dialW, alignSelf: 'center', alignItems: 'center', gap: 8 }}>
+    // SPL gauge — its OWN full-width row so labels sit outside the arc. The
+    // STUDIO/SPL chooser is pinned to the TOP-LEFT corner of the container
+    // (owner 2026-07-30); the LED shares the top row with the VU.
+    <View style={{ width: dialW, alignSelf: 'center', height: dialH }}>
       <viz.SplDialView
         width={dialW}
         height={dialH}
@@ -165,9 +168,9 @@ function VuHero({
         labelMode={dialMode}
         loopSeconds={VU_LOOP}
         centerText={centerText}
+        centerColor={centerColor}
       />
-      {/* STUDIO / SPL chooser — swaps the ring's labels (owner 2026-07-30). */}
-      <View style={styles.dialModeRow}>
+      <View style={styles.dialModeCorner}>
         {(['studio', 'spl'] as const).map((m) => (
           <Pressable
             key={m}
@@ -191,6 +194,23 @@ function VuHero({
  *  RELATIVE to this reference (current SPL − RANGE), so RANGE centres the meter
  *  on the room's noise level. Default 100 dB. AUTO (below) tracks ambient. */
 const RANGE_VALUES = [20, 40, 60, 80, 100, 120] as const;
+
+// Circle-gauge zone palette (matches SplDialView's darkened arc colors) — used to
+// tint the live centre readout so the number turns the colour of the zone it sits
+// in as the level moves (owner 2026-07-30).
+const ZONE = { green: '#1f7a34', amber: '#b8860b', orange: '#c9631a', red: '#b3271e', dim: '#6b7078' } as const;
+function splZoneColor(spl: number, mode: 'studio' | 'spl'): string {
+  if (mode === 'spl') {
+    if (spl < 60) return ZONE.green;
+    if (spl < 78) return ZONE.amber;
+    if (spl < 95) return ZONE.orange;
+    return ZONE.red;
+  }
+  // studio: dim below the sweet spot, green across 79–85, red above
+  if (spl < 79) return ZONE.dim;
+  if (spl <= 85) return ZONE.green;
+  return ZONE.red;
+}
 
 /** Peak-hold linger options for the LED meter's user setting. */
 const HOLD_MODES: PeakHoldMode[] = ['off', '1s', '3s', 'inf'];
@@ -345,15 +365,15 @@ export function SplMeterScreen({ navigation }: Props) {
   }, [meter, weighting, response, offset, liveRmsDb, livePeakDb]);
 
   // AUTO range recompute — reads the smoothed EMA a few times a second and parks
-  // the ANCHOR (the −20 mark) 10 dB below the current level, so the live signal
-  // sits mid-scale (~−10 VU) and keeps swinging. Rounded to 5 dB with a small
+  // the 0-VU reference 10 dB ABOVE the current level, so the live signal sits
+  // mid-scale (~−10 VU) and keeps swinging. Rounded to 5 dB with a small
   // hysteresis so it re-settles without hunting. Only while AUTO + live.
   useEffect(() => {
     if (!rangeAuto || !running) return;
     const id = setInterval(() => {
       const ema = splEmaRef.current;
       if (ema == null) return;
-      const target = Math.max(20, Math.min(120, Math.round((ema - 10) / 5) * 5));
+      const target = Math.max(20, Math.min(130, Math.round((ema + 10) / 5) * 5));
       setAutoRangeDb((prev) => (Math.abs(prev - target) >= 5 ? target : prev));
     }, 300);
     return () => clearInterval(id);
@@ -367,28 +387,28 @@ export function SplMeterScreen({ navigation }: Props) {
   // badges the dial ESTIMATED — never a certified SPL reading (§1.7).
   const splOffset = offset ?? 100;
   const calibrated = offset != null;
-  // VU RANGE wiring (owner 2026-07-30): the RANGE value is the SPL that sits at
-  // the −20 VU mark; the 0 VU mark is 20 dB above it (the −20..0 span is 20 dB on
-  // this relative face). So a RANGE of 60 shows 60 dB at −20 and 80 dB at 0. The
-  // dBFS that reads 0 VU is therefore (RANGE + 20) − splOffset. In AUTO the
-  // anchor is the slow-tracked ambient reference (kept so the needle sits mid-scale).
-  const effAnchor = rangeAuto ? autoRangeDb : rangeDb; // SPL at the −20 VU mark
-  const vuRef0 = effAnchor + 20; // SPL at the 0 VU mark
-  const vuLive0 = vuRef0 - splOffset;
+  // VU RANGE wiring (owner 2026-07-30, corrected): the RANGE value is the SPL that
+  // reads 0 VU (the selected number sits AT the 0 mark); the −20 mark is 20 dB
+  // below it. So RANGE 80 shows 80 dB at 0 and 60 dB at −20. The dBFS that reads
+  // 0 VU is RANGE − splOffset. In AUTO the reference is the slow-tracked ambient.
+  const rangeRef = rangeAuto ? autoRangeDb : rangeDb; // SPL that reads 0 VU
+  const vuLive0 = rangeRef - splOffset;
   // Printed TOP-LEFT on the VU face.
-  const vuRangeText = rangeAuto ? `AUTO ${effAnchor}` : `RANGE ${effAnchor}`;
-  // SPL bracket printed inside the arc: the low number at −20, the high at 0.
-  const vuBrackets = { lowText: `${effAnchor}`, highText: `${vuRef0}` };
+  const vuRangeText = rangeAuto ? `AUTO ${rangeRef}` : `RANGE ${rangeRef}`;
+  // SPL bracket printed inside the arc (BLUE — the 0 value equals the blue RANGE
+  // button): low number at −20 (= RANGE − 20), high at 0 (= RANGE).
+  const vuBrackets = { lowText: `${rangeRef - 20}`, highText: `${rangeRef}` };
   // VU corner readouts (printed inside the glass): MAX = peak-hold in SPL terms,
   // LEVEL = the current selected weighting × response, both via the screen's
   // shown()/fmtDb so every number on the screen agrees.
   const vuMaxText = meter ? fmtDb(shown(meter.peakHoldDb)) : '—';
   const vuLevelText = meter ? fmtDb(shown(selectedLevelDb(meter, weighting, response))) : '—';
   // Live SPL number for the CENTER of the circle gauge — the ESTIMATED dB SPL
-  // (level + splOffset) so it matches the node's position on the dial's scale.
-  const dialCenterText = meter
-    ? `${Math.round(selectedLevelDb(meter, weighting, response) + splOffset)}`
-    : '—';
+  // (level + splOffset) so it matches the node's position on the dial's scale —
+  // plus its zone colour so the number turns the colour of the arc zone it's in.
+  const dialSpl = meter ? Math.round(selectedLevelDb(meter, weighting, response) + splOffset) : null;
+  const dialCenterText = dialSpl != null ? `${dialSpl}` : '—';
+  const dialCenterColor = dialSpl != null ? splZoneColor(dialSpl, dialMode) : undefined;
 
   /** SAVE LOG → Saved Measurement Library (spec §7; payload = SplLogPayload). */
   const onSaveLog = useCallback(() => {
@@ -758,8 +778,8 @@ export function SplMeterScreen({ navigation }: Props) {
             {running && (
               <Text style={styles.vuBadge}>
                 {calibrated
-                  ? `VU: RELATIVE · ${effAnchor} dB at −20 → ${vuRef0} dB at 0 (${rangeAuto ? 'AUTO' : 'RANGE'}). GAUGE: dB SPL · FIELD-CALIBRATED (APPROXIMATE) — the 79/82/85 dB(C) mix band is a reference, not a guarantee`
-                  : `VU: RELATIVE · ${effAnchor} dB at −20 → ${vuRef0} dB at 0 (${rangeAuto ? 'AUTO · ESTIMATED' : 'RANGE · ESTIMATED'} environment). GAUGE: ESTIMATED · UNCALIBRATED — SPL numbers are an estimate; calibrate against a real SPL meter for true readings`}
+                  ? `VU: RELATIVE · ${rangeRef} dB at 0 → ${rangeRef - 20} dB at −20 (${rangeAuto ? 'AUTO' : 'RANGE'}). GAUGE: dB SPL · FIELD-CALIBRATED (APPROXIMATE) — the 79/82/85 dB(C) mix band is a reference, not a guarantee`
+                  : `VU: RELATIVE · ${rangeRef} dB at 0 → ${rangeRef - 20} dB at −20 (${rangeAuto ? 'AUTO · ESTIMATED' : 'RANGE · ESTIMATED'} environment). GAUGE: ESTIMATED · UNCALIBRATED — SPL numbers are an estimate; calibrate against a real SPL meter for true readings`}
               </Text>
             )}
 
@@ -797,7 +817,7 @@ export function SplMeterScreen({ navigation }: Props) {
                     label opens the RANGE popup (owner 2026-07-30); the old inline
                     note was removed so the readouts sit closer to the VU. */}
                 <View style={styles.chipGroup}>
-                  <HelpHead title={`RANGE · ${effAnchor}→${vuRef0} dB${rangeAuto ? ' (AUTO)' : ''}`} onHelp={() => help('range')} style={styles.chipGroupLabel} />
+                  <HelpHead title={`RANGE · ${rangeRef} dB @0 VU${rangeAuto ? ' (AUTO)' : ''}`} onHelp={() => help('range')} style={styles.chipGroupLabel} />
                   {/* Single horizontal scroll row (owner 2026-07-30) — the values
                       no longer wrap to two rows. */}
                   <ScrollView
@@ -810,7 +830,7 @@ export function SplMeterScreen({ navigation }: Props) {
                       return (
                         <Pressable
                           key={v}
-                          style={[styles.rangeChip, sel && styles.chipSelected]}
+                          style={[styles.rangeChip, sel && styles.rangeChipSelected]}
                           onPress={() => {
                             setRangeAuto(false);
                             setRangeDb(v);
@@ -819,18 +839,18 @@ export function SplMeterScreen({ navigation }: Props) {
                           accessibilityState={{ selected: sel }}
                           accessibilityLabel={`Range ${v} dB`}
                         >
-                          <Text style={[styles.rangeChipText, sel && styles.chipTextSelected]}>{v}</Text>
+                          <Text style={[styles.rangeChipText, sel && styles.rangeChipTextSelected]}>{v}</Text>
                         </Pressable>
                       );
                     })}
                     <Pressable
-                      style={[styles.rangeChip, styles.rangeChipAuto, rangeAuto && styles.chipSelected]}
+                      style={[styles.rangeChip, styles.rangeChipAuto, rangeAuto && styles.rangeChipSelected]}
                       onPress={() => setRangeAuto(true)}
                       accessibilityRole="button"
                       accessibilityState={{ selected: rangeAuto }}
                       accessibilityLabel="Auto range"
                     >
-                      <Text style={[styles.rangeChipText, rangeAuto && styles.chipTextSelected]}>AUTO</Text>
+                      <Text style={[styles.rangeChipText, rangeAuto && styles.rangeChipTextSelected]}>AUTO</Text>
                     </Pressable>
                   </ScrollView>
                 </View>
@@ -893,6 +913,7 @@ export function SplMeterScreen({ navigation }: Props) {
                     dialMode={dialMode}
                     onDialMode={setDialMode}
                     centerText={dialCenterText}
+                    centerColor={dialCenterColor}
                   />
                 ) : null}
 
@@ -1252,23 +1273,27 @@ const styles = StyleSheet.create({
   topRow: { flexDirection: 'row', gap: 10, alignItems: 'flex-start' },
   holdResetBtn: { flex: 0, paddingHorizontal: 16, justifyContent: 'center' },
 
-  // RANGE selector — stepped values in a single horizontal scroll row.
+  // RANGE selector — stepped values in a single horizontal scroll row. BLUE
+  // (owner 2026-07-30) to tie them to the blue −20/0 bracket on the VU face:
+  // the selected value IS the number shown at 0 VU.
   rangeScroll: { flexDirection: 'row', gap: 6, paddingRight: 4 },
   rangeChip: {
     borderRadius: 7,
     borderWidth: 1,
-    borderColor: '#3a3a3a',
-    backgroundColor: '#161616',
+    borderColor: '#2f5fbf',
+    backgroundColor: '#101a2e',
     paddingVertical: 8,
     width: 44,
     alignItems: 'center',
   },
-  rangeChipText: { fontFamily: fonts.mono, fontSize: 13, color: colors.textSecondary },
+  rangeChipText: { fontFamily: fonts.mono, fontSize: 13, color: '#7fa8ff' },
+  rangeChipSelected: { borderColor: '#5d97ff', backgroundColor: '#20407e' },
+  rangeChipTextSelected: { color: '#e4edff' },
   rangeChipAuto: { width: 56 },
   rangeNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted },
 
-  // STUDIO / SPL chooser under the circle meter.
-  dialModeRow: { flexDirection: 'row', gap: 8 },
+  // STUDIO / SPL chooser — pinned to the TOP-LEFT corner of the circle meter.
+  dialModeCorner: { position: 'absolute', top: 6, left: 6, flexDirection: 'row', gap: 6, zIndex: 2 },
   dialModeChip: {
     borderRadius: 7,
     borderWidth: 1,
