@@ -18,7 +18,7 @@
  * Academy unlock, measurement usage is not (ruling 2026-07-23).
  */
 import { memo, useCallback, useMemo, useState } from 'react';
-import { Alert, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, FlatList, Pressable, Share, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { compareCompatibility } from '../../features/tools/measure/compare';
@@ -36,6 +36,43 @@ const fmtWhen = (iso: string) => {
   const d = new Date(iso);
   return `${d.toLocaleDateString()} ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
 };
+
+/** Plain-text export of one measurement's FULL context (owner 2026-07-30) —
+ *  the same disclosure the expanded row shows, shaped for the OS share sheet. */
+function measurementToText(m: SavedMeasurement): string {
+  const lines: string[] = [
+    m.title,
+    `Taken: ${fmtWhen(m.created_at)}`,
+    `Tool: ${toolByKey(m.tool_type).name}`,
+    `Input: ${m.input_device}`,
+    `Calibration: ${m.calibration_status.replace(/_/g, ' ')}`,
+    `Quality: ${QUALITY_LABEL[m.quality_state]}`,
+  ];
+  payloadLines(m).forEach((l) => lines.push(`${l.label}: ${l.value}`));
+  Object.entries(m.measurement_settings).forEach(([k, v]) =>
+    lines.push(`${k.replace(/_/g, ' ')}: ${String(v ?? '—')}`),
+  );
+  m.warning_flags.forEach((f) => {
+    const w = WARNING_INFO[f];
+    lines.push(`⚠ ${w ? `${w.message} ${w.hint}` : f}`);
+  });
+  if (m.notes) lines.push(`Notes: ${m.notes}`);
+  return lines.join('\n');
+}
+
+async function shareMeasurements(ms: SavedMeasurement[]): Promise<void> {
+  if (ms.length === 0) return;
+  const body =
+    ms.length === 1
+      ? measurementToText(ms[0])
+      : `AP&E — ${ms.length} saved measurements\n\n` +
+        ms.map(measurementToText).join('\n\n──────────\n\n');
+  try {
+    await Share.share({ title: ms.length === 1 ? ms[0].title : 'AP&E saved measurements', message: body });
+  } catch {
+    // User dismissed the share sheet, or the OS reported no target — non-fatal.
+  }
+}
 
 function QualityChip({ m }: { m: SavedMeasurement }) {
   const c = QUALITY_COLOR[m.quality_state];
@@ -148,6 +185,12 @@ function ContextBlock({ m }: { m: SavedMeasurement }) {
   const settings = Object.entries(m.measurement_settings);
   return (
     <View style={styles.ctx}>
+      {/* Quality / caution lives ONLY inside the expanded view now (owner
+          2026-07-30) — the collapsed list stays clean. */}
+      <View style={styles.ctxRow}>
+        <Text style={styles.ctxKey}>QUALITY</Text>
+        <QualityChip m={m} />
+      </View>
       {payloadLines(m).map((l) => (
         <View key={l.label} style={styles.ctxRow}>
           <Text style={styles.ctxKey}>{l.label}</Text>
@@ -166,7 +209,16 @@ function ContextBlock({ m }: { m: SavedMeasurement }) {
       </View>
       <View style={styles.ctxRow}>
         <Text style={styles.ctxKey}>CALIBRATION</Text>
-        <Text style={styles.ctxVal}>{m.calibration_status.replace(/_/g, ' ')}</Text>
+        <Text
+          style={[
+            styles.ctxVal,
+            m.calibration_status === 'calibrated' && styles.ctxValCalibrated,
+          ]}
+        >
+          {m.calibration_status === 'calibrated'
+            ? 'field-calibrated ✓'
+            : m.calibration_status.replace(/_/g, ' ')}
+        </Text>
       </View>
       <View style={styles.ctxRow}>
         <Text style={styles.ctxKey}>SAMPLE RATE</Text>
@@ -203,17 +255,20 @@ const Row = memo(function Row({
   showTool,
   isOpen,
   isPicked,
-  compareMode,
+  pickMode,
   onPress,
   onDelete,
+  onShare,
 }: {
   m: SavedMeasurement;
   showTool: boolean;
   isOpen: boolean;
   isPicked: boolean;
-  compareMode: boolean;
+  /** Compare OR multi-select — either way the row shows a checkbox and does not expand. */
+  pickMode: boolean;
   onPress: (m: SavedMeasurement) => void;
   onDelete: (m: SavedMeasurement) => void;
+  onShare: (m: SavedMeasurement) => void;
 }) {
   return (
     <View style={[styles.row, isPicked && styles.rowPicked]}>
@@ -221,10 +276,10 @@ const Row = memo(function Row({
         style={styles.rowTop}
         onPress={() => onPress(m)}
         accessibilityRole="button"
-        accessibilityState={compareMode ? { selected: isPicked } : { expanded: isOpen }}
+        accessibilityState={pickMode ? { selected: isPicked } : { expanded: isOpen }}
         accessibilityLabel={m.title}
       >
-        {compareMode && (
+        {pickMode && (
           <View style={[styles.pickBox, isPicked && styles.pickBoxOn]}>
             {isPicked ? <Text style={styles.pickMark}>✓</Text> : null}
           </View>
@@ -238,19 +293,30 @@ const Row = memo(function Row({
             {fmtWhen(m.created_at)}
           </Text>
         </View>
-        <QualityChip m={m} />
+        {/* Quality/caution chip removed from the collapsed row (owner 2026-07-30)
+            — it now lives inside the expanded context only. */}
       </Pressable>
-      {isOpen && !compareMode && (
+      {isOpen && !pickMode && (
         <>
           <ContextBlock m={m} />
-          <Pressable
-            style={styles.deleteBtn}
-            onPress={() => onDelete(m)}
-            accessibilityRole="button"
-            accessibilityLabel={`Delete ${m.title}`}
-          >
-            <Text style={styles.deleteBtnText}>DELETE</Text>
-          </Pressable>
+          <View style={styles.rowActions}>
+            <Pressable
+              style={styles.shareBtn}
+              onPress={() => onShare(m)}
+              accessibilityRole="button"
+              accessibilityLabel={`Share ${m.title}`}
+            >
+              <Text style={styles.shareBtnText}>SHARE</Text>
+            </Pressable>
+            <Pressable
+              style={styles.deleteBtn}
+              onPress={() => onDelete(m)}
+              accessibilityRole="button"
+              accessibilityLabel={`Delete ${m.title}`}
+            >
+              <Text style={styles.deleteBtnText}>DELETE</Text>
+            </Pressable>
+          </View>
         </>
       )}
     </View>
@@ -264,6 +330,11 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
   const [openId, setOpenId] = useState<string | null>(null);
   const [compareMode, setCompareMode] = useState(false);
   const [picked, setPicked] = useState<string[]>([]);
+  // Multi-select (owner 2026-07-30): a second pick mode for bulk share/delete,
+  // mutually exclusive with Compare. `selected` holds any number of ids.
+  const [selectMode, setSelectMode] = useState(false);
+  const [selected, setSelected] = useState<string[]>([]);
+  const pickMode = compareMode || selectMode;
 
   const pickedMs = useMemo(
     () => picked.map((id) => all.find((m) => m.id === id)).filter(Boolean) as SavedMeasurement[],
@@ -273,7 +344,9 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
 
   const onRowPress = useCallback(
     (m: SavedMeasurement) => {
-      if (compareMode) {
+      if (selectMode) {
+        setSelected((prev) => (prev.includes(m.id) ? prev.filter((x) => x !== m.id) : [...prev, m.id]));
+      } else if (compareMode) {
         setPicked((prev) =>
           prev.includes(m.id) ? prev.filter((x) => x !== m.id) : prev.length >= 2 ? [prev[1], m.id] : [...prev, m.id],
         );
@@ -281,7 +354,7 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
         setOpenId((prev) => (prev === m.id ? null : m.id));
       }
     },
-    [compareMode],
+    [compareMode, selectMode],
   );
 
   const onRowDelete = useCallback((m: SavedMeasurement) => {
@@ -290,6 +363,38 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
       { text: 'Delete', style: 'destructive', onPress: () => deleteMeasurement(m.id) },
     ]);
   }, []);
+
+  const onRowShare = useCallback((m: SavedMeasurement) => {
+    void shareMeasurements([m]);
+  }, []);
+
+  // Bulk actions over the current selection.
+  const selectedMs = useMemo(
+    () => all.filter((m) => selected.includes(m.id)),
+    [all, selected],
+  );
+  const onShareSelected = useCallback(() => void shareMeasurements(selectedMs), [selectedMs]);
+  const onToggleAll = useCallback(() => {
+    setSelected((prev) => (prev.length === all.length ? [] : all.map((m) => m.id)));
+  }, [all]);
+  const onDeleteSelected = useCallback(() => {
+    if (selected.length === 0) return;
+    Alert.alert(
+      'Delete measurements',
+      `Delete ${selected.length} selected measurement${selected.length === 1 ? '' : 's'}? This cannot be undone.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            selected.forEach((id) => deleteMeasurement(id));
+            setSelected([]);
+          },
+        },
+      ],
+    );
+  }, [selected]);
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -308,6 +413,8 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
             onPress={() => {
               setCompareMode((c) => !c);
               setPicked([]);
+              setSelectMode(false);
+              setSelected([]);
             }}
             accessibilityRole="button"
             accessibilityState={{ selected: compareMode }}
@@ -318,7 +425,54 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
             </Text>
           </Pressable>
         )}
+        {all.length >= 1 && (
+          <Pressable
+            style={[styles.selectBtn, selectMode && styles.selectBtnOn]}
+            onPress={() => {
+              setSelectMode((s) => !s);
+              setSelected([]);
+              setCompareMode(false);
+              setPicked([]);
+            }}
+            accessibilityRole="button"
+            accessibilityState={{ selected: selectMode }}
+            accessibilityLabel="Select measurements"
+          >
+            <Text style={[styles.selectBtnText, selectMode && styles.selectBtnTextOn]}>
+              {selectMode ? 'DONE' : 'SELECT'}
+            </Text>
+          </Pressable>
+        )}
       </View>
+
+      {/* Bulk-action bar — shown only in multi-select (owner 2026-07-30). */}
+      {selectMode && (
+        <View style={styles.selectBar}>
+          <Pressable onPress={onToggleAll} accessibilityRole="button" accessibilityLabel="Select all or clear">
+            <Text style={styles.selectBarLink}>{selected.length === all.length && all.length > 0 ? 'CLEAR' : 'ALL'}</Text>
+          </Pressable>
+          <Text style={styles.selectBarCount}>{selected.length} selected</Text>
+          <View style={{ flex: 1 }} />
+          <Pressable
+            style={[styles.selectBarBtn, selected.length === 0 && styles.selectBarBtnDisabled]}
+            onPress={onShareSelected}
+            disabled={selected.length === 0}
+            accessibilityRole="button"
+            accessibilityLabel="Share selected"
+          >
+            <Text style={styles.selectBarBtnText}>SHARE</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.selectBarBtn, styles.selectBarBtnDanger, selected.length === 0 && styles.selectBarBtnDisabled]}
+            onPress={onDeleteSelected}
+            disabled={selected.length === 0}
+            accessibilityRole="button"
+            accessibilityLabel="Delete selected"
+          >
+            <Text style={[styles.selectBarBtnText, styles.selectBarBtnTextDanger]}>DELETE</Text>
+          </Pressable>
+        </View>
+      )}
 
       <FlatList
         data={all}
@@ -329,10 +483,11 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
             m={item}
             showTool={!toolKey}
             isOpen={openId === item.id}
-            isPicked={picked.includes(item.id)}
-            compareMode={compareMode}
+            isPicked={selectMode ? selected.includes(item.id) : picked.includes(item.id)}
+            pickMode={pickMode}
             onPress={onRowPress}
             onDelete={onRowDelete}
+            onShare={onRowShare}
           />
         )}
         ListHeaderComponent={
@@ -423,6 +578,38 @@ const styles = StyleSheet.create({
   compareBtnTextOn: { color: '#4dd0e1' },
   compareHint: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.textSub, marginBottom: 10 },
 
+  selectBtn: {
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#3a3a3a',
+    backgroundColor: '#161616',
+    paddingVertical: 7,
+    paddingHorizontal: 12,
+    marginLeft: 8,
+  },
+  selectBtnOn: { borderColor: 'rgba(255,193,84,.7)', backgroundColor: '#1c1608' },
+  selectBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textSecondary },
+  selectBtnTextOn: { color: colors.amber },
+
+  selectBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 9,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#131316',
+  },
+  selectBarLink: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: colors.amber },
+  selectBarCount: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub },
+  selectBarBtn: { borderRadius: 7, borderWidth: 1, borderColor: '#3a3a3a', paddingVertical: 6, paddingHorizontal: 14 },
+  selectBarBtnDanger: { borderColor: 'rgba(255,141,122,.5)' },
+  selectBarBtnDisabled: { opacity: 0.4 },
+  selectBarBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: colors.textSecondary },
+  selectBarBtnTextDanger: { color: '#ff8d7a' },
+
   comparePanel: {
     borderRadius: 12,
     borderWidth: 1,
@@ -485,12 +672,21 @@ const styles = StyleSheet.create({
   ctxRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 12 },
   ctxKey: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.2, color: colors.textSub },
   ctxVal: { fontFamily: fonts.mono, fontSize: 12.5, color: colors.textSecondary, flexShrink: 1, textAlign: 'right' },
+  ctxValCalibrated: { color: '#5bff85' },
   ctxDivider: { height: 1, backgroundColor: '#26262c', marginVertical: 4 },
   ctxWarn: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: colors.amber },
   ctxNotes: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 12.5, color: colors.textMuted, marginTop: 4 },
 
+  rowActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: 10 },
+  shareBtn: {
+    borderRadius: 7,
+    borderWidth: 1,
+    borderColor: 'rgba(77,208,225,.5)',
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+  },
+  shareBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: '#4dd0e1' },
   deleteBtn: {
-    alignSelf: 'flex-end',
     borderRadius: 7,
     borderWidth: 1,
     borderColor: 'rgba(255,141,122,.5)',

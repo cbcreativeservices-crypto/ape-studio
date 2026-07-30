@@ -20,6 +20,7 @@ import { Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensio
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSharedValue } from 'react-native-reanimated';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useFocusEffect } from '@react-navigation/native';
 import * as Crypto from 'expo-crypto';
 import { GlassButton } from '../../components/GlassButton';
 import { requireVizMeters, type VizMetersModule } from '../lab/meter/skiaGate';
@@ -216,6 +217,29 @@ export function SplMeterScreen({ navigation }: Props) {
   const { state, frames, start, stop, lastError, resetPeakHold, resetLeq } = useDspEngine(
     {},
     { meter: true },
+  );
+
+  // Auto-resume within the SPL ecosystem (owner 2026-07-30): the engine tears
+  // the mic down on blur for privacy (useDspEngine), so navigating to the
+  // calculators / saved measurements / VU and back would otherwise re-show the
+  // START card. We remember the user's INTENT to run and silently re-arm the
+  // meter on refocus — the mic is still off while away, just restored on return.
+  // A deliberate STOP clears the intent, so it is also the "end my session" act.
+  const wantRunning = useRef(false);
+  const stateRef = useRef(state);
+  stateRef.current = state;
+  const startMeter = useCallback(() => {
+    wantRunning.current = true;
+    void start();
+  }, [start]);
+  const stopMeter = useCallback(() => {
+    wantRunning.current = false;
+    stop();
+  }, [stop]);
+  useFocusEffect(
+    useCallback(() => {
+      if (wantRunning.current && stateRef.current === 'idle') void start();
+    }, [start]),
   );
 
   const [weighting, setWeighting] = useState<Weighting>('A');
@@ -427,7 +451,7 @@ export function SplMeterScreen({ navigation }: Props) {
               label={state === 'starting' ? 'STARTING…' : 'START METER'}
               tint="orange"
               disabled={state === 'starting'}
-              onPress={() => void start()}
+              onPress={startMeter}
             />
           </>
         )}
@@ -466,8 +490,86 @@ export function SplMeterScreen({ navigation }: Props) {
             </View>
             <DisplayGuideButton onPress={helpAll} />
 
+            {/* PEAK / PEAK HOLD — may exceed 0 dBFS (F1): red at ≥ 0, never clamped. */}
+            <View style={styles.peakRow}>
+              {/* Peak cells stay RAW dBFS always — they are digital-headroom
+                  indicators; the ≥0 dBFS hot state is about the converter
+                  ceiling, not acoustic level (F1). */}
+              <Pressable style={styles.peakCell} onLongPress={() => help('peak')} delayLongPress={260}>
+                <Text style={styles.cellLabel}>PEAK (dBFS)</Text>
+                <Text style={[styles.cellValue, meter != null && meter.peakDb >= 0 && styles.cellValueHot]}>
+                  {meter ? fmtDb(meter.peakDb) : '—'}
+                </Text>
+              </Pressable>
+              <Pressable style={styles.peakCell} onLongPress={() => help('peak_hold')} delayLongPress={260}>
+                <Text style={styles.cellLabel}>PEAK HOLD (dBFS)</Text>
+                <Text style={[styles.cellValue, meter != null && meter.peakHoldDb >= 0 && styles.cellValueHot]}>
+                  {meter ? fmtDb(meter.peakHoldDb) : '—'}
+                </Text>
+              </Pressable>
+              <Pressable
+                style={styles.ctrlBtnSmall}
+                onPress={resetPeakHold}
+                accessibilityRole="button"
+                accessibilityLabel="Reset peak hold"
+              >
+                <Text style={styles.ctrlText}>RESET{'\n'}PEAK</Text>
+              </Pressable>
+            </View>
+
+            {/* Live quality warnings, plain language (spec §6) — the SAME flags
+                that get stored with a saved log. */}
+            {flags.map((f) => (
+              <Text key={f} style={styles.liveWarn}>
+                ⚠ {WARNING_INFO[f].message} {WARNING_INFO[f].hint}
+              </Text>
+            ))}
+
+            {/* Session log (spec §9 View 2): Leq + elapsed + reset/save. */}
+            <View style={styles.logCard}>
+              <HelpHead title="SESSION LOG" onHelp={() => help('session_log')} style={styles.sectionHead} />
+              <Pressable onLongPress={() => help('session_log')} delayLongPress={260}>
+              <View style={styles.logRow}>
+                <View style={styles.logCell}>
+                  <Text style={styles.cellLabel}>Leq(A)</Text>
+                  <Text style={styles.cellValue}>{meter ? fmtDb(shown(meter.leqADb)) : '—'}</Text>
+                </View>
+                <View style={styles.logCell}>
+                  <Text style={styles.cellLabel}>Leq(Z)</Text>
+                  <Text style={styles.cellValue}>{meter ? fmtDb(shown(meter.leqZDb)) : '—'}</Text>
+                </View>
+                <View style={styles.logCell}>
+                  <Text style={styles.cellLabel}>ELAPSED</Text>
+                  <Text style={styles.cellValue}>{meter ? fmtElapsed(meter.elapsedSec) : '—'}</Text>
+                </View>
+              </View>
+              </Pressable>
+              <Text style={styles.logNote}>
+                Leq = equivalent continuous level over the session · {unitLabel}
+              </Text>
+              <View style={styles.controls}>
+                <Pressable style={styles.ctrlBtn} onPress={resetLeq} accessibilityRole="button" accessibilityLabel="Reset log">
+                  <Text style={styles.ctrlText}>RESET LOG</Text>
+                </Pressable>
+                <Pressable
+                  style={[styles.ctrlBtn, justSaved && styles.ctrlBtnSaved, !meter && styles.ctrlBtnDisabled]}
+                  onPress={onSaveLog}
+                  disabled={!meter}
+                  accessibilityRole="button"
+                  accessibilityState={{ disabled: !meter }}
+                  accessibilityLabel="Save log"
+                >
+                  <Text style={[styles.ctrlText, justSaved && styles.ctrlTextSaved]}>
+                    {justSaved ? 'SAVED ✓' : 'SAVE LOG'}
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
+
             {/* Field calibration (ruling R1, 2026-07-23): device-local offset,
-                matched against the user's reference meter. */}
+                matched against the user's reference meter. Moved BELOW the
+                session log (owner 2026-07-30) — it's a setup step, so it sits
+                under the live readouts and log the user works with. */}
             <View style={styles.calCard}>
               <View style={styles.calHeadRow}>
                 <HelpHead title="CALIBRATION" onHelp={() => help('calibration')} style={styles.sectionHead} />
@@ -551,83 +653,10 @@ export function SplMeterScreen({ navigation }: Props) {
               </Text>
             </View>
 
-            {/* PEAK / PEAK HOLD — may exceed 0 dBFS (F1): red at ≥ 0, never clamped. */}
-            <View style={styles.peakRow}>
-              {/* Peak cells stay RAW dBFS always — they are digital-headroom
-                  indicators; the ≥0 dBFS hot state is about the converter
-                  ceiling, not acoustic level (F1). */}
-              <Pressable style={styles.peakCell} onLongPress={() => help('peak')} delayLongPress={260}>
-                <Text style={styles.cellLabel}>PEAK (dBFS)</Text>
-                <Text style={[styles.cellValue, meter != null && meter.peakDb >= 0 && styles.cellValueHot]}>
-                  {meter ? fmtDb(meter.peakDb) : '—'}
-                </Text>
-              </Pressable>
-              <Pressable style={styles.peakCell} onLongPress={() => help('peak_hold')} delayLongPress={260}>
-                <Text style={styles.cellLabel}>PEAK HOLD (dBFS)</Text>
-                <Text style={[styles.cellValue, meter != null && meter.peakHoldDb >= 0 && styles.cellValueHot]}>
-                  {meter ? fmtDb(meter.peakHoldDb) : '—'}
-                </Text>
-              </Pressable>
-              <Pressable
-                style={styles.ctrlBtnSmall}
-                onPress={resetPeakHold}
-                accessibilityRole="button"
-                accessibilityLabel="Reset peak hold"
-              >
-                <Text style={styles.ctrlText}>RESET{'\n'}PEAK</Text>
-              </Pressable>
-            </View>
-
-            {/* Live quality warnings, plain language (spec §6) — the SAME flags
-                that get stored with a saved log. */}
-            {flags.map((f) => (
-              <Text key={f} style={styles.liveWarn}>
-                ⚠ {WARNING_INFO[f].message} {WARNING_INFO[f].hint}
-              </Text>
-            ))}
-
-            {/* Session log (spec §9 View 2): Leq + elapsed + reset/save. */}
-            <View style={styles.logCard}>
-              <HelpHead title="SESSION LOG" onHelp={() => help('session_log')} style={styles.sectionHead} />
-              <Pressable onLongPress={() => help('session_log')} delayLongPress={260}>
-              <View style={styles.logRow}>
-                <View style={styles.logCell}>
-                  <Text style={styles.cellLabel}>Leq(A)</Text>
-                  <Text style={styles.cellValue}>{meter ? fmtDb(shown(meter.leqADb)) : '—'}</Text>
-                </View>
-                <View style={styles.logCell}>
-                  <Text style={styles.cellLabel}>Leq(Z)</Text>
-                  <Text style={styles.cellValue}>{meter ? fmtDb(shown(meter.leqZDb)) : '—'}</Text>
-                </View>
-                <View style={styles.logCell}>
-                  <Text style={styles.cellLabel}>ELAPSED</Text>
-                  <Text style={styles.cellValue}>{meter ? fmtElapsed(meter.elapsedSec) : '—'}</Text>
-                </View>
-              </View>
-              </Pressable>
-              <Text style={styles.logNote}>
-                Leq = equivalent continuous level over the session · {unitLabel}
-              </Text>
-              <View style={styles.controls}>
-                <Pressable style={styles.ctrlBtn} onPress={resetLeq} accessibilityRole="button" accessibilityLabel="Reset log">
-                  <Text style={styles.ctrlText}>RESET LOG</Text>
-                </Pressable>
-                <Pressable
-                  style={[styles.ctrlBtn, justSaved && styles.ctrlBtnSaved, !meter && styles.ctrlBtnDisabled]}
-                  onPress={onSaveLog}
-                  disabled={!meter}
-                  accessibilityRole="button"
-                  accessibilityState={{ disabled: !meter }}
-                  accessibilityLabel="Save log"
-                >
-                  <Text style={[styles.ctrlText, justSaved && styles.ctrlTextSaved]}>
-                    {justSaved ? 'SAVED ✓' : 'SAVE LOG'}
-                  </Text>
-                </Pressable>
-              </View>
-            </View>
-
-            <GlassButton label="STOP" tint="orange" onPress={stop} />
+            {/* STOP turns the microphone OFF without leaving the screen and ends
+                the session (clears auto-resume). Navigating away only pauses the
+                mic; this is the explicit "I'm done capturing" control. */}
+            <GlassButton label="STOP · MIC OFF" tint="orange" onPress={stopMeter} />
           </>
         )}
 
@@ -689,7 +718,7 @@ export function SplMeterScreen({ navigation }: Props) {
                   label={state === 'starting' ? 'STARTING…' : 'START METER'}
                   tint="orange"
                   disabled={state === 'starting'}
-                  onPress={() => void start()}
+                  onPress={startMeter}
                 />
               </>
             )}
@@ -987,10 +1016,10 @@ export function SplMeterScreen({ navigation }: Props) {
                 </View>
 
                 <GlassButton
-                  label="STOP"
+                  label="STOP · MIC OFF"
                   tint="orange"
                   onPress={() => {
-                    stop();
+                    stopMeter();
                     setVuOpen(false);
                   }}
                 />
