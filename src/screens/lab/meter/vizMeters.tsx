@@ -863,10 +863,10 @@ export function VuMeterView(p: {
     const th = needleRad.value;
     const s = Math.sin(th);
     const c = Math.cos(th);
-    // Studio Six proportions (C2, owner 2026-07-30): SHORT blade — the tip stops
-    // well inside the scale ticks (~0.72·R) so the needle reads clearly shorter,
-    // with a stubby counterweight tail.
-    const tipR = R * 0.72;
+    // Studio Six proportions (owner 2026-07-30, revised): the blade reaches JUST
+    // INSIDE the scale ticks (~0.92·R) like a real VU — close to the arc but never
+    // past it — over a stubby counterweight tail.
+    const tipR = R * 0.92;
     const tailR = -12;
     const wb = 3.0;
     const wt = 1.0;
@@ -887,7 +887,7 @@ export function VuMeterView(p: {
     const th = needleRad.value;
     const s = Math.sin(th);
     const c = Math.cos(th);
-    const tipR = R * 0.72;
+    const tipR = R * 0.92;
     const tailR = -12;
     const wb = 3.0;
     const wt = 1.0;
@@ -999,7 +999,10 @@ export function VuMeterView(p: {
           {l.d > 0 ? `+${l.d}` : `${l.d}`}
         </Lbl>
       ))}
-      <Lbl x={cx - 26} y={py - R * 0.34} w={52} size={27} font={fonts.oswaldSemiBold} color="#2b2417" ls={3}>
+      {/* VU wordmark: pinned a fixed gap ABOVE the pivot hub (owner 2026-07-30)
+          so the black hub circle never overlaps the letters, whatever R works out
+          to on-device. Center column is clear of the needle blade at rest. */}
+      <Lbl x={cx - 26} y={py - 44} w={52} size={26} font={fonts.oswaldSemiBold} color="#2b2417" ls={3}>
         VU
       </Lbl>
       {showLed ? (
@@ -1030,10 +1033,10 @@ export function VuMeterView(p: {
           it. Raised above the pivot boss so it never collides with the needle. */}
       {p.cornerReadouts?.levelText != null ? (
         <>
-          <Lbl x={fx + fw - 122} y={py - 34} w={92} align="right" size={27} font={fonts.oswaldSemiBold} color="#2b2417">
+          <Lbl x={fx + fw - 132} y={py - 34} w={92} align="right" size={27} font={fonts.oswaldSemiBold} color="#2b2417">
             {p.cornerReadouts.levelText}
           </Lbl>
-          <Lbl x={fx + fw - 26} y={py - 19} w={22} align="left" size={11} font={fonts.oswaldSemiBold} ls={0.6} color="#8a6a3a">
+          <Lbl x={fx + fw - 36} y={py - 19} w={22} align="left" size={11} font={fonts.oswaldSemiBold} ls={0.6} color="#8a6a3a">
             dB
           </Lbl>
         </>
@@ -1885,35 +1888,17 @@ export function SplDialView(p: {
       sizeTicks.lineTo(q1.x, q1.y);
     }
 
-    // Label anchors.
+    // Numeric dB scale sits INSIDE the arc line (kept clean, nothing overlaps).
     const numAt = (s: number, r: number) => {
       const lp = pt(angOf(s), r);
       return { x: lp.x, y: lp.y };
     };
     const numLabels = [20, 40, 60, 80, 100, 120].map((s) => ({ s, ...numAt(s, Rs - 13) }));
-    // SPL mode — common reference sounds at their dB along the arc (dBA/dBC as
-    // noted). Kept sparse so the ring stays uncrowded.
-    const splRefSrc: { s: number; t: string; sub: string }[] = [
-      { s: 37, t: 'QUIET ROOM', sub: '35–40 dBA' },
-      { s: 60, t: 'CONVERSATION', sub: '~60 dBA' },
-      { s: 79, t: 'STUDIO', sub: '~79 dBC' },
-      { s: 95, t: 'CONCERT', sub: '~95 dBC' },
-    ];
-    const splRefs = splRefSrc.map((e) => ({ ...e, ...numAt(e.s, Rs + 22) }));
-    // STUDIO SM/MD/LG labels just beyond their outward ticks (around the arc).
-    const bandLabels = [
-      { s: 79, t: 'SM' },
-      { s: 82, t: 'MD' },
-      { s: 85, t: 'LG' },
-    ].map((e) => ({ ...e, ...numAt(e.s, Rs + 2 + wArc * 0.5 + 16) }));
-    // STUDIO point annotations kept around the arc (high red zone / low end).
-    const riskAnchor = numAt(114, Rs + 22);
-    const bassAnchor = numAt(30, Rs + 22);
 
     return {
       plate, face, sheen, arcGreen, arcYellow, arcOrange, arcRed, zone100,
       arcStudioDim, arcStudioGreen, arcStudioRed, majors, minors, sizeTicks,
-      numLabels, splRefs, bandLabels, riskAnchor, bassAnchor,
+      numLabels,
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [w, h]);
@@ -1979,6 +1964,56 @@ export function SplDialView(p: {
   const ink = '#2e2618';
   const inkDim = '#7a6f57';
   const RED_INK = '#b3271e';
+  const GREEN_INK = '#2f7d49';
+
+  // ── CALLOUT LABELS (owner 2026-07-30 redesign): every descriptive/reference
+  // label lives OUTSIDE the arc in the wide side margins — left margin = low SPL,
+  // right margin = high SPL (the arc's geometry maps that way). Each label is
+  // connected to its EXACT dB point on the arc line by a thin LEADER hairline
+  // ending in a small dot ON the arc. Left labels are right-aligned, right labels
+  // left-aligned, and the vertical slots are ordered to match each anchor's
+  // height so the leaders never cross the arc or each other. Rebuilt only when
+  // the size or the label mode changes.
+  const CO = useMemo(() => {
+    const arcR = Rs + 2;
+    const anchor = (spl: number) => {
+      const a = angOf(spl);
+      return { x: cx + Math.sin(a) * arcR, y: cy - Math.cos(a) * arcR };
+    };
+    const leftInnerX = Math.round(cx - arcR - 12);
+    const rightInnerX = Math.round(cx + arcR + 12);
+    type CoLine = { t: string; size: number; color: string; ls?: number };
+    type CoItem = { side: 'L' | 'R'; spl: number; ty: number; red?: boolean; lines: CoLine[] };
+    const items: CoItem[] =
+      mode === 'spl'
+        ? [
+            { side: 'R', spl: 79, ty: 14, lines: [ { t: 'STUDIO LISTENING', size: 10, color: ink, ls: 0.2 }, { t: '~79 dBC', size: 9.5, color: inkDim } ] },
+            { side: 'R', spl: 95, ty: 60, lines: [ { t: 'CONCERT', size: 11, color: ink, ls: 0.3 }, { t: '~95 dBC', size: 9.5, color: inkDim } ] },
+            { side: 'R', spl: 110, ty: 106, red: true, lines: [ { t: '100+ dB', size: 11, color: RED_INK, ls: 0.3 }, { t: 'UNSAFE >15 MIN/DAY', size: 9, color: RED_INK } ] },
+            { side: 'L', spl: 60, ty: 30, lines: [ { t: 'CONVERSATION', size: 11, color: ink, ls: 0.3 }, { t: '~60 dBA', size: 9.5, color: inkDim } ] },
+            { side: 'L', spl: 37, ty: 98, lines: [ { t: 'QUIET ROOM', size: 11, color: ink, ls: 0.3 }, { t: '35–40 dBA', size: 9.5, color: inkDim } ] },
+          ]
+        : [
+            { side: 'R', spl: 82, ty: 12, lines: [ { t: 'SWEET SPOT', size: 11, color: GREEN_INK, ls: 0.3 }, { t: '79 / 82 / 85 dB(C)', size: 9.5, color: inkDim }, { t: 'SM · MD · LG', size: 9.5, color: inkDim } ] },
+            { side: 'R', spl: 100, ty: 96, red: true, lines: [ { t: 'HEARING', size: 11, color: RED_INK, ls: 0.3 }, { t: 'RISK', size: 11, color: RED_INK, ls: 0.3 } ] },
+            { side: 'L', spl: 55, ty: 48, lines: [ { t: 'BASS LESS', size: 10.5, color: inkDim, ls: 0.3 }, { t: 'ACCURATE', size: 10.5, color: inkDim, ls: 0.3 } ] },
+          ];
+    const leader = Skia.Path.Make();
+    const dotN = Skia.Path.Make();
+    const dotR = Skia.Path.Make();
+    const laid = items.map((it) => {
+      const innerX = it.side === 'L' ? leftInnerX : rightInnerX;
+      const a = anchor(it.spl);
+      const midY = it.ty + it.lines.length * 6 + 2;
+      leader.moveTo(innerX, midY);
+      leader.lineTo(a.x, a.y);
+      (it.red ? dotR : dotN).addCircle(a.x, a.y, 2.6);
+      return { ...it, innerX, ax: a.x, ay: a.y };
+    });
+    return { items: laid, leader, dotN, dotR, leftInnerX, rightInnerX };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [w, h, mode]);
+
   return (
     <View style={{ width: w, height: h }}>
       <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
@@ -2023,6 +2058,12 @@ export function SplDialView(p: {
         {mode === 'studio' ? (
           <Path path={G.sizeTicks} color="#1f6c39" style="stroke" strokeWidth={1.8} />
         ) : null}
+        {/* LEADER LINES: hairline from each external callout to its exact dB point
+            on the arc, ending in a small dot. Drawn UNDER the node so the live
+            node point is never obscured. */}
+        <Path path={CO.leader} color="#6f6444" style="stroke" strokeWidth={1} opacity={0.85} />
+        <Path path={CO.dotN} color={ink} />
+        <Path path={CO.dotR} color={RED_INK} />
         {/* NODE POINT riding the arc: soft halo glow + bright core + specular. */}
         <Path path={nodeHalo} color={withAlpha(AMBER, 0.5)}>
           <BlurMask blur={7} style="normal" />
@@ -2048,68 +2089,54 @@ export function SplDialView(p: {
         </Lbl>
       ))}
 
-      {/* AROUND-ARC annotations (A4: point annotations stay; generic sentences
-          moved to the bottom band). A2: all larger + bold. */}
-      {mode === 'studio' ? (
-        <>
-          {G.bandLabels.map((b) => (
-            <Lbl key={`b${b.s}`} x={b.x - 14} y={b.y - 6} w={28} size={11} font={fonts.oswaldSemiBold} color="#1f6c39">
-              {b.t}
+      {/* EXTERNAL CALLOUT LABELS (owner 2026-07-30 redesign): each reference /
+          guidance label sits cleanly in a side margin, right-aligned on the left,
+          left-aligned on the right, connected inward to its exact dB on the arc by
+          the leader hairlines drawn in the Canvas above. */}
+      {CO.items.map((it, idx) => (
+        <View key={`co${idx}`}>
+          {it.lines.map((ln, i) => (
+            <Lbl
+              key={i}
+              x={it.side === 'L' ? 6 : it.innerX + 4}
+              y={it.ty + i * 12}
+              w={it.side === 'L' ? it.innerX - 10 : w - (it.innerX + 4) - 6}
+              align={it.side === 'L' ? 'right' : 'left'}
+              size={ln.size}
+              font={fonts.oswaldSemiBold}
+              ls={ln.ls}
+              color={ln.color}
+            >
+              {ln.t}
             </Lbl>
           ))}
-          <Lbl x={G.riskAnchor.x - 30} y={G.riskAnchor.y - 6} w={60} size={10} font={fonts.oswaldSemiBold} ls={0.4} color={RED_INK}>
-            HEARING RISK
-          </Lbl>
-          <Lbl x={G.bassAnchor.x - 32} y={G.bassAnchor.y - 6} w={64} size={10} font={fonts.oswaldSemiBold} ls={0.4} color={inkDim}>
-            BASS LESS ACCURATE
-          </Lbl>
-        </>
-      ) : (
-        <>
-          {G.splRefs.map((e) => (
-            <View key={`r${e.s}`}>
-              <Lbl x={e.x - 34} y={e.y - 11} w={68} size={11} font={fonts.oswaldSemiBold} ls={0.4} color={e.s >= 100 ? RED_INK : ink}>
-                {e.t}
-              </Lbl>
-              <Lbl x={e.x - 34} y={e.y + 1} w={68} size={9.5} font={fonts.oswaldSemiBold} color={inkDim}>
-                {e.sub}
-              </Lbl>
-            </View>
-          ))}
-        </>
-      )}
+        </View>
+      ))}
 
-      {/* A4 — BOTTOM text band: branding + descriptive captions + the ESTIMATED
-          badge, pinned below the dial so the CENTER of the face stays clear. */}
+      {/* A4 — BOTTOM text band: a low-center dB SPL wordmark + one context caption
+          + the ESTIMATED badge, pinned below the dial so the CENTER of the face and
+          the arc stay clear. */}
       <Lbl x={0} y={cy + Rface + 8} w={w} size={15} font={fonts.oswaldSemiBold} ls={3} color={ink}>
         dB SPL
       </Lbl>
       {mode === 'studio' ? (
         <>
-          <Lbl x={0} y={cy + Rface + 28} w={w} size={13} font={fonts.oswaldSemiBold} ls={0.4} color="#2f7d49">
-            MIX SWEET SPOT · 79–85 dB(C)
-          </Lbl>
-          <Lbl x={0} y={cy + Rface + 44} w={w} size={11} font={fonts.oswaldSemiBold} ls={0.4} color={inkDim}>
+          <Lbl x={0} y={cy + Rface + 30} w={w} size={11} font={fonts.oswaldSemiBold} ls={0.4} color={inkDim}>
             CHECK 85–95 · WORK 70–75 · DETAIL 60–65
           </Lbl>
-          <Lbl x={0} y={cy + Rface + 58} w={w} size={12} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
+          <Lbl x={0} y={cy + Rface + 46} w={w} size={12} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
             C-WEIGHTED · SLOW
           </Lbl>
         </>
       ) : (
-        <>
-          <Lbl x={0} y={cy + Rface + 28} w={w} size={13} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
-            REFERENCE SOUNDS · dBA / dBC AS NOTED
-          </Lbl>
-          <Lbl x={0} y={cy + Rface + 46} w={w} size={12} font={fonts.oswaldSemiBold} ls={0.4} color={RED_INK}>
-            100+ dB · UNSAFE OVER 15 MIN/DAY
-          </Lbl>
-        </>
+        <Lbl x={0} y={cy + Rface + 32} w={w} size={12} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
+          REFERENCE SOUNDS · dBA / dBC AS NOTED
+        </Lbl>
       )}
 
       {/* ESTIMATED badge (uncalibrated) — never a certified reading (§1.7). */}
       {!p.calibrated ? (
-        <Lbl x={0} y={cy + Rface + 74} w={w} size={12} font={fonts.oswaldSemiBold} ls={0.6} color={RED_INK}>
+        <Lbl x={0} y={cy + Rface + 66} w={w} size={12} font={fonts.oswaldSemiBold} ls={0.6} color={RED_INK}>
           ESTIMATED · UNCALIBRATED
         </Lbl>
       ) : null}

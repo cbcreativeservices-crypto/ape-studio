@@ -114,6 +114,7 @@ function VuHero({
   dialW,
   ledW,
   dialH,
+  ledH,
   holdMode,
   splOffset,
   calibrated,
@@ -125,6 +126,7 @@ function VuHero({
   dialW: number;
   ledW: number;
   dialH: number;
+  ledH: number;
   holdMode: PeakHoldMode;
   splOffset: number;
   calibrated: boolean;
@@ -133,8 +135,9 @@ function VuHero({
 }) {
   const phase = viz.usePhaseClock(true, 1 / VU_LOOP);
   return (
-    <View style={styles.heroRow}>
-      <View style={{ width: dialW, alignItems: 'center', gap: 6 }}>
+    <View style={{ gap: 14 }}>
+      {/* SPL gauge — its OWN full-width row so labels sit outside the arc. */}
+      <View style={{ width: dialW, alignSelf: 'center', alignItems: 'center', gap: 8 }}>
         <viz.SplDialView
           width={dialW}
           height={dialH}
@@ -163,14 +166,17 @@ function VuHero({
           ))}
         </View>
       </View>
-      <viz.PeakAvgMeterView
-        width={ledW}
-        height={dialH}
-        phase={phase}
-        live={live}
-        loopSeconds={VU_LOOP}
-        holdMode={holdMode}
-      />
+      {/* LED PEAK / AVERAGE meter — its own centered row below the gauge. */}
+      <View style={{ alignItems: 'center' }}>
+        <viz.PeakAvgMeterView
+          width={ledW}
+          height={ledH}
+          phase={phase}
+          live={live}
+          loopSeconds={VU_LOOP}
+          holdMode={holdMode}
+        />
+      </View>
     </View>
   );
 }
@@ -299,12 +305,14 @@ export function SplMeterScreen({ navigation }: Props) {
   // Wide horizontal VU across the full popup width (the hero at the top).
   const vuW = winW - 32;
   const vuH = Math.round(vuW * 0.5);
-  // Below-the-VU row: round SPL gauge LEFT (~60%), thin LED RIGHT (~34%), capped
-  // so it never overflows portrait; the two share a height for a clean baseline.
-  const heroAvail = winW - 32 - 12;
-  const dialW = Math.min(300, Math.round(heroAvail * 0.6));
-  const ledW = Math.min(138, Math.round(heroAvail * 0.36));
-  const dialH = Math.round(dialW * 1.02);
+  // Below the VU (owner 2026-07-30 redesign): the SPL gauge gets its OWN
+  // FULL-WIDTH row so its reference labels can sit OUTSIDE the arc with leader
+  // lines (the cramped side-by-side layout left no room and the text collided
+  // with the scale). The LED PEAK/AVERAGE meter moves to its own row below it.
+  const dialW = winW - 32;
+  const dialH = Math.round(dialW * 0.74);
+  const ledW = Math.min(190, Math.round(dialW * 0.52));
+  const ledH = Math.round(dialH * 0.72);
   // The popup meters are fed by pushing the SAME polled frame values into two
   // SharedValues — no second poll, no duplicated state. RMS = the selected
   // weighting × response level (set in the effect below); peak = the raw peak
@@ -711,8 +719,8 @@ export function SplMeterScreen({ navigation }: Props) {
             {(state === 'idle' || state === 'starting') && (
               <>
                 <Text style={styles.intro}>
-                  Start the meter to drive the VU. The microphone captures only while the meter
-                  runs.
+                  The microphone is off. Start the meter to drive the VU — capture runs only while
+                  the meter runs. You stay on this screen; tap START to turn the mic back on.
                 </Text>
                 <GlassButton
                   label={state === 'starting' ? 'STARTING…' : 'START METER'}
@@ -768,7 +776,13 @@ export function SplMeterScreen({ navigation }: Props) {
                     note was removed so the readouts sit closer to the VU. */}
                 <View style={styles.chipGroup}>
                   <HelpHead title={`RANGE · 0 VU = ${effRange} dB${rangeAuto ? ' (AUTO)' : ''}`} onHelp={() => help('range')} style={styles.chipGroupLabel} />
-                  <View style={styles.rangeRow}>
+                  {/* Single horizontal scroll row (owner 2026-07-30) — the values
+                      no longer wrap to two rows. */}
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.rangeScroll}
+                  >
                     {RANGE_VALUES.map((v) => {
                       const sel = !rangeAuto && rangeDb === v;
                       return (
@@ -796,7 +810,7 @@ export function SplMeterScreen({ navigation }: Props) {
                     >
                       <Text style={[styles.rangeChipText, rangeAuto && styles.chipTextSelected]}>AUTO</Text>
                     </Pressable>
-                  </View>
+                  </ScrollView>
                 </View>
 
                 {/* 4 — BELOW THE VU: round SPL "Noise'o'Meter" gauge (LEFT, with its
@@ -808,6 +822,7 @@ export function SplMeterScreen({ navigation }: Props) {
                     dialW={dialW}
                     ledW={ledW}
                     dialH={dialH}
+                    ledH={ledH}
                     holdMode={holdMode}
                     splOffset={splOffset}
                     calibrated={calibrated}
@@ -859,14 +874,6 @@ export function SplMeterScreen({ navigation }: Props) {
                     </Pressable>
                   </View>
                 </View>
-
-                {/* Mirrored live quality warnings (same flags as on save) — kept
-                    with the session log (owner 2026-07-30 reorder). */}
-                {flags.map((f) => (
-                  <Text key={f} style={styles.liveWarn}>
-                    ⚠ {WARNING_INFO[f].message} {WARNING_INFO[f].hint}
-                  </Text>
-                ))}
 
                 {/* 7 — Mirrored session log + save (same handlers). */}
                 <View style={styles.logCard}>
@@ -1015,14 +1022,18 @@ export function SplMeterScreen({ navigation }: Props) {
                   </Text>
                 </View>
 
-                <GlassButton
-                  label="STOP · MIC OFF"
-                  tint="orange"
-                  onPress={() => {
-                    stopMeter();
-                    setVuOpen(false);
-                  }}
-                />
+                {/* Amber live-quality warnings — moved to the very bottom, below
+                    control-room monitoring (owner 2026-07-30). */}
+                {flags.map((f) => (
+                  <Text key={f} style={styles.liveWarn}>
+                    ⚠ {WARNING_INFO[f].message} {WARNING_INFO[f].hint}
+                  </Text>
+                ))}
+
+                {/* STOP turns the mic OFF but STAYS in the VU screen (owner
+                    2026-07-30); the same control below flips to START to turn the
+                    mic back on without leaving. */}
+                <GlassButton label="STOP · MIC OFF" tint="orange" onPress={stopMeter} />
               </>
             )}
           </ScrollView>
@@ -1218,8 +1229,8 @@ const styles = StyleSheet.create({
   heroRow: { flexDirection: 'row', gap: 12, alignItems: 'flex-start', justifyContent: 'center' },
   holdResetBtn: { flex: 0, paddingHorizontal: 16, justifyContent: 'center' },
 
-  // RANGE selector — 9 stepped values, wrapping mono chips.
-  rangeRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  // RANGE selector — stepped values in a single horizontal scroll row.
+  rangeScroll: { flexDirection: 'row', gap: 6, paddingRight: 4 },
   rangeChip: {
     borderRadius: 7,
     borderWidth: 1,
