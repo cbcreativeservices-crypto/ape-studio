@@ -196,7 +196,7 @@ function LayerChips({
       <LabChip label="PRESSURE" selected={layers.pressure} onPress={() => t('pressure')} onLongPress={() => help('layers')} />
       <LabChip label="HEAT" selected={layers.heat} onPress={() => t('heat')} onLongPress={() => help('layers')} />
       <LabChip label="RAYS" selected={layers.rays} onPress={() => t('rays')} onLongPress={() => help(raysKey)} />
-      <LabChip label="ARRIVALS" selected={layers.arrivals} onPress={() => t('arrivals')} onLongPress={() => help('layers')} />
+      <LabChip label="ARRIVALS" selected={layers.arrivals} onPress={() => t('arrivals')} onLongPress={() => help('arrivals')} />
     </View>
   );
 }
@@ -323,7 +323,7 @@ export function ReflectionModule(p: WaveModuleProps) {
           readout={fmtHz(freq)}
           onHelp={() => p.help('reflection')}
         />
-        <ReadoutGrid items={readouts} />
+        <ReadoutGrid items={readouts} help={p.help} helpKey="reflection" />
       </PanelCard>
 
       <PanelCard>
@@ -446,7 +446,7 @@ export function AbsorptionModule(p: WaveModuleProps) {
           readout={fmtHz(freq)}
           onHelp={() => p.help('absorption')}
         />
-        <ReadoutGrid items={readouts} />
+        <ReadoutGrid items={readouts} help={p.help} helpKey="absorption" />
         <Badge text="SABINE RT TREATS THE 2-D ROOM AS 3 m TALL — TEXTBOOK TEACHING α VALUES, NOT ISO 354 PRODUCT DATA" />
       </PanelCard>
 
@@ -522,7 +522,7 @@ export function DiffusionModule(p: WaveModuleProps) {
 
   const readouts = [
     { k: 'TOP WALL', v: diffuser ? 'DIFFUSER' : 'FLAT — SPECULAR' },
-    { k: 'DIFFUSER DEPTH', v: fmtM(depth) },
+    { k: 'DIFFUSER DEPTH', v: fmtM(depth), helpKey: 'diffusion_depth' },
     { k: 'LOWEST SCATTERED ƒ', v: `${fmtHz(fLow)} (c / 2·depth)` },
     {
       k: `THIS ƒ (${fmtHz(freq)})`,
@@ -565,7 +565,7 @@ export function DiffusionModule(p: WaveModuleProps) {
           onChange={(v) => setDepth(clampSnap(0.05 + v * 0.55, 0.05, 0.6))}
           label="DIFFUSER DEPTH"
           readout={fmtM(depth)}
-          onHelp={() => p.help('diffusion')}
+          onHelp={() => p.help('diffusion_depth')}
         />
         <DragSlider
           value={logFrac(freq, 125, 8000)}
@@ -574,7 +574,7 @@ export function DiffusionModule(p: WaveModuleProps) {
           readout={fmtHz(freq)}
           onHelp={() => p.help('diffusion')}
         />
-        <ReadoutGrid items={readouts} />
+        <ReadoutGrid items={readouts} help={p.help} helpKey="diffusion" />
       </PanelCard>
 
       <PanelCard>
@@ -671,7 +671,7 @@ export function RefractionModule(p: WaveModuleProps) {
           readout={wind < 0.05 ? 'CALM' : `${(wind * 12).toFixed(0)} m/s aloft`}
           onHelp={() => p.help('refraction')}
         />
-        <ReadoutGrid items={readouts} />
+        <ReadoutGrid items={readouts} help={p.help} helpKey="refraction" />
       </PanelCard>
 
       <PanelCard>
@@ -780,7 +780,7 @@ export function DiffractionModule(p: WaveModuleProps) {
           readout={fmtHz(freq)}
           onHelp={() => p.help('diffraction')}
         />
-        <ReadoutGrid items={readouts} />
+        <ReadoutGrid items={readouts} help={p.help} helpKey="diffraction" />
       </PanelCard>
 
       <PanelCard>
@@ -932,7 +932,7 @@ export function InterferenceModule(p: WaveModuleProps) {
           readout={fmtHz(freq)}
           onHelp={() => p.help('interference')}
         />
-        <ReadoutGrid items={readouts} />
+        <ReadoutGrid items={readouts} help={p.help} helpKey="interference" />
       </PanelCard>
 
       <PanelCard>
@@ -1066,7 +1066,7 @@ export function CombModule(p: WaveModuleProps) {
           <LabChip label="MOVE MIC ← 0.15 m" selected={false} onPress={() => nudgeMic(-0.15)} onLongPress={() => p.help('comb')} />
           <LabChip label="MOVE MIC → 0.15 m" selected={false} onPress={() => nudgeMic(0.15)} onLongPress={() => p.help('comb')} />
         </View>
-        <ReadoutGrid items={readouts} />
+        <ReadoutGrid items={readouts} help={p.help} helpKey="comb" />
       </PanelCard>
 
       <PanelCard>
@@ -1207,7 +1207,7 @@ export function StandingWaveModule(p: WaveModuleProps) {
           readout={fmtM(scene.h)}
           onHelp={() => p.help('room_builder')}
         />
-        <ReadoutGrid items={readouts} />
+        <ReadoutGrid items={readouts} help={p.help} helpKey="standing_wave" />
       </PanelCard>
 
       <PanelCard>

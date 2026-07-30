@@ -6,7 +6,7 @@
  * chips used by the ADC/DAC modules.
  */
 import { ReactNode } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { LabChip } from '../LabShell';
 
@@ -33,16 +33,46 @@ export function MythReality({ myth, reality }: { myth: string; reality: string }
   );
 }
 
-/** Compact label:value readout grid — every module's numbers row. */
-export function ReadoutGrid({ items }: { items: { k: string; v: string }[] }) {
+/** Compact label:value readout grid — every module's numbers row.
+ *  Long-press-for-help (additive): pass `help` plus a `helpKey` (a default
+ *  lesson key for the whole grid) and/or a per-item `helpKey`, and each wired
+ *  cell opens that control's guided-lesson entry on long-press. Callers that
+ *  omit `help` render exactly as before (plain, non-pressable cells). */
+export function ReadoutGrid({
+  items,
+  help,
+  helpKey,
+}: {
+  items: { k: string; v: string; helpKey?: string }[];
+  help?: (k: string) => void;
+  helpKey?: string;
+}) {
   return (
     <View style={styles.grid}>
-      {items.map((it) => (
-        <View key={it.k} style={styles.cell}>
-          <Text style={styles.cellK}>{it.k}</Text>
-          <Text style={styles.cellV}>{it.v}</Text>
-        </View>
-      ))}
+      {items.map((it) => {
+        const hk = it.helpKey ?? helpKey;
+        if (help && hk) {
+          return (
+            <Pressable
+              key={it.k}
+              style={styles.cell}
+              onLongPress={() => help(hk)}
+              delayLongPress={350}
+              accessibilityRole="button"
+              accessibilityLabel={`${it.k} — what it shows`}
+            >
+              <Text style={styles.cellK}>{it.k}</Text>
+              <Text style={styles.cellV}>{it.v}</Text>
+            </Pressable>
+          );
+        }
+        return (
+          <View key={it.k} style={styles.cell}>
+            <Text style={styles.cellK}>{it.k}</Text>
+            <Text style={styles.cellV}>{it.v}</Text>
+          </View>
+        );
+      })}
     </View>
   );
 }

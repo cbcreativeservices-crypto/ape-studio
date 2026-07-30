@@ -239,6 +239,8 @@ export function SpectrumModule(p: MeterModuleProps) {
         </View>
         <Text style={dstyles.caption}>{SPECTRUM_CAPTIONS[pattern]}</Text>
         <ReadoutGrid
+          help={p.help}
+          helpKey="spectrum_read"
           items={[
             { k: 'PEAK FREQ', v: fmtHz(scan.peakF) },
             { k: 'PEAK LEVEL', v: `${scan.peakDb.toFixed(1)} dB (rel)` },
@@ -334,6 +336,8 @@ export function SpectrogramModule(p: MeterModuleProps) {
           waveform, where up means loud. Here, up means HIGH-PITCHED.
         </Text>
         <ReadoutGrid
+          help={p.help}
+          helpKey="spectrogram_axes"
           items={[
             { k: 'TIME', v: '→ across' },
             { k: 'FREQUENCY', v: '↑ up' },
@@ -501,6 +505,8 @@ export function WaterfallModule(p: MeterModuleProps) {
           number.
         </Text>
         <ReadoutGrid
+          help={p.help}
+          helpKey="waterfall_axes"
           items={[
             { k: 'X — ACROSS', v: 'frequency' },
             { k: 'Y — UP', v: 'amplitude' },
@@ -563,6 +569,8 @@ export function WaterfallModule(p: MeterModuleProps) {
         </View>
 
         <ReadoutGrid
+          help={p.help}
+          helpKey="waterfall_decay"
           items={[
             { k: 'RT60 · 125 Hz', v: `${rt.r125.toFixed(2)} s` },
             { k: 'RT60 · 250 Hz', v: `${rt.r250.toFixed(2)} s` },

@@ -182,7 +182,7 @@ export function QuantModule(p: DigitalModuleProps) {
             onLongPress={() => p.help('quant_error')}
           />
         </View>
-        <ReadoutGrid items={errorOnly ? [...readouts, { k: 'ERROR RMS', v: fmtDb(errRmsDb) }] : readouts} />
+        <ReadoutGrid help={p.help} helpKey="quant_error" items={errorOnly ? [...readouts, { k: 'ERROR RMS', v: fmtDb(errRmsDb) }] : readouts} />
         {errorOnly ? (
           <Text style={dstyles.caption}>
             {correlated
@@ -342,6 +342,8 @@ export function BinaryModule(p: DigitalModuleProps) {
           <VizUnavailableCard />
         )}
         <ReadoutGrid
+          help={p.help}
+          helpKey="binary_sample"
           items={[
             { k: 'SAMPLE #', v: `${sel}` },
             { k: 'TIME', v: `${(sel / 48).toFixed(3)} ms` },
@@ -405,6 +407,8 @@ export function BinaryModule(p: DigitalModuleProps) {
         </View>
         {viz ? <viz.BitDotStrip width={p.width} value={reg} /> : null}
         <ReadoutGrid
+          help={p.help}
+          helpKey="bit_toggle"
           items={[
             { k: 'DECIMAL', v: fmtGroup(reg) },
             { k: 'HEX', v: fmtHex16(reg) },

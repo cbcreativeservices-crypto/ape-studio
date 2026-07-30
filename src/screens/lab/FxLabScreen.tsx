@@ -263,15 +263,28 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
       {/* READOUTS — the current settings at a glance + the LIVE GR meter. */}
       <CollapsibleSection title="READOUTS">
         <View style={styles.readoutRow}>
-          <View style={styles.readoutCell}>
+          <Pressable
+            style={styles.readoutCell}
+            onLongPress={() => openSourceHelp(config.sources[sourceIdx].gen)}
+            delayLongPress={350}
+            accessibilityRole="button"
+            accessibilityLabel="Source — what this test signal is"
+          >
             <Text style={styles.readoutLabel}>SOURCE</Text>
             <Text style={styles.readoutValue}>{config.sources[sourceIdx].label}</Text>
-          </View>
+          </Pressable>
           {config.params.map((p) => (
-            <View key={p.paramId} style={styles.readoutCell}>
+            <Pressable
+              key={p.paramId}
+              style={styles.readoutCell}
+              onLongPress={() => openLesson(p.lessonKey)}
+              delayLongPress={350}
+              accessibilityRole="button"
+              accessibilityLabel={`${p.label} — what it does`}
+            >
               <Text style={styles.readoutLabel}>{p.label}</Text>
               <Text style={styles.readoutValue}>{choiceLabel(p, values[p.paramId])}</Text>
-            </View>
+            </Pressable>
           ))}
         </View>
         {config.pollGr ? (

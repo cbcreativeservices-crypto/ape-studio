@@ -230,7 +230,7 @@ export function AnalogModule(p: DigitalModuleProps) {
           readout={`${cycles.toFixed(1)} cycles in view`}
           onHelp={() => p.help('waveform_view')}
         />
-        <ReadoutGrid items={readouts} />
+        <ReadoutGrid items={readouts} help={p.help} helpKey="waveform_view" />
         <Badge text="PEAK · RMS · CREST COMPUTED FROM THE ACTUAL DRAWN WAVEFORM SAMPLES" />
       </PanelCard>
 
@@ -543,7 +543,7 @@ export function SamplingModule(p: DigitalModuleProps) {
           readout={`${nShown} samples · ${cycles.toFixed(cycles < 3 ? 2 : 1)} cycles in view`}
           onHelp={() => p.help('samples_per_cycle')}
         />
-        <ReadoutGrid items={readouts} />
+        <ReadoutGrid items={readouts} help={p.help} helpKey="sample_rate" />
       </PanelCard>
 
       <PanelCard>
@@ -655,6 +655,8 @@ export function SamplingModule(p: DigitalModuleProps) {
           <VizUnavailableCard />
         )}
         <ReadoutGrid
+          help={p.help}
+          helpKey="aa_filter"
           items={[
             { k: 'CUTOFF', v: fmtHz(cutoffHz) },
             { k: 'SLOPE', v: `${slope} dB/oct` },

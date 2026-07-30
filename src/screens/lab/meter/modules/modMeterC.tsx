@@ -164,6 +164,8 @@ export function PhaseModule(p: MeterModuleProps) {
           onHelp={() => p.help('phase_meter')}
         />
         <ReadoutGrid
+          help={p.help}
+          helpKey="phase_meter"
           items={[
             { k: 'CORRELATION', v: `${corr >= 0 ? '+' : ''}${corr.toFixed(2)}` },
             { k: 'WIDTH', v: `${Math.round(widthV * 100)} %` },
@@ -302,6 +304,8 @@ export function StereoModule(p: MeterModuleProps) {
         </View>
         <Text style={dstyles.caption}>{cur.caption}</Text>
         <ReadoutGrid
+          help={p.help}
+          helpKey="stereo_width"
           items={[
             { k: 'MID (SHARED)', v: cur.mid },
             { k: 'SIDE (DIFFERENCE)', v: cur.side },
@@ -468,6 +472,8 @@ export function ScopeModule(p: MeterModuleProps) {
               onHelp={() => p.help('lissajous')}
             />
             <ReadoutGrid
+              help={p.help}
+              helpKey="oscilloscope"
               items={[
                 { k: 'CORRELATION', v: `${corr >= 0 ? '+' : ''}${corr.toFixed(2)}` },
                 { k: 'WIDTH', v: `${Math.round(widthV * 100)} %` },

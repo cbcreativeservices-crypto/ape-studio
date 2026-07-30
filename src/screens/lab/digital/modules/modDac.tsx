@@ -188,6 +188,8 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
         </View>
         {viz ? <viz.ImagesView width={vw} os={os} /> : <VizUnavailableCard />}
         <ReadoutGrid
+          help={help}
+          helpKey="oversampling"
           items={[
             { k: 'OUTPUT RATE', v: `${os} × 48 kHz` },
             { k: 'FIRST IMAGE AT', v: `${os * 48} kHz` },
@@ -226,6 +228,8 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
         />
         {viz ? <viz.IspView width={vw} running={focused} ratio={ratio} phaseDeg={phaseDeg} /> : <VizUnavailableCard />}
         <ReadoutGrid
+          help={help}
+          helpKey="isp"
           items={[
             { k: 'SAMPLE PEAK', v: `${isp.samplePeakDb.toFixed(2)} dBFS` },
             { k: 'TRUE PEAK', v: `${isp.truePeakDb >= 0 ? '+' : ''}${isp.truePeakDb.toFixed(2)} dBTP` },
@@ -377,6 +381,8 @@ export function ErrorsModule({ width, focused, help }: DigitalModuleProps) {
         />
         {viz ? <viz.JitterView width={vw} running={focused} amount={jitAmt} mode={jitMode} /> : <VizUnavailableCard />}
         <ReadoutGrid
+          help={help}
+          helpKey="jitter"
           items={[
             { k: 'NOMINAL INTERVAL', v: '20.83 µs @48k' },
             { k: 'PEAK DEVIATION', v: `±${peakDevNs.toFixed(1)} ns` },
@@ -415,6 +421,8 @@ export function ErrorsModule({ width, focused, help }: DigitalModuleProps) {
       <PanelCard>
         <PanelHead title="DATA RATE — THE MENTAL MATH" helpLabel="data rate" onHelp={() => help('data_rate')} />
         <ReadoutGrid
+          help={help}
+          helpKey="data_rate"
           items={[
             { k: 'FORMAT', v: '48k × 24-bit × 2ch' },
             { k: 'BIT RATE', v: '2.304 Mbit/s' },

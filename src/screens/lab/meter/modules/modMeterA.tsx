@@ -346,7 +346,7 @@ export function WaveformModule(p: MeterModuleProps) {
           readout={`${dcOff >= 0 ? '+' : ''}${(dcOff * 100).toFixed(0)} %`}
           onHelp={() => p.help('dc_offset')}
         />
-        <ReadoutGrid items={readouts} />
+        <ReadoutGrid items={readouts} help={p.help} helpKey="waveform_read" />
       </PanelCard>
 
       <PanelCard>
@@ -454,7 +454,7 @@ export function PeakModule(p: MeterModuleProps) {
           readout={fmtDb(gainDb)}
           onHelp={() => p.help('peak_hold')}
         />
-        <ReadoutGrid items={readouts} />
+        <ReadoutGrid items={readouts} help={p.help} helpKey="peak_meter" />
       </PanelCard>
 
       <PanelCard>
@@ -571,7 +571,7 @@ export function VuModule(p: MeterModuleProps) {
           readout={fmtDb(gainDb)}
           onHelp={() => p.help('ballistics')}
         />
-        <ReadoutGrid items={readouts} />
+        <ReadoutGrid items={readouts} help={p.help} helpKey="ballistics" />
       </PanelCard>
 
       <PanelCard>
@@ -698,7 +698,7 @@ export function LoudnessModule(p: MeterModuleProps) {
           <LabChip label="ⓘ LRA" selected={false} onPress={() => p.help('lra')} />
           <LabChip label="ⓘ TRUE PEAK" selected={false} onPress={() => p.help('true_peak_meter')} />
         </View>
-        <ReadoutGrid items={readouts} />
+        <ReadoutGrid items={readouts} help={p.help} helpKey="lufs" />
       </PanelCard>
 
       <PanelCard>

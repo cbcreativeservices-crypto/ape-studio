@@ -195,6 +195,8 @@ export function AdcModule({ width, focused, help }: DigitalModuleProps) {
           onHelp={() => help('gain_staging')}
         />
         <ReadoutGrid
+          help={help}
+          helpKey="gain_staging"
           items={[
             { k: 'PEAK', v: r.digitalOver ? '0.0 dBFS OVER' : `${r.recPeakDb.toFixed(1)} dBFS` },
             { k: 'SNR (vs drawn floor)', v: `${r.snrDb.toFixed(0)} dB` },
@@ -335,6 +337,8 @@ export function ProcessingModule({ width, focused, help }: DigitalModuleProps) {
           <Text style={[styles.trimBtnText, trim && styles.trimBtnTextOn]}>{trim ? `UNDO TRIM (+${gainDb.toFixed(1)} dB)` : `TRIM −${gainDb.toFixed(1)} dB`}</Text>
         </Pressable>
         <ReadoutGrid
+          help={help}
+          helpKey="gain_above_zero"
           items={[
             { k: 'FLOAT BUS', v: `${busDb >= 0 ? '+' : ''}${busDb.toFixed(1)} dBFS` },
             { k: 'FIXED RENDER', v: busDb > 0 ? '0.0 dBFS (clipped)' : `${fixedDb.toFixed(1)} dBFS` },

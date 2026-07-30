@@ -109,7 +109,7 @@ function LayerChips({ layers, onLayers, help }: { layers: WaveLayers; onLayers: 
           label={k.toUpperCase()}
           selected={layers[k]}
           onPress={() => onLayers({ ...layers, [k]: !layers[k] })}
-          onLongPress={() => help('layers')}
+          onLongPress={() => help(k === 'arrivals' ? 'arrivals' : 'layers')}
         />
       ))}
     </View>
@@ -242,6 +242,8 @@ export function CoverageModule(p: WaveModuleProps) {
           onHelp={() => p.help('coverage_pattern')}
         />
         <ReadoutGrid
+          help={p.help}
+          helpKey="coverage_pattern"
           items={[
             { k: 'NOMINAL COVERAGE', v: `${cov}°` },
             { k: `EFFECTIVE @ ${fmtHz(freq)}`, v: eff >= 360 ? '≈360° (omni)' : `${eff}°` },
@@ -365,6 +367,8 @@ export function LineArrayModule(p: WaveModuleProps) {
           onHelp={() => p.help('line_array')}
         />
         <ReadoutGrid
+          help={p.help}
+          helpKey="line_array"
           items={[
             { k: 'BOXES', v: `${n}` },
             { k: 'ARRAY LENGTH', v: `${arrayLen.toFixed(2)} m` },
@@ -497,6 +501,8 @@ export function DelayAlignModule(p: WaveModuleProps) {
           </Text>
         ) : null}
         <ReadoutGrid
+          help={p.help}
+          helpKey="delay_align"
           items={[
             { k: 'PATH — SUB', v: `${dSub.toFixed(2)} m` },
             { k: 'PATH — MAIN', v: `${dMain.toFixed(2)} m` },
@@ -631,6 +637,8 @@ export function CardioidSubModule(p: WaveModuleProps) {
           />
         </View>
         <ReadoutGrid
+          help={p.help}
+          helpKey="cardioid_sub"
           items={[
             { k: 'SPACING', v: `${CSUB_SPACING.toFixed(2)} m` },
             { k: 'CORRECT DELAY', v: `${correctDelayMs.toFixed(2)} ms` },
@@ -747,6 +755,8 @@ export function BeamSteerModule(p: WaveModuleProps) {
         <DragSlider value={steerV} onChange={setSteerV} label="STEER" readout={`${steer}°`} onHelp={() => p.help('beam_steer')} />
         <DragSlider value={freqV} onChange={setFreqV} label="FREQUENCY" readout={`${freq} Hz`} onHelp={() => p.help('beam_steer')} />
         <ReadoutGrid
+          help={p.help}
+          helpKey="beam_steer"
           items={[
             { k: 'STEER ANGLE', v: `${steer}°` },
             { k: 'PER-BOX Δt', v: `${Math.round(Math.abs(dtPerBoxMs) * 1000)} µs` },
@@ -873,6 +883,8 @@ export function EchoModule(p: WaveModuleProps) {
         <ArrivalTimeline arrivals={arrivals} thresholdMs={50} />
         <Badge text="STEMS = arrivalsAt (DIRECT + 1st/2nd-ORDER IMAGE-SOURCE REFLECTIONS) · AMBER FUSES WITH THE DIRECT (<50 ms) · RED READS AS A DISCRETE ECHO" />
         <ReadoutGrid
+          help={p.help}
+          helpKey="echo"
           items={[
             { k: 'ROOM', v: `${preset.w} × ${preset.h} m` },
             { k: 'DIRECT', v: direct ? `${(direct.t * 1000).toFixed(1)} ms` : '—' },
@@ -986,6 +998,8 @@ export function ReverbModule(p: WaveModuleProps) {
         <Text style={dstyles.eyebrow}>THE BUILDUP — DIRECT → EARLY → LATE</Text>
         <ArrivalTimeline arrivals={arrivals} thresholdMs={80} />
         <ReadoutGrid
+          help={p.help}
+          helpKey="reverb_field"
           items={[
             { k: 'RT60 @ 125 Hz', v: `${rt125.toFixed(2)} s` },
             { k: 'RT60 @ 500 Hz', v: `${rt500.toFixed(2)} s` },
@@ -1243,6 +1257,8 @@ export function RoomBuilderModule(p: WaveModuleProps) {
       <PanelCard>
         <Text style={dstyles.eyebrow}>AT THE LISTENER</Text>
         <ReadoutGrid
+          help={p.help}
+          helpKey="room_builder"
           items={[
             { k: 'ROOM', v: `${roomW.toFixed(1)} × ${roomH.toFixed(1)} m` },
             { k: `LEVEL @ ${fmtHz(viewFreq)}`, v: lvl == null ? '—' : `${lvl.toFixed(1)} dB` },
