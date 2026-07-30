@@ -694,7 +694,21 @@ export function SplMeterScreen({ navigation }: Props) {
               </>
             )}
 
-            {/* 1 — VU METER AT TOP (the wide horizontal hero, relative to RANGE). */}
+            {/* 1 — House honesty badge line (owner 2026-07-30): moved ABOVE the VU
+                so it is the FIRST thing shown when running. The VU is a RELATIVE
+                meter around the RANGE reference (honest regardless of calibration);
+                the SPL gauge below is calibrated-approximate at best (ESTIMATED when
+                uncalibrated) and its 79/82/85 dB(C) mix band is a C-weighted
+                reference, not a guarantee. */}
+            {running && (
+              <Text style={styles.vuBadge}>
+                {calibrated
+                  ? `VU: RELATIVE · 0 VU = ${effRange} dB (${rangeAuto ? 'AUTO' : 'RANGE'}). GAUGE: dB SPL · FIELD-CALIBRATED (APPROXIMATE) — the 79/82/85 dB(C) mix band is a reference, not a guarantee`
+                  : `VU: RELATIVE · 0 VU = ${effRange} dB (${rangeAuto ? 'AUTO · ESTIMATED' : 'RANGE · ESTIMATED'} environment). GAUGE: ESTIMATED · UNCALIBRATED — SPL numbers are an estimate; calibrate against a real SPL meter for true readings`}
+              </Text>
+            )}
+
+            {/* 2 — VU METER AT TOP (the wide horizontal hero, relative to RANGE). */}
             {running &&
               (viz ? (
                 <VuTopMeter
@@ -718,21 +732,13 @@ export function SplMeterScreen({ navigation }: Props) {
                 </View>
               ))}
 
-            {/* House honesty line: the VU is a RELATIVE meter around the RANGE
-                reference (honest regardless of calibration); the SPL gauge below
-                is calibrated-approximate at best (ESTIMATED when uncalibrated) and
-                its 79/82/85 dB(C) mix band is a C-weighted reference, not a guarantee. */}
-            <Text style={styles.vuBadge}>
-              {calibrated
-                ? `VU: RELATIVE · 0 VU = ${effRange} dB (${rangeAuto ? 'AUTO' : 'RANGE'}). GAUGE: dB SPL · FIELD-CALIBRATED (APPROXIMATE) — the 79/82/85 dB(C) mix band is a reference, not a guarantee`
-                : `VU: RELATIVE · 0 VU = ${effRange} dB (${rangeAuto ? 'AUTO · ESTIMATED' : 'RANGE · ESTIMATED'} environment). GAUGE: ESTIMATED · UNCALIBRATED — SPL numbers are an estimate; calibrate against a real SPL meter for true readings`}
-            </Text>
-
             {running && (
               <>
-                {/* 2 — RANGE selector: the environmental SPL that reads 0 VU. */}
+                {/* 3 — RANGE selector: the environmental SPL that reads 0 VU. The
+                    label opens the RANGE popup (owner 2026-07-30); the old inline
+                    note was removed so the readouts sit closer to the VU. */}
                 <View style={styles.chipGroup}>
-                  <HelpHead title={`RANGE · 0 VU = ${effRange} dB${rangeAuto ? ' (AUTO)' : ''}`} onHelp={() => help('weighting')} style={styles.chipGroupLabel} />
+                  <HelpHead title={`RANGE · 0 VU = ${effRange} dB${rangeAuto ? ' (AUTO)' : ''}`} onHelp={() => help('range')} style={styles.chipGroupLabel} />
                   <View style={styles.rangeRow}>
                     {RANGE_VALUES.map((v) => {
                       const sel = !rangeAuto && rangeDb === v;
@@ -762,14 +768,9 @@ export function SplMeterScreen({ navigation }: Props) {
                       <Text style={[styles.rangeChipText, rangeAuto && styles.chipTextSelected]}>AUTO</Text>
                     </Pressable>
                   </View>
-                  <Text style={styles.rangeNote}>
-                    RANGE sets the room level that reads 0 VU — the needle then shows how far the
-                    signal sits above or below it{calibrated ? '' : ' (estimated until calibrated)'}.
-                    AUTO tracks the ambient level so the needle stays centred and swinging.
-                  </Text>
                 </View>
 
-                {/* 3 — BELOW THE VU: round SPL "Noise'o'Meter" gauge (LEFT, with its
+                {/* 4 — BELOW THE VU: round SPL "Noise'o'Meter" gauge (LEFT, with its
                     STUDIO/SPL chooser) + thin LED PEAK/AVERAGE meters (RIGHT). */}
                 {viz ? (
                   <VuHero
@@ -830,24 +831,59 @@ export function SplMeterScreen({ navigation }: Props) {
                   </View>
                 </View>
 
-                {/* Compact control-room legend for the gauge's sweet-spot band. */}
-                <View style={styles.roomLegend}>
-                  <Text style={styles.roomLegendHead}>CONTROL-ROOM MONITORING · dB SPL (C-WEIGHTED)</Text>
-                  <Text style={styles.roomLegendBody}>
-                    Green band = the mixing sweet spot. 79 dB(C) suits small rooms (under ~1,500 ft³ /
-                    42 m³) and most critical balance / music mixing; 82 medium; 85 large (Holman /
-                    SMPTE-THX). Lower levels are common too — 70–75 for general editing and long
-                    sessions, 60–65 for detailed or background work — with brief 85–95 checks for
-                    impact, punch and low-frequency energy.
+                {/* Mirrored live quality warnings (same flags as on save) — kept
+                    with the session log (owner 2026-07-30 reorder). */}
+                {flags.map((f) => (
+                  <Text key={f} style={styles.liveWarn}>
+                    ⚠ {WARNING_INFO[f].message} {WARNING_INFO[f].hint}
                   </Text>
-                  <Text style={styles.roomLegendBody}>
-                    Calibration uses C-weighting, not A: it is flatter and represents music's
-                    low-frequency energy. A-weighting is for hearing-risk, not monitoring. These
-                    targets are a reference guide, not a guarantee.
+                ))}
+
+                {/* 7 — Mirrored session log + save (same handlers). */}
+                <View style={styles.logCard}>
+                  <Text style={styles.sectionHead}>SESSION LOG</Text>
+                  <View style={styles.logRow}>
+                    <View style={styles.logCell}>
+                      <Text style={styles.cellLabel}>Leq(A)</Text>
+                      <Text style={styles.cellValue}>{meter ? fmtDb(shown(meter.leqADb)) : '—'}</Text>
+                    </View>
+                    <View style={styles.logCell}>
+                      <Text style={styles.cellLabel}>Leq(Z)</Text>
+                      <Text style={styles.cellValue}>{meter ? fmtDb(shown(meter.leqZDb)) : '—'}</Text>
+                    </View>
+                    <View style={styles.logCell}>
+                      <Text style={styles.cellLabel}>ELAPSED</Text>
+                      <Text style={styles.cellValue}>{meter ? fmtElapsed(meter.elapsedSec) : '—'}</Text>
+                    </View>
+                  </View>
+                  <Text style={styles.logNote}>
+                    Leq = equivalent continuous level over the session · {unitLabel}
                   </Text>
+                  <View style={styles.controls}>
+                    <Pressable
+                      style={styles.ctrlBtn}
+                      onPress={resetLeq}
+                      accessibilityRole="button"
+                      accessibilityLabel="Reset log"
+                    >
+                      <Text style={styles.ctrlText}>RESET LOG</Text>
+                    </Pressable>
+                    <Pressable
+                      style={[styles.ctrlBtn, justSaved && styles.ctrlBtnSaved, !meter && styles.ctrlBtnDisabled]}
+                      onPress={onSaveLog}
+                      disabled={!meter}
+                      accessibilityRole="button"
+                      accessibilityState={{ disabled: !meter }}
+                      accessibilityLabel="Save log"
+                    >
+                      <Text style={[styles.ctrlText, justSaved && styles.ctrlTextSaved]}>
+                        {justSaved ? 'SAVED ✓' : 'SAVE LOG'}
+                      </Text>
+                    </Pressable>
+                  </View>
                 </View>
 
-                {/* Field calibration (ruling R1) — same store as the screen, so
+                {/* 8 — Field calibration (ruling R1) — same store as the screen, so
                     the gauge's SPL scale updates the instant it is set/cleared. */}
                 <View style={styles.calCard}>
                   <View style={styles.calHeadRow}>
@@ -932,55 +968,22 @@ export function SplMeterScreen({ navigation }: Props) {
                   </Text>
                 </View>
 
-                {/* Mirrored live quality warnings (same flags as on save). */}
-                {flags.map((f) => (
-                  <Text key={f} style={styles.liveWarn}>
-                    ⚠ {WARNING_INFO[f].message} {WARNING_INFO[f].hint}
+                {/* 9 — Compact control-room legend for the gauge's sweet-spot band
+                    (owner 2026-07-30: moved to the BOTTOM, just above STOP). */}
+                <View style={styles.roomLegend}>
+                  <Text style={styles.roomLegendHead}>CONTROL-ROOM MONITORING · dB SPL (C-WEIGHTED)</Text>
+                  <Text style={styles.roomLegendBody}>
+                    Green band = the mixing sweet spot. 79 dB(C) suits small rooms (under ~1,500 ft³ /
+                    42 m³) and most critical balance / music mixing; 82 medium; 85 large (Holman /
+                    SMPTE-THX). Lower levels are common too — 70–75 for general editing and long
+                    sessions, 60–65 for detailed or background work — with brief 85–95 checks for
+                    impact, punch and low-frequency energy.
                   </Text>
-                ))}
-
-                {/* Mirrored session log + save (same handlers). */}
-                <View style={styles.logCard}>
-                  <Text style={styles.sectionHead}>SESSION LOG</Text>
-                  <View style={styles.logRow}>
-                    <View style={styles.logCell}>
-                      <Text style={styles.cellLabel}>Leq(A)</Text>
-                      <Text style={styles.cellValue}>{meter ? fmtDb(shown(meter.leqADb)) : '—'}</Text>
-                    </View>
-                    <View style={styles.logCell}>
-                      <Text style={styles.cellLabel}>Leq(Z)</Text>
-                      <Text style={styles.cellValue}>{meter ? fmtDb(shown(meter.leqZDb)) : '—'}</Text>
-                    </View>
-                    <View style={styles.logCell}>
-                      <Text style={styles.cellLabel}>ELAPSED</Text>
-                      <Text style={styles.cellValue}>{meter ? fmtElapsed(meter.elapsedSec) : '—'}</Text>
-                    </View>
-                  </View>
-                  <Text style={styles.logNote}>
-                    Leq = equivalent continuous level over the session · {unitLabel}
+                  <Text style={styles.roomLegendBody}>
+                    Calibration uses C-weighting, not A: it is flatter and represents music's
+                    low-frequency energy. A-weighting is for hearing-risk, not monitoring. These
+                    targets are a reference guide, not a guarantee.
                   </Text>
-                  <View style={styles.controls}>
-                    <Pressable
-                      style={styles.ctrlBtn}
-                      onPress={resetLeq}
-                      accessibilityRole="button"
-                      accessibilityLabel="Reset log"
-                    >
-                      <Text style={styles.ctrlText}>RESET LOG</Text>
-                    </Pressable>
-                    <Pressable
-                      style={[styles.ctrlBtn, justSaved && styles.ctrlBtnSaved, !meter && styles.ctrlBtnDisabled]}
-                      onPress={onSaveLog}
-                      disabled={!meter}
-                      accessibilityRole="button"
-                      accessibilityState={{ disabled: !meter }}
-                      accessibilityLabel="Save log"
-                    >
-                      <Text style={[styles.ctrlText, justSaved && styles.ctrlTextSaved]}>
-                        {justSaved ? 'SAVED ✓' : 'SAVE LOG'}
-                      </Text>
-                    </Pressable>
-                  </View>
                 </View>
 
                 <GlassButton
