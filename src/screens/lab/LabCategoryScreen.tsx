@@ -1,0 +1,127 @@
+/**
+ * LabCategoryScreen — the second level of the Audio Learning Lab hierarchy
+ * (owner IA restructure 2026-07-29): the labs inside ONE category, optionally
+ * grouped into Lab Families. Selecting a lab opens its detailed lesson.
+ *
+ * Category → (Lab Family) → Lab. Reuses the landing's row/badge design
+ * language. Purely data-driven from labCatalog — adding a lab needs no change
+ * here.
+ */
+import { Fragment } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { colors, fonts } from '../../theme/tokens';
+import type { RootStackParamList } from '../../navigation/types';
+import { categoryCountLabel, getCategory, type LabLeaf } from './labCatalog';
+
+type Props = NativeStackScreenProps<RootStackParamList, 'LabCategory'>;
+
+export function LabCategoryScreen({ navigation, route }: Props) {
+  const insets = useSafeAreaInsets();
+  const cat = getCategory(route.params.id);
+
+  if (!cat || cat.kind !== 'list') {
+    return (
+      <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+        <Header title="AUDIO LEARNING LAB" subtitle="" onBack={() => navigation.goBack()} />
+        <Text style={styles.empty}>This category is not available.</Text>
+      </View>
+    );
+  }
+
+  const go = navigation.navigate as unknown as (route: string, params?: object) => void;
+  const open = (leaf: LabLeaf) => go(leaf.route, leaf.params);
+
+  return (
+    <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+      <Header title={cat.name.toUpperCase()} subtitle={categoryCountLabel(cat)} onBack={() => navigation.goBack()} />
+      <ScrollView contentContainerStyle={styles.scroll}>
+        <Text style={styles.intro}>{cat.description}</Text>
+
+        {cat.families?.map((fam) => (
+          <View key={fam.name} style={styles.section}>
+            <Text style={styles.familyTitle}>{fam.name}</Text>
+            <View style={styles.list}>
+              {fam.labs.map((leaf) => (
+                <LabRow key={leaf.name} leaf={leaf} onOpen={() => open(leaf)} />
+              ))}
+            </View>
+          </View>
+        ))}
+
+        {cat.labs && cat.labs.length > 0 ? (
+          <View style={styles.list}>
+            {cat.labs.map((leaf) => (
+              <Fragment key={leaf.name}>
+                <LabRow leaf={leaf} onOpen={() => open(leaf)} />
+              </Fragment>
+            ))}
+          </View>
+        ) : null}
+      </ScrollView>
+    </View>
+  );
+}
+
+function Header({ title, subtitle, onBack }: { title: string; subtitle: string; onBack: () => void }) {
+  return (
+    <View style={styles.header}>
+      <Pressable onPress={onBack} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
+        <Text style={styles.back}>‹</Text>
+      </Pressable>
+      <View style={{ flexShrink: 1 }}>
+        <Text style={styles.title}>{title}</Text>
+        {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+      </View>
+    </View>
+  );
+}
+
+function LabRow({ leaf, onOpen }: { leaf: LabLeaf; onOpen: () => void }) {
+  return (
+    <Pressable
+      onPress={onOpen}
+      accessibilityRole="button"
+      accessibilityLabel={`Open ${leaf.name}`}
+      style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
+    >
+      <View style={{ flex: 1 }}>
+        <Text style={styles.rowName}>{leaf.name}</Text>
+        <Text style={styles.rowBlurb}>{leaf.blurb}</Text>
+      </View>
+      <Text style={styles.chevron}>›</Text>
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: colors.screenBg },
+  header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 10 },
+  back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
+  title: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1.4, color: colors.textPrimary },
+  subtitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.amber, marginTop: 2 },
+  scroll: { padding: 16, paddingBottom: 28, gap: 18 },
+  intro: { fontFamily: fonts.barlowRegular, fontSize: 14.5, lineHeight: 21, color: colors.textSecondary },
+  empty: { fontFamily: fonts.barlowRegular, fontSize: 14, color: colors.textSub, padding: 16 },
+
+  section: { gap: 8 },
+  familyTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.5, color: colors.amber },
+  list: { gap: 8 },
+
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255,198,77,.45)',
+    backgroundColor: '#17140c',
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+  },
+  rowPressed: { backgroundColor: '#1f1a0e' },
+  rowName: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 0.4, color: colors.textPrimary },
+  rowBlurb: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub, marginTop: 1 },
+  chevron: { fontFamily: fonts.oswaldSemiBold, fontSize: 22, color: colors.amber, paddingHorizontal: 4 },
+});

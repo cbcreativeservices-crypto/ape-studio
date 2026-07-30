@@ -32,6 +32,7 @@ import { FrequencyCounterScreen } from '../screens/tools/FrequencyCounterScreen'
 import { MultiMeterScreen } from '../screens/tools/MultiMeterScreen';
 import { DspDebugScreen } from '../screens/tools/DspDebugScreen';
 import { EarLabScreen } from '../screens/lab/EarLabScreen';
+import { LabCategoryScreen } from '../screens/lab/LabCategoryScreen';
 import { HarmonicLabScreen } from '../screens/lab/HarmonicLabScreen';
 import { OscillatorLabScreen } from '../screens/lab/OscillatorLabScreen';
 import { NoiseLabScreen } from '../screens/lab/NoiseLabScreen';
@@ -123,6 +124,7 @@ export function RootNavigator() {
           EarLab landing menu; HarmonicLab is the one live lab today. Bottom nav
           hidden like the other tool screens. */}
       <Stack.Screen name="EarLab" component={EarLabScreen} />
+      <Stack.Screen name="LabCategory" component={LabCategoryScreen} />
       <Stack.Screen name="HarmonicLab" component={HarmonicLabScreen} />
       <Stack.Screen name="OscillatorLab" component={OscillatorLabScreen} />
       <Stack.Screen name="NoiseLab" component={NoiseLabScreen} />

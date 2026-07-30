@@ -127,6 +127,9 @@ export type RootStackParamList = {
    *  labs + Signal Chain Builder + Wave Physics Lab. Its own card/route (NOT a
    *  ToolsHub tile). */
   EarLab: undefined;
+  /** Second level of the Audio Learning Lab hierarchy (owner IA restructure
+   *  2026-07-29): the labs inside one category. `id` = labCatalog category id. */
+  LabCategory: { id: string };
   /** Lab 13 "Harmonic" (v4 MASTER §7) — the hear-see-control harmonics
    *  centerpiece (additive synthesis · spectrum · distortion), with
    *  Learn/Explore/Practice/Test modes. Opened from the EarLab landing menu. */
