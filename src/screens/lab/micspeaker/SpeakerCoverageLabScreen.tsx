@@ -19,7 +19,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
-import { LabChip } from '../LabShell';
+import { InteractionZone, LabChip } from '../LabShell';
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../../features/lab/guidedLessons';
 import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../foundations/bits';
 import { requireMsViz, skiaAvailable, type MsVizModule } from './skiaGate';
@@ -66,11 +66,19 @@ function Legend() {
   );
 }
 
-type SectionProps = { viz: MsVizModule | null; width: number; help: (k: string) => void };
+type SectionProps = {
+  viz: MsVizModule | null;
+  width: number;
+  help: (k: string) => void;
+  /** Scroll-lock for the coverage canvases (owner 2026-07-29 drag-vs-scroll
+   *  fix): a touch inside an <InteractionZone onLock={onLock}> silences the
+   *  host ScrollView so the interaction wins over the page. */
+  onLock?: (v: boolean) => void;
+};
 
 // ── 1 · TOP VIEW — position, aim, dispersion, overlap, front fills ──────────
 
-function TopSection({ viz, width, help }: SectionProps) {
+function TopSection({ viz, width, help, onLock }: SectionProps) {
   const [dispIdx, setDispIdx] = useState(1);
   const [twoOn, setTwoOn] = useState(false);
   const [fills, setFills] = useState(false);
@@ -83,20 +91,23 @@ function TopSection({ viz, width, help }: SectionProps) {
 
   return (
     <View style={styles.panelCard}>
-      {viz ? (
-        <viz.TopCoverageView
-          width={width}
-          spk1x01={s1.x}
-          spk1AimDeg={s1.aim}
-          spk2On={twoOn}
-          spk2x01={s2.x}
-          spk2AimDeg={s2.aim}
-          hDeg={disp.hDeg}
-          frontFills={fills}
-        />
-      ) : (
-        <VizUnavailableCard />
-      )}
+      {/* InteractionZone: touches on the canvas win over the page scroll (owner 2026-07-29). */}
+      <InteractionZone onLock={onLock}>
+        {viz ? (
+          <viz.TopCoverageView
+            width={width}
+            spk1x01={s1.x}
+            spk1AimDeg={s1.aim}
+            spk2On={twoOn}
+            spk2x01={s2.x}
+            spk2AimDeg={s2.aim}
+            hDeg={disp.hDeg}
+            frontFills={fills}
+          />
+        ) : (
+          <VizUnavailableCard />
+        )}
+      </InteractionZone>
       <IllustrationBadge />
       <DisplayGuideButton onPress={() => help('top_view')} />
       <Legend />
@@ -163,7 +174,7 @@ const SIDE_CHECK: CheckSpec = {
   wrongHint: 'Raise the HEIGHT slider and add TILT — watch which seats turn green.',
 };
 
-function SideSection({ viz, width, help }: SectionProps) {
+function SideSection({ viz, width, help, onLock }: SectionProps) {
   const [dispIdx, setDispIdx] = useState(1);
   const [h01, setH01] = useState(0.35);
   const [tilt, setTilt] = useState(12);
@@ -179,24 +190,27 @@ function SideSection({ viz, width, help }: SectionProps) {
 
   return (
     <View style={styles.panelCard}>
-      {viz ? (
-        <viz.SideCoverageView
-          width={width}
-          h01={h01}
-          tiltDeg={tilt}
-          vDeg={disp.vDeg}
-          stage01={stage01}
-          ceil01={ceil01}
-          depth01={depth01}
-          sloped={sloped}
-          delayOn={delayOn}
-          lineArray={lineArray}
-          rearDelayOn={rearDelay}
-          timeAligned={timeAligned}
-        />
-      ) : (
-        <VizUnavailableCard />
-      )}
+      {/* InteractionZone: touches on the canvas win over the page scroll (owner 2026-07-29). */}
+      <InteractionZone onLock={onLock}>
+        {viz ? (
+          <viz.SideCoverageView
+            width={width}
+            h01={h01}
+            tiltDeg={tilt}
+            vDeg={disp.vDeg}
+            stage01={stage01}
+            ceil01={ceil01}
+            depth01={depth01}
+            sloped={sloped}
+            delayOn={delayOn}
+            lineArray={lineArray}
+            rearDelayOn={rearDelay}
+            timeAligned={timeAligned}
+          />
+        ) : (
+          <VizUnavailableCard />
+        )}
+      </InteractionZone>
       <IllustrationBadge text="CONCEPTUAL LEVEL MAP — illustrative model, NOT an SPL prediction; heads are tinted by whether the vertical pattern reaches them (real rooms, reflections & arrays differ)" />
       {lineArray ? (
         <Text style={styles.badge}>
@@ -296,6 +310,9 @@ export function SpeakerCoverageLabScreen() {
   const [sectionIdx, setSectionIdx] = useState(0);
   const [width, setWidth] = useState(0);
   const viz = useState(() => requireMsViz())[0];
+  // Canvas touches lock the ScrollView while a finger is down inside an
+  // InteractionZone, so the interaction wins over scroll (owner 2026-07-29).
+  const [scrollLocked, setScrollLocked] = useState(false);
 
   const [lessonKey, setLessonKey] = useState<string | undefined>(undefined);
   const [lessonOpen, setLessonOpen] = useState(false);
@@ -316,11 +333,10 @@ export function SpeakerCoverageLabScreen() {
           <Text style={styles.subtitle}>How loudspeakers distribute sound</Text>
         </View>
       </View>
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={styles.scroll} scrollEnabled={!scrollLocked}>
         <FutureAudioNote />
         {!skiaAvailable ? <VizUnavailableCard /> : null}
         <View style={styles.chipRow}>
-          <LabChip label="ⓘ GUIDED LESSON" selected={lessonOpen} onPress={() => help(undefined)} />
           {SECTIONS.map((sec, i) => (
             <LabChip key={sec.key} label={sec.label} selected={sectionIdx === i} onPress={() => setSectionIdx(i)} />
           ))}
@@ -329,8 +345,17 @@ export function SpeakerCoverageLabScreen() {
         <Text style={styles.body}>{s.blurb}</Text>
         {/* panelCard consumes 24 padding + 2 border → content box is −26. */}
         <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
-          {width > 0 ? <s.Comp viz={viz} width={width} help={help} /> : null}
+          {width > 0 ? <s.Comp viz={viz} width={width} help={help} onLock={setScrollLocked} /> : null}
         </View>
+        {/* Guided-lesson entry lives at the BOTTOM (owner 2026-07-29, LabShell v2). */}
+        <Pressable
+          style={styles.lessonRow}
+          onPress={() => help(undefined)}
+          accessibilityRole="button"
+          accessibilityLabel="Open the guided lesson"
+        >
+          <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
+        </Pressable>
       </ScrollView>
       <GuidedLessonSheet
         visible={lessonOpen}
@@ -369,4 +394,15 @@ const styles = StyleSheet.create({
   },
   legendRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   swatch: { width: 12, height: 12, borderRadius: 3 },
+  // Bottom guided-lesson row — mirrors LabShell v2's lessonRow styling.
+  lessonRow: {
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#131316',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    marginTop: 4,
+  },
+  lessonRowText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.9, color: colors.textSecondary },
 });

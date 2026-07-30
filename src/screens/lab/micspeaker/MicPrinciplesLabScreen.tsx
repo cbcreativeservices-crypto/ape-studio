@@ -23,7 +23,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
-import { LabChip } from '../LabShell';
+import { InteractionZone, LabChip } from '../LabShell';
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../../features/lab/guidedLessons';
 import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../foundations/bits';
 import { requireMsViz, skiaAvailable, type MsVizModule } from './skiaGate';
@@ -216,11 +216,20 @@ function MeterBar({ label, frac, color }: { label: string; frac: number; color: 
   );
 }
 
-type SectionProps = { viz: MsVizModule | null; width: number; focused: boolean; help: (k: string) => void };
+type SectionProps = {
+  viz: MsVizModule | null;
+  width: number;
+  focused: boolean;
+  help: (k: string) => void;
+  /** Scroll-lock for drag surfaces (owner 2026-07-29 drag-vs-scroll fix):
+   *  sections wrap their drag canvases in <InteractionZone onLock={onLock}>
+   *  so the object wins over the page while a finger is down. */
+  onLock?: (v: boolean) => void;
+};
 
 // ── 1 · Polar patterns ──────────────────────────────────────────────────────
 
-function PolarSection({ viz, width, focused, help }: SectionProps) {
+function PolarSection({ viz, width, focused, help, onLock }: SectionProps) {
   const [patIdx, setPatIdx] = useState(1);
   // The source is now a FREE position in canvas px, not an angle on a fixed
   // radius. It starts at the old 35° / near-edge spot so the scene opens the
@@ -256,9 +265,12 @@ function PolarSection({ viz, width, focused, help }: SectionProps) {
 
   return (
     <View style={styles.panelCard}>
-      <View {...pan.panHandlers}>
-        {viz ? <PolarViz viz={viz} width={width} a={pat.a} b={pat.b} src={src} running={focused} /> : <VizUnavailableCard />}
-      </View>
+      {/* InteractionZone: the head drag wins over the page scroll (owner 2026-07-29). */}
+      <InteractionZone onLock={onLock}>
+        <View {...pan.panHandlers}>
+          {viz ? <PolarViz viz={viz} width={width} a={pat.a} b={pat.b} src={src} running={focused} /> : <VizUnavailableCard />}
+        </View>
+      </InteractionZone>
       <IllustrationBadge text="CONCEPTUAL PICKUP FIELD — ILLUSTRATIVE MODEL, NOT A MEASURED POLAR RESPONSE · color = r(θ) = |A + B·cosθ| × 1/d falloff · drag the head anywhere — it can come right up next to the mic, but never through it" />
       <DisplayGuideButton onPress={() => help('polar_pattern')} />
       <View style={styles.chipRow}>
@@ -530,7 +542,7 @@ const CUP_CHECK: CheckSpec = {
   wrongHint: 'Watch the polar panel as you slide to FULL CUP — what happened to the rear of the pattern?',
 };
 
-function HandSection({ viz, width, help }: SectionProps) {
+function HandSection({ viz, width, help, onLock }: SectionProps) {
   // Starts in the CORRECT zone by construction (ZONE_P_CORRECT ≤ 0.35 < ZONE_P_RIM).
   const [pos, setPos] = useState(ZONE_P_DEFAULT);
   const [why, setWhy] = useState(false);
@@ -559,7 +571,10 @@ function HandSection({ viz, width, help }: SectionProps) {
 
   return (
     <View style={styles.panelCard}>
-      <View {...pan.panHandlers}>{viz ? <viz.HandPlacementView width={width} pos01={pos} /> : <VizUnavailableCard />}</View>
+      {/* InteractionZone: the vertical hand drag wins over the page scroll (owner 2026-07-29). */}
+      <InteractionZone onLock={onLock}>
+        <View {...pan.panHandlers}>{viz ? <viz.HandPlacementView width={width} pos01={pos} /> : <VizUnavailableCard />}</View>
+      </InteractionZone>
       <IllustrationBadge text="THREE SYNCHRONIZED PANELS — mic & hand · polar pattern (ghost = intended cardioid) · frequency response. ILLUSTRATIVE MODEL" />
       <DisplayGuideButton onPress={() => help('hand_position')} />
       <View style={styles.chipRow}>
@@ -649,6 +664,9 @@ export function MicPrinciplesLabScreen() {
   const [sectionIdx, setSectionIdx] = useState(0);
   const [width, setWidth] = useState(0);
   const viz = useState(() => requireMsViz())[0];
+  // Drag surfaces lock the ScrollView while a finger is down inside an
+  // InteractionZone, so the drag wins over scroll (owner 2026-07-29).
+  const [scrollLocked, setScrollLocked] = useState(false);
 
   const [lessonKey, setLessonKey] = useState<string | undefined>(undefined);
   const [lessonOpen, setLessonOpen] = useState(false);
@@ -669,11 +687,10 @@ export function MicPrinciplesLabScreen() {
           <Text style={styles.subtitle}>How microphones capture sound</Text>
         </View>
       </View>
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={styles.scroll} scrollEnabled={!scrollLocked}>
         <FutureAudioNote />
         {!skiaAvailable ? <VizUnavailableCard /> : null}
         <View style={styles.chipRow}>
-          <LabChip label="ⓘ GUIDED LESSON" selected={lessonOpen} onPress={() => help(undefined)} />
           {SECTIONS.map((sec, i) => (
             <LabChip key={sec.key} label={sec.label} selected={sectionIdx === i} onPress={() => setSectionIdx(i)} />
           ))}
@@ -682,8 +699,17 @@ export function MicPrinciplesLabScreen() {
         <Text style={styles.body}>{s.blurb}</Text>
         {/* panelCard consumes 24 padding + 2 border → content box is −26. */}
         <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
-          {width > 0 ? <s.Comp viz={viz} width={width} focused={focused} help={help} /> : null}
+          {width > 0 ? <s.Comp viz={viz} width={width} focused={focused} help={help} onLock={setScrollLocked} /> : null}
         </View>
+        {/* Guided-lesson entry lives at the BOTTOM (owner 2026-07-29, LabShell v2). */}
+        <Pressable
+          style={styles.lessonRow}
+          onPress={() => help(undefined)}
+          accessibilityRole="button"
+          accessibilityLabel="Open the guided lesson"
+        >
+          <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
+        </Pressable>
       </ScrollView>
       <GuidedLessonSheet
         visible={lessonOpen}
@@ -726,4 +752,15 @@ const styles = StyleSheet.create({
   meterFill: { height: 9 },
   mistakeCard: { gap: 6, borderRadius: 9, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#0f0f13', padding: 10 },
   mistakeTitle: { fontFamily: fonts.oswaldMedium, fontSize: 14.5, letterSpacing: 0.4, color: colors.textPrimary },
+  // Bottom guided-lesson row — mirrors LabShell v2's lessonRow styling.
+  lessonRow: {
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#131316',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    marginTop: 4,
+  },
+  lessonRowText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.9, color: colors.textSecondary },
 });

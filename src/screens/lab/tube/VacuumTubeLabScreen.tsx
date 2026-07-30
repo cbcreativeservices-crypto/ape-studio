@@ -436,7 +436,6 @@ export function VacuumTubeLabScreen() {
         </Text>
         {!skiaAvailable ? <VizUnavailableCard /> : null}
         <View style={styles.chipRow}>
-          <LabChip label="ⓘ GUIDED LESSON" selected={lessonOpen} onPress={() => help(undefined)} />
           {SECTIONS.map((sec, i) => (
             <LabChip key={sec.key} label={sec.label} selected={sectionIdx === i} onPress={() => setSectionIdx(i)} />
           ))}
@@ -452,6 +451,15 @@ export function VacuumTubeLabScreen() {
         <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
           {width > 0 ? <s.Comp viz={viz} width={width} focused={focused} electron={electron} help={help} /> : null}
         </View>
+        {/* Guided-lesson entry lives at the BOTTOM (owner 2026-07-29, LabShell v2). */}
+        <Pressable
+          style={styles.lessonRow}
+          onPress={() => help(undefined)}
+          accessibilityRole="button"
+          accessibilityLabel="Open the guided lesson"
+        >
+          <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
+        </Pressable>
       </ScrollView>
       <GuidedLessonSheet
         visible={lessonOpen}
@@ -497,4 +505,15 @@ const styles = StyleSheet.create({
   tubeCard: { gap: 4, borderRadius: 9, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#0f0f13', padding: 10 },
   tubeName: { fontFamily: fonts.oswaldMedium, fontSize: 16, letterSpacing: 0.6, color: colors.textPrimary },
   tubeKind: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.2, color: colors.amber },
+  // Bottom guided-lesson row — mirrors LabShell v2's lessonRow styling.
+  lessonRow: {
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#131316',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    marginTop: 4,
+  },
+  lessonRowText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.9, color: colors.textSecondary },
 });

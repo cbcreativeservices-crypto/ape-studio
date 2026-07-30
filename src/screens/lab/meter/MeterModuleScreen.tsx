@@ -14,7 +14,15 @@ import { WaveformModule, PeakModule, VuModule, LoudnessModule } from './modules/
 import { SpectrumModule, SpectrogramModule, WaterfallModule } from './modules/modMeterB';
 import { PhaseModule, StereoModule, ScopeModule, DetectiveModule } from './modules/modMeterC';
 
-export type MeterModuleProps = { width: number; focused: boolean; help: (key?: string) => void };
+export type MeterModuleProps = {
+  width: number;
+  focused: boolean;
+  help: (key?: string) => void;
+  /** Optional scroll-lock (owner 2026-07-29 drag-vs-scroll fix): a module may
+   *  call lockScroll(true) at drag start / (false) on release so its gesture
+   *  wins over the host ScrollView. Plumbed now; modules adopt as needed. */
+  lockScroll?: (v: boolean) => void;
+};
 
 const COMPONENTS: Record<MeterModuleId, (p: MeterModuleProps) => React.JSX.Element> = {
   waveform: WaveformModule,
@@ -38,6 +46,9 @@ export function MeterModuleScreen() {
   const meta = METER_MODULES.find((m) => m.id === route.params.id) ?? METER_MODULES[0];
   const Comp = COMPONENTS[meta.id];
   const [width, setWidth] = useState(0);
+  // Modules lock the ScrollView during their drags via the lockScroll prop
+  // (owner 2026-07-29 drag-vs-scroll fix).
+  const [scrollLocked, setScrollLocked] = useState(false);
   const [lessonKey, setLessonKey] = useState<string | undefined>(undefined);
   const [lessonOpen, setLessonOpen] = useState(false);
   const help = (k?: string) => {
@@ -56,10 +67,19 @@ export function MeterModuleScreen() {
           <Text style={styles.subtitle}>Visual Audio Analysis Lab</Text>
         </View>
       </View>
-      <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" scrollEnabled={!scrollLocked}>
         <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
-          {width > 0 ? <Comp width={width} focused={focused} help={help} /> : null}
+          {width > 0 ? <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} /> : null}
         </View>
+        {/* Guided-lesson entry lives at the BOTTOM (owner 2026-07-29, LabShell v2). */}
+        <Pressable
+          style={styles.lessonRow}
+          onPress={() => help()}
+          accessibilityRole="button"
+          accessibilityLabel="Open the guided lesson"
+        >
+          <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
+        </Pressable>
       </ScrollView>
       <GuidedLessonSheet visible={lessonOpen} lesson={getLabLesson('meter')} controlKey={lessonKey} onClose={() => setLessonOpen(false)} />
     </View>
@@ -73,4 +93,15 @@ const styles = StyleSheet.create({
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.2, color: colors.textPrimary },
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
   scroll: { padding: 16, paddingBottom: 30, gap: 12 },
+  // Bottom guided-lesson row — mirrors LabShell v2's lessonRow styling.
+  lessonRow: {
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#131316',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    marginTop: 4,
+  },
+  lessonRowText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.9, color: colors.textSecondary },
 });
