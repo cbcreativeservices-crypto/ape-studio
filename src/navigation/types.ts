@@ -179,6 +179,9 @@ export type RootStackParamList = {
    *  engine + 15 preset modules, geometric/analytic launch path. */
   WaveLab: undefined;
   WaveModule: { id: import('../screens/lab/wave/modules/registry').WaveModuleId };
+  /** Visual Audio Analysis (Meter Interpretation) Lab (owner 2026-07-29). */
+  MeterLab: undefined;
+  MeterModule: { id: import('../screens/lab/meter/modules/registry').MeterModuleId };
   /** FOUNDATIONS OF SOUND (owner 2026-07-26) — the FIRST module in the Ear
    *  Training & Audio Lab: a stepped teaching course (Modules 1–4 MVP) + the
    *  free Playground sandbox. Skia-animated (pre-Skia clients degrade

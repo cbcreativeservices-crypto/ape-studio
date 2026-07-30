@@ -50,7 +50,8 @@ export type LabRoute =
   | 'SpeakerLab'
   | 'TubeLab'
   | 'DigitalLab'
-  | 'WaveLab';
+  | 'WaveLab'
+  | 'MeterLab';
 
 /** The four glossary actions (v4 MASTER §6.1). */
 export type GlossaryActionKind = 'hear_it' | 'experiment' | 'watch_it' | 'launch_lab';
@@ -177,6 +178,21 @@ const READY_TERMS_WAVE = [
   'Reverberation', 'Reverberation / Reverb', 'Reverberation time (RT60)', 'Impulse response',
 ];
 
+// Visual Audio Analysis Lab LIVE (2026-07-29). DB-verified 2026-07-29 —
+// UNCLAIMED terms only: 'Waveform' stays with HarmonicLab, 'Stereo Width' with
+// StereoLab, 'Mono compatibility'/'Correlation Meter' with PhaseLab, 'dBFS'/
+// 'Inter-Sample Peak(s)'/'Effective number of bits' with DigitalLab. 'Loudness'
+// (once held for Foundations M9, never claimed) belongs here — the LUFS module
+// teaches it directly. 'Waterfall B3' is the Hammond organ, NOT the plot —
+// deliberately excluded (wrong sense).
+const READY_TERMS_METER = [
+  'VU Meter (Volume Unit Meter)', 'Meter Ballistics', 'Metering', 'Peak Hold',
+  'RMS', 'Crest factor', 'DC offset', 'Transient', 'Dynamic Range', 'Headroom',
+  'LUFS', 'Loudness', 'Momentary loudness measurement', 'True Peak',
+  'Spectrum Analyzer', 'Spectrogram', 'Waterfall analysis', 'Waterfall Plot (CSD)',
+  'Oscilloscope', 'Goniometer', 'Phase scope', 'Correlation', 'Stereo Image',
+];
+
 const READY_TERMS_TUBE = [
   'Vacuum tube', 'Valve', 'Triode', 'Tetrode', 'Pentode', 'Cathode', 'Control grid',
   'Screen grid', 'Suppressor grid', 'Anode / Plate', 'Heater', 'Filament', 'Emission',
@@ -252,6 +268,9 @@ const READY: Record<string, LearningProfile> = Object.fromEntries([
   ),
   ...READY_TERMS_WAVE.map(
     (t) => [normTerm(t), { lab: 'wave', actions: launch('WaveLab') } as LearningProfile] as const,
+  ),
+  ...READY_TERMS_METER.map(
+    (t) => [normTerm(t), { lab: 'meter', actions: launch('MeterLab') } as LearningProfile] as const,
   ),
 ]);
 

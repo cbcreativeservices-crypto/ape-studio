@@ -1119,6 +1119,71 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     ],
     formula: 'Image source: reflection = straight path from the mirrored source. Field: p = Σ (g/r)·e^{i(kr+ωt₀)}. Modes: f = (c/2)·√((n/L)² + (m/W)²). Maekawa: ≈10·log(3+20N), N = 2δ/λ. Sabine: RT60 = 0.161·V/A.',
   },
+
+  // ────────────── VISUAL AUDIO ANALYSIS LAB (Meter Interpretation, 2026-07-29) ──
+  meter: {
+    id: 'meter',
+    num: 29,
+    name: 'Visual Audio Analysis',
+    tier: 'T1',
+    tagline: 'How to READ professional meters — not just open them.',
+    whatItIs:
+      'Every experienced engineer reads displays the way musicians read notation — but almost ' +
+      'nobody is taught how. Eleven modules build that visual pattern recognition: waveforms, ' +
+      'peak meters, the classic VU needle, LUFS loudness, spectrum shapes, spectrograms, the ' +
+      'waterfall, phase and stereo displays, the oscilloscope — ending with the Signal ' +
+      'Detective, where you diagnose problems from the picture alone. Displays run on ' +
+      'synthesized teaching signals (badged); the Academy\'s measurement tools then show you the ' +
+      'same pictures on real sound.',
+    controls: [
+      { key: 'waveform_read', name: 'Reading a waveform', definition: 'Height = amplitude, symmetry = polarity balance, flat tops = clipping, flat line = silence, sharp spikes = transients. One glance tells you level, dynamics and damage before you press play.' },
+      { key: 'dc_offset', name: 'DC offset', definition: 'The whole waveform riding above or below the center line — a constant voltage that steals headroom and thumps on edits. The picture: silence that isn\'t drawn AT zero.' },
+      { key: 'transients', name: 'Transients', definition: 'The tall, thin spikes at the start of drum hits and plucks — huge peak, almost no average energy. They are why peak meters and your ears disagree.' },
+      { key: 'clipping_view', name: 'Clipping on the waveform', definition: 'Peaks sliced flat at full scale. Analog clipping rounds; digital clipping shears. Once the top of the wave is gone, no fader brings it back.' },
+      { key: 'dynamic_range_view', name: 'Dynamic range in the picture', definition: 'The distance between the loudest peaks and the quiet detail. A healthy take breathes; an over-compressed one is a solid brick of ink.' },
+      { key: 'peak_meter', name: 'Peak meter', definition: 'Tracks the instantaneous maximum, sample by sample — the "will it clip?" meter. It says nothing about loudness: a snare crack and a sine at the same peak read identically here and sound wildly different.' },
+      { key: 'peak_hold', name: 'Peak hold & OVER lamp', definition: 'The floating bar that lingers at the highest recent peak, and the latch that trips at full scale. Hold lets you mix without staring; the OVER lamp is the tattletale that something already hit the ceiling.' },
+      { key: 'vu_meter', name: 'The classic VU', definition: 'A mechanical needle with ~300 ms of inertia — it physically CANNOT reach a transient before it\'s over. That "flaw" is the feature: it ignores peaks and reads average level, which tracks perceived loudness. 0 VU = nominal operating level, not clipping.' },
+      { key: 'ballistics', name: 'Meter ballistics', definition: 'How fast a meter attacks and releases. Peak meters: microseconds up, slow fall for readability. VU: ~300 ms both ways. Loudness meters: defined windows (400 ms / 3 s). Same signal, three different stories — by design.' },
+      { key: 'rms_vs_peak', name: 'Peak vs RMS (crest factor)', definition: 'A snare peaks at −6 dBFS with an RMS near −30: crest factor ~24 dB. A sustained organ peaks at −6 with RMS −9: crest 3 dB. Same peak, ~20 dB apart in loudness — the single most important metering lesson.' },
+      { key: 'lufs', name: 'LUFS', definition: 'Loudness Units relative to Full Scale — a perception-weighted average (K-weighted) that broadcast and streaming platforms use to match program loudness. Unlike dBFS, two programs at the same LUFS should FEEL equally loud.' },
+      { key: 'integrated', name: 'Integrated loudness', definition: 'One number for the whole program — gated so silence doesn\'t drag it down. Streaming targets (e.g. −14 LUFS) and broadcast specs (−23/−24) are integrated values.' },
+      { key: 'short_momentary', name: 'Momentary & short-term', definition: 'Momentary = 400 ms window (what\'s loud RIGHT NOW); short-term = 3 s (the current section). Watch momentary dance while integrated barely moves — different windows, different questions.' },
+      { key: 'lra', name: 'Loudness Range (LRA)', definition: 'The statistical spread between the program\'s soft and loud sections (in LU). A movie might span 20+; a pop master 4–6. It quantifies "how dynamic is this program" — not how loud.' },
+      { key: 'true_peak_meter', name: 'True peak (dBTP)', definition: 'The reconstructed analog waveform can rise ABOVE the highest sample between samples. True-peak meters oversample to catch it — why platforms ask for −1 dBTP ceilings, and why "no clipped samples" isn\'t "no clipping".' },
+      { key: 'spectrum_read', name: 'Reading a spectrum', definition: 'Left = lows, right = highs, height = energy. Ask three things: where is the energy centered, is the shape smooth or spiky, and is anything sticking up that shouldn\'t be?' },
+      { key: 'spectral_patterns', name: 'Spectrum patterns', definition: 'Speech = formant humps 200 Hz–3 kHz. Kick = LF mound + click bump. Cymbal = dense HF wash. Hum = needle spikes at exact mains harmonics. Feedback = ONE towering narrow spike. Pink noise = smooth −3 dB/octave ramp. Learn seven shapes and you can read most sessions.' },
+      { key: 'spectrogram_axes', name: 'Spectrogram axes', definition: 'Time runs HORIZONTAL, frequency VERTICAL, level is COLOR. It is a spectrum filmed over time — the most misread display in audio because people try to read it like a waveform.' },
+      { key: 'spectrogram_patterns', name: 'Spectrogram patterns', definition: 'Speech = stacked formant bands with pitch striations. Birdsong = rising/falling thin chirps. Cymbal = bright HF wash fading right. Feedback = one horizontal line getting brighter. Whistle = a single thin steady line. White noise = uniform confetti.' },
+      { key: 'waterfall_axes', name: 'Waterfall axes (CSD)', definition: 'Frequency across, level up, TIME receding into the picture: each ridge slice is the spectrum a moment later. The front edge is "now"; the mountain range behind is history decaying.' },
+      { key: 'waterfall_decay', name: 'Reading decay', definition: 'A healthy room/speaker collapses evenly — the whole range settles together. Anything still standing tall while its neighbors are gone is RINGING: a room mode, a resonant driver, a high-Q filter.' },
+      { key: 'room_ring', name: 'Room resonances in the waterfall', definition: 'One frequency\'s ridge stretches far back while everything nearby has died: that frequency is ringing — the room (or cabinet) stores and releases energy there. EQ can tame its level; only treatment/damping shortens its decay.' },
+      { key: 'damping', name: 'Damping materials', definition: 'Slide concrete → curtains → carpet → panels and watch the mountain\'s tail shorten — highs first (porous absorption), lows last (they need thickness). The waterfall shows what the RT60 number only summarizes.' },
+      { key: 'eq_ridge', name: 'EQ in the waterfall', definition: 'Boost 250 Hz and its mountain grows TALLER — but decay stays the same length: EQ changes level, not ring time. A high-Q boost adds a narrow ridge that also RINGS — the filter itself stores energy. That is why surgical boosts can sound "resonant".' },
+      { key: 'reverb_tails', name: 'Reverb tails compared', definition: 'Room = short, warm slope. Plate = long, bright, even sheet. Hall = long with lows outlasting highs. Spring = narrow bouncy ridges. You can identify the reverb type from the waterfall before you ever hear it.' },
+      { key: 'phase_meter', name: 'Correlation meter', definition: '+1 = identical channels (mono), 0 = unrelated (wide), −1 = opposite polarity (cancellation in mono). Healthy stereo lives between ~+0.3 and +1. Sitting near −1 means the mono bus — and many phones — will eat your mix.' },
+      { key: 'goniometer', name: 'Goniometer / vectorscope', definition: 'The dot cloud: a vertical line = mono, a fat ball = wide, a HORIZONTAL line = pure anti-phase. Lean left/right = channel imbalance. It\'s the correlation meter with a picture attached.' },
+      { key: 'stereo_width', name: 'Stereo width displays', definition: 'Mono, narrow, wide, hard-L/R and mid-side are POSITIONS of energy, not qualities. Mid = what both speakers share; Side = what they disagree about. Width is the M/S ratio made visible.' },
+      { key: 'oscilloscope', name: 'Oscilloscope', definition: 'Voltage vs time, the rawest view: sine = smooth wave, square = shelves, saw = ramps, speech = bursts. If the scope shows flat-topping, clipping is happening RIGHT THERE, whatever the meters claim.' },
+      { key: 'lissajous', name: 'X-Y / Lissajous', definition: 'Left channel drives X, right drives Y: identical channels draw a 45° line, anti-phase draws the opposite diagonal, stereo draws a cloud, and pure tones at related frequencies draw the classic curves. Instant phase literacy.' },
+      { key: 'detective', name: 'Signal Detective', definition: 'The graduation exercise: an unlabeled display with a problem in it. Name the meter, read the story, spot the fault, prescribe the processor. Wrong guesses teach as much as right ones — every answer explains WHY.' },
+    ],
+    commonMistakes: [
+      'Mixing by peak meters and wondering why loudness is wrong — peaks protect converters; averages track ears.',
+      'Expecting a VU needle to show a snare hit — 300 ms of inertia is the point, not a defect.',
+      'Reading a spectrogram left-to-right as "low-to-high" — time is horizontal; frequency is vertical.',
+      'Treating "no clipped samples" as "no clipping" — true peaks live between the samples.',
+      'EQ-cutting a ringing frequency and expecting the DECAY to shorten — level and ring time are different axes (the waterfall shows both).',
+      'Ignoring the correlation meter until the mono PA/phone playback collapses the mix.',
+      'Chasing streaming loudness with limiting alone — integrated LUFS responds to the whole program, not the ceiling.',
+      'Reading meters without knowing their ballistics — the same signal reads differently on purpose.',
+    ],
+    proTips: [
+      'Learn the seven spectrum shapes (speech/kick/cymbal/guitar/hum/feedback/pink) until naming them is reflex — that reflex IS what experienced engineers call "seeing the problem".',
+      'On any new display, find the three axes first (what\'s across, what\'s up, what\'s color/depth) — every meter confusion in audio is an axis confusion.',
+    ],
+    formula: 'Crest factor = peak dB − RMS dB · VU ≈ 300 ms average · momentary/short-term = 400 ms / 3 s windows · correlation = Σlr/√(Σl²·Σr²) · waterfall slice(f,t) = spectrum(f) − 60·t/RT60(f).',
+  },
 };
 
 /** Lab lessons in spec order (1..16) — for menus/indexes. */

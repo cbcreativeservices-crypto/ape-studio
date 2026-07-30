@@ -44,7 +44,8 @@ export type LabId =
   | 'speaker' // Speaker Placement & Coverage — visual-first (owner 2026-07-29)
   | 'tube' // Vacuum Tube Fundamentals — visual-first (owner 2026-07-29)
   | 'digital' // Digital Audio Sampling & Conversion Lab — standalone (owner 2026-07-29)
-  | 'wave'; // Wave Physics Laboratory — Pillar C Room Builder + 15 modules (launch 2026-07-29)
+  | 'wave' // Wave Physics Laboratory — Pillar C Room Builder + 15 modules (launch 2026-07-29)
+  | 'meter'; // Visual Audio Analysis Lab — reading professional meters (owner 2026-07-29)
 
 /** Native-engine feasibility tier (v4 MASTER §12) — informational. */
 export type LabTier = 'T1' | 'T2' | 'T3';

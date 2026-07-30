@@ -124,6 +124,15 @@ const SECTIONS: LabSection[] = [
     ],
   },
   {
+    // Visual Audio Analysis Lab (owner 2026-07-29): teaches READING meters —
+    // complements the measurement tools, which MEASURE.
+    title: 'METER INTERPRETATION',
+    note: 'Learn to read every professional display — waveform to waterfall.',
+    entries: [
+      { tag: '28', name: 'Visual Audio Analysis Lab', blurb: 'Peak vs VU vs LUFS, spectrum shapes, spectrograms, the waterfall ⭐, phase & stereo — plus the Signal Detective.', route: 'MeterLab' },
+    ],
+  },
+  {
     // Audio Calculator Laboratory (owner 2026-07-29): one unified lab of
     // consolidated calculator workspaces with the Calculation Chain.
     title: 'CALCULATOR LABORATORY',
