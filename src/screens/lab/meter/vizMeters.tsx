@@ -671,6 +671,12 @@ export function VuMeterView(p: {
   phase: SharedValue<number>;
   /** Also draw a fast peak LED beside the face (the peak-vs-average lesson). */
   showPeakLed?: boolean;
+  /** Peak-hold marker on the VU arc (SPL popup, 2026-07-30): a thin white tick on
+   *  the scale arc marking the HIGHEST needle position reached. 'off' / absent ⇒
+   *  no marker (meter-lab callers unaffected); '1s'/'3s' ⇒ the tick lingers at the
+   *  peak then follows the needle back down after that many seconds; 'inf' ⇒ it
+   *  latches at the max until the needle rises past it again. */
+  peakHold?: PeakHoldMode;
   /** Wall-seconds one loop of the phase clock represents (ballistics scale). */
   loopSeconds?: number;
   /** Linear RMS that reads 0 VU (illustrative calibration). */
@@ -950,16 +956,57 @@ export function VuMeterView(p: {
     return pegged ? 1 : led;
   }, [p.phase, ledArr, livePeak, LOOP, nx, RMS0]);
 
+  // ── PEAK-HOLD MARKER (owner 2026-07-30): a thin white tick riding the scale arc
+  // at the HIGHEST needle position reached, honouring `peakHold`. The needle angle
+  // rises monotonically with level, so the peak IS the max needleRad. dt comes from
+  // the phase-clock delta (the same idiom as the ballistics above). When the prop is
+  // absent/'off' the tick is disabled and nothing is drawn (meter-lab unaffected).
+  const pkEnabled = p.peakHold != null && p.peakHold !== 'off';
+  const pkHoldSecs = p.peakHold === '3s' ? 3 : p.peakHold === '1s' ? 1 : 1e9; // 'inf' latches
+  const pkAng = useSharedValue(-1e9);
+  const pkAge = useSharedValue(0);
+  const pkLastPh = useSharedValue(-1);
+  const peakTick = useDerivedValue(() => {
+    if (!pkEnabled) return Skia.Path.Make();
+    const cur = needleRad.value;
+    const ph = p.phase.value;
+    let dt = 0;
+    if (pkLastPh.value >= 0) {
+      let d = ph - pkLastPh.value;
+      if (d < 0) d = 0;
+      dt = (d / (Math.PI * 2)) * LOOP;
+      if (dt > 0.08) dt = 0.08;
+    }
+    pkLastPh.value = ph;
+    if (cur >= pkAng.value) {
+      pkAng.value = cur;
+      pkAge.value = 0;
+    } else {
+      pkAge.value += dt;
+      // Once the hold expires the marker glides back DOWN to follow the needle
+      // (~1.6 rad/s ≈ full scale in ~1 s); 'inf' never expires, so it latches.
+      if (pkAge.value > pkHoldSecs) pkAng.value = Math.max(cur, pkAng.value - 1.6 * dt);
+    }
+    const th = pkAng.value;
+    const s = Math.sin(th);
+    const c = Math.cos(th);
+    const r0 = R + 1;
+    const r1 = R + 12;
+    const pth = Skia.Path.Make();
+    pth.moveTo(cx + s * r0, py - c * r0);
+    pth.lineTo(cx + s * r1, py - c * r1);
+    return pth;
+  }, [p.phase, needleRad, pkEnabled, pkHoldSecs, LOOP]);
+
   const ledX = fx + fw - 22;
   const ledY = fy + 20;
-  // VU wordmark seat (owner 2026-07-30, revised): the wordmark lives in the OPEN
-  // BAND between the top scale-number arc and the needle-tip arc. The topmost
-  // numeral (−3, at the vertical) has its ink bottom near py − R − 13; the needle
-  // tip traces a circle of radius R·0.92 (peaks at py − 0.92·R at the vertical).
-  // Seat "VU" fully inside that band: pin its BOTTOM 3 px above the needle-tip arc
-  // and size it so its TOP still clears the numeral row (shrinking on small faces).
-  const wmSize = Math.min(20, Math.max(14, Math.round(0.08 * R + 7)));
-  const wmBottomY = py - R * 0.92 - 3;
+  // VU wordmark seat (owner 2026-07-30, DROPPED DOWN): the wordmark was riding too
+  // high, up near the scale numerals. Seat it instead in the lower-centre OPEN area
+  // — clearly BELOW the blue in-arc bracket numbers (radius ≈ R−15) yet comfortably
+  // ABOVE the needle base / pivot hub (radius ~10). Pin its BOTTOM a fixed gap above
+  // the hub and size it so its TOP still clears the R−15 blue-number radius.
+  const wmSize = Math.min(18, Math.max(12, Math.round(0.06 * R + 6)));
+  const wmBottomY = py - 16;
   const wmTopY = wmBottomY - wmSize;
   return (
     <View style={{ width: w, height: h }}>
@@ -989,6 +1036,9 @@ export function VuMeterView(p: {
         <Path path={G.arcB} color="#2b2317" style="stroke" strokeWidth={1.8} />
         <Path path={G.tickB} color="#2b2317" style="stroke" strokeWidth={1.4} />
         <Path path={G.tickR} color="#6e1710" style="stroke" strokeWidth={1.4} />
+        {/* Peak-hold marker: subtle white tick on the arc at the highest needle
+            angle reached (peakHold prop). Absent/'off' ⇒ nothing drawn. */}
+        {pkEnabled ? <Path path={peakTick} color="#ffffff" style="stroke" strokeWidth={1} opacity={0.7} /> : null}
         {/* Fast PEAK LED beside the face (the contrast lesson in one glance). */}
         {showLed ? (
           <>
@@ -1883,8 +1933,8 @@ export function SplDialView(p: {
 
   // Scale: 20..130 dB SPL across a ±A° sweep, pivot low-of-centre so the bottom
   // wedge is free for the sweet-spot band / reference labels.
-  const SPL_MIN = 20;
-  const SPL_MAX = 130;
+  const SPL_MIN = 30;
+  const SPL_MAX = 120;
   const SPAN = SPL_MAX - SPL_MIN;
   const A = 122; // half-sweep, degrees (244° total, gap at the bottom)
   const cx = w / 2;
@@ -1899,7 +1949,10 @@ export function SplDialView(p: {
   const bottomPad = 8;
   // Reserved TOP caption band (wordmark + mode caption + ESTIMATED badge), below
   // the STUDIO/SPL buttons. Its height sets how much room the dial gets below it.
-  const topTextH = Math.max(96, Math.round(h * 0.33));
+  // Trimmed (owner 2026-07-30): the title block now starts LOWER (y≈46, clearing
+  // the STUDIO/SPL buttons with breathing room) but the reserved band is smaller
+  // so the dial rides UP to meet it — more space buttons→title, less title→dial.
+  const topTextH = Math.max(104, Math.round(h * 0.3));
   // B2 (owner 2026-07-30): dial ~72% of the fit radius, opening horizontal room in
   // the side margins for the callout labels.
   const dialRegionH = h - topTextH - bottomPad;
@@ -1937,19 +1990,19 @@ export function SplDialView(p: {
     sheen.lineTo(cx - Rface * 0.95, cy + Rface * 0.1);
     sheen.close();
 
-    // A3 — SPL mode MAIN arc: loudness/exposure scale, green → yellow → orange →
-    // red, with the 100+ zone emphasized bright red (unsafe > 15 min/day).
-    const arcGreen = arcStroke(SPL_MIN, 60, Rs + 2);
-    const arcYellow = arcStroke(60, 78, Rs + 2);
-    const arcOrange = arcStroke(78, 95, Rs + 2);
-    const arcRed = arcStroke(95, SPL_MAX, Rs + 2);
-    const zone100 = arcStroke(100, SPL_MAX, Rs + 2);
-    // A3 — STUDIO mode MAIN arc: the control-room meaning IS the arc colour —
-    // dim/grey below the sweet spot, GREEN across the 79–85 dB(C) band, RED above
-    // (too loud / hearing-risk). No separate inner ring (A5).
-    const arcStudioDim = arcStroke(SPL_MIN, 79, Rs + 2);
-    const arcStudioGreen = arcStroke(79, 85, Rs + 2);
-    const arcStudioRed = arcStroke(85, SPL_MAX, Rs + 2);
+    // A3 — UNIFIED zone bands (owner 2026-07-30): GRAY below the green start,
+    // GREEN up to 84, YELLOW 85–94, ORANGE 95–99, RED 100+. The yellow/orange/red
+    // bands are IDENTICAL in every mode; only the green START differs (STUDIO 60,
+    // SPL/OPTIMAL 40), so the gray run before it changes length by mode.
+    const arcYellow = arcStroke(85, 95, Rs + 2);
+    const arcOrange = arcStroke(95, 100, Rs + 2);
+    const arcRed = arcStroke(100, SPL_MAX, Rs + 2);
+    // STUDIO: gray 30–60, green 60–85.
+    const arcStudioGray = arcStroke(SPL_MIN, 60, Rs + 2);
+    const arcStudioGreen = arcStroke(60, 85, Rs + 2);
+    // SPL / OPTIMAL: gray 30–40, green 40–85.
+    const arcSplGray = arcStroke(SPL_MIN, 40, Rs + 2);
+    const arcSplGreen = arcStroke(40, 85, Rs + 2);
     // Major/minor ticks (20..130 dB) drawn in dark ink over the colored arc.
     const majors = Skia.Path.Make();
     const minors = Skia.Path.Make();
@@ -1977,11 +2030,11 @@ export function SplDialView(p: {
       const lp = pt(angOf(s), r);
       return { x: lp.x, y: lp.y };
     };
-    const numLabels = [20, 40, 60, 80, 100, 120].map((s) => ({ s, ...numAt(s, Rs - 13) }));
+    const numLabels = [30, 50, 70, 90, 110].map((s) => ({ s, ...numAt(s, Rs - 13) }));
 
     return {
-      plate, face, sheen, arcGreen, arcYellow, arcOrange, arcRed, zone100,
-      arcStudioDim, arcStudioGreen, arcStudioRed, majors, minors, sizeTicks,
+      plate, face, sheen, arcYellow, arcOrange, arcRed,
+      arcStudioGray, arcStudioGreen, arcSplGray, arcSplGreen, majors, minors, sizeTicks,
       numLabels,
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -2062,6 +2115,28 @@ export function SplDialView(p: {
   // Dim/grey studio zone — darkened so the below-sweet-spot arc still reads on gray.
   const Z_GREY = '#6b7078';
 
+  // ── LIVE CONTAINER TINT (owner 2026-07-30): a soft, low-opacity colour wash
+  // over the WHOLE plate that reflects the CURRENT level's zone — GRAY below the
+  // green start, then GREEN → YELLOW → ORANGE → RED as the live level rises (red
+  // at 100+). Same thresholds as the arc bands, with the mode-aware green start.
+  // Driven live off the same rmsDb+splOffset the centre readout uses, so the plate
+  // reads as a big ambient level indicator. Kept faint (~0.15) so text stays crisp.
+  const greenStart = mode === 'studio' ? 60 : 40;
+  const tintGrey = withAlpha(Z_GREY, 0.14);
+  const tintGreen = withAlpha(Z_GREEN, 0.15);
+  const tintYellow = withAlpha(Z_AMBER, 0.16);
+  const tintOrange = withAlpha(Z_ORANGE, 0.17);
+  const tintRed = withAlpha(Z_RED, 0.18);
+  const tintColor = useDerivedValue(() => {
+    const raw = liveRms.value;
+    const spl = raw === raw && raw > -120 ? raw + p.splOffset : SPL_MIN;
+    if (spl < greenStart) return tintGrey;
+    if (spl < 85) return tintGreen;
+    if (spl < 95) return tintYellow;
+    if (spl < 100) return tintOrange;
+    return tintRed;
+  }, [liveRms, p.splOffset, greenStart]);
+
   // ── CALLOUT LABELS (owner 2026-07-30 redesign v2 — distribute around the WHOLE
   // circle): every descriptive/reference label is placed RADIALLY OUTSIDE its
   // exact-dB anchor, so the labels ring the arc — lower-left (low dB) sweeping up
@@ -2132,7 +2207,10 @@ export function SplDialView(p: {
     const labelR = arcOuter + Math.max(26, Rface * 0.42); // ray radius for vertical
     const CENTER_SIN = 0.2;                 // |sin| below this ⇒ a top-centre anchor
     // Keep every callout below the top caption/title block and above the bottom.
-    const topLimit = topTextH + 12;
+    // Floor at 134 so the (now-lowered, start y≈46) title stack — which bottoms out
+    // around y≈130 for the tallest STUDIO + ESTIMATED case — is always cleared even
+    // when the trimmed topTextH would otherwise seat callouts higher.
+    const topLimit = Math.max(topTextH + 12, 134);
     const botLimit = h - 6;
     const minGap = 7;
 
@@ -2220,22 +2298,29 @@ export function SplDialView(p: {
         <Path path={G.plate} color="#9a9aa1" style="stroke" strokeWidth={1} opacity={0.9} />
         {/* Medium-gray face (LOWER portion), a touch lighter than the plate. */}
         <Path path={G.face} color="#bebec4" />
+        {/* LIVE zone tint (owner 2026-07-30): a soft colour wash over the whole
+            plate that follows the current level's zone — gray→green→yellow→orange→
+            red. Drawn UNDER the arc/ticks/node so those stay crisp; the callout +
+            title text lives outside the Canvas, so it is never washed out. */}
+        <Path path={G.plate} color={tintColor} />
         {/* A3 — MAIN arc conveys each MODE's ranges (zone palette darkened to read
             on white). STUDIO: dim below the sweet spot, GREEN 79–85 dB(C), RED
             above. SPL: green→amber→orange→red loudness with 100+ emphasised red. */}
         {mode === 'studio' ? (
           <>
-            <Path path={G.arcStudioDim} color={Z_GREY} style="stroke" strokeWidth={wArc} strokeCap="butt" opacity={0.9} />
+            <Path path={G.arcStudioGray} color={Z_GREY} style="stroke" strokeWidth={wArc} strokeCap="butt" opacity={0.9} />
             <Path path={G.arcStudioGreen} color={Z_GREEN} style="stroke" strokeWidth={wArc} strokeCap="butt" />
-            <Path path={G.arcStudioRed} color={Z_RED} style="stroke" strokeWidth={wArc} strokeCap="butt" />
-          </>
-        ) : (
-          <>
-            <Path path={G.arcGreen} color={Z_GREEN} style="stroke" strokeWidth={wArc} strokeCap="butt" />
             <Path path={G.arcYellow} color={Z_AMBER} style="stroke" strokeWidth={wArc} strokeCap="butt" />
             <Path path={G.arcOrange} color={Z_ORANGE} style="stroke" strokeWidth={wArc} strokeCap="butt" />
             <Path path={G.arcRed} color={Z_RED} style="stroke" strokeWidth={wArc} strokeCap="butt" />
-            <Path path={G.zone100} color={Z_RED} style="stroke" strokeWidth={wArc} strokeCap="butt" opacity={0.95} />
+          </>
+        ) : (
+          <>
+            <Path path={G.arcSplGray} color={Z_GREY} style="stroke" strokeWidth={wArc} strokeCap="butt" opacity={0.9} />
+            <Path path={G.arcSplGreen} color={Z_GREEN} style="stroke" strokeWidth={wArc} strokeCap="butt" />
+            <Path path={G.arcYellow} color={Z_AMBER} style="stroke" strokeWidth={wArc} strokeCap="butt" />
+            <Path path={G.arcOrange} color={Z_ORANGE} style="stroke" strokeWidth={wArc} strokeCap="butt" />
+            <Path path={G.arcRed} color={Z_RED} style="stroke" strokeWidth={wArc} strokeCap="butt" />
           </>
         )}
         <Path path={G.minors} color="#4a4436" style="stroke" strokeWidth={1.1} opacity={0.85} />
@@ -2320,52 +2405,56 @@ export function SplDialView(p: {
           (y≈34) so nothing sits at the bottom anymore. */}
       {mode === 'studio' ? (
         <>
-          {/* Item 6: two-line centered title matching the SPL / OPTIMAL modes. */}
-          <Lbl x={0} y={34} w={w} size={15} font={fonts.oswaldSemiBold} ls={2} color={ink}>
+          {/* Item 6: two-line centered title matching the SPL / OPTIMAL modes.
+              Pushed DOWN (owner 2026-07-30, start y≈46) to clear the STUDIO/SPL
+              buttons with breathing room. */}
+          <Lbl x={0} y={46} w={w} size={15} font={fonts.oswaldSemiBold} ls={2} color={ink}>
             STUDIO MONITORING
           </Lbl>
-          <Lbl x={0} y={57} w={w} size={12} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
+          <Lbl x={0} y={69} w={w} size={12} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
             dB SPL(C) · MIXING LEVELS
           </Lbl>
-          <Lbl x={0} y={75} w={w} size={11} font={fonts.oswaldSemiBold} ls={0.4} color={inkDim}>
+          <Lbl x={0} y={87} w={w} size={11} font={fonts.oswaldSemiBold} ls={0.4} color={inkDim}>
             CHECK 85–95 · WORK 70–75 · DETAIL 60–65
           </Lbl>
-          <Lbl x={0} y={91} w={w} size={11} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
+          <Lbl x={0} y={103} w={w} size={11} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
             C-WEIGHTED · SLOW
           </Lbl>
           {/* ESTIMATED badge (uncalibrated) — never a certified reading (§1.7). */}
           {!p.calibrated ? (
-            <Lbl x={0} y={107} w={w} size={9} font={fonts.oswaldSemiBold} ls={0.6} color={RED_INK}>
+            <Lbl x={0} y={119} w={w} size={9} font={fonts.oswaldSemiBold} ls={0.6} color={RED_INK}>
               ESTIMATED · UNCALIBRATED
             </Lbl>
           ) : null}
         </>
       ) : mode === 'spl' ? (
         <>
-          {/* Item 8: two-line SPL title (the old "dB SPL" wordmark removed). */}
-          <Lbl x={0} y={34} w={w} size={15} font={fonts.oswaldSemiBold} ls={2} color={ink}>
+          {/* Item 8: two-line SPL title (the old "dB SPL" wordmark removed). Pushed
+              DOWN (owner 2026-07-30, start y≈46) to clear the mode buttons. */}
+          <Lbl x={0} y={46} w={w} size={15} font={fonts.oswaldSemiBold} ls={2} color={ink}>
             SPL REFERENCE SOUNDS
           </Lbl>
-          <Lbl x={0} y={58} w={w} size={12} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
+          <Lbl x={0} y={70} w={w} size={12} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
             dBA / dBC AS NOTED
           </Lbl>
           {!p.calibrated ? (
-            <Lbl x={0} y={80} w={w} size={9} font={fonts.oswaldSemiBold} ls={0.6} color={RED_INK}>
+            <Lbl x={0} y={92} w={w} size={9} font={fonts.oswaldSemiBold} ls={0.6} color={RED_INK}>
               ESTIMATED · UNCALIBRATED
             </Lbl>
           ) : null}
         </>
       ) : (
         <>
-          {/* Item 9: optimal reference-listening title. */}
-          <Lbl x={0} y={34} w={w} size={13} font={fonts.oswaldSemiBold} ls={1} color={ink}>
+          {/* Item 9: optimal reference-listening title. Pushed DOWN (owner
+              2026-07-30, start y≈46) to clear the mode buttons. */}
+          <Lbl x={0} y={46} w={w} size={13} font={fonts.oswaldSemiBold} ls={1} color={ink}>
             OPTIMAL REFERENCE LISTENING
           </Lbl>
-          <Lbl x={0} y={57} w={w} size={12} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
+          <Lbl x={0} y={69} w={w} size={12} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
             dBA · LAeq WHERE NOTED
           </Lbl>
           {!p.calibrated ? (
-            <Lbl x={0} y={79} w={w} size={9} font={fonts.oswaldSemiBold} ls={0.6} color={RED_INK}>
+            <Lbl x={0} y={91} w={w} size={9} font={fonts.oswaldSemiBold} ls={0.6} color={RED_INK}>
               ESTIMATED · UNCALIBRATED
             </Lbl>
           ) : null}

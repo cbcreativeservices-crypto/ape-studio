@@ -80,6 +80,7 @@ function VuTopMeter({
   levelText,
   rangeText,
   brackets,
+  peakHold,
 }: {
   viz: VizMetersModule;
   live: LiveMeterDrive;
@@ -90,6 +91,7 @@ function VuTopMeter({
   levelText: string;
   rangeText: string;
   brackets: { lowText: string; highText: string; mid10Text?: string; mid5Text?: string };
+  peakHold: PeakHoldMode;
 }) {
   const phase = viz.usePhaseClock(true, 1 / VU_LOOP);
   return (
@@ -103,6 +105,7 @@ function VuTopMeter({
       live0Db={live0Db}
       cornerReadouts={{ maxText, levelText, rangeText }}
       scaleBrackets={brackets}
+      peakHold={peakHold}
     />
   );
 }
@@ -214,26 +217,15 @@ const RANGE_VALUES = [40, 60, 80, 100] as const;
 // in as the level moves (owner 2026-07-30).
 const ZONE = { green: '#1f7a34', amber: '#b8860b', orange: '#c9631a', red: '#b3271e', dim: '#6b7078' } as const;
 type DialMode = 'studio' | 'spl' | 'optimal';
+// Unified level→zone mapping (owner 2026-07-30): GRAY below the green start,
+// GREEN up to 84, YELLOW 85–94, ORANGE 95–99, RED 100+. The green START differs
+// by mode — STUDIO wants a monitored 60 dB floor; SPL/OPTIMAL start green at 40.
 function splZoneColor(spl: number, mode: DialMode): string {
-  if (mode === 'studio') {
-    // studio: dim below the sweet spot, green across 79–85, red above
-    if (spl < 79) return ZONE.dim;
-    if (spl <= 85) return ZONE.green;
-    return ZONE.red;
-  }
-  if (mode === 'optimal') {
-    // optimal reference listening bands: ambient/program/reference green-ish,
-    // show/high orange, limit/100+ red.
-    if (spl < 60) return ZONE.green;
-    if (spl < 79) return ZONE.amber;
-    if (spl <= 84) return ZONE.green;
-    if (spl < 97) return ZONE.orange;
-    return ZONE.red;
-  }
-  // spl reference-sounds loudness zones
-  if (spl < 60) return ZONE.green;
-  if (spl < 78) return ZONE.amber;
-  if (spl < 95) return ZONE.orange;
+  const greenStart = mode === 'studio' ? 60 : 40;
+  if (spl < greenStart) return ZONE.dim;
+  if (spl <= 84) return ZONE.green;
+  if (spl <= 94) return ZONE.amber;
+  if (spl <= 99) return ZONE.orange;
   return ZONE.red;
 }
 
@@ -259,6 +251,7 @@ function Chip({
   onPress,
   compact,
   bigGlyph,
+  tint = 'amber',
   accessibilityLabel,
 }: {
   label: string;
@@ -267,11 +260,18 @@ function Chip({
   compact?: boolean;
   /** Render the label larger (e.g. the ∞ peak-hold glyph, too small otherwise). */
   bigGlyph?: boolean;
+  /** Selected accent (owner 2026-07-30): amber is the house accent; RESPONSE uses
+   *  green (FAST) / purple (SLOW). Replaces the off-system orange. */
+  tint?: 'amber' | 'green' | 'purple';
   accessibilityLabel?: string;
 }) {
+  const selStyle =
+    tint === 'green' ? styles.chipSelGreen : tint === 'purple' ? styles.chipSelPurple : styles.chipSelected;
+  const selText =
+    tint === 'green' ? styles.chipTextGreen : tint === 'purple' ? styles.chipTextPurple : styles.chipTextSelected;
   return (
     <Pressable
-      style={[styles.chip, compact && styles.chipCompact, selected && styles.chipSelected]}
+      style={[styles.chip, compact && styles.chipCompact, selected && selStyle]}
       onPress={onPress}
       accessibilityRole="button"
       accessibilityState={{ selected }}
@@ -282,7 +282,7 @@ function Chip({
           styles.chipText,
           compact && styles.chipTextCompact,
           bigGlyph && styles.chipTextGlyph,
-          selected && styles.chipTextSelected,
+          selected && selText,
         ]}
       >
         {label}
@@ -309,12 +309,20 @@ export function SplMeterScreen({ navigation }: Props) {
   const wantRunning = useRef(false);
   const stateRef = useRef(state);
   stateRef.current = state;
+  // micPaused (owner 2026-07-30): STOP must ONLY stop the mic — it is NOT a
+  // navigation/exit button. Previously STOP dropped state to 'idle', which
+  // collapsed the whole tool back to its START card (it read as "kicked out to
+  // the menu"). Now a manual STOP sets micPaused so the tool UI STAYS visible
+  // (frozen, readouts dashed) and the same button flips to START to re-arm.
+  const [micPaused, setMicPaused] = useState(false);
   const startMeter = useCallback(() => {
     wantRunning.current = true;
+    setMicPaused(false);
     void start();
   }, [start]);
   const stopMeter = useCallback(() => {
     wantRunning.current = false;
+    setMicPaused(true);
     stop();
   }, [stop]);
   useFocusEffect(
@@ -350,6 +358,9 @@ export function SplMeterScreen({ navigation }: Props) {
     rawDb + (withDraft ? draftOffset : (offset ?? 0));
 
   const running = state === 'running';
+  // Show the tool's meter UI while running OR while manually paused (mic off but
+  // still IN the tool) — never collapse to the START card on a manual STOP.
+  const showMeter = running || micPaused;
   // Readouts come ONLY from a live frame — stale frames after STOP are not
   // shown (measurement-integrity: no value the mic isn't producing right now).
   const meter = running ? frames.meter : null;
@@ -458,11 +469,14 @@ export function SplMeterScreen({ navigation }: Props) {
     mid5Text: `${rangeRef - 5}`,
     highText: `${rangeRef}`,
   };
-  // VU corner readouts (printed inside the glass): MAX = peak-hold in SPL terms,
-  // LEVEL = the current selected weighting × response, both via the screen's
-  // shown()/fmtDb so every number on the screen agrees.
-  const vuMaxText = meter ? fmtDb(shown(meter.peakHoldDb)) : '—';
-  const vuLevelText = meter ? fmtDb(shown(selectedLevelDb(meter, weighting, response))) : '—';
+  // VU corner readouts (printed inside the glass) — BUGFIX 2026-07-30: these must
+  // show the ESTIMATED dB SPL (level + splOffset), the SAME number the needle,
+  // the blue brackets, and the circle centre use. Previously they printed raw
+  // dBFS (e.g. −67), which disagreed with the needle and read like "67 dB" next
+  // to a 40 dB room. estSpl() converts a dBFS reading to the SPL estimate.
+  const estSpl = (dbfs: number) => (Number.isFinite(dbfs) ? (dbfs + splOffset).toFixed(1) : '—');
+  const vuMaxText = meter ? estSpl(meter.peakHoldDb) : '—';
+  const vuLevelText = meter ? estSpl(selectedLevelDb(meter, weighting, response)) : '—';
   // Live SPL number for the CENTER of the circle gauge — the ESTIMATED dB SPL
   // (level + splOffset) so it matches the node's position on the dial's scale —
   // plus its zone colour so the number turns the colour of the arc zone it's in.
@@ -548,7 +562,7 @@ export function SplMeterScreen({ navigation }: Props) {
         {/* Honest not-ready states: absent / spike / denied / error. */}
         <EngineGate state={state} lastError={lastError} />
 
-        {(state === 'idle' || state === 'starting') && (
+        {!micPaused && (state === 'idle' || state === 'starting') && (
           <>
             <Text style={styles.intro}>
               Live digital level metering with A/C/Z weighting and Fast/Slow response, plus a
@@ -558,14 +572,14 @@ export function SplMeterScreen({ navigation }: Props) {
             </Text>
             <GlassButton
               label={state === 'starting' ? 'STARTING…' : 'START METER'}
-              tint="orange"
+              tint="gold"
               disabled={state === 'starting'}
               onPress={startMeter}
             />
           </>
         )}
 
-        {running && (
+        {showMeter && (
           <>
             {/* Weighting × response selection (spec §9 required controls). */}
             <View style={styles.chipsRow}>
@@ -581,7 +595,13 @@ export function SplMeterScreen({ navigation }: Props) {
                 <HelpHead title="RESPONSE" onHelp={() => help('response')} style={styles.chipGroupLabel} />
                 <View style={styles.chipSet}>
                   {RESPONSES.map((r) => (
-                    <Chip key={r} label={r.toUpperCase()} selected={response === r} onPress={() => setResponse(r)} />
+                    <Chip
+                      key={r}
+                      label={r.toUpperCase()}
+                      tint={r === 'fast' ? 'green' : 'purple'}
+                      selected={response === r}
+                      onPress={() => setResponse(r)}
+                    />
                   ))}
                 </View>
               </View>
@@ -763,10 +783,13 @@ export function SplMeterScreen({ navigation }: Props) {
               </Text>
             </View>
 
-            {/* STOP turns the microphone OFF without leaving the screen and ends
-                the session (clears auto-resume). Navigating away only pauses the
-                mic; this is the explicit "I'm done capturing" control. */}
-            <GlassButton label="STOP · MIC OFF" tint="orange" onPress={stopMeter} />
+            {/* STOP only turns the mic OFF and STAYS in the tool (owner
+                2026-07-30) — the same button flips to START to re-arm. */}
+            {running ? (
+              <GlassButton label="STOP · MIC OFF" tint="gold" onPress={stopMeter} />
+            ) : (
+              <GlassButton label="START · MIC ON" tint="gold" onPress={startMeter} />
+            )}
           </>
         )}
 
@@ -818,7 +841,7 @@ export function SplMeterScreen({ navigation }: Props) {
           <ScrollView contentContainerStyle={styles.vuScroll}>
             <EngineGate state={state} lastError={lastError} />
 
-            {(state === 'idle' || state === 'starting') && (
+            {!micPaused && (state === 'idle' || state === 'starting') && (
               <>
                 <Text style={styles.intro}>
                   The microphone is off. Start the meter to drive the VU — capture runs only while
@@ -826,7 +849,7 @@ export function SplMeterScreen({ navigation }: Props) {
                 </Text>
                 <GlassButton
                   label={state === 'starting' ? 'STARTING…' : 'START METER'}
-                  tint="orange"
+                  tint="gold"
                   disabled={state === 'starting'}
                   onPress={startMeter}
                 />
@@ -839,7 +862,7 @@ export function SplMeterScreen({ navigation }: Props) {
                 the SPL gauge below is calibrated-approximate at best (ESTIMATED when
                 uncalibrated) and its 79/82/85 dB(C) mix band is a C-weighted
                 reference, not a guarantee. */}
-            {running && (
+            {showMeter && (
               <Text style={styles.vuBadge}>
                 {calibrated
                   ? `VU: RELATIVE · ${rangeRef} dB at 0 → ${rangeRef - 20} dB at −20 (${rangeAuto ? 'AUTO' : 'RANGE'}). GAUGE: dB SPL · FIELD-CALIBRATED (APPROXIMATE) — the 79/82/85 dB(C) mix band is a reference, not a guarantee`
@@ -847,7 +870,7 @@ export function SplMeterScreen({ navigation }: Props) {
               </Text>
             )}
 
-            {running && (
+            {showMeter && (
               <>
                 {/* 2 — TOP AREA (owner 2026-07-30): LEFT column = VU + RANGE +
                     WEIGHTING + PEAK HOLD (compact); a thin TALL LED runs down the
@@ -869,6 +892,7 @@ export function SplMeterScreen({ navigation }: Props) {
                         levelText={vuLevelText}
                         rangeText={vuRangeText}
                         brackets={vuBrackets}
+                        peakHold={holdMode}
                       />
                     ) : (
                       /* Honest gate for pre-Skia clients (§1.7): readouts stay live. */
@@ -935,7 +959,14 @@ export function SplMeterScreen({ navigation }: Props) {
                         <Text style={styles.chipGroupLabel}>RESPONSE</Text>
                         <View style={styles.chipSetWrap}>
                           {RESPONSES.map((r) => (
-                            <Chip key={r} label={r.toUpperCase()} compact selected={response === r} onPress={() => setResponse(r)} />
+                            <Chip
+                              key={r}
+                              label={r.toUpperCase()}
+                              tint={r === 'fast' ? 'green' : 'purple'}
+                              compact
+                              selected={response === r}
+                              onPress={() => setResponse(r)}
+                            />
                           ))}
                         </View>
                       </View>
@@ -1043,7 +1074,11 @@ export function SplMeterScreen({ navigation }: Props) {
                 {/* STOP — moved ABOVE calibration / below the session log (owner
                     2026-07-30). Turns the mic OFF but STAYS in the VU screen; the
                     same control flips to START to turn the mic back on. */}
-                <GlassButton label="STOP · MIC OFF" tint="orange" onPress={stopMeter} />
+                {running ? (
+                  <GlassButton label="STOP · MIC OFF" tint="gold" onPress={stopMeter} />
+                ) : (
+                  <GlassButton label="START · MIC ON" tint="gold" onPress={startMeter} />
+                )}
 
                 {/* 8 — Field calibration (ruling R1) — same store as the screen, so
                     the gauge's SPL scale updates the instant it is set/cleared. */}
@@ -1192,12 +1227,17 @@ const styles = StyleSheet.create({
   },
   // Smaller, non-stretching chip for the compacted left-column controls.
   chipCompact: { flex: 0, paddingVertical: 6, paddingHorizontal: 11, minWidth: 34 },
-  chipSelected: { borderColor: 'rgba(255,138,30,.65)', backgroundColor: '#1a1207' },
+  // House accent is AMBER (owner 2026-07-30 — orange was off-system).
+  chipSelected: { borderColor: 'rgba(255,198,77,.7)', backgroundColor: '#1c1608' },
+  chipSelGreen: { borderColor: 'rgba(55,224,95,.7)', backgroundColor: '#0c2012' },
+  chipSelPurple: { borderColor: 'rgba(180,91,255,.7)', backgroundColor: '#1a1024' },
   chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1, color: colors.textSecondary },
   chipTextCompact: { fontSize: 11.5, letterSpacing: 0.6 },
   // Bigger glyph (the ∞ peak-hold symbol is illegible at chip size otherwise).
   chipTextGlyph: { fontSize: 19, lineHeight: 20 },
-  chipTextSelected: { color: colors.orange },
+  chipTextSelected: { color: colors.amber },
+  chipTextGreen: { color: colors.green },
+  chipTextPurple: { color: colors.purple },
 
   // Big readout card.
   readoutCard: {
