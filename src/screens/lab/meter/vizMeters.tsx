@@ -685,8 +685,10 @@ export function VuMeterView(p: {
   /** Optional digital readouts printed INSIDE the glass at the bottom corners
    *  (SPL popup, 2026-07-30): bottom-LEFT "MAX", bottom-RIGHT the current level +
    *  "dB". The CALLER formats both strings (its shown()/fmtDb math is the single
-   *  source of truth). Absent ⇒ nothing drawn — meter-lab call sites unaffected. */
-  cornerReadouts?: { maxText?: string; levelText?: string };
+   *  source of truth). Absent ⇒ nothing drawn — meter-lab call sites unaffected.
+   *  `rangeText` (SPL popup, 2026-07-30) prints TOP-LEFT — e.g. "RANGE 100" or
+   *  "AUTO · 85" — the VU's 0-VU reference; MAX stays bottom-left, level bottom-right. */
+  cornerReadouts?: { maxText?: string; levelText?: string; rangeText?: string };
 }) {
   const w = p.width;
   const h = p.height ?? 230;
@@ -858,8 +860,10 @@ export function VuMeterView(p: {
     const th = needleRad.value;
     const s = Math.sin(th);
     const c = Math.cos(th);
-    const tipR = R + 8;
-    const tailR = -18;
+    // Studio Six proportions: the tapered blade tip lands just INSIDE the scale
+    // ticks (tick base is R + 2), never past the arc; short counterweight tail.
+    const tipR = R + 1;
+    const tailR = -16;
     const wb = 3.0;
     const wt = 1.0;
     const bx = cx + s * tailR;
@@ -879,8 +883,8 @@ export function VuMeterView(p: {
     const th = needleRad.value;
     const s = Math.sin(th);
     const c = Math.cos(th);
-    const tipR = R + 8;
-    const tailR = -18;
+    const tipR = R + 1;
+    const tailR = -16;
     const wb = 3.0;
     const wt = 1.0;
     const ox = 2.4;
@@ -999,6 +1003,11 @@ export function VuMeterView(p: {
       ) : null}
       {/* Digital readouts printed on the glass (SPL popup): MAX (bottom-left) +
           the live level with a "dB" unit (bottom-right). Formatted by caller. */}
+      {p.cornerReadouts?.rangeText != null ? (
+        <Lbl x={fx + 12} y={fy + 8} w={fw - 24} align="left" size={9} font={fonts.oswaldSemiBold} ls={1.2} color="#6e5a34">
+          {p.cornerReadouts.rangeText}
+        </Lbl>
+      ) : null}
       {p.cornerReadouts?.maxText != null ? (
         <>
           <Lbl x={fx + 12} y={py - 21} w={70} align="left" size={7} font={fonts.oswaldSemiBold} ls={1} color="#8a2f24">
@@ -1762,6 +1771,12 @@ export function SplDialView(p: {
   splOffset: number;
   /** True ⇒ field-calibrated (approximate); false ⇒ badge the dial ESTIMATED. */
   calibrated: boolean;
+  /** Which annotations the ring conveys (owner 2026-07-30). 'studio' = the
+   *  control-room 79–85 dB(C) sweet-spot band + monitoring guidance; 'spl' =
+   *  common reference sounds at their dB along the arc + the 100+ exposure zone.
+   *  The colored 20–130 arc, ticks, numerals and the node point are identical in
+   *  both — only the labels swap. Default 'studio'. */
+  labelMode?: 'studio' | 'spl';
   loopSeconds?: number;
   /** Legacy corner-readout props — the readouts moved to the VU; kept optional
    *  for prop-compat, not rendered by the gauge. */
@@ -1777,11 +1792,12 @@ export function SplDialView(p: {
   const h = p.height ?? Math.round(w * 1.02);
   const LOOP = p.loopSeconds ?? 4;
   const liveRms = p.live.rmsDb;
+  const mode = p.labelMode ?? 'studio';
 
-  // Scale: 30..110 dB SPL across a ±A° sweep, pivot low-of-centre so the bottom
-  // wedge is free for the sweet-spot band labels.
-  const SPL_MIN = 30;
-  const SPL_MAX = 110;
+  // Scale: 20..130 dB SPL across a ±A° sweep, pivot low-of-centre so the bottom
+  // wedge is free for the sweet-spot band / reference labels.
+  const SPL_MIN = 20;
+  const SPL_MAX = 130;
   const SPAN = SPL_MAX - SPL_MIN;
   const A = 122; // half-sweep, degrees (244° total, gap at the bottom)
   const cx = w / 2;
@@ -1841,10 +1857,12 @@ export function SplDialView(p: {
     // Outer COLORED loudness arc — green (low) → yellow → orange → red (high),
     // four bold segments centred on the tick base. The mixing sweet-spot lives
     // on the SEPARATE inner band below, so this arc is the general loudness read.
-    const arcGreen = arcStroke(SPL_MIN, 62, Rs + 2);
-    const arcYellow = arcStroke(62, 78, Rs + 2);
-    const arcOrange = arcStroke(78, 92, Rs + 2);
-    const arcRed = arcStroke(92, SPL_MAX, Rs + 2);
+    const arcGreen = arcStroke(SPL_MIN, 60, Rs + 2);
+    const arcYellow = arcStroke(60, 78, Rs + 2);
+    const arcOrange = arcStroke(78, 95, Rs + 2);
+    const arcRed = arcStroke(95, SPL_MAX, Rs + 2);
+    // SPL mode: an emphasized red overlay on the 100+ zone (unsafe > 15 min/day).
+    const zone100 = arcStroke(100, SPL_MAX, Rs + 2);
     // Major/minor ticks (30..110 dB) drawn in dark ink over the colored arc.
     const majors = Skia.Path.Make();
     const minors = Skia.Path.Make();
@@ -1879,15 +1897,16 @@ export function SplDialView(p: {
       const lp = pt(angOf(s), r);
       return { x: lp.x, y: lp.y };
     };
-    const numLabels = [30, 50, 70, 90, 110].map((s) => ({ s, ...numAt(s, Rs - 12) }));
-    const exSrc: { s: number; t: string }[] = [
-      { s: 30, t: 'WHISPER' },
-      { s: 40, t: 'QUIET' },
-      { s: 60, t: 'SPEECH' },
-      { s: 85, t: 'TRAFFIC' },
-      { s: 105, t: 'CONCERT' },
+    const numLabels = [20, 40, 60, 80, 100, 120].map((s) => ({ s, ...numAt(s, Rs - 12) }));
+    // SPL mode — common reference sounds at their dB along the arc (dBA/dBC as
+    // noted). Kept sparse so the ring stays uncrowded.
+    const splRefSrc: { s: number; t: string; sub: string }[] = [
+      { s: 37, t: 'QUIET ROOM', sub: '35–40 dBA' },
+      { s: 60, t: 'CONVERSATION', sub: '~60 dBA' },
+      { s: 79, t: 'STUDIO', sub: '~79 dBC' },
+      { s: 95, t: 'CONCERT', sub: '~95 dBC' },
     ];
-    const examples = exSrc.map((e) => ({ s: e.s, t: e.t, ...numAt(e.s, Rs + 22) }));
+    const splRefs = splRefSrc.map((e) => ({ ...e, ...numAt(e.s, Rs + 20) }));
     const bandLabels = [
       { s: 79, t: 'SM' },
       { s: 82, t: 'MD' },
@@ -1904,8 +1923,8 @@ export function SplDialView(p: {
     });
 
     return {
-      outer, face, sheen, arcGreen, arcYellow, arcOrange, arcRed, majors, minors,
-      zoneDim, zoneRisk, band, bandTicks, numLabels, examples, bandLabels,
+      outer, face, sheen, arcGreen, arcYellow, arcOrange, arcRed, zone100, majors, minors,
+      zoneDim, zoneRisk, band, bandTicks, numLabels, splRefs, bandLabels,
       riskAnchor, bassAnchor, Rb, screws,
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1945,29 +1964,29 @@ export function SplDialView(p: {
     return (-A + 2 * A * pct) * DEG;
   }, [p.phase, liveRms, p.splOffset, LOOP]);
 
-  const mkNeedle = (ox: number, oy: number) => {
-    'worklet';
+  // ── NODE POINT (owner 2026-07-30): NO centre needle — a glowing filled dot
+  // rides the colored arc LINE at the current level's angle, gliding via the
+  // same integrator above. Core + soft halo are rebuilt per frame in world
+  // coords (house rule: geometry in worklets, no animated CTM).
+  const nodeCoreR = Math.max(4, Rface * 0.05);
+  const nodeHaloR = nodeCoreR * 2.3;
+  const nodeArcR = Rs + 2; // sits ON the colored loudness-arc line
+  const nodeCore = useDerivedValue(() => {
     const th = needleRad.value;
-    const s = Math.sin(th);
-    const c = Math.cos(th);
-    const tipR = Rs + 4;
-    const tailR = -Rface * 0.16;
-    const wb = 3.0;
-    const wt = 1.0;
-    const bx = cx + s * tailR + ox;
-    const by = cy - c * tailR + oy;
-    const tx = cx + s * tipR + ox;
-    const ty = cy - c * tipR + oy;
+    const x = cx + Math.sin(th) * nodeArcR;
+    const y = cy - Math.cos(th) * nodeArcR;
     const pth = Skia.Path.Make();
-    pth.moveTo(bx + c * wb, by + s * wb);
-    pth.lineTo(tx + c * wt, ty + s * wt);
-    pth.lineTo(tx - c * wt, ty - s * wt);
-    pth.lineTo(bx - c * wb, by - s * wb);
-    pth.close();
+    pth.addCircle(x, y, nodeCoreR);
     return pth;
-  };
-  const needlePath = useDerivedValue(() => mkNeedle(0, 0), [needleRad]);
-  const needleShadow = useDerivedValue(() => mkNeedle(2.2, 3.2), [needleRad]);
+  }, [needleRad]);
+  const nodeHalo = useDerivedValue(() => {
+    const th = needleRad.value;
+    const x = cx + Math.sin(th) * nodeArcR;
+    const y = cy - Math.cos(th) * nodeArcR;
+    const pth = Skia.Path.Make();
+    pth.addCircle(x, y, nodeHaloR);
+    return pth;
+  }, [needleRad]);
 
   const ink = '#2e2618';
   const inkDim = '#7a6f57';
@@ -1996,28 +2015,33 @@ export function SplDialView(p: {
             positions={[0, 0.74, 1]}
           />
         </Path>
-        {/* Inner sweet-spot zone arcs: dim below, green band, red above. */}
-        <Path path={G.zoneDim} color="#b8ab8c" style="stroke" strokeWidth={3} opacity={0.8} />
-        <Path path={G.zoneRisk} color="#c9382e" style="stroke" strokeWidth={3} opacity={0.85} />
-        <Path path={G.band} color={withAlpha(GREEN, 0.32)} />
-        <Path path={G.band} color="#2f9d54" style="stroke" strokeWidth={1.2} opacity={0.9} />
-        <Path path={G.bandTicks} color="#1f6c39" style="stroke" strokeWidth={1.3} />
+        {/* STUDIO mode — inner sweet-spot zone arcs: dim below, green band, red above. */}
+        {mode === 'studio' ? (
+          <>
+            <Path path={G.zoneDim} color="#b8ab8c" style="stroke" strokeWidth={3} opacity={0.8} />
+            <Path path={G.zoneRisk} color="#c9382e" style="stroke" strokeWidth={3} opacity={0.85} />
+            <Path path={G.band} color={withAlpha(GREEN, 0.32)} />
+            <Path path={G.band} color="#2f9d54" style="stroke" strokeWidth={1.2} opacity={0.9} />
+            <Path path={G.bandTicks} color="#1f6c39" style="stroke" strokeWidth={1.3} />
+          </>
+        ) : null}
         {/* Outer COLORED loudness arc (green → yellow → orange → red) + ticks. */}
         <Path path={G.arcGreen} color="#4ea84e" style="stroke" strokeWidth={wArc} strokeCap="butt" />
         <Path path={G.arcYellow} color="#e8c341" style="stroke" strokeWidth={wArc} strokeCap="butt" />
         <Path path={G.arcOrange} color="#e6902f" style="stroke" strokeWidth={wArc} strokeCap="butt" />
         <Path path={G.arcRed} color="#cf3b2e" style="stroke" strokeWidth={wArc} strokeCap="butt" />
+        {/* SPL mode — emphasize the 100+ exposure zone in bright red. */}
+        {mode === 'spl' ? (
+          <Path path={G.zone100} color="#ff3b2e" style="stroke" strokeWidth={wArc} strokeCap="butt" opacity={0.95} />
+        ) : null}
         <Path path={G.minors} color="#2b2317" style="stroke" strokeWidth={1.1} opacity={0.8} />
         <Path path={G.majors} color={ink} style="stroke" strokeWidth={1.6} />
-        {/* Needle: soft drop shadow, tapered blade, pivot boss. */}
-        <Path path={needleShadow} color="#000000" opacity={0.16}>
-          <BlurMask blur={3} style="normal" />
+        {/* NODE POINT riding the arc: soft halo glow + bright core + specular. */}
+        <Path path={nodeHalo} color={withAlpha(AMBER, 0.5)}>
+          <BlurMask blur={7} style="normal" />
         </Path>
-        <Path path={needlePath} color="#17130c" />
-        <Circle cx={cx} cy={cy} r={9}>
-          <RadialGradient c={vec(cx - 3, cy - 3)} r={15} colors={['#4a4c55', '#232429', '#101114']} />
-        </Circle>
-        <Circle cx={cx} cy={cy} r={3.2} color="#0c0d10" />
+        <Path path={nodeCore} color="#fff0c4" />
+        <Path path={nodeCore} color="#c98a1e" style="stroke" strokeWidth={1.2} opacity={0.9} />
         {/* Glass: diagonal specular sheen + inner lip. */}
         <Path path={G.sheen}>
           <LinearGradient
@@ -2030,40 +2054,65 @@ export function SplDialView(p: {
         <Path path={G.face} color="#4b4e57" style="stroke" strokeWidth={0.8} opacity={0.5} />
       </Canvas>
 
-      {/* Printed numerals + example words (mono/condensed ink on cream). */}
+      {/* Printed numerals — always (mono/condensed ink on cream, red at 100+). */}
       {G.numLabels.map((l) => (
-        <Lbl key={`n${l.s}`} x={l.x - 12} y={l.y - 5} w={24} size={9} color={l.s > 85 ? RED_INK : ink}>
+        <Lbl key={`n${l.s}`} x={l.x - 12} y={l.y - 5} w={24} size={9} color={l.s >= 100 ? RED_INK : ink}>
           {`${l.s}`}
         </Lbl>
       ))}
-      {G.examples.map((e) => (
-        <Lbl key={`e${e.s}`} x={e.x - 24} y={e.y - 4} w={48} size={6.5} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
-          {e.t}
-        </Lbl>
-      ))}
-      {G.bandLabels.map((b) => (
-        <Lbl key={`b${b.s}`} x={b.x - 12} y={b.y - 4} w={24} size={6.5} font={fonts.oswaldSemiBold} color="#1f6c39">
-          {b.t}
-        </Lbl>
-      ))}
-      <Lbl x={G.riskAnchor.x - 26} y={G.riskAnchor.y - 4} w={52} size={6} font={fonts.oswaldSemiBold} ls={0.4} color={RED_INK}>
-        HEARING RISK
-      </Lbl>
-      <Lbl x={G.bassAnchor.x - 28} y={G.bassAnchor.y - 4} w={56} size={6} font={fonts.oswaldSemiBold} ls={0.4} color={inkDim}>
-        BASS LESS ACCURATE
-      </Lbl>
 
-      {/* Face branding + the MIX-target caption. */}
+      {/* STUDIO annotations: sweet-spot 79/82/85 room-size ticks + captions. */}
+      {mode === 'studio' ? (
+        <>
+          {G.bandLabels.map((b) => (
+            <Lbl key={`b${b.s}`} x={b.x - 12} y={b.y - 4} w={24} size={6.5} font={fonts.oswaldSemiBold} color="#1f6c39">
+              {b.t}
+            </Lbl>
+          ))}
+          <Lbl x={G.riskAnchor.x - 26} y={G.riskAnchor.y - 4} w={52} size={6} font={fonts.oswaldSemiBold} ls={0.4} color={RED_INK}>
+            HEARING RISK
+          </Lbl>
+          <Lbl x={G.bassAnchor.x - 28} y={G.bassAnchor.y - 4} w={56} size={6} font={fonts.oswaldSemiBold} ls={0.4} color={inkDim}>
+            BASS LESS ACCURATE
+          </Lbl>
+          <Lbl x={cx - 60} y={cy - Rface * 0.32} w={120} size={6.5} color="#2f7d49">
+            MIX SWEET SPOT · 79–85 dB(C)
+          </Lbl>
+          <Lbl x={cx - 75} y={cy - Rface * 0.13} w={150} size={6} font={fonts.oswaldSemiBold} ls={0.4} color={inkDim}>
+            CHECK 85–95 · WORK 70–75 · DETAIL 60–65
+          </Lbl>
+          <Lbl x={cx - 60} y={cy + Rface * 0.16} w={120} size={6.5} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
+            C-WEIGHTED · SLOW
+          </Lbl>
+        </>
+      ) : (
+        /* SPL annotations: reference sounds at their dB + the 100+ exposure note. */
+        <>
+          {G.splRefs.map((e) => (
+            <View key={`r${e.s}`}>
+              <Lbl x={e.x - 30} y={e.y - 9} w={60} size={6.5} font={fonts.oswaldSemiBold} ls={0.4} color={e.s >= 100 ? RED_INK : ink}>
+                {e.t}
+              </Lbl>
+              <Lbl x={e.x - 30} y={e.y - 1} w={60} size={6} color={inkDim}>
+                {e.sub}
+              </Lbl>
+            </View>
+          ))}
+          <Lbl x={cx - 60} y={cy - Rface * 0.32} w={120} size={6.5} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
+            REFERENCE SOUNDS
+          </Lbl>
+          <Lbl x={cx - 75} y={cy - Rface * 0.13} w={150} size={6} font={fonts.oswaldSemiBold} ls={0.4} color={inkDim}>
+            dBA / dBC AS NOTED
+          </Lbl>
+          <Lbl x={cx - 78} y={cy + Rface * 0.16} w={156} size={6.5} font={fonts.oswaldSemiBold} ls={0.4} color={RED_INK}>
+            100+ dB · UNSAFE OVER 15 MIN/DAY
+          </Lbl>
+        </>
+      )}
+
+      {/* Face branding — always. */}
       <Lbl x={cx - 40} y={cy - Rface * 0.52} w={80} size={16} font={fonts.oswaldSemiBold} ls={2} color={ink}>
         dB SPL
-      </Lbl>
-      <Lbl x={cx - 60} y={cy - Rface * 0.32} w={120} size={6.5} color="#2f7d49">
-        MIX SWEET SPOT · 79–85 dB(C)
-      </Lbl>
-
-      {/* C-weighting note on the face (calibration standard for monitoring). */}
-      <Lbl x={cx - 60} y={cy + Rface * 0.16} w={120} size={6.5} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
-        C-WEIGHTED · SLOW
       </Lbl>
 
       {/* ESTIMATED badge (uncalibrated) — never a certified reading (§1.7). */}

@@ -77,6 +77,7 @@ function VuTopMeter({
   live0Db,
   maxText,
   levelText,
+  rangeText,
 }: {
   viz: VizMetersModule;
   live: LiveMeterDrive;
@@ -85,6 +86,7 @@ function VuTopMeter({
   live0Db: number;
   maxText: string;
   levelText: string;
+  rangeText: string;
 }) {
   const phase = viz.usePhaseClock(true, 1 / VU_LOOP);
   return (
@@ -96,7 +98,7 @@ function VuTopMeter({
       showPeakLed
       loopSeconds={VU_LOOP}
       live0Db={live0Db}
-      cornerReadouts={{ maxText, levelText }}
+      cornerReadouts={{ maxText, levelText, rangeText }}
     />
   );
 }
@@ -114,6 +116,8 @@ function VuHero({
   holdMode,
   splOffset,
   calibrated,
+  dialMode,
+  onDialMode,
 }: {
   viz: VizMetersModule;
   live: LiveMeterDrive;
@@ -123,19 +127,41 @@ function VuHero({
   holdMode: PeakHoldMode;
   splOffset: number;
   calibrated: boolean;
+  dialMode: 'studio' | 'spl';
+  onDialMode: (m: 'studio' | 'spl') => void;
 }) {
   const phase = viz.usePhaseClock(true, 1 / VU_LOOP);
   return (
     <View style={styles.heroRow}>
-      <viz.SplDialView
-        width={dialW}
-        height={dialH}
-        phase={phase}
-        live={live}
-        splOffset={splOffset}
-        calibrated={calibrated}
-        loopSeconds={VU_LOOP}
-      />
+      <View style={{ width: dialW, alignItems: 'center', gap: 6 }}>
+        <viz.SplDialView
+          width={dialW}
+          height={dialH}
+          phase={phase}
+          live={live}
+          splOffset={splOffset}
+          calibrated={calibrated}
+          labelMode={dialMode}
+          loopSeconds={VU_LOOP}
+        />
+        {/* STUDIO / SPL chooser — swaps the ring's labels (owner 2026-07-30). */}
+        <View style={styles.dialModeRow}>
+          {(['studio', 'spl'] as const).map((m) => (
+            <Pressable
+              key={m}
+              style={[styles.dialModeChip, dialMode === m && styles.chipSelected]}
+              onPress={() => onDialMode(m)}
+              accessibilityRole="button"
+              accessibilityState={{ selected: dialMode === m }}
+              accessibilityLabel={m === 'studio' ? 'Studio labels' : 'SPL reference labels'}
+            >
+              <Text style={[styles.dialModeChipText, dialMode === m && styles.chipTextSelected]}>
+                {m.toUpperCase()}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+      </View>
       <viz.PeakAvgMeterView
         width={ledW}
         height={dialH}
@@ -150,8 +176,8 @@ function VuHero({
 
 /** RANGE — the environmental SPL that reads 0 VU. The VU shows the signal
  *  RELATIVE to this reference (current SPL − RANGE), so RANGE centres the meter
- *  on the room's noise level. Default 100 dB. */
-const RANGE_VALUES = [60, 70, 80, 90, 100, 110, 120, 130, 140] as const;
+ *  on the room's noise level. Default 100 dB. AUTO (below) tracks ambient. */
+const RANGE_VALUES = [20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120] as const;
 
 /** Peak-hold linger options for the LED meter's user setting. */
 const HOLD_MODES: PeakHoldMode[] = ['off', '1s', '3s', 'inf'];
@@ -236,6 +262,15 @@ export function SplMeterScreen({ navigation }: Props) {
   // RANGE (owner 2026-07-30): the environmental SPL that reads 0 VU. The wide VU
   // at the top shows the signal RELATIVE to this (current SPL − RANGE).
   const [rangeDb, setRangeDb] = useState(100);
+  // AUTO range (owner 2026-07-30): when on, the 0-VU reference tracks a slow EMA
+  // of the measured SPL so the needle stays on-scale and visibly swinging around
+  // centre. Manual chips turn it off. autoRangeDb is the rounded auto reference.
+  const [rangeAuto, setRangeAuto] = useState(false);
+  const [autoRangeDb, setAutoRangeDb] = useState(80);
+  const splEmaRef = useRef<number | null>(null);
+  // Circle-meter label mode (owner 2026-07-30): STUDIO (control-room sweet-spot)
+  // vs SPL (reference sounds). The node point rides the same arc in both.
+  const [dialMode, setDialMode] = useState<'studio' | 'spl'>('studio');
   const { width: winW } = useWindowDimensions();
   // Wide horizontal VU across the full popup width (the hero at the top).
   const vuW = winW - 32;
@@ -258,7 +293,29 @@ export function SplMeterScreen({ navigation }: Props) {
     const lvl = meter ? selectedLevelDb(meter, weighting, response) : -120;
     liveRmsDb.value = Number.isFinite(lvl) ? lvl : -120;
     livePeakDb.value = meter && Number.isFinite(meter.peakDb) ? meter.peakDb : -120;
-  }, [meter, weighting, response, liveRmsDb, livePeakDb]);
+    // AUTO-RANGE feed: a heavily-smoothed EMA of the measured (estimated) SPL —
+    // dBFS + the calibration/nominal offset — so the auto 0-VU reference can
+    // track ambient and keep the needle on-scale and moving (not pinned).
+    if (meter && Number.isFinite(lvl)) {
+      const splNow = lvl + (offset ?? 100);
+      splEmaRef.current =
+        splEmaRef.current == null ? splNow : splEmaRef.current + (splNow - splEmaRef.current) * 0.05;
+    }
+  }, [meter, weighting, response, offset, liveRmsDb, livePeakDb]);
+
+  // AUTO range recompute — slow cadence (500 ms) reading the smoothed EMA, so the
+  // 0-VU reference re-settles gently (rounded to the nearest 5 dB, clamped to the
+  // chip range). Only runs while AUTO is on and the meter is live.
+  useEffect(() => {
+    if (!rangeAuto || !running) return;
+    const id = setInterval(() => {
+      const ema = splEmaRef.current;
+      if (ema == null) return;
+      const rounded = Math.max(20, Math.min(120, Math.round(ema / 5) * 5));
+      setAutoRangeDb((prev) => (prev === rounded ? prev : rounded));
+    }, 500);
+    return () => clearInterval(id);
+  }, [rangeAuto, running]);
   const live = useMemo<LiveMeterDrive>(() => ({ rmsDb: liveRmsDb, peakDb: livePeakDb }), [liveRmsDb, livePeakDb]);
 
   // ── Dial mapping + corner readouts (single source: the screen's shown()/unit
@@ -271,8 +328,12 @@ export function SplMeterScreen({ navigation }: Props) {
   // VU RANGE wiring: 0 VU must sit where the measured SPL equals RANGE. Since
   // displayed SPL = dBFS + splOffset, the dBFS that reads 0 VU is RANGE − splOffset.
   // So the VU shows (current SPL − RANGE) regardless of calibration (uncalibrated
-  // it works against the ESTIMATED SPL — the badge discloses that).
-  const vuLive0 = rangeDb - splOffset;
+  // it works against the ESTIMATED SPL — the badge discloses that). In AUTO the
+  // effective RANGE is the slow-tracked ambient reference.
+  const effRange = rangeAuto ? autoRangeDb : rangeDb;
+  const vuLive0 = effRange - splOffset;
+  // Printed TOP-LEFT on the VU face: "RANGE 100" or "AUTO · 85".
+  const vuRangeText = rangeAuto ? `AUTO · ${autoRangeDb}` : `RANGE ${rangeDb}`;
   // VU corner readouts (printed inside the glass): MAX = peak-hold in SPL terms,
   // LEVEL = the current selected weighting × response, both via the screen's
   // shown()/fmtDb so every number on the screen agrees.
@@ -644,6 +705,7 @@ export function SplMeterScreen({ navigation }: Props) {
                   live0Db={vuLive0}
                   maxText={vuMaxText}
                   levelText={vuLevelText}
+                  rangeText={vuRangeText}
                 />
               ) : (
                 /* Honest gate for pre-Skia clients (§1.7): readouts stay live. */
@@ -662,34 +724,67 @@ export function SplMeterScreen({ navigation }: Props) {
                 its 79/82/85 dB(C) mix band is a C-weighted reference, not a guarantee. */}
             <Text style={styles.vuBadge}>
               {calibrated
-                ? `VU: RELATIVE · 0 VU = ${rangeDb} dB (RANGE). GAUGE: dB SPL · FIELD-CALIBRATED (APPROXIMATE) — the 79/82/85 dB(C) mix band is a reference, not a guarantee`
-                : `VU: RELATIVE · 0 VU = ${rangeDb} dB (ESTIMATED environment). GAUGE: ESTIMATED · UNCALIBRATED — SPL numbers are an estimate; calibrate against a real SPL meter for true readings`}
+                ? `VU: RELATIVE · 0 VU = ${effRange} dB (${rangeAuto ? 'AUTO' : 'RANGE'}). GAUGE: dB SPL · FIELD-CALIBRATED (APPROXIMATE) — the 79/82/85 dB(C) mix band is a reference, not a guarantee`
+                : `VU: RELATIVE · 0 VU = ${effRange} dB (${rangeAuto ? 'AUTO · ESTIMATED' : 'RANGE · ESTIMATED'} environment). GAUGE: ESTIMATED · UNCALIBRATED — SPL numbers are an estimate; calibrate against a real SPL meter for true readings`}
             </Text>
 
             {running && (
               <>
                 {/* 2 — RANGE selector: the environmental SPL that reads 0 VU. */}
                 <View style={styles.chipGroup}>
-                  <HelpHead title={`RANGE · 0 VU = ${rangeDb} dB`} onHelp={() => help('weighting')} style={styles.chipGroupLabel} />
+                  <HelpHead title={`RANGE · 0 VU = ${effRange} dB${rangeAuto ? ' (AUTO)' : ''}`} onHelp={() => help('weighting')} style={styles.chipGroupLabel} />
                   <View style={styles.rangeRow}>
-                    {RANGE_VALUES.map((v) => (
-                      <Pressable
-                        key={v}
-                        style={[styles.rangeChip, rangeDb === v && styles.chipSelected]}
-                        onPress={() => setRangeDb(v)}
-                        accessibilityRole="button"
-                        accessibilityState={{ selected: rangeDb === v }}
-                        accessibilityLabel={`Range ${v} dB`}
-                      >
-                        <Text style={[styles.rangeChipText, rangeDb === v && styles.chipTextSelected]}>{v}</Text>
-                      </Pressable>
-                    ))}
+                    {RANGE_VALUES.map((v) => {
+                      const sel = !rangeAuto && rangeDb === v;
+                      return (
+                        <Pressable
+                          key={v}
+                          style={[styles.rangeChip, sel && styles.chipSelected]}
+                          onPress={() => {
+                            setRangeAuto(false);
+                            setRangeDb(v);
+                          }}
+                          accessibilityRole="button"
+                          accessibilityState={{ selected: sel }}
+                          accessibilityLabel={`Range ${v} dB`}
+                        >
+                          <Text style={[styles.rangeChipText, sel && styles.chipTextSelected]}>{v}</Text>
+                        </Pressable>
+                      );
+                    })}
+                    <Pressable
+                      style={[styles.rangeChip, styles.rangeChipAuto, rangeAuto && styles.chipSelected]}
+                      onPress={() => setRangeAuto(true)}
+                      accessibilityRole="button"
+                      accessibilityState={{ selected: rangeAuto }}
+                      accessibilityLabel="Auto range"
+                    >
+                      <Text style={[styles.rangeChipText, rangeAuto && styles.chipTextSelected]}>AUTO</Text>
+                    </Pressable>
                   </View>
                   <Text style={styles.rangeNote}>
                     RANGE sets the room level that reads 0 VU — the needle then shows how far the
                     signal sits above or below it{calibrated ? '' : ' (estimated until calibrated)'}.
+                    AUTO tracks the ambient level so the needle stays centred and swinging.
                   </Text>
                 </View>
+
+                {/* 3 — BELOW THE VU: round SPL "Noise'o'Meter" gauge (LEFT, with its
+                    STUDIO/SPL chooser) + thin LED PEAK/AVERAGE meters (RIGHT). */}
+                {viz ? (
+                  <VuHero
+                    viz={viz}
+                    live={live}
+                    dialW={dialW}
+                    ledW={ledW}
+                    dialH={dialH}
+                    holdMode={holdMode}
+                    splOffset={splOffset}
+                    calibrated={calibrated}
+                    dialMode={dialMode}
+                    onDialMode={setDialMode}
+                  />
+                ) : null}
 
                 {/* Weighting × response controls (same setters as the screen). */}
                 <View style={styles.chipsRow}>
@@ -734,21 +829,6 @@ export function SplMeterScreen({ navigation }: Props) {
                     </Pressable>
                   </View>
                 </View>
-
-                {/* 3 — BELOW THE VU: round SPL "Noise'o'Meter" gauge (LEFT) +
-                    thin LED PEAK/AVERAGE meters (RIGHT). */}
-                {viz ? (
-                  <VuHero
-                    viz={viz}
-                    live={live}
-                    dialW={dialW}
-                    ledW={ledW}
-                    dialH={dialH}
-                    holdMode={holdMode}
-                    splOffset={splOffset}
-                    calibrated={calibrated}
-                  />
-                ) : null}
 
                 {/* Compact control-room legend for the gauge's sweet-spot band. */}
                 <View style={styles.roomLegend}>
@@ -1118,7 +1198,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   rangeChipText: { fontFamily: fonts.mono, fontSize: 13, color: colors.textSecondary },
+  rangeChipAuto: { width: 56 },
   rangeNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted },
+
+  // STUDIO / SPL chooser under the circle meter.
+  dialModeRow: { flexDirection: 'row', gap: 8 },
+  dialModeChip: {
+    borderRadius: 7,
+    borderWidth: 1,
+    borderColor: '#3a3a3a',
+    backgroundColor: '#161616',
+    paddingVertical: 6,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+  },
+  dialModeChipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: colors.textSecondary },
 
   // Control-room legend under the gauge.
   roomLegend: {
