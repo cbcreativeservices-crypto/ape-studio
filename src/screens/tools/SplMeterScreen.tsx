@@ -75,6 +75,9 @@ function VuTopMeter({
   live,
   vuW,
   vuH,
+  ledW,
+  ledH,
+  holdMode,
   live0Db,
   maxText,
   levelText,
@@ -84,23 +87,38 @@ function VuTopMeter({
   live: LiveMeterDrive;
   vuW: number;
   vuH: number;
+  ledW: number;
+  ledH: number;
+  holdMode: PeakHoldMode;
   live0Db: number;
   maxText: string;
   levelText: string;
   rangeText: string;
 }) {
+  // One clock drives both the VU needle and the LED columns (owner 2026-07-30:
+  // the LED sits to the RIGHT of the VU, sharing the top row 3/4 : 1/4).
   const phase = viz.usePhaseClock(true, 1 / VU_LOOP);
   return (
-    <viz.VuMeterView
-      width={vuW}
-      height={vuH}
-      phase={phase}
-      live={live}
-      showPeakLed
-      loopSeconds={VU_LOOP}
-      live0Db={live0Db}
-      cornerReadouts={{ maxText, levelText, rangeText }}
-    />
+    <View style={styles.topRow}>
+      <viz.VuMeterView
+        width={vuW}
+        height={vuH}
+        phase={phase}
+        live={live}
+        showPeakLed
+        loopSeconds={VU_LOOP}
+        live0Db={live0Db}
+        cornerReadouts={{ maxText, levelText, rangeText }}
+      />
+      <viz.PeakAvgMeterView
+        width={ledW}
+        height={ledH}
+        phase={phase}
+        live={live}
+        loopSeconds={VU_LOOP}
+        holdMode={holdMode}
+      />
+    </View>
   );
 }
 
@@ -112,10 +130,7 @@ function VuHero({
   viz,
   live,
   dialW,
-  ledW,
   dialH,
-  ledH,
-  holdMode,
   splOffset,
   calibrated,
   dialMode,
@@ -124,10 +139,7 @@ function VuHero({
   viz: VizMetersModule;
   live: LiveMeterDrive;
   dialW: number;
-  ledW: number;
   dialH: number;
-  ledH: number;
-  holdMode: PeakHoldMode;
   splOffset: number;
   calibrated: boolean;
   dialMode: 'studio' | 'spl';
@@ -135,47 +147,35 @@ function VuHero({
 }) {
   const phase = viz.usePhaseClock(true, 1 / VU_LOOP);
   return (
-    <View style={{ gap: 14 }}>
-      {/* SPL gauge — its OWN full-width row so labels sit outside the arc. */}
-      <View style={{ width: dialW, alignSelf: 'center', alignItems: 'center', gap: 8 }}>
-        <viz.SplDialView
-          width={dialW}
-          height={dialH}
-          phase={phase}
-          live={live}
-          splOffset={splOffset}
-          calibrated={calibrated}
-          labelMode={dialMode}
-          loopSeconds={VU_LOOP}
-        />
-        {/* STUDIO / SPL chooser — swaps the ring's labels (owner 2026-07-30). */}
-        <View style={styles.dialModeRow}>
-          {(['studio', 'spl'] as const).map((m) => (
-            <Pressable
-              key={m}
-              style={[styles.dialModeChip, dialMode === m && styles.chipSelected]}
-              onPress={() => onDialMode(m)}
-              accessibilityRole="button"
-              accessibilityState={{ selected: dialMode === m }}
-              accessibilityLabel={m === 'studio' ? 'Studio labels' : 'SPL reference labels'}
-            >
-              <Text style={[styles.dialModeChipText, dialMode === m && styles.chipTextSelected]}>
-                {m.toUpperCase()}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
-      </View>
-      {/* LED PEAK / AVERAGE meter — its own centered row below the gauge. */}
-      <View style={{ alignItems: 'center' }}>
-        <viz.PeakAvgMeterView
-          width={ledW}
-          height={ledH}
-          phase={phase}
-          live={live}
-          loopSeconds={VU_LOOP}
-          holdMode={holdMode}
-        />
+    // SPL gauge — its OWN full-width row so labels sit outside the arc. The LED
+    // moved up to share the top row with the VU (owner 2026-07-30).
+    <View style={{ width: dialW, alignSelf: 'center', alignItems: 'center', gap: 8 }}>
+      <viz.SplDialView
+        width={dialW}
+        height={dialH}
+        phase={phase}
+        live={live}
+        splOffset={splOffset}
+        calibrated={calibrated}
+        labelMode={dialMode}
+        loopSeconds={VU_LOOP}
+      />
+      {/* STUDIO / SPL chooser — swaps the ring's labels (owner 2026-07-30). */}
+      <View style={styles.dialModeRow}>
+        {(['studio', 'spl'] as const).map((m) => (
+          <Pressable
+            key={m}
+            style={[styles.dialModeChip, dialMode === m && styles.chipSelected]}
+            onPress={() => onDialMode(m)}
+            accessibilityRole="button"
+            accessibilityState={{ selected: dialMode === m }}
+            accessibilityLabel={m === 'studio' ? 'Studio labels' : 'SPL reference labels'}
+          >
+            <Text style={[styles.dialModeChipText, dialMode === m && styles.chipTextSelected]}>
+              {m.toUpperCase()}
+            </Text>
+          </Pressable>
+        ))}
       </View>
     </View>
   );
@@ -302,17 +302,18 @@ export function SplMeterScreen({ navigation }: Props) {
   // vs SPL (reference sounds). The node point rides the same arc in both.
   const [dialMode, setDialMode] = useState<'studio' | 'spl'>('studio');
   const { width: winW } = useWindowDimensions();
-  // Wide horizontal VU across the full popup width (the hero at the top).
-  const vuW = winW - 32;
-  const vuH = Math.round(vuW * 0.5);
-  // Below the VU (owner 2026-07-30 redesign): the SPL gauge gets its OWN
-  // FULL-WIDTH row so its reference labels can sit OUTSIDE the arc with leader
-  // lines (the cramped side-by-side layout left no room and the text collided
-  // with the scale). The LED PEAK/AVERAGE meter moves to its own row below it.
+  // TOP hero row (owner 2026-07-30): the wide VU (3/4 of the width) shares one
+  // row with the thin LED PEAK/AVERAGE meter (1/4) on its right; they align on a
+  // shared height.
+  const topAvail = winW - 32 - 10; // popup width − padding − gap
+  const vuW = Math.round(topAvail * 0.75);
+  const ledW = topAvail - vuW; // the remaining ~1/4
+  const vuH = Math.round(vuW * 0.6);
+  const ledH = vuH;
+  // Below the hero: the SPL gauge gets its OWN FULL-WIDTH row so its reference
+  // labels can sit OUTSIDE the arc with leader lines.
   const dialW = winW - 32;
   const dialH = Math.round(dialW * 0.74);
-  const ledW = Math.min(190, Math.round(dialW * 0.52));
-  const ledH = Math.round(dialH * 0.72);
   // The popup meters are fed by pushing the SAME polled frame values into two
   // SharedValues — no second poll, no duplicated state. RMS = the selected
   // weighting × response level (set in the effect below); peak = the raw peak
@@ -753,6 +754,9 @@ export function SplMeterScreen({ navigation }: Props) {
                   live={live}
                   vuW={vuW}
                   vuH={vuH}
+                  ledW={ledW}
+                  ledH={ledH}
+                  holdMode={holdMode}
                   live0Db={vuLive0}
                   maxText={vuMaxText}
                   levelText={vuLevelText}
@@ -820,10 +824,7 @@ export function SplMeterScreen({ navigation }: Props) {
                     viz={viz}
                     live={live}
                     dialW={dialW}
-                    ledW={ledW}
                     dialH={dialH}
-                    ledH={ledH}
-                    holdMode={holdMode}
                     splOffset={splOffset}
                     calibrated={calibrated}
                     dialMode={dialMode}
@@ -1227,6 +1228,8 @@ const styles = StyleSheet.create({
   vuScroll: { padding: 16, paddingBottom: 40, gap: 14, alignItems: 'stretch' },
   // Below-the-VU row: round SPL gauge (left) + thin LED meter (right).
   heroRow: { flexDirection: 'row', gap: 12, alignItems: 'flex-start', justifyContent: 'center' },
+  // Top hero: VU (3/4) + LED (1/4), sharing one row and a baseline.
+  topRow: { flexDirection: 'row', gap: 10, alignItems: 'flex-start' },
   holdResetBtn: { flex: 0, paddingHorizontal: 16, justifyContent: 'center' },
 
   // RANGE selector — stepped values in a single horizontal scroll row.
