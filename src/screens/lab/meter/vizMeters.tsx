@@ -679,8 +679,14 @@ export function VuMeterView(p: {
    *  live rmsDb; the peak LED follows live peakDb (lights ≥ −3 dBFS). */
   live?: LiveMeterDrive;
   /** dBFS that reads 0 VU in live mode (default −18 — a stated convention,
-   *  NOT a calibrated 0 VU = +4 dBu reference). */
+   *  NOT a calibrated 0 VU = +4 dBu reference). In the SPL popup this is driven
+   *  to (RANGE − splOffset) so the measured SPL == RANGE parks the needle at 0. */
   live0Db?: number;
+  /** Optional digital readouts printed INSIDE the glass at the bottom corners
+   *  (SPL popup, 2026-07-30): bottom-LEFT "MAX", bottom-RIGHT the current level +
+   *  "dB". The CALLER formats both strings (its shown()/fmtDb math is the single
+   *  source of truth). Absent ⇒ nothing drawn — meter-lab call sites unaffected. */
+  cornerReadouts?: { maxText?: string; levelText?: string };
 }) {
   const w = p.width;
   const h = p.height ?? 230;
@@ -990,6 +996,28 @@ export function VuMeterView(p: {
         <Lbl x={ledX - 20} y={ledY + 9} w={40} size={6.5} color="#8c2f24" ls={1}>
           PEAK
         </Lbl>
+      ) : null}
+      {/* Digital readouts printed on the glass (SPL popup): MAX (bottom-left) +
+          the live level with a "dB" unit (bottom-right). Formatted by caller. */}
+      {p.cornerReadouts?.maxText != null ? (
+        <>
+          <Lbl x={fx + 12} y={py - 21} w={70} align="left" size={7} font={fonts.oswaldSemiBold} ls={1} color="#8a2f24">
+            MAX
+          </Lbl>
+          <Lbl x={fx + 12} y={py - 12} w={94} align="left" size={14} color="#2b2417">
+            {p.cornerReadouts.maxText}
+          </Lbl>
+        </>
+      ) : null}
+      {p.cornerReadouts?.levelText != null ? (
+        <>
+          <Lbl x={fx + fw - 108} y={py - 13} w={80} align="right" size={17} color="#2b2417">
+            {p.cornerReadouts.levelText}
+          </Lbl>
+          <Lbl x={fx + fw - 24} y={py - 7} w={18} align="left" size={8} font={fonts.oswaldSemiBold} ls={0.6} color="#8a6a3a">
+            dB
+          </Lbl>
+        </>
       ) : null}
     </View>
   );
@@ -1708,18 +1736,22 @@ export function ScopeView(p: {
 // ─────────────────────────────────────────────────────────────────────────────
 // SplDial ⭐ — the SPL screen's circular needle meter (owner 2026-07-30)
 
-/** The cream-face dB-SPL dial for the SPL-meter VU popup. TWO concentric arc
- *  scales — an outer everyday-loudness reference (whisper → concert) and an
- *  inner control-room MIXING SWEET-SPOT band (79/82/85 dB(C)) with hearing-risk
- *  (above) and bass-accuracy (below) annotations — plus a physically ballistic
- *  needle and digital corner readouts printed on the face.
+/** The "Noise'o'Meter" round dB-SPL gauge for the SPL-meter VU popup (restyled
+ *  2026-07-30 — now SEPARATE from the VU: the VU is the relative hero, this is
+ *  the absolute SPL dial). A beveled steel bezel with corner screws, a COLORED
+ *  loudness arc sweeping GREEN (low) → YELLOW → ORANGE → RED (high) with ticks +
+ *  numerals, a physically-ballistic needle, and an inner CONTROL-ROOM MIXING
+ *  SWEET-SPOT band (79/82/85 dB(C)) with room-size ticks + hearing-risk (above)
+ *  and bass-accuracy (below) annotations.
  *
  *  HONESTY (§1.7): the SPL scale is field-calibrated-approximate at best. Drive
  *  `calibrated=false` and the whole dial is badged ESTIMATED; `splOffset` is the
  *  dB added to the live dBFS to display dB SPL (the screen's calibration offset,
  *  or a nominal 100 dB estimate) — so the needle position ALWAYS matches the
- *  numbers the rest of the screen prints. All corner strings are formatted by
- *  the caller (single source of the shown()/unit math). */
+ *  numbers the rest of the screen prints.
+ *
+ *  The digital readouts now live on the VU face; the level and peak props are
+ *  kept OPTIONAL only for prop-compatibility and are no longer drawn here. */
 export function SplDialView(p: {
   width: number;
   height?: number;
@@ -1731,12 +1763,13 @@ export function SplDialView(p: {
   /** True ⇒ field-calibrated (approximate); false ⇒ badge the dial ESTIMATED. */
   calibrated: boolean;
   loopSeconds?: number;
-  /** Corner readouts (pre-formatted so the SPL math matches the whole screen). */
-  levelLabel: string;
-  levelValue: string;
-  levelUnit: string;
-  peakValue: string;
-  peakHoldValue: string;
+  /** Legacy corner-readout props — the readouts moved to the VU; kept optional
+   *  for prop-compat, not rendered by the gauge. */
+  levelLabel?: string;
+  levelValue?: string;
+  levelUnit?: string;
+  peakValue?: string;
+  peakHoldValue?: string;
   peakHot?: boolean;
   peakHoldHot?: boolean;
 }) {
@@ -1746,15 +1779,19 @@ export function SplDialView(p: {
   const liveRms = p.live.rmsDb;
 
   // Scale: 30..110 dB SPL across a ±A° sweep, pivot low-of-centre so the bottom
-  // wedge is free for the printed digital readouts.
+  // wedge is free for the sweet-spot band labels.
   const SPL_MIN = 30;
   const SPL_MAX = 110;
   const SPAN = SPL_MAX - SPL_MIN;
   const A = 122; // half-sweep, degrees (244° total, gap at the bottom)
   const cx = w / 2;
-  const Rface = w * 0.47;
-  const cy = Rface + 4; // face circle top-aligned; pivot at its centre
+  // Beveled bezel ring around a cream face (Noise'o'Meter housing).
+  const bezelW = Math.max(7, Math.round(w * 0.05));
+  const Rface = w / 2 - bezelW - 3;
+  const Router = Rface + bezelW;
+  const cy = Router + 3; // pivot at the face centre
   const Rs = Rface / 1.28; // scale (tick) radius
+  const wArc = Math.max(6, Rface * 0.09); // colored loudness-arc thickness
   const splPct = (spl: number) => (spl - SPL_MIN) / SPAN;
   const angOf = (spl: number) => (-A + 2 * A * splPct(spl)) * DEG; // radians from top
 
@@ -1801,8 +1838,14 @@ export function SplDialView(p: {
     sheen.lineTo(cx - Rface * 0.95, cy + Rface * 0.1);
     sheen.close();
 
-    // Outer reference arc + major/minor ticks (30..110 dB).
-    const refArc = arcStroke(SPL_MIN, SPL_MAX, Rs + 2);
+    // Outer COLORED loudness arc — green (low) → yellow → orange → red (high),
+    // four bold segments centred on the tick base. The mixing sweet-spot lives
+    // on the SEPARATE inner band below, so this arc is the general loudness read.
+    const arcGreen = arcStroke(SPL_MIN, 62, Rs + 2);
+    const arcYellow = arcStroke(62, 78, Rs + 2);
+    const arcOrange = arcStroke(78, 92, Rs + 2);
+    const arcRed = arcStroke(92, SPL_MAX, Rs + 2);
+    // Major/minor ticks (30..110 dB) drawn in dark ink over the colored arc.
     const majors = Skia.Path.Make();
     const minors = Skia.Path.Make();
     for (let s = SPL_MIN; s <= SPL_MAX; s += 5) {
@@ -1853,9 +1896,17 @@ export function SplDialView(p: {
     const riskAnchor = numAt(101, Rb + 12);
     const bassAnchor = numAt(46, Rb + 12);
 
+    // Bezel screws at the four diagonals (Noise'o'Meter hardware).
+    const screwR = Rface + bezelW * 0.5;
+    const screws = [45, 135, 225, 315].map((deg) => {
+      const a = deg * DEG;
+      return { deg, x: cx + Math.cos(a) * screwR, y: cy + Math.sin(a) * screwR };
+    });
+
     return {
-      outer, face, sheen, refArc, majors, minors, zoneDim, zoneRisk, band, bandTicks,
-      numLabels, examples, bandLabels, riskAnchor, bassAnchor, Rb,
+      outer, face, sheen, arcGreen, arcYellow, arcOrange, arcRed, majors, minors,
+      zoneDim, zoneRisk, band, bandTicks, numLabels, examples, bandLabels,
+      riskAnchor, bassAnchor, Rb, screws,
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [w, h]);
@@ -1924,11 +1975,15 @@ export function SplDialView(p: {
   return (
     <View style={{ width: w, height: h }}>
       <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
-        {/* Housing: dark rim + corner-lit bezel. */}
-        <Circle cx={cx} cy={cy} r={Rface + 3}>
-          <LinearGradient start={vec(0, cy - Rface)} end={vec(0, cy + Rface)} colors={['#26272e', '#131418', '#0b0b0e']} positions={[0, 0.6, 1]} />
+        {/* Beveled steel bezel ring (Noise'o'Meter housing) + corner screws. */}
+        <Circle cx={cx} cy={cy} r={Router}>
+          <RadialGradient c={vec(cx - Router * 0.4, cy - Router * 0.5)} r={Router * 2} colors={['#3a3d45', '#1a1b20', '#0b0b0e']} />
         </Circle>
-        <Path path={G.outer} color="#000000" style="stroke" strokeWidth={1.4} opacity={0.7} />
+        <Circle cx={cx} cy={cy} r={Router - 1} color="#5b5f6a" style="stroke" strokeWidth={1} opacity={0.35} />
+        {G.screws.map((s) => (
+          <Screw key={s.deg} x={s.x} y={s.y} r={bezelW * 0.3} slotDeg={s.deg} />
+        ))}
+        <Circle cx={cx} cy={cy} r={Rface + 2.5} color="#05060a" style="stroke" strokeWidth={2} opacity={0.9} />
         {/* Warm cream face: radial light + edge vignette. */}
         <Path path={G.face}>
           <RadialGradient c={vec(cx, cy - Rface * 0.3)} r={Rface * 1.35} colors={['#f8eecf', '#f0e0b4', '#e2cd98']} />
@@ -1947,10 +2002,13 @@ export function SplDialView(p: {
         <Path path={G.band} color={withAlpha(GREEN, 0.32)} />
         <Path path={G.band} color="#2f9d54" style="stroke" strokeWidth={1.2} opacity={0.9} />
         <Path path={G.bandTicks} color="#1f6c39" style="stroke" strokeWidth={1.3} />
-        {/* Outer reference arc + ticks. */}
-        <Path path={G.refArc} color={ink} style="stroke" strokeWidth={1.6} />
-        <Path path={G.minors} color="#5a5442" style="stroke" strokeWidth={1.1} />
-        <Path path={G.majors} color={ink} style="stroke" strokeWidth={1.5} />
+        {/* Outer COLORED loudness arc (green → yellow → orange → red) + ticks. */}
+        <Path path={G.arcGreen} color="#4ea84e" style="stroke" strokeWidth={wArc} strokeCap="butt" />
+        <Path path={G.arcYellow} color="#e8c341" style="stroke" strokeWidth={wArc} strokeCap="butt" />
+        <Path path={G.arcOrange} color="#e6902f" style="stroke" strokeWidth={wArc} strokeCap="butt" />
+        <Path path={G.arcRed} color="#cf3b2e" style="stroke" strokeWidth={wArc} strokeCap="butt" />
+        <Path path={G.minors} color="#2b2317" style="stroke" strokeWidth={1.1} opacity={0.8} />
+        <Path path={G.majors} color={ink} style="stroke" strokeWidth={1.6} />
         {/* Needle: soft drop shadow, tapered blade, pivot boss. */}
         <Path path={needleShadow} color="#000000" opacity={0.16}>
           <BlurMask blur={3} style="normal" />
@@ -2003,37 +2061,17 @@ export function SplDialView(p: {
         MIX SWEET SPOT · 79–85 dB(C)
       </Lbl>
 
+      {/* C-weighting note on the face (calibration standard for monitoring). */}
+      <Lbl x={cx - 60} y={cy + Rface * 0.16} w={120} size={6.5} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
+        C-WEIGHTED · SLOW
+      </Lbl>
+
       {/* ESTIMATED badge (uncalibrated) — never a certified reading (§1.7). */}
       {!p.calibrated ? (
-        <Lbl x={cx - 70} y={cy - Rface * 0.18} w={140} size={7} font={fonts.oswaldSemiBold} ls={0.6} color={RED_INK}>
+        <Lbl x={cx - 70} y={cy + Rface * 0.3} w={140} size={7} font={fonts.oswaldSemiBold} ls={0.6} color={RED_INK}>
           ESTIMATED · UNCALIBRATED
         </Lbl>
       ) : null}
-
-      {/* Bottom-LEFT corner: PEAK + PEAK HOLD (raw dBFS headroom). */}
-      <Lbl x={cx - Rface * 0.86} y={cy + Rface * 0.14} w={Rface * 0.62} align="left" size={6.5} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
-        PEAK dBFS
-      </Lbl>
-      <Lbl x={cx - Rface * 0.86} y={cy + Rface * 0.24} w={Rface * 0.62} align="left" size={13} color={p.peakHot ? RED_INK : ink}>
-        {p.peakValue}
-      </Lbl>
-      <Lbl x={cx - Rface * 0.86} y={cy + Rface * 0.44} w={Rface * 0.62} align="left" size={6.5} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
-        PEAK HOLD
-      </Lbl>
-      <Lbl x={cx - Rface * 0.86} y={cy + Rface * 0.54} w={Rface * 0.62} align="left" size={11} color={p.peakHoldHot ? RED_INK : ink}>
-        {p.peakHoldValue}
-      </Lbl>
-
-      {/* Bottom-RIGHT corner: the small selected-weighting level readout. */}
-      <Lbl x={cx + Rface * 0.22} y={cy + Rface * 0.14} w={Rface * 0.64} align="right" size={7} font={fonts.oswaldSemiBold} ls={0.8} color="#8a6a1e">
-        {p.levelLabel}
-      </Lbl>
-      <Lbl x={cx + Rface * 0.1} y={cy + Rface * 0.23} w={Rface * 0.76} align="right" size={19} color={ink}>
-        {p.levelValue}
-      </Lbl>
-      <Lbl x={cx + Rface * 0.1} y={cy + Rface * 0.52} w={Rface * 0.76} align="right" size={6.5} color={inkDim}>
-        {p.levelUnit}
-      </Lbl>
     </View>
   );
 }

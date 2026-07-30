@@ -65,11 +65,46 @@ const fmtElapsed = (sec: number) => {
  *  clock runs at 1/VU_LOOP Hz so the ballistics integrate real time. */
 const VU_LOOP = 4;
 
-/** The popup's Skia hero (mounted only while the popup is open AND the viz
- *  module gate passed): LEFT the circular dB-SPL dial (two arc scales + mixing
- *  sweet-spot band + ballistic needle + corner readouts), RIGHT the thin live
- *  LED meter (PEAK + AVERAGE columns with a user peak-hold). Both are driven by
- *  the SAME polled RMS/peak SharedValues off one shared phase clock. */
+/** TOP hero (mounted only while the popup is open AND the viz gate passed): the
+ *  classic wide horizontal VU — the relative meter around the RANGE reference.
+ *  `live0Db` is driven to (RANGE − splOffset) so a measured SPL == RANGE parks
+ *  the needle at 0 VU; MAX + the current level are printed inside the glass. */
+function VuTopMeter({
+  viz,
+  live,
+  vuW,
+  vuH,
+  live0Db,
+  maxText,
+  levelText,
+}: {
+  viz: VizMetersModule;
+  live: LiveMeterDrive;
+  vuW: number;
+  vuH: number;
+  live0Db: number;
+  maxText: string;
+  levelText: string;
+}) {
+  const phase = viz.usePhaseClock(true, 1 / VU_LOOP);
+  return (
+    <viz.VuMeterView
+      width={vuW}
+      height={vuH}
+      phase={phase}
+      live={live}
+      showPeakLed
+      loopSeconds={VU_LOOP}
+      live0Db={live0Db}
+      cornerReadouts={{ maxText, levelText }}
+    />
+  );
+}
+
+/** BELOW the VU (owner 2026-07-30): LEFT the round "Noise'o'Meter" dB-SPL gauge
+ *  (colored loudness arc + control-room sweet-spot band + ballistic needle),
+ *  RIGHT the thin live LED meter (PEAK + AVERAGE with a user peak-hold). Both
+ *  are driven by the SAME polled RMS/peak SharedValues off one shared clock. */
 function VuHero({
   viz,
   live,
@@ -79,13 +114,6 @@ function VuHero({
   holdMode,
   splOffset,
   calibrated,
-  levelLabel,
-  levelValue,
-  levelUnit,
-  peakValue,
-  peakHoldValue,
-  peakHot,
-  peakHoldHot,
 }: {
   viz: VizMetersModule;
   live: LiveMeterDrive;
@@ -95,13 +123,6 @@ function VuHero({
   holdMode: PeakHoldMode;
   splOffset: number;
   calibrated: boolean;
-  levelLabel: string;
-  levelValue: string;
-  levelUnit: string;
-  peakValue: string;
-  peakHoldValue: string;
-  peakHot: boolean;
-  peakHoldHot: boolean;
 }) {
   const phase = viz.usePhaseClock(true, 1 / VU_LOOP);
   return (
@@ -114,13 +135,6 @@ function VuHero({
         splOffset={splOffset}
         calibrated={calibrated}
         loopSeconds={VU_LOOP}
-        levelLabel={levelLabel}
-        levelValue={levelValue}
-        levelUnit={levelUnit}
-        peakValue={peakValue}
-        peakHoldValue={peakHoldValue}
-        peakHot={peakHot}
-        peakHoldHot={peakHoldHot}
       />
       <viz.PeakAvgMeterView
         width={ledW}
@@ -133,6 +147,11 @@ function VuHero({
     </View>
   );
 }
+
+/** RANGE — the environmental SPL that reads 0 VU. The VU shows the signal
+ *  RELATIVE to this reference (current SPL − RANGE), so RANGE centres the meter
+ *  on the room's noise level. Default 100 dB. */
+const RANGE_VALUES = [60, 70, 80, 90, 100, 110, 120, 130, 140] as const;
 
 /** Peak-hold linger options for the LED meter's user setting. */
 const HOLD_MODES: PeakHoldMode[] = ['off', '1s', '3s', 'inf'];
@@ -214,9 +233,15 @@ export function SplMeterScreen({ navigation }: Props) {
   const [vuOpen, setVuOpen] = useState(false);
   // User setting for the LED meter's peak-hold cap linger (owner 2026-07-30).
   const [holdMode, setHoldMode] = useState<PeakHoldMode>('1s');
+  // RANGE (owner 2026-07-30): the environmental SPL that reads 0 VU. The wide VU
+  // at the top shows the signal RELATIVE to this (current SPL − RANGE).
+  const [rangeDb, setRangeDb] = useState(100);
   const { width: winW } = useWindowDimensions();
-  // Side-by-side hero sizing (dial LEFT ~60%, thin LED RIGHT ~34%), capped so
-  // it never overflows portrait; the two share a height for a clean baseline.
+  // Wide horizontal VU across the full popup width (the hero at the top).
+  const vuW = winW - 32;
+  const vuH = Math.round(vuW * 0.5);
+  // Below-the-VU row: round SPL gauge LEFT (~60%), thin LED RIGHT (~34%), capped
+  // so it never overflows portrait; the two share a height for a clean baseline.
   const heroAvail = winW - 32 - 12;
   const dialW = Math.min(300, Math.round(heroAvail * 0.6));
   const ledW = Math.min(138, Math.round(heroAvail * 0.36));
@@ -243,13 +268,16 @@ export function SplMeterScreen({ navigation }: Props) {
   // badges the dial ESTIMATED — never a certified SPL reading (§1.7).
   const splOffset = offset ?? 100;
   const calibrated = offset != null;
-  const dialLevelLabel = `L${weighting}${response === 'fast' ? 'F' : 'S'}`;
-  const dialLevelValue = meter ? fmtDb(shown(selectedLevelDb(meter, weighting, response))) : '—';
-  const dialLevelUnit = offset != null ? 'dB SPL' : 'dBFS · est';
-  const dialPeakValue = meter ? fmtDb(meter.peakDb) : '—';
-  const dialPeakHoldValue = meter ? fmtDb(meter.peakHoldDb) : '—';
-  const dialPeakHot = meter != null && meter.peakDb >= 0;
-  const dialPeakHoldHot = meter != null && meter.peakHoldDb >= 0;
+  // VU RANGE wiring: 0 VU must sit where the measured SPL equals RANGE. Since
+  // displayed SPL = dBFS + splOffset, the dBFS that reads 0 VU is RANGE − splOffset.
+  // So the VU shows (current SPL − RANGE) regardless of calibration (uncalibrated
+  // it works against the ESTIMATED SPL — the badge discloses that).
+  const vuLive0 = rangeDb - splOffset;
+  // VU corner readouts (printed inside the glass): MAX = peak-hold in SPL terms,
+  // LEVEL = the current selected weighting × response, both via the screen's
+  // shown()/fmtDb so every number on the screen agrees.
+  const vuMaxText = meter ? fmtDb(shown(meter.peakHoldDb)) : '—';
+  const vuLevelText = meter ? fmtDb(shown(selectedLevelDb(meter, weighting, response))) : '—';
 
   /** SAVE LOG → Saved Measurement Library (spec §7; payload = SplLogPayload). */
   const onSaveLog = useCallback(() => {
@@ -605,47 +633,64 @@ export function SplMeterScreen({ navigation }: Props) {
               </>
             )}
 
+            {/* 1 — VU METER AT TOP (the wide horizontal hero, relative to RANGE). */}
             {running &&
               (viz ? (
-                <VuHero
+                <VuTopMeter
                   viz={viz}
                   live={live}
-                  dialW={dialW}
-                  ledW={ledW}
-                  dialH={dialH}
-                  holdMode={holdMode}
-                  splOffset={splOffset}
-                  calibrated={calibrated}
-                  levelLabel={dialLevelLabel}
-                  levelValue={dialLevelValue}
-                  levelUnit={dialLevelUnit}
-                  peakValue={dialPeakValue}
-                  peakHoldValue={dialPeakHoldValue}
-                  peakHot={dialPeakHot}
-                  peakHoldHot={dialPeakHoldHot}
+                  vuW={vuW}
+                  vuH={vuH}
+                  live0Db={vuLive0}
+                  maxText={vuMaxText}
+                  levelText={vuLevelText}
                 />
               ) : (
                 /* Honest gate for pre-Skia clients (§1.7): readouts stay live. */
                 <View style={styles.vuUnavailCard}>
-                  <Text style={styles.vuUnavailTitle}>SPL DIAL NEEDS THE NEW DEV BUILD</Text>
+                  <Text style={styles.vuUnavailTitle}>VU METER NEEDS THE NEW DEV BUILD</Text>
                   <Text style={styles.vuUnavailBody}>
-                    This dev client predates the graphics engine the dial renders on. The digital
-                    readouts below are fully live — install the newest dev build to see the needle.
+                    This dev client predates the graphics engine the meters render on. The digital
+                    readouts below are fully live — install the newest dev build to see the needles.
                   </Text>
                 </View>
               ))}
 
-            {/* House honesty line: the dial's SPL scale is calibrated-approximate
-                at best (and an ESTIMATE when uncalibrated); the sweet-spot band
-                is a mixing REFERENCE (C-weighted), not a guarantee. */}
+            {/* House honesty line: the VU is a RELATIVE meter around the RANGE
+                reference (honest regardless of calibration); the SPL gauge below
+                is calibrated-approximate at best (ESTIMATED when uncalibrated) and
+                its 79/82/85 dB(C) mix band is a C-weighted reference, not a guarantee. */}
             <Text style={styles.vuBadge}>
               {calibrated
-                ? 'DIAL: dB SPL · FIELD-CALIBRATED (APPROXIMATE) — the 79/82/85 dB(C) mix band is a reference, not a guarantee'
-                : 'DIAL: ESTIMATED · UNCALIBRATED — SPL numbers are an estimate; calibrate against a real SPL meter for true readings. The mix band is most meaningful once calibrated'}
+                ? `VU: RELATIVE · 0 VU = ${rangeDb} dB (RANGE). GAUGE: dB SPL · FIELD-CALIBRATED (APPROXIMATE) — the 79/82/85 dB(C) mix band is a reference, not a guarantee`
+                : `VU: RELATIVE · 0 VU = ${rangeDb} dB (ESTIMATED environment). GAUGE: ESTIMATED · UNCALIBRATED — SPL numbers are an estimate; calibrate against a real SPL meter for true readings`}
             </Text>
 
             {running && (
               <>
+                {/* 2 — RANGE selector: the environmental SPL that reads 0 VU. */}
+                <View style={styles.chipGroup}>
+                  <HelpHead title={`RANGE · 0 VU = ${rangeDb} dB`} onHelp={() => help('weighting')} style={styles.chipGroupLabel} />
+                  <View style={styles.rangeRow}>
+                    {RANGE_VALUES.map((v) => (
+                      <Pressable
+                        key={v}
+                        style={[styles.rangeChip, rangeDb === v && styles.chipSelected]}
+                        onPress={() => setRangeDb(v)}
+                        accessibilityRole="button"
+                        accessibilityState={{ selected: rangeDb === v }}
+                        accessibilityLabel={`Range ${v} dB`}
+                      >
+                        <Text style={[styles.rangeChipText, rangeDb === v && styles.chipTextSelected]}>{v}</Text>
+                      </Pressable>
+                    ))}
+                  </View>
+                  <Text style={styles.rangeNote}>
+                    RANGE sets the room level that reads 0 VU — the needle then shows how far the
+                    signal sits above or below it{calibrated ? '' : ' (estimated until calibrated)'}.
+                  </Text>
+                </View>
+
                 {/* Weighting × response controls (same setters as the screen). */}
                 <View style={styles.chipsRow}>
                   <View style={styles.chipGroup}>
@@ -690,8 +735,40 @@ export function SplMeterScreen({ navigation }: Props) {
                   </View>
                 </View>
 
+                {/* 3 — BELOW THE VU: round SPL "Noise'o'Meter" gauge (LEFT) +
+                    thin LED PEAK/AVERAGE meters (RIGHT). */}
+                {viz ? (
+                  <VuHero
+                    viz={viz}
+                    live={live}
+                    dialW={dialW}
+                    ledW={ledW}
+                    dialH={dialH}
+                    holdMode={holdMode}
+                    splOffset={splOffset}
+                    calibrated={calibrated}
+                  />
+                ) : null}
+
+                {/* Compact control-room legend for the gauge's sweet-spot band. */}
+                <View style={styles.roomLegend}>
+                  <Text style={styles.roomLegendHead}>CONTROL-ROOM MONITORING · dB SPL (C-WEIGHTED)</Text>
+                  <Text style={styles.roomLegendBody}>
+                    Green band = the mixing sweet spot. 79 dB(C) suits small rooms (under ~1,500 ft³ /
+                    42 m³) and most critical balance / music mixing; 82 medium; 85 large (Holman /
+                    SMPTE-THX). Lower levels are common too — 70–75 for general editing and long
+                    sessions, 60–65 for detailed or background work — with brief 85–95 checks for
+                    impact, punch and low-frequency energy.
+                  </Text>
+                  <Text style={styles.roomLegendBody}>
+                    Calibration uses C-weighting, not A: it is flatter and represents music's
+                    low-frequency energy. A-weighting is for hearing-risk, not monitoring. These
+                    targets are a reference guide, not a guarantee.
+                  </Text>
+                </View>
+
                 {/* Field calibration (ruling R1) — same store as the screen, so
-                    the dial's SPL scale updates the instant it is set/cleared. */}
+                    the gauge's SPL scale updates the instant it is set/cleared. */}
                 <View style={styles.calCard}>
                   <View style={styles.calHeadRow}>
                     <Text style={styles.sectionHead}>CALIBRATION</Text>
@@ -1025,9 +1102,35 @@ const styles = StyleSheet.create({
   vuModalTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 1.6, color: colors.textPrimary },
   vuClose: { fontFamily: fonts.oswaldSemiBold, fontSize: 22, color: colors.textSecondary, padding: 4 },
   vuScroll: { padding: 16, paddingBottom: 40, gap: 14, alignItems: 'stretch' },
-  // Side-by-side hero: circular SPL dial (left) + thin LED meter (right).
+  // Below-the-VU row: round SPL gauge (left) + thin LED meter (right).
   heroRow: { flexDirection: 'row', gap: 12, alignItems: 'flex-start', justifyContent: 'center' },
   holdResetBtn: { flex: 0, paddingHorizontal: 16, justifyContent: 'center' },
+
+  // RANGE selector — 9 stepped values, wrapping mono chips.
+  rangeRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  rangeChip: {
+    borderRadius: 7,
+    borderWidth: 1,
+    borderColor: '#3a3a3a',
+    backgroundColor: '#161616',
+    paddingVertical: 8,
+    width: 44,
+    alignItems: 'center',
+  },
+  rangeChipText: { fontFamily: fonts.mono, fontSize: 13, color: colors.textSecondary },
+  rangeNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted },
+
+  // Control-room legend under the gauge.
+  roomLegend: {
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#131316',
+    padding: 14,
+    gap: 8,
+  },
+  roomLegendHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.2, color: colors.amberLabel },
+  roomLegendBody: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: colors.textSecondary },
   vuBadge: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 9,
