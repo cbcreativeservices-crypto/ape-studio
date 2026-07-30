@@ -689,6 +689,11 @@ export function VuMeterView(p: {
    *  `rangeText` (SPL popup, 2026-07-30) prints TOP-LEFT — e.g. "RANGE 100" or
    *  "AUTO · 85" — the VU's 0-VU reference; MAX stays bottom-left, level bottom-right. */
   cornerReadouts?: { maxText?: string; levelText?: string; rangeText?: string };
+  /** SPL-span brackets printed on the INNER (concave) side of the arc (SPL popup,
+   *  2026-07-30): `lowText` near the −20 mark, `highText` near the 0 mark — the SPL
+   *  range the VU deflection maps onto (low SPL at −20, high SPL at 0). Small dark
+   *  ink, opposite the outer −20..+3 numerals. Absent ⇒ nothing drawn. */
+  scaleBrackets?: { lowText: string; highText: string };
 }) {
   const w = p.width;
   const h = p.height ?? 230;
@@ -750,9 +755,11 @@ export function VuMeterView(p: {
     const rI = R + 2;
     const oO = Skia.XYWHRect(cx - rO, py - rO, 2 * rO, 2 * rO);
     const oI = Skia.XYWHRect(cx - rI, py - rI, 2 * rI, 2 * rI);
-    const a0 = angDb(0) / DEG - 90;
+    // Red is the over-0 zone: nudge the FILL a hair above 0 so the 0 tick is the
+    // clean boundary and the "0" numeral (moved left, below) never sits on red.
+    const a0 = angDb(0.2) / DEG - 90;
     const a1 = angDb(3) / DEG - 90;
-    const st = pt(angDb(0), rO);
+    const st = pt(angDb(0.2), rO);
     wedge.moveTo(st.x, st.y);
     wedge.arcToOval(oO, a0, a1 - a0, false);
     const ie = pt(angDb(3), rI);
@@ -773,12 +780,19 @@ export function VuMeterView(p: {
     sheen.lineTo(fx + fw * 0.34, fy + fh - 2);
     sheen.lineTo(fx + fw * 0.12, fy + fh - 2);
     sheen.close();
-    // Label anchors for the RNText numerals (printed scale typography).
+    // Label anchors for the RNText numerals (printed scale typography). The "0"
+    // numeral is nudged angularly toward −20 (left of the red boundary) so it
+    // reads in clean dark ink and is NOT buried in the red over-0 wedge.
     const labels = majors.map((d) => {
-      const lp = pt(angDb(d), R + 21);
+      const aOff = d === 0 ? -3.5 * DEG : 0;
+      const lp = pt(angDb(d) + aOff, R + 21);
       return { d, x: lp.x, y: lp.y };
     });
-    return { tickB, tickR, arcB, wedge, outer, face, topShade, sheen, labels };
+    // SPL-span bracket anchors on the INNER (concave) side of the arc — near the
+    // −20 and 0 marks, opposite the outer numerals (drawn only when scaleBrackets).
+    const brLow = pt(angDb(-20), R - 15);
+    const brHigh = pt(angDb(0), R - 15);
+    return { tickB, tickR, arcB, wedge, outer, face, topShade, sheen, labels, brLow, brHigh };
   }, [w, h]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Precomputed loop series: windowed RMS (needle target) + peak LED ──────
@@ -844,11 +858,12 @@ export function VuMeterView(p: {
     } else {
       target = rmsArr[Math.min(RES - 1, Math.floor(f * RES))];
     }
-    // meterEngine.vuStep math — tc = 0.3 s:
-    const a = 1 - Math.exp(-dt / 0.3);
+    // Fast integrator — tc = 0.10 s (owner 2026-07-30: needle must track quickly):
+    const a = 1 - Math.exp(-dt / 0.1);
     vuVal.value = vuVal.value + (target - vuVal.value) * a;
-    // Under-damped follower (ωn ≈ 18 rad/s, ζ ≈ 0.73) → gentle overshoot.
-    const acc = (vuVal.value - nx.value) * 340 - nv.value * 27;
+    // Stiffened under-damped follower (spring/damping raised proportionally so it
+    // catches up fast without ringing).
+    const acc = (vuVal.value - nx.value) * 700 - nv.value * 38;
     nv.value = nv.value + acc * dt;
     nx.value = nx.value + nv.value * dt;
     let pct = nx.value / (RMS0 * 1.4125);
@@ -923,15 +938,11 @@ export function VuMeterView(p: {
   return (
     <View style={{ width: w, height: h }}>
       <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
-        {/* Housing: dark rounded bezel with corner screws. */}
+        {/* Housing: dark rounded bezel (corner screws removed, owner 2026-07-30). */}
         <Path path={G.outer}>
           <LinearGradient start={vec(0, 0)} end={vec(0, h)} colors={['#26272e', '#131418', '#0b0b0e']} positions={[0, 0.6, 1]} />
         </Path>
         <Path path={G.outer} color="#000000" style="stroke" strokeWidth={1.4} opacity={0.7} />
-        <Screw x={12} y={12} r={4.2} slotDeg={20} />
-        <Screw x={w - 12} y={12} r={4.2} slotDeg={75} />
-        <Screw x={12} y={h - 12} r={4.2} slotDeg={130} />
-        <Screw x={w - 12} y={h - 12} r={4.2} slotDeg={100} />
         {/* Warm cream face: radial light + edge vignette + bezel drop shade. */}
         <Path path={G.face}>
           <RadialGradient c={vec(cx, fy + fh * 0.3)} r={fw * 0.8} colors={['#f8eecf', '#f0e0b4', '#e2cd98']} />
@@ -999,6 +1010,18 @@ export function VuMeterView(p: {
           {l.d > 0 ? `+${l.d}` : `${l.d}`}
         </Lbl>
       ))}
+      {/* SPL-span brackets on the INNER side of the arc (SPL popup): lowText at the
+          −20 mark, highText at the 0 mark — the SPL range mapped onto the VU. */}
+      {p.scaleBrackets != null ? (
+        <>
+          <Lbl x={G.brLow.x - 24} y={G.brLow.y - 5} w={48} size={9.5} font={fonts.oswaldSemiBold} ls={0.3} color="#2e2618">
+            {p.scaleBrackets.lowText}
+          </Lbl>
+          <Lbl x={G.brHigh.x - 24} y={G.brHigh.y - 5} w={48} size={9.5} font={fonts.oswaldSemiBold} ls={0.3} color="#2e2618">
+            {p.scaleBrackets.highText}
+          </Lbl>
+        </>
+      ) : null}
       {/* VU wordmark: pinned a fixed gap ABOVE the pivot hub (owner 2026-07-30)
           so the black hub circle never overlaps the letters, whatever R works out
           to on-device. Center column is clear of the needle blade at rest. */}
@@ -1800,6 +1823,10 @@ export function SplDialView(p: {
   peakHoldValue?: string;
   peakHot?: boolean;
   peakHoldHot?: boolean;
+  /** Live digital SPL number shown LARGE in the CENTRE of the dial (owner
+   *  2026-07-30), with a small "dB SPL" sub-label under it. The caller formats it
+   *  each frame. Absent ⇒ nothing drawn in the centre. */
+  centerText?: string;
 }) {
   const w = p.width;
   const h = p.height ?? Math.round(w * 1.02);
@@ -1926,9 +1953,9 @@ export function SplDialView(p: {
     let target = (spl - SPL_MIN) / SPAN;
     if (target < 0) target = 0;
     if (target > 1.04) target = 1.04;
-    const a = 1 - Math.exp(-dt / 0.3);
+    const a = 1 - Math.exp(-dt / 0.1);
     val.value = val.value + (target - val.value) * a;
-    const acc = (val.value - nx.value) * 340 - nv.value * 27;
+    const acc = (val.value - nx.value) * 700 - nv.value * 38;
     nv.value = nv.value + acc * dt;
     nx.value = nx.value + nv.value * dt;
     let pct = nx.value;
@@ -1961,10 +1988,16 @@ export function SplDialView(p: {
     return pth;
   }, [needleRad]);
 
-  const ink = '#2e2618';
-  const inkDim = '#7a6f57';
+  const ink = '#1c1c1c';
+  const inkDim = '#6a6250';
   const RED_INK = '#b3271e';
-  const GREEN_INK = '#2f7d49';
+  // Zone palette — darkened to read on the WHITE face (owner 2026-07-30). Used for
+  // BOTH the arc strokes and the zone-matched callout labels + leaders.
+  const Z_GREEN = '#1f7a34';
+  const Z_AMBER = '#b8860b';
+  const Z_ORANGE = '#c9631a';
+  const Z_RED = '#b3271e';
+  const Z_GREY = '#8a8f99';
 
   // ── CALLOUT LABELS (owner 2026-07-30 redesign): every descriptive/reference
   // label lives OUTSIDE the arc in the wide side margins — left margin = low SPL,
@@ -1983,103 +2016,88 @@ export function SplDialView(p: {
     const leftInnerX = Math.round(cx - arcR - 12);
     const rightInnerX = Math.round(cx + arcR + 12);
     type CoLine = { t: string; size: number; color: string; ls?: number };
-    type CoItem = { side: 'L' | 'R'; spl: number; ty: number; red?: boolean; lines: CoLine[] };
+    // `color` = the zone colour that tints this callout's leader + anchor dot AND
+    // its primary line — "text colours match their area colours" (owner 2026-07-30).
+    type CoItem = { side: 'L' | 'R'; spl: number; ty: number; color: string; lines: CoLine[] };
     const items: CoItem[] =
       mode === 'spl'
         ? [
-            { side: 'R', spl: 79, ty: 14, lines: [ { t: 'STUDIO LISTENING', size: 10, color: ink, ls: 0.2 }, { t: '~79 dBC', size: 9.5, color: inkDim } ] },
-            { side: 'R', spl: 95, ty: 60, lines: [ { t: 'CONCERT', size: 11, color: ink, ls: 0.3 }, { t: '~95 dBC', size: 9.5, color: inkDim } ] },
-            { side: 'R', spl: 110, ty: 106, red: true, lines: [ { t: '100+ dB', size: 11, color: RED_INK, ls: 0.3 }, { t: 'UNSAFE >15 MIN/DAY', size: 9, color: RED_INK } ] },
-            { side: 'L', spl: 60, ty: 30, lines: [ { t: 'CONVERSATION', size: 11, color: ink, ls: 0.3 }, { t: '~60 dBA', size: 9.5, color: inkDim } ] },
-            { side: 'L', spl: 37, ty: 98, lines: [ { t: 'QUIET ROOM', size: 11, color: ink, ls: 0.3 }, { t: '35–40 dBA', size: 9.5, color: inkDim } ] },
+            { side: 'R', spl: 79, ty: 14, color: Z_AMBER, lines: [ { t: 'STUDIO LISTENING', size: 12, color: Z_AMBER, ls: 0.2 }, { t: '~79 dBC', size: 10, color: inkDim } ] },
+            { side: 'R', spl: 95, ty: 64, color: Z_ORANGE, lines: [ { t: 'CONCERT', size: 13, color: Z_ORANGE, ls: 0.3 }, { t: '~95 dBC', size: 10, color: inkDim } ] },
+            { side: 'R', spl: 110, ty: 116, color: Z_RED, lines: [ { t: '100+ dB', size: 13, color: Z_RED, ls: 0.3 }, { t: 'UNSAFE >15 MIN/DAY', size: 9.5, color: Z_RED } ] },
+            { side: 'L', spl: 60, ty: 32, color: Z_GREEN, lines: [ { t: 'CONVERSATION', size: 13, color: Z_GREEN, ls: 0.3 }, { t: '~60 dBA', size: 10, color: inkDim } ] },
+            { side: 'L', spl: 37, ty: 104, color: Z_GREEN, lines: [ { t: 'QUIET ROOM', size: 13, color: Z_GREEN, ls: 0.3 }, { t: '35–40 dBA', size: 10, color: inkDim } ] },
           ]
         : [
-            { side: 'R', spl: 82, ty: 12, lines: [ { t: 'SWEET SPOT', size: 11, color: GREEN_INK, ls: 0.3 }, { t: '79 / 82 / 85 dB(C)', size: 9.5, color: inkDim }, { t: 'SM · MD · LG', size: 9.5, color: inkDim } ] },
-            { side: 'R', spl: 100, ty: 96, red: true, lines: [ { t: 'HEARING', size: 11, color: RED_INK, ls: 0.3 }, { t: 'RISK', size: 11, color: RED_INK, ls: 0.3 } ] },
-            { side: 'L', spl: 55, ty: 48, lines: [ { t: 'BASS LESS', size: 10.5, color: inkDim, ls: 0.3 }, { t: 'ACCURATE', size: 10.5, color: inkDim, ls: 0.3 } ] },
+            { side: 'R', spl: 82, ty: 12, color: Z_GREEN, lines: [ { t: 'SWEET SPOT', size: 13, color: Z_GREEN, ls: 0.3 }, { t: '79 / 82 / 85 dB(C)', size: 10, color: inkDim }, { t: 'SM · MD · LG', size: 10, color: inkDim } ] },
+            { side: 'R', spl: 100, ty: 104, color: Z_RED, lines: [ { t: 'HEARING', size: 13, color: Z_RED, ls: 0.3 }, { t: 'RISK', size: 13, color: Z_RED, ls: 0.3 } ] },
+            { side: 'L', spl: 55, ty: 52, color: Z_GREY, lines: [ { t: 'BASS LESS', size: 12, color: inkDim, ls: 0.3 }, { t: 'ACCURATE', size: 12, color: inkDim, ls: 0.3 } ] },
           ];
-    const leader = Skia.Path.Make();
-    const dotN = Skia.Path.Make();
-    const dotR = Skia.Path.Make();
     const laid = items.map((it) => {
       const innerX = it.side === 'L' ? leftInnerX : rightInnerX;
       const a = anchor(it.spl);
       const midY = it.ty + it.lines.length * 6 + 2;
-      leader.moveTo(innerX, midY);
-      leader.lineTo(a.x, a.y);
-      (it.red ? dotR : dotN).addCircle(a.x, a.y, 2.6);
-      return { ...it, innerX, ax: a.x, ay: a.y };
+      const leaderPath = Skia.Path.Make();
+      leaderPath.moveTo(innerX, midY);
+      leaderPath.lineTo(a.x, a.y);
+      const dotPath = Skia.Path.Make();
+      dotPath.addCircle(a.x, a.y, 2.8);
+      return { ...it, innerX, ax: a.x, ay: a.y, leaderPath, dotPath };
     });
-    return { items: laid, leader, dotN, dotR, leftInnerX, rightInnerX };
+    return { items: laid, leftInnerX, rightInnerX };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [w, h, mode]);
 
   return (
     <View style={{ width: w, height: h }}>
       <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
-        {/* A1 — dark rounded-rect PLATE (round housing + screws removed). */}
-        <Path path={G.plate}>
-          <LinearGradient start={vec(0, 0)} end={vec(0, h)} colors={['#1b1c22', '#121317', '#0b0b0e']} positions={[0, 0.6, 1]} />
-        </Path>
-        <Path path={G.plate} color="#000000" style="stroke" strokeWidth={1.4} opacity={0.7} />
-        <Path path={G.plate} color="#3a3d45" style="stroke" strokeWidth={0.8} opacity={0.35} />
-        {/* Warm cream face (UPPER portion): radial light + edge vignette. */}
-        <Path path={G.face}>
-          <RadialGradient c={vec(cx, cy - Rface * 0.3)} r={Rface * 1.35} colors={['#f8eecf', '#f0e0b4', '#e2cd98']} />
-        </Path>
-        <Path path={G.face}>
-          <RadialGradient
-            c={vec(cx, cy)}
-            r={Rface * 1.02}
-            colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0)', 'rgba(84,52,18,0.28)']}
-            positions={[0, 0.74, 1]}
-          />
-        </Path>
-        {/* A3 — MAIN arc conveys each MODE's ranges. STUDIO: dim below the sweet
-            spot, GREEN 79–85 dB(C), RED above. SPL: green→yellow→orange→red
-            loudness with 100+ bright red. A5: no inner sweet-spot ring in either. */}
+        {/* A1 — WHITE rounded-rect PLATE (owner 2026-07-30: dark gradient plate
+            removed; round housing + screws already gone). */}
+        <Path path={G.plate} color="#ffffff" />
+        <Path path={G.plate} color="#e0e0e0" style="stroke" strokeWidth={1} opacity={0.9} />
+        {/* Near-white face (UPPER portion). */}
+        <Path path={G.face} color="#fafafa" />
+        {/* A3 — MAIN arc conveys each MODE's ranges (zone palette darkened to read
+            on white). STUDIO: dim below the sweet spot, GREEN 79–85 dB(C), RED
+            above. SPL: green→amber→orange→red loudness with 100+ emphasised red. */}
         {mode === 'studio' ? (
           <>
-            <Path path={G.arcStudioDim} color="#6b6f78" style="stroke" strokeWidth={wArc} strokeCap="butt" opacity={0.85} />
-            <Path path={G.arcStudioGreen} color="#37a457" style="stroke" strokeWidth={wArc} strokeCap="butt" />
-            <Path path={G.arcStudioRed} color="#cf3b2e" style="stroke" strokeWidth={wArc} strokeCap="butt" />
+            <Path path={G.arcStudioDim} color={Z_GREY} style="stroke" strokeWidth={wArc} strokeCap="butt" opacity={0.9} />
+            <Path path={G.arcStudioGreen} color={Z_GREEN} style="stroke" strokeWidth={wArc} strokeCap="butt" />
+            <Path path={G.arcStudioRed} color={Z_RED} style="stroke" strokeWidth={wArc} strokeCap="butt" />
           </>
         ) : (
           <>
-            <Path path={G.arcGreen} color="#4ea84e" style="stroke" strokeWidth={wArc} strokeCap="butt" />
-            <Path path={G.arcYellow} color="#e8c341" style="stroke" strokeWidth={wArc} strokeCap="butt" />
-            <Path path={G.arcOrange} color="#e6902f" style="stroke" strokeWidth={wArc} strokeCap="butt" />
-            <Path path={G.arcRed} color="#cf3b2e" style="stroke" strokeWidth={wArc} strokeCap="butt" />
-            <Path path={G.zone100} color="#ff3b2e" style="stroke" strokeWidth={wArc} strokeCap="butt" opacity={0.95} />
+            <Path path={G.arcGreen} color={Z_GREEN} style="stroke" strokeWidth={wArc} strokeCap="butt" />
+            <Path path={G.arcYellow} color={Z_AMBER} style="stroke" strokeWidth={wArc} strokeCap="butt" />
+            <Path path={G.arcOrange} color={Z_ORANGE} style="stroke" strokeWidth={wArc} strokeCap="butt" />
+            <Path path={G.arcRed} color={Z_RED} style="stroke" strokeWidth={wArc} strokeCap="butt" />
+            <Path path={G.zone100} color={Z_RED} style="stroke" strokeWidth={wArc} strokeCap="butt" opacity={0.95} />
           </>
         )}
-        <Path path={G.minors} color="#2b2317" style="stroke" strokeWidth={1.1} opacity={0.8} />
+        <Path path={G.minors} color="#4a4436" style="stroke" strokeWidth={1.1} opacity={0.85} />
         <Path path={G.majors} color={ink} style="stroke" strokeWidth={1.6} />
         {mode === 'studio' ? (
-          <Path path={G.sizeTicks} color="#1f6c39" style="stroke" strokeWidth={1.8} />
+          <Path path={G.sizeTicks} color={Z_GREEN} style="stroke" strokeWidth={1.8} />
         ) : null}
-        {/* LEADER LINES: hairline from each external callout to its exact dB point
-            on the arc, ending in a small dot. Drawn UNDER the node so the live
-            node point is never obscured. */}
-        <Path path={CO.leader} color="#6f6444" style="stroke" strokeWidth={1} opacity={0.85} />
-        <Path path={CO.dotN} color={ink} />
-        <Path path={CO.dotR} color={RED_INK} />
-        {/* NODE POINT riding the arc: soft halo glow + bright core + specular. */}
+        {/* LEADER LINES: each callout's hairline + anchor dot, tinted its ZONE
+            colour (owner 2026-07-30). Drawn UNDER the node so the live node point
+            is never obscured. */}
+        {CO.items.map((it, idx) => (
+          <Group key={`ld${idx}`}>
+            <Path path={it.leaderPath} color={it.color} style="stroke" strokeWidth={1.1} opacity={0.9} />
+            <Path path={it.dotPath} color={it.color} />
+          </Group>
+        ))}
+        {/* NODE POINT riding the arc: soft amber halo + dark core with a light rim
+            so it stays visible on every zone colour and on the white face. */}
         <Path path={nodeHalo} color={withAlpha(AMBER, 0.5)}>
           <BlurMask blur={7} style="normal" />
         </Path>
-        <Path path={nodeCore} color="#fff0c4" />
-        <Path path={nodeCore} color="#c98a1e" style="stroke" strokeWidth={1.2} opacity={0.9} />
-        {/* Glass: diagonal specular sheen + inner lip. */}
-        <Path path={G.sheen}>
-          <LinearGradient
-            start={vec(cx - Rface * 0.4, cy - Rface)}
-            end={vec(cx - Rface * 0.6, cy + Rface * 0.2)}
-            colors={['rgba(255,255,255,0.13)', 'rgba(255,255,255,0.01)']}
-          />
-        </Path>
-        <Path path={G.face} color="#07080a" style="stroke" strokeWidth={2.6} opacity={0.9} />
-        <Path path={G.face} color="#4b4e57" style="stroke" strokeWidth={0.8} opacity={0.5} />
+        <Path path={nodeCore} color="#2e2618" />
+        <Path path={nodeCore} color="#fff5d8" style="stroke" strokeWidth={1.4} opacity={0.95} />
+        {/* Face edge: subtle light ring (dark bezel removed for the white look). */}
+        <Path path={G.face} color="#d0d0d0" style="stroke" strokeWidth={1.4} opacity={0.9} />
       </Canvas>
 
       {/* A2 — Printed numerals (larger + bold, red at 100+). */}
@@ -2099,7 +2117,7 @@ export function SplDialView(p: {
             <Lbl
               key={i}
               x={it.side === 'L' ? 6 : it.innerX + 4}
-              y={it.ty + i * 12}
+              y={it.ty + i * 13}
               w={it.side === 'L' ? it.innerX - 10 : w - (it.innerX + 4) - 6}
               align={it.side === 'L' ? 'right' : 'left'}
               size={ln.size}
@@ -2112,6 +2130,21 @@ export function SplDialView(p: {
           ))}
         </View>
       ))}
+
+      {/* CENTER digital SPL readout (owner 2026-07-30): the live number LARGE in
+          the concave middle of the dial, with a small "dB SPL" sub-label. The arc
+          + node ride the OUTER ring (Rs+2), so the centre stays clear. Absent ⇒
+          nothing drawn. */}
+      {p.centerText != null ? (
+        <>
+          <Lbl x={0} y={cy - 21} w={w} size={30} font={fonts.oswaldSemiBold} color={ink}>
+            {p.centerText}
+          </Lbl>
+          <Lbl x={0} y={cy + 15} w={w} size={10} font={fonts.oswaldSemiBold} ls={1.5} color={inkDim}>
+            dB SPL
+          </Lbl>
+        </>
+      ) : null}
 
       {/* A4 — BOTTOM text band: a low-center dB SPL wordmark + one context caption
           + the ESTIMATED badge, pinned below the dial so the CENTER of the face and
@@ -2210,7 +2243,7 @@ export function PeakAvgMeterView(p: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [w, h]);
 
-  // ── Live ballistics: instant-attack / 37 dB-s release PEAK, 300 ms AVERAGE,
+  // ── Live ballistics: instant-attack / 62 dB-s release PEAK, ~150 ms AVERAGE,
   // floating hold governed by holdMode. dt from the phase-clock delta (the VU
   // idiom). lPk is the returned engine value; lAvg/lHold are side-effect
   // SharedValues read by the average column and the cap (one-frame lag is
@@ -2234,9 +2267,11 @@ export function PeakAvgMeterView(p: {
     const ra = liveRms.value;
     const pk = rp === rp && rp > -120 ? Math.min(6, rp) : -120;
     const av = ra === ra && ra > -120 ? Math.min(6, ra) : -120;
-    lPk.value = Math.max(pk, lPk.value - 37 * dt);
-    const a = 1 - Math.exp(-dt / 0.3);
-    lAvg.value = av > -120 ? lAvg.value + (av - lAvg.value) * a : Math.max(-120, lAvg.value - 20 * dt);
+    // PEAK: near-instant attack (Math.max jumps up), quick fall (owner 2026-07-30).
+    lPk.value = Math.max(pk, lPk.value - 62 * dt);
+    // AVERAGE: livelier — tc 0.15 s (was 0.3), faster silence decay.
+    const a = 1 - Math.exp(-dt / 0.15);
+    lAvg.value = av > -120 ? lAvg.value + (av - lAvg.value) * a : Math.max(-120, lAvg.value - 34 * dt);
     if (showCap) {
       if (pk >= lHold.value) {
         lHold.value = pk;
@@ -2301,10 +2336,7 @@ export function PeakAvgMeterView(p: {
     <View style={{ width: w, height: h }}>
       <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
         <BrushedPanel w={w} h={h} />
-        <Screw x={11} y={11} r={3.4} slotDeg={25} />
-        <Screw x={w - 11} y={11} r={3.4} slotDeg={80} />
-        <Screw x={11} y={h - 11} r={3.4} slotDeg={130} />
-        <Screw x={w - 11} y={h - 11} r={3.4} slotDeg={60} />
+        {/* Corner screws removed (owner 2026-07-30: no screws anywhere). */}
         {/* Inset bezel well. */}
         <Path path={G.well} color="#08090b" />
         <Path path={G.well} color="#000000" style="stroke" strokeWidth={1.6} opacity={0.8} />

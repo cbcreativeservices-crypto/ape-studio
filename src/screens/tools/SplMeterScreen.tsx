@@ -82,6 +82,7 @@ function VuTopMeter({
   maxText,
   levelText,
   rangeText,
+  brackets,
 }: {
   viz: VizMetersModule;
   live: LiveMeterDrive;
@@ -94,6 +95,7 @@ function VuTopMeter({
   maxText: string;
   levelText: string;
   rangeText: string;
+  brackets: { lowText: string; highText: string };
 }) {
   // One clock drives both the VU needle and the LED columns (owner 2026-07-30:
   // the LED sits to the RIGHT of the VU, sharing the top row 3/4 : 1/4).
@@ -109,6 +111,7 @@ function VuTopMeter({
         loopSeconds={VU_LOOP}
         live0Db={live0Db}
         cornerReadouts={{ maxText, levelText, rangeText }}
+        scaleBrackets={brackets}
       />
       <viz.PeakAvgMeterView
         width={ledW}
@@ -135,6 +138,7 @@ function VuHero({
   calibrated,
   dialMode,
   onDialMode,
+  centerText,
 }: {
   viz: VizMetersModule;
   live: LiveMeterDrive;
@@ -144,6 +148,7 @@ function VuHero({
   calibrated: boolean;
   dialMode: 'studio' | 'spl';
   onDialMode: (m: 'studio' | 'spl') => void;
+  centerText: string;
 }) {
   const phase = viz.usePhaseClock(true, 1 / VU_LOOP);
   return (
@@ -159,6 +164,7 @@ function VuHero({
         calibrated={calibrated}
         labelMode={dialMode}
         loopSeconds={VU_LOOP}
+        centerText={centerText}
       />
       {/* STUDIO / SPL chooser — swaps the ring's labels (owner 2026-07-30). */}
       <View style={styles.dialModeRow}>
@@ -184,7 +190,7 @@ function VuHero({
 /** RANGE — the environmental SPL that reads 0 VU. The VU shows the signal
  *  RELATIVE to this reference (current SPL − RANGE), so RANGE centres the meter
  *  on the room's noise level. Default 100 dB. AUTO (below) tracks ambient. */
-const RANGE_VALUES = [20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120] as const;
+const RANGE_VALUES = [20, 40, 60, 80, 100, 120] as const;
 
 /** Peak-hold linger options for the LED meter's user setting. */
 const HOLD_MODES: PeakHoldMode[] = ['off', '1s', '3s', 'inf'];
@@ -291,7 +297,7 @@ export function SplMeterScreen({ navigation }: Props) {
   const [holdMode, setHoldMode] = useState<PeakHoldMode>('1s');
   // RANGE (owner 2026-07-30): the environmental SPL that reads 0 VU. The wide VU
   // at the top shows the signal RELATIVE to this (current SPL − RANGE).
-  const [rangeDb, setRangeDb] = useState(100);
+  const [rangeDb, setRangeDb] = useState(60);
   // AUTO range (owner 2026-07-30): when on, the 0-VU reference tracks a slow EMA
   // of the measured SPL so the needle stays on-scale and visibly swinging around
   // centre. Manual chips turn it off. autoRangeDb is the rounded auto reference.
@@ -331,22 +337,25 @@ export function SplMeterScreen({ navigation }: Props) {
     // track ambient and keep the needle on-scale and moving (not pinned).
     if (meter && Number.isFinite(lvl)) {
       const splNow = lvl + (offset ?? 100);
+      // Moderately responsive EMA so AUTO actually keeps up with the room
+      // (owner 2026-07-30: "auto needs to work better") — was 0.05 (too sluggish).
       splEmaRef.current =
-        splEmaRef.current == null ? splNow : splEmaRef.current + (splNow - splEmaRef.current) * 0.05;
+        splEmaRef.current == null ? splNow : splEmaRef.current + (splNow - splEmaRef.current) * 0.15;
     }
   }, [meter, weighting, response, offset, liveRmsDb, livePeakDb]);
 
-  // AUTO range recompute — slow cadence (500 ms) reading the smoothed EMA, so the
-  // 0-VU reference re-settles gently (rounded to the nearest 5 dB, clamped to the
-  // chip range). Only runs while AUTO is on and the meter is live.
+  // AUTO range recompute — reads the smoothed EMA a few times a second and parks
+  // the ANCHOR (the −20 mark) 10 dB below the current level, so the live signal
+  // sits mid-scale (~−10 VU) and keeps swinging. Rounded to 5 dB with a small
+  // hysteresis so it re-settles without hunting. Only while AUTO + live.
   useEffect(() => {
     if (!rangeAuto || !running) return;
     const id = setInterval(() => {
       const ema = splEmaRef.current;
       if (ema == null) return;
-      const rounded = Math.max(20, Math.min(120, Math.round(ema / 5) * 5));
-      setAutoRangeDb((prev) => (prev === rounded ? prev : rounded));
-    }, 500);
+      const target = Math.max(20, Math.min(120, Math.round((ema - 10) / 5) * 5));
+      setAutoRangeDb((prev) => (Math.abs(prev - target) >= 5 ? target : prev));
+    }, 300);
     return () => clearInterval(id);
   }, [rangeAuto, running]);
   const live = useMemo<LiveMeterDrive>(() => ({ rmsDb: liveRmsDb, peakDb: livePeakDb }), [liveRmsDb, livePeakDb]);
@@ -358,20 +367,28 @@ export function SplMeterScreen({ navigation }: Props) {
   // badges the dial ESTIMATED — never a certified SPL reading (§1.7).
   const splOffset = offset ?? 100;
   const calibrated = offset != null;
-  // VU RANGE wiring: 0 VU must sit where the measured SPL equals RANGE. Since
-  // displayed SPL = dBFS + splOffset, the dBFS that reads 0 VU is RANGE − splOffset.
-  // So the VU shows (current SPL − RANGE) regardless of calibration (uncalibrated
-  // it works against the ESTIMATED SPL — the badge discloses that). In AUTO the
-  // effective RANGE is the slow-tracked ambient reference.
-  const effRange = rangeAuto ? autoRangeDb : rangeDb;
-  const vuLive0 = effRange - splOffset;
-  // Printed TOP-LEFT on the VU face: "RANGE 100" or "AUTO · 85".
-  const vuRangeText = rangeAuto ? `AUTO · ${autoRangeDb}` : `RANGE ${rangeDb}`;
+  // VU RANGE wiring (owner 2026-07-30): the RANGE value is the SPL that sits at
+  // the −20 VU mark; the 0 VU mark is 20 dB above it (the −20..0 span is 20 dB on
+  // this relative face). So a RANGE of 60 shows 60 dB at −20 and 80 dB at 0. The
+  // dBFS that reads 0 VU is therefore (RANGE + 20) − splOffset. In AUTO the
+  // anchor is the slow-tracked ambient reference (kept so the needle sits mid-scale).
+  const effAnchor = rangeAuto ? autoRangeDb : rangeDb; // SPL at the −20 VU mark
+  const vuRef0 = effAnchor + 20; // SPL at the 0 VU mark
+  const vuLive0 = vuRef0 - splOffset;
+  // Printed TOP-LEFT on the VU face.
+  const vuRangeText = rangeAuto ? `AUTO ${effAnchor}` : `RANGE ${effAnchor}`;
+  // SPL bracket printed inside the arc: the low number at −20, the high at 0.
+  const vuBrackets = { lowText: `${effAnchor}`, highText: `${vuRef0}` };
   // VU corner readouts (printed inside the glass): MAX = peak-hold in SPL terms,
   // LEVEL = the current selected weighting × response, both via the screen's
   // shown()/fmtDb so every number on the screen agrees.
   const vuMaxText = meter ? fmtDb(shown(meter.peakHoldDb)) : '—';
   const vuLevelText = meter ? fmtDb(shown(selectedLevelDb(meter, weighting, response))) : '—';
+  // Live SPL number for the CENTER of the circle gauge — the ESTIMATED dB SPL
+  // (level + splOffset) so it matches the node's position on the dial's scale.
+  const dialCenterText = meter
+    ? `${Math.round(selectedLevelDb(meter, weighting, response) + splOffset)}`
+    : '—';
 
   /** SAVE LOG → Saved Measurement Library (spec §7; payload = SplLogPayload). */
   const onSaveLog = useCallback(() => {
@@ -741,8 +758,8 @@ export function SplMeterScreen({ navigation }: Props) {
             {running && (
               <Text style={styles.vuBadge}>
                 {calibrated
-                  ? `VU: RELATIVE · 0 VU = ${effRange} dB (${rangeAuto ? 'AUTO' : 'RANGE'}). GAUGE: dB SPL · FIELD-CALIBRATED (APPROXIMATE) — the 79/82/85 dB(C) mix band is a reference, not a guarantee`
-                  : `VU: RELATIVE · 0 VU = ${effRange} dB (${rangeAuto ? 'AUTO · ESTIMATED' : 'RANGE · ESTIMATED'} environment). GAUGE: ESTIMATED · UNCALIBRATED — SPL numbers are an estimate; calibrate against a real SPL meter for true readings`}
+                  ? `VU: RELATIVE · ${effAnchor} dB at −20 → ${vuRef0} dB at 0 (${rangeAuto ? 'AUTO' : 'RANGE'}). GAUGE: dB SPL · FIELD-CALIBRATED (APPROXIMATE) — the 79/82/85 dB(C) mix band is a reference, not a guarantee`
+                  : `VU: RELATIVE · ${effAnchor} dB at −20 → ${vuRef0} dB at 0 (${rangeAuto ? 'AUTO · ESTIMATED' : 'RANGE · ESTIMATED'} environment). GAUGE: ESTIMATED · UNCALIBRATED — SPL numbers are an estimate; calibrate against a real SPL meter for true readings`}
               </Text>
             )}
 
@@ -761,6 +778,7 @@ export function SplMeterScreen({ navigation }: Props) {
                   maxText={vuMaxText}
                   levelText={vuLevelText}
                   rangeText={vuRangeText}
+                  brackets={vuBrackets}
                 />
               ) : (
                 /* Honest gate for pre-Skia clients (§1.7): readouts stay live. */
@@ -779,7 +797,7 @@ export function SplMeterScreen({ navigation }: Props) {
                     label opens the RANGE popup (owner 2026-07-30); the old inline
                     note was removed so the readouts sit closer to the VU. */}
                 <View style={styles.chipGroup}>
-                  <HelpHead title={`RANGE · 0 VU = ${effRange} dB${rangeAuto ? ' (AUTO)' : ''}`} onHelp={() => help('range')} style={styles.chipGroupLabel} />
+                  <HelpHead title={`RANGE · ${effAnchor}→${vuRef0} dB${rangeAuto ? ' (AUTO)' : ''}`} onHelp={() => help('range')} style={styles.chipGroupLabel} />
                   {/* Single horizontal scroll row (owner 2026-07-30) — the values
                       no longer wrap to two rows. */}
                   <ScrollView
@@ -817,22 +835,8 @@ export function SplMeterScreen({ navigation }: Props) {
                   </ScrollView>
                 </View>
 
-                {/* 4 — BELOW THE VU: round SPL "Noise'o'Meter" gauge (LEFT, with its
-                    STUDIO/SPL chooser) + thin LED PEAK/AVERAGE meters (RIGHT). */}
-                {viz ? (
-                  <VuHero
-                    viz={viz}
-                    live={live}
-                    dialW={dialW}
-                    dialH={dialH}
-                    splOffset={splOffset}
-                    calibrated={calibrated}
-                    dialMode={dialMode}
-                    onDialMode={setDialMode}
-                  />
-                ) : null}
-
-                {/* Weighting × response controls (same setters as the screen). */}
+                {/* Weighting × response + PEAK HOLD controls — moved ABOVE the
+                    circle meter (owner 2026-07-30). Same setters as the screen. */}
                 <View style={styles.chipsRow}>
                   <View style={styles.chipGroup}>
                     <Text style={styles.chipGroupLabel}>WEIGHTING</Text>
@@ -875,6 +879,22 @@ export function SplMeterScreen({ navigation }: Props) {
                     </Pressable>
                   </View>
                 </View>
+
+                {/* 4 — The round SPL "Noise'o'Meter" gauge (full-width row, external
+                    callout labels + live centre readout). */}
+                {viz ? (
+                  <VuHero
+                    viz={viz}
+                    live={live}
+                    dialW={dialW}
+                    dialH={dialH}
+                    splOffset={splOffset}
+                    calibrated={calibrated}
+                    dialMode={dialMode}
+                    onDialMode={setDialMode}
+                    centerText={dialCenterText}
+                  />
+                ) : null}
 
                 {/* 7 — Mirrored session log + save (same handlers). */}
                 <View style={styles.logCard}>
