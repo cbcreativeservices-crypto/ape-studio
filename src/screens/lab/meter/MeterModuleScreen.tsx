@@ -9,6 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
+import { ScrollLockProvider } from '../LabShell';
 import { METER_MODULES, type MeterModuleId } from './modules/registry';
 import { WaveformModule, PeakModule, VuModule, LoudnessModule } from './modules/modMeterA';
 import { SpectrumModule, SpectrogramModule, WaterfallModule } from './modules/modMeterB';
@@ -67,6 +68,7 @@ export function MeterModuleScreen() {
           <Text style={styles.subtitle}>Visual Audio Analysis Lab</Text>
         </View>
       </View>
+      <ScrollLockProvider value={setScrollLocked}>
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" scrollEnabled={!scrollLocked}>
         <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
           {width > 0 ? <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} /> : null}
@@ -81,6 +83,7 @@ export function MeterModuleScreen() {
           <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
         </Pressable>
       </ScrollView>
+      </ScrollLockProvider>
       <GuidedLessonSheet visible={lessonOpen} lesson={getLabLesson('meter')} controlKey={lessonKey} onClose={() => setLessonOpen(false)} />
     </View>
   );

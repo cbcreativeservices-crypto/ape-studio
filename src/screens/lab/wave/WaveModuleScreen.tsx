@@ -10,6 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
+import { ScrollLockProvider } from '../LabShell';
 import { WAVE_MODULES, type WaveModuleId } from './modules/registry';
 import {
   ReflectionModule, AbsorptionModule, DiffusionModule, RefractionModule,
@@ -79,6 +80,7 @@ export function WaveModuleScreen() {
           <Text style={styles.subtitle}>Wave Physics Laboratory</Text>
         </View>
       </View>
+      <ScrollLockProvider value={setScrollLocked}>
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" scrollEnabled={!scrollLocked}>
         <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
           {width > 0 ? <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} /> : null}
@@ -93,6 +95,7 @@ export function WaveModuleScreen() {
           <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
         </Pressable>
       </ScrollView>
+      </ScrollLockProvider>
       <GuidedLessonSheet visible={lessonOpen} lesson={getLabLesson('wave')} controlKey={lessonKey} onClose={() => setLessonOpen(false)} />
     </View>
   );

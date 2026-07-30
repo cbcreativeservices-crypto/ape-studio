@@ -145,6 +145,21 @@ export type LabShellExploreApi = { setScrollLocked: (locked: boolean) => void };
 
 const ScrollLockCtx = createContext<((locked: boolean) => void) | null>(null);
 
+/** Provider for the scroll-lock control. LabShell supplies it automatically to
+ *  its Explore content; NON-LabShell hosts (module screens, the foundations
+ *  course/playground) wrap their own ScrollView content in this and pass their
+ *  `setScrollLocked` so drag primitives inside — DragSlider, RoomSceneView —
+ *  lock the scroll during a gesture with NO prop threading (owner 2026-07-30
+ *  systemic drag-vs-scroll fix). */
+export const ScrollLockProvider = ScrollLockCtx.Provider;
+
+/** Grab the nearest scroll-lock setter from context (null when there is no
+ *  LabShell / ScrollLockProvider above). Drag primitives call this and lock on
+ *  gesture start / unlock on release so the object wins over the page. */
+export function useScrollLock(): ((locked: boolean) => void) | null {
+  return useContext(ScrollLockCtx);
+}
+
 /** Wrap ANY drag/touch-interactive surface: the moment a finger lands inside,
  *  the shell's scroll is disabled until release/cancel — the object wins over
  *  the page (owner 2026-07-29 drag-vs-scroll fix). Purely additive: children

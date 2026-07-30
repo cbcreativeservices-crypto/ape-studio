@@ -44,7 +44,7 @@ import { EngineGate } from '../../tools/EngineGate';
 import type { EngineState } from '../../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
-import { LabChip } from '../LabShell';
+import { LabChip, ScrollLockProvider, useScrollLock } from '../LabShell';
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../../features/lab/guidedLessons';
 import { CheckQuestion, ConceptBadge, DragSlider, LevelMeterBar, VizUnavailableCard, type CheckSpec } from './bits';
 import { requireViz, skiaAvailable, type VizModule } from './skiaGate';
@@ -612,6 +612,11 @@ function M8Panel({ viz, width, tone, focused, help }: PanelProps) {
   const widthRef = useRef(width);
   widthRef.current = width;
   const lastAngRef = useRef<number | null>(null);
+  // Rotary drag vs scroll (owner 2026-07-30): lock the host scroll for the
+  // gesture so a near-vertical swing spins the spiral instead of scrolling.
+  const ctxLock = useScrollLock();
+  const lockRef = useRef(ctxLock);
+  lockRef.current = ctxLock;
 
   const setFreq = (nf: number) => {
     fRef.current = nf;
@@ -624,6 +629,7 @@ function M8Panel({ viz, width, tone, focused, help }: PanelProps) {
       onStartShouldSetPanResponder: () => false,
       onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dx) > 4 || Math.abs(g.dy) > 4,
       onPanResponderGrant: (e) => {
+        lockRef.current?.(true);
         const dx = e.nativeEvent.locationX - widthRef.current / 2;
         const dy = e.nativeEvent.locationY - 105;
         // Hub dead-zone: near the center, angles are meaningless — a touch
@@ -650,6 +656,11 @@ function M8Panel({ viz, width, tone, focused, help }: PanelProps) {
       },
       onPanResponderRelease: () => {
         lastAngRef.current = null;
+        lockRef.current?.(false);
+      },
+      onPanResponderTerminate: () => {
+        lastAngRef.current = null;
+        lockRef.current?.(false);
       },
       onPanResponderTerminationRequest: () => false,
     }),
@@ -1334,6 +1345,10 @@ export function FoundationsCourseScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [step, setStep] = useState(0);
   const [width, setWidth] = useState(0);
+  // Drag-vs-scroll (owner 2026-07-30): panel drag surfaces (DragSliders, the M8
+  // octave spiral) lock this scroll during a gesture via the ScrollLockProvider
+  // below — the primitives grab the setter from context, no per-control wiring.
+  const [scrollLocked, setScrollLocked] = useState(false);
 
   const [gate] = useState<EngineState>(() => {
     if (!ApeDsp.isAvailable()) return 'absent';
@@ -1425,7 +1440,8 @@ export function FoundationsCourseScreen() {
         </Pressable>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollLockProvider value={setScrollLocked}>
+      <ScrollView contentContainerStyle={styles.scroll} scrollEnabled={!scrollLocked}>
         {!engineReady ? <EngineGate state={gate} /> : null}
         {/* One-time honesty note for pre-Skia clients, above the fold. */}
         {!skiaAvailable && step === 0 ? <VizUnavailableCard /> : null}
@@ -1470,6 +1486,7 @@ export function FoundationsCourseScreen() {
           </View>
         </View>
       </ScrollView>
+      </ScrollLockProvider>
 
       <GuidedLessonSheet
         visible={lessonOpen}

@@ -37,7 +37,7 @@ import { EngineGate } from '../../tools/EngineGate';
 import type { EngineState } from '../../../features/tools/engine/useDspEngine';
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../../features/lab/guidedLessons';
 import { colors, fonts } from '../../../theme/tokens';
-import { LabChip } from '../LabShell';
+import { LabChip, ScrollLockProvider } from '../LabShell';
 import { ConceptBadge, DragSlider, LevelMeterBar, VizUnavailableCard } from './bits';
 import { requireViz, type VizModule } from './skiaGate';
 import { visHzFor } from './FoundationsCourseScreen';
@@ -277,6 +277,9 @@ export function FoundationsPlaygroundScreen() {
   const airMode = source === 'noise' ? 'noise' : 'wave';
   const displayVisHz = source === 'sweep' ? visHzFor(900) : visHzFor(freq);
   const [width, setWidth] = useState(0);
+  // Drag-vs-scroll (owner 2026-07-30): DragSliders lock this screen's scroll
+  // during a drag via the ScrollLockProvider below — no per-slider wiring.
+  const [scrollLocked, setScrollLocked] = useState(false);
   // Air-window wavelength (px): wide at low pitch, tight at high pitch — only
   // for a single-frequency wave (noise/sweep have no single λ).
   const airLambdaPx = source === 'wave' && width > 0 ? width / (1.3 + 4.7 * freq01) : undefined;
@@ -298,7 +301,8 @@ export function FoundationsPlaygroundScreen() {
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollLockProvider value={setScrollLocked}>
+      <ScrollView contentContainerStyle={styles.scroll} scrollEnabled={!scrollLocked}>
         {!engineReady ? <EngineGate state={gate} /> : null}
 
         {/* ── SOURCE ─────────────────────────────────────────────────────── */}
@@ -509,6 +513,7 @@ export function FoundationsPlaygroundScreen() {
           </Pressable>
         </View>
       </ScrollView>
+      </ScrollLockProvider>
 
       <GuidedLessonSheet
         visible={lessonOpen}

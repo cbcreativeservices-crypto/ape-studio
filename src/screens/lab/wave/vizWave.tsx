@@ -41,6 +41,7 @@ import {
 } from '@shopify/react-native-skia';
 import { useDerivedValue, type SharedValue } from 'react-native-reanimated';
 import { fonts } from '../../../theme/tokens';
+import { useScrollLock } from '../LabShell';
 import {
   MATERIALS,
   alphaAt,
@@ -245,6 +246,10 @@ export type RoomSceneProps = {
   onDragSource?: (id: string, x: number, y: number) => void;
   onDragListener?: (x: number, y: number) => void;
   onSelect?: (id: string | null) => void;
+  /** Fires true when an object drag starts, false on release/terminate — hosts
+   *  wire this to their scroll-lock so the drag beats the ScrollView. Usually
+   *  unneeded: RoomSceneView also locks via the ScrollLockProvider context. */
+  onDragActive?: (active: boolean) => void;
 };
 
 // ── Room geometry: meters → px ───────────────────────────────────────────────
@@ -821,14 +826,25 @@ export function RoomSceneView(p: RoomSceneProps) {
   //   is a dedicated interactive area, so we CLAIM ON TOUCH START; scrolling
   //   starts from anywhere else on the screen). Callbacks report METERS,
   //   clamped 0.2 m inside the room and rounded to 0.05 m (see sceneKey note).
-  const stateRef = useRef({ scene, geo, cb: { s: p.onDragSource, l: p.onDragListener, sel: p.onSelect } });
-  stateRef.current = { scene, geo, cb: { s: p.onDragSource, l: p.onDragListener, sel: p.onSelect } };
+  // Scroll-lock (owner 2026-07-30 drag-vs-scroll fix): the object drag must win
+  // over the host ScrollView on every platform (Android's native ScrollView
+  // otherwise steals vertical movement). Lock on grant, free on release/
+  // terminate — via the ScrollLockProvider context (auto, no threading) plus an
+  // explicit onDragActive for hosts that supply no provider.
+  const ctxLock = useScrollLock();
+  const stateRef = useRef({ scene, geo, cb: { s: p.onDragSource, l: p.onDragListener, sel: p.onSelect }, lock: ctxLock, onDragActive: p.onDragActive });
+  stateRef.current = { scene, geo, cb: { s: p.onDragSource, l: p.onDragListener, sel: p.onSelect }, lock: ctxLock, onDragActive: p.onDragActive };
+  const setScrollLock = (v: boolean) => {
+    stateRef.current.lock?.(v);
+    stateRef.current.onDragActive?.(v);
+  };
   const grabRef = useRef<{ kind: 'src' | 'listener'; id: string; offX: number; offY: number; sx: number; sy: number; moved: boolean } | null>(null);
   const pan = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: () => true,
       onPanResponderGrant: (e) => {
+        setScrollLock(true);
         const st = stateRef.current;
         const px = e.nativeEvent.locationX;
         const py = e.nativeEvent.locationY;
@@ -867,6 +883,11 @@ export function RoomSceneView(p: RoomSceneProps) {
         if (!g) sel?.(null);
         else if (!g.moved) sel?.(g.id);
         grabRef.current = null;
+        setScrollLock(false);
+      },
+      onPanResponderTerminate: () => {
+        grabRef.current = null;
+        setScrollLock(false);
       },
       onPanResponderTerminationRequest: () => false,
     }),

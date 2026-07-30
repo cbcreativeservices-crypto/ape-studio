@@ -17,6 +17,7 @@
 import { useRef, useState } from 'react';
 import { PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
+import { useScrollLock } from '../LabShell';
 
 export type CheckSpec = {
   question: string;
@@ -75,14 +76,22 @@ export function CheckQuestion({ spec }: { spec: CheckSpec }) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /** Minimal horizontal drag slider: value 0..1; onChange fires at drag rate
- *  (callers throttle/map as needed). Locks nothing — small vertical footprint
- *  so it never fights the ScrollView badly (horizontal drags win naturally). */
+ *  (callers throttle/map as needed).
+ *
+ *  DRAG vs SCROLL (owner 2026-07-30): once a finger is DOWN on the track the
+ *  slider claims the responder at touch-start and refuses handoff, but inside a
+ *  vertical ScrollView a near-vertical drag could still steal to scroll. So the
+ *  slider disables the host scroll for the gesture's duration: it grabs the
+ *  scroll-lock setter from context automatically when a LabShell / ScrollLock-
+ *  Provider is above it (NO prop threading), and also accepts an explicit
+ *  `onDragActive` for hosts that wire their own. Value/onChange math unchanged. */
 export function DragSlider({
   value,
   onChange,
   label,
   readout,
   onHelp,
+  onDragActive,
 }: {
   value: number; // 0..1
   onChange: (v: number) => void;
@@ -90,18 +99,31 @@ export function DragSlider({
   readout?: string;
   /** When set, an ⓘ next to the label opens this control's help popup. */
   onHelp?: () => void;
+  /** Fires true on drag start, false on release/terminate — for hosts that
+   *  are NOT under a LabShell/ScrollLockProvider and wire their own lock. */
+  onDragActive?: (active: boolean) => void;
 }) {
   const [w, setW] = useState(0);
   const wRef = useRef(0);
   wRef.current = w;
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
+  // Scroll-lock plumbing: context (auto) + explicit prop, kept in a ref so the
+  // once-created PanResponder always calls the current setters.
+  const ctxLock = useScrollLock();
+  const lockRef = useRef({ ctx: ctxLock, prop: onDragActive });
+  lockRef.current = { ctx: ctxLock, prop: onDragActive };
+  const setLock = (v: boolean) => {
+    lockRef.current.ctx?.(v);
+    lockRef.current.prop?.(v);
+  };
 
   const pan = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dx) > Math.abs(g.dy),
       onPanResponderGrant: (e) => {
+        setLock(true);
         if (wRef.current > 0)
           onChangeRef.current(Math.max(0, Math.min(1, e.nativeEvent.locationX / wRef.current)));
       },
@@ -109,6 +131,8 @@ export function DragSlider({
         if (wRef.current > 0)
           onChangeRef.current(Math.max(0, Math.min(1, e.nativeEvent.locationX / wRef.current)));
       },
+      onPanResponderRelease: () => setLock(false),
+      onPanResponderTerminate: () => setLock(false),
       onPanResponderTerminationRequest: () => false,
     }),
   ).current;
