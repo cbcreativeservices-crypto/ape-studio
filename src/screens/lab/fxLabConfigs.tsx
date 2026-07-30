@@ -18,6 +18,13 @@
  *
  * Param values are conventional teaching points (guided-lesson content covers
  * the full ranges); every row long-presses into its control's lesson.
+ *
+ * ANIMATION (visual standards 2026-07-29): every config also authors `anim` —
+ * the mapping from the CURRENT param values to its fxAnim signal-flow model
+ * (the Skia animated hero: input wave → effect stage → transformed output).
+ * The mapping hands over the SAME values that drive the DSP; the per-effect
+ * transformation math lives in fxAnim (mirroring fxViz). On pre-Skia clients
+ * the static heroes below render alone, exactly as before.
  */
 import { FX, FX_PARAM, EQ_BAND_TYPES, GEN_MODES } from '../../../modules/ape-dsp';
 import {
@@ -48,6 +55,18 @@ const EQ_TYPE = P.eqBand(0, 'type');
 const EQ_FREQ = P.eqBand(0, 'freq');
 const EQ_Q = P.eqBand(0, 'q');
 const EQ_GAIN = P.eqBand(0, 'gain');
+
+/** The band the current param values describe — shared by the static hero
+ *  and the animated hero so both ALWAYS show the same filter. */
+function eqBandOf(v: Record<number, number>): EqBandSpec {
+  return {
+    type: v[EQ_TYPE] === EQ_BAND_TYPES.peak ? 'peak'
+      : v[EQ_TYPE] === EQ_BAND_TYPES.lowShelf ? 'lowShelf'
+      : v[EQ_TYPE] === EQ_BAND_TYPES.highShelf ? 'highShelf'
+      : v[EQ_TYPE] === EQ_BAND_TYPES.lowPass ? 'lowPass' : 'highPass',
+    freq: v[EQ_FREQ], q: v[EQ_Q], gainDb: v[EQ_GAIN],
+  };
+}
 
 const eqConfig: FxLabConfig = {
   labId: 'eq',
@@ -93,13 +112,7 @@ const eqConfig: FxLabConfig = {
     },
   ],
   Hero: (v) => {
-    const band: EqBandSpec = {
-      type: v[EQ_TYPE] === EQ_BAND_TYPES.peak ? 'peak'
-        : v[EQ_TYPE] === EQ_BAND_TYPES.lowShelf ? 'lowShelf'
-        : v[EQ_TYPE] === EQ_BAND_TYPES.highShelf ? 'highShelf'
-        : v[EQ_TYPE] === EQ_BAND_TYPES.lowPass ? 'lowPass' : 'highPass',
-      freq: v[EQ_FREQ], q: v[EQ_Q], gainDb: v[EQ_GAIN],
-    };
+    const band = eqBandOf(v);
     return (
       <ResponseCurveGraph
         curves={[
@@ -109,6 +122,7 @@ const eqConfig: FxLabConfig = {
       />
     );
   },
+  anim: (v) => ({ kind: 'eq', bands: [eqBandOf(v)] }),
   heroBadge: ANALYTIC,
   heroCaption: (v) =>
     `${v[EQ_GAIN] > 0 ? '+' : ''}${v[EQ_GAIN]} dB at ${v[EQ_FREQ] >= 1000 ? `${v[EQ_FREQ] / 1000} kHz` : `${v[EQ_FREQ]} Hz`}, Q ${v[EQ_Q]}. ` +
@@ -173,6 +187,13 @@ const delayConfig: FxLabConfig = {
   Hero: (v) => (
     <EchoTimelineGraph timeMs={v[P.timeMs]} feedback={v[P.delayFeedback]} mix={v[P.delayMix]} pingpong={v[P.pingpong] > 0.5} />
   ),
+  anim: (v) => ({
+    kind: 'delay',
+    timeMs: v[P.timeMs],
+    feedback: v[P.delayFeedback],
+    mix: v[P.delayMix],
+    pingpong: v[P.pingpong] > 0.5,
+  }),
   heroBadge: 'ECHO PATTERN — ANALYTIC (spacing = time · decay = feedback)',
   heroCaption: (v) =>
     `${v[P.timeMs]} ms between repeats; each repeat is ${Math.round(v[P.delayFeedback] * 100)}% of the last. ` +
@@ -228,6 +249,7 @@ const reverbConfig: FxLabConfig = {
     },
   ],
   Hero: (v) => <DecayCurveGraph rt60={v[P.rt60]} preDelayMs={v[P.preDelayMs]} />,
+  anim: (v) => ({ kind: 'reverb', rt60: v[P.rt60], preDelayMs: v[P.preDelayMs], mix: v[P.reverbMix] }),
   heroBadge: 'DECAY SLOPE — ANALYTIC (RT60 = time to fall 60 dB)',
   heroCaption: (v) =>
     `${v[P.preDelayMs]} ms pre-delay separates the dry hit from the wash, then the tail falls 60 dB in ${v[P.rt60]} s.` +
@@ -300,6 +322,15 @@ const chorusConfig: FxLabConfig = {
     },
   ],
   Hero: (v) => combSweepHero(v[P.centerMs], 6 * v[P.depth], v[P.modMix], 0),
+  anim: (v) => ({
+    kind: 'mod',
+    flavor: 'chorus',
+    rateHz: v[P.rateHz],
+    depth: v[P.depth],
+    centerMs: v[P.centerMs],
+    mix: v[P.modMix],
+    feedback: 0,
+  }),
   heroBadge: ANALYTIC,
   heroCaption: (v) =>
     v[P.modMix] >= 1
@@ -369,6 +400,15 @@ const flangerConfig: FxLabConfig = {
     },
   ],
   Hero: (v) => combSweepHero(v[P.centerMs], v[P.centerMs] * 0.85 * v[P.depth], v[P.modMix], v[P.modFeedback]),
+  anim: (v) => ({
+    kind: 'mod',
+    flavor: 'flanger',
+    rateHz: v[P.rateHz],
+    depth: v[P.depth],
+    centerMs: v[P.centerMs],
+    mix: v[P.modMix],
+    feedback: v[P.modFeedback],
+  }),
   heroBadge: ANALYTIC,
   heroCaption: (v) =>
     `Notches every ${Math.round(1 / (v[P.centerMs] / 1000))} Hz (spacing = 1/delay), sweeping between the ghosts. ` +
@@ -443,6 +483,14 @@ const phaserConfig: FxLabConfig = {
       ]}
     />
   ),
+  anim: (v) => ({
+    kind: 'phaser',
+    rateHz: v[P.rateHz],
+    depth: v[P.depth],
+    centerHz: v[P.centerHz],
+    stages: v[P.stages],
+    feedback: v[P.modFeedback],
+  }),
   heroBadge: ANALYTIC,
   heroCaption: (v) =>
     `${v[P.stages]} stages ≈ ${Math.floor(v[P.stages] / 2)} notches, UNEVENLY spaced (set by phase, not by a delay time) — a phaser is not a delay.`,
@@ -507,6 +555,15 @@ const compConfig: FxLabConfig = {
   Hero: (v) => (
     <TransferCurveGraph mode="compressor" thresholdDb={v[P.thresholdDb]} ratio={v[P.ratio]} makeupDb={v[P.makeupDb]} />
   ),
+  anim: (v) => ({
+    kind: 'dynamics',
+    mode: 'compressor',
+    thresholdDb: v[P.thresholdDb],
+    ratio: v[P.ratio],
+    rangeDb: -40,
+    ceilingDb: -12,
+    makeupDb: v[P.makeupDb],
+  }),
   heroBadge: 'TRANSFER CURVE — ANALYTIC · GR METER — LIVE',
   heroCaption: (v) =>
     `Above ${v[P.thresholdDb]} dB, every ${v[P.ratio]} dB in becomes 1 dB out. The source peaks at −20 dBFS — ` +
@@ -557,6 +614,15 @@ const gateConfig: FxLabConfig = {
     },
   ],
   Hero: (v) => <TransferCurveGraph mode="gate" thresholdDb={v[P.thresholdDb]} rangeDb={v[P.rangeDb]} />,
+  anim: (v) => ({
+    kind: 'dynamics',
+    mode: 'gate',
+    thresholdDb: v[P.thresholdDb],
+    ratio: 4,
+    rangeDb: v[P.rangeDb],
+    ceilingDb: -12,
+    makeupDb: 0,
+  }),
   heroBadge: 'TRANSFER CURVE — ANALYTIC · GR METER — LIVE',
   heroCaption: (v) =>
     `Below ${v[P.thresholdDb]} dB the output drops ${Math.abs(v[P.rangeDb])} dB toward the floor. ` +
@@ -598,6 +664,15 @@ const limiterConfig: FxLabConfig = {
     },
   ],
   Hero: (v) => <TransferCurveGraph mode="limiter" thresholdDb={v[P.ceilingDb]} ceilingDb={v[P.ceilingDb]} />,
+  anim: (v) => ({
+    kind: 'dynamics',
+    mode: 'limiter',
+    thresholdDb: v[P.ceilingDb],
+    ratio: 20,
+    rangeDb: -40,
+    ceilingDb: v[P.ceilingDb],
+    makeupDb: 0,
+  }),
   heroBadge: 'TRANSFER CURVE — ANALYTIC · GR METER — LIVE',
   heroCaption: (v) =>
     `Output can NEVER exceed ${v[P.ceilingDb]} dB. Source at −20 dBFS → ${
@@ -655,6 +730,12 @@ const distConfig: FxLabConfig = {
   Hero: (v) => (
     <WaveshapeGraph type={v[P.distType] === 0 ? 'hard' : v[P.distType] === 1 ? 'soft' : 'tube'} driveDb={v[P.driveDb]} />
   ),
+  anim: (v) => ({
+    kind: 'distortion',
+    type: v[P.distType] === 0 ? 'hard' : v[P.distType] === 1 ? 'soft' : 'tube',
+    driveDb: v[P.driveDb],
+    mix: v[P.distMix],
+  }),
   heroBadge: 'WAVESHAPE — ANALYTIC (input dim · output amber, shape-normalized)',
   heroCaption: (v) =>
     v[P.distType] === 2
@@ -708,6 +789,15 @@ const phaseConfig: FxLabConfig = {
     },
   ],
   Hero: (v) => <LissajousGraph widthPct={100} invertR={v[PHASE_INV] > 0.5} delayRms={v[PHASE_DLY]} toneHz={440} />,
+  anim: (v) => ({
+    kind: 'stereo',
+    flavor: 'phase',
+    widthPct: 100,
+    pan: 0,
+    invertR: v[PHASE_INV] > 0.5,
+    delayRms: v[PHASE_DLY],
+    monoFold: v[P.monoFold] > 0.5,
+  }),
   heroBadge: 'LISSAJOUS + CORRELATION — ANALYTIC (440 Hz model)',
   heroCaption: (v) =>
     v[PHASE_INV] > 0.5
@@ -767,6 +857,15 @@ const stereoConfig: FxLabConfig = {
     },
   ],
   Hero: (v) => <LissajousGraph widthPct={v[P.widthPct]} invertR={false} delayRms={0} toneHz={440} />,
+  anim: (v) => ({
+    kind: 'stereo',
+    flavor: 'width',
+    widthPct: v[P.widthPct],
+    pan: v[P.pan],
+    invertR: false,
+    delayRms: 0,
+    monoFold: v[P.monoFold] > 0.5,
+  }),
   heroBadge: 'LISSAJOUS + CORRELATION — ANALYTIC (440 Hz model)',
   heroCaption: (v) =>
     v[P.monoFold] > 0.5

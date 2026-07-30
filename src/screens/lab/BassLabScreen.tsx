@@ -3,6 +3,11 @@
  * shared LabShell. A 4-string fretted electric bass makes string physics
  * tangible: string division ↔ fractions ↔ intervals ↔ the harmonic series.
  *
+ * LAYOUT v2 (owner 2026-07-29): collapsible READOUTS → DISPLAY → CONTROLS →
+ * ACTIONS sections; PLAY/STOP is the compact HeaderPlayButton via LabShell's
+ * headerAction; the shell renders the Guided-Lesson entry row itself. The
+ * fretboard is TAP-only (no drag), so no InteractionZone is needed.
+ *
  * TWO MODES:
  *  • FRETTED — tap a string+fret on the fretboard: fret n leaves 2^(−n/12) of
  *    the string vibrating and multiplies the pitch by 2^(n/12). The special
@@ -28,7 +33,6 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Svg, { Circle, Defs, LinearGradient, Line, Path, RadialGradient, Rect, Stop } from 'react-native-svg';
 import { ApeDsp, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
-import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { guardAdditiveForEngine, speakerGuardDb, SPEAKER_HPF_HZ } from '../../features/audio/speakerSafety';
@@ -36,7 +40,7 @@ import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../featu
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
-import { LabShell, LabChip } from './LabShell';
+import { LabShell, LabChip, CollapsibleSection, HeaderPlayButton } from './LabShell';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -194,99 +198,19 @@ export function BassLabScreen() {
       subtitle="Strings · Frets · Harmonics · Intervals"
       intro={INTRO}
       exploreCaption="Tap the fretboard (or the chips) to choose a note — then read the fraction, watch the standing wave, and play it."
+      headerAction={
+        <HeaderPlayButton
+          playing={running}
+          disabled={!engineReady}
+          onPress={() => (running ? stopNote() : void startNote())}
+          label={running ? 'Stop' : `Play ${soundHz.toFixed(1)} hertz`}
+        />
+      }
     >
       {!engineReady ? <EngineGate state={gate} /> : null}
 
-      <View style={styles.chipRow}>
-        <LabChip label="ⓘ GUIDED LESSON" selected={lessonOpen} onPress={() => openLesson()} />
-      </View>
-      <Text style={styles.caption}>Long-press a labeled control for its guided lesson.</Text>
-
-      <Text style={styles.sectionHead}>MODE</Text>
-      <View style={styles.chipRow}>
-        <LabChip
-          label="FRETTED"
-          selected={mode === 'fretted'}
-          onPress={() => setMode('fretted')}
-          onLongPress={() => openLesson('fret')}
-        />
-        <LabChip
-          label="NATURAL HARMONICS"
-          selected={mode === 'harmonics'}
-          onPress={() => setMode('harmonics')}
-          onLongPress={() => openLesson('harmonic_node')}
-        />
-      </View>
-
-      <Text style={styles.sectionHead}>STRING</Text>
-      <View style={styles.chipRow}>
-        {STRINGS.map((s, i) => (
-          <LabChip
-            key={s.key}
-            label={`${s.label} · ${s.hz.toFixed(0)} Hz`}
-            selected={stringIdx === i}
-            onPress={() => setStringIdx(i)}
-            onLongPress={() => openLesson('string')}
-          />
-        ))}
-      </View>
-
-      {mode === 'fretted' ? (
-        <>
-          <Text style={styles.sectionHead}>FRET</Text>
-          <View style={styles.chipRow}>
-            {Array.from({ length: NUM_FRETS + 1 }, (_, n) => (
-              <LabChip
-                key={n}
-                label={n === 0 ? 'OPEN' : String(n)}
-                selected={fret === n}
-                onPress={() => setFret(n)}
-                onLongPress={() => openLesson('fret')}
-              />
-            ))}
-          </View>
-        </>
-      ) : (
-        <>
-          <Text style={styles.sectionHead}>TOUCH NODE — FRACTION OF THE STRING</Text>
-          <View style={styles.chipRow}>
-            {NODES.map((nd, i) => (
-              <LabChip
-                key={nd.n}
-                label={`${nd.frac} · H${nd.n}`}
-                selected={nodeIdx === i}
-                onPress={() => setNodeIdx(i)}
-                onLongPress={() => openLesson('harmonic_node')}
-              />
-            ))}
-          </View>
-        </>
-      )}
-
-      {/* THE FRETBOARD — true geometry, tappable. */}
-      <View style={styles.panelCard}>
-        <Text style={styles.badge}>TRUE FRET GEOMETRY — NUT → BRIDGE · DRAWN FROM THE EQUATIONS</Text>
-        <Fretboard
-          mode={mode}
-          stringIdx={stringIdx}
-          fret={fret}
-          harmonicN={node.n}
-          onPick={(si, n) => {
-            setStringIdx(si);
-            if (mode === 'fretted') setFret(n);
-            else setNodeIdx(Math.max(0, NODES.findIndex((nd) => nd.n === n)));
-          }}
-        />
-        <Text style={styles.caption}>
-          {mode === 'fretted'
-            ? 'Frets crowd toward the bridge because each semitone is the same RATIO (2^(1/12)) — equal ratios, shrinking spacings. The wave is drawn on the vibrating length (fret → bridge).'
-            : `Touching at ${node.frac} damps every mode WITHOUT a node there — harmonic ${node.n} (and its multiples) survive. Nodes are marked; the string rings over its FULL length.`}
-        </Text>
-        <DisplayGuideButton onPress={() => openLesson('display')} />
-      </View>
-
-      {/* READOUT — fraction · frequency · note · interval · wavelength. */}
-      <View style={styles.panelCard}>
+      <CollapsibleSection title="READOUTS">
+        {/* READOUT — fraction · frequency · note · interval · wavelength. */}
         <Text style={styles.badge}>READOUT — EXACT VALUES FROM THE STRING MODEL</Text>
         {mode === 'fretted' ? (
           <>
@@ -318,33 +242,116 @@ export function BassLabScreen() {
           {airWavelen.toFixed(2)} m
         </Text>
         <DisplayGuideButton onPress={() => openLesson('display')} />
-      </View>
+      </CollapsibleSection>
 
-      {/* PLAY — real audio through the additive engine (sine fallback on v2). */}
-      {engineReady ? (
-        <>
-          <GlassButton
-            label={running ? 'STOP' : `PLAY — ${soundHz.toFixed(1)} Hz`}
-            tint="green"
-            height={52}
-            fontSize={15}
-            onPress={() => (running ? stopNote() : void startNote())}
+      <CollapsibleSection title="DISPLAY">
+        {/* THE FRETBOARD — true geometry, tappable. */}
+        <View style={styles.panelCard}>
+          <Text style={styles.badge}>TRUE FRET GEOMETRY — NUT → BRIDGE · DRAWN FROM THE EQUATIONS</Text>
+          <Fretboard
+            mode={mode}
+            stringIdx={stringIdx}
+            fret={fret}
+            harmonicN={node.n}
+            onPick={(si, n) => {
+              setStringIdx(si);
+              if (mode === 'fretted') setFret(n);
+              else setNodeIdx(Math.max(0, NODES.findIndex((nd) => nd.n === n)));
+            }}
           />
           <Text style={styles.caption}>
-            {additiveReady
-              ? mode === 'fretted'
-                ? `Idealized plucked-string model — harmonic amplitudes ≈ 1/n through the additive engine (real strings vary with pluck position and pickup). Output ${GEN_LEVEL_DB} dBFS · uncalibrated.`
-                : `The single exact harmonic ${node.n} of the open ${str.label} string through the additive engine. Output ${GEN_LEVEL_DB} dBFS · uncalibrated.`
-              : 'This dev build predates the v3 additive engine — audio falls back to a pure sine at the target pitch; the fretboard and readouts are exact either way.'}
+            {mode === 'fretted'
+              ? 'Frets crowd toward the bridge because each semitone is the same RATIO (2^(1/12)) — equal ratios, shrinking spacings. The wave is drawn on the vibrating length (fret → bridge).'
+              : `Touching at ${node.frac} damps every mode WITHOUT a node there — harmonic ${node.n} (and its multiples) survive. Nodes are marked; the string rings over its FULL length.`}
           </Text>
-          {soundHz < SPEAKER_HPF_HZ ? (
-            <Text style={styles.advisory}>
-              {`Speaker high-pass (${SPEAKER_HPF_HZ} Hz): a ${soundHz.toFixed(0)} Hz fundamental is attenuated ${speakerGuardDb(soundHz).toFixed(1)} dB on the phone speaker — you mostly hear its harmonics. Use headphones for the true low end.`}
+          <DisplayGuideButton onPress={() => openLesson('display')} />
+        </View>
+      </CollapsibleSection>
+
+      <CollapsibleSection title="CONTROLS">
+        <Text style={styles.sectionHead}>MODE</Text>
+        <View style={styles.chipRow}>
+          <LabChip
+            label="FRETTED"
+            selected={mode === 'fretted'}
+            onPress={() => setMode('fretted')}
+            onLongPress={() => openLesson('fret')}
+          />
+          <LabChip
+            label="NATURAL HARMONICS"
+            selected={mode === 'harmonics'}
+            onPress={() => setMode('harmonics')}
+            onLongPress={() => openLesson('harmonic_node')}
+          />
+        </View>
+
+        <Text style={styles.sectionHead}>STRING</Text>
+        <View style={styles.chipRow}>
+          {STRINGS.map((s, i) => (
+            <LabChip
+              key={s.key}
+              label={`${s.label} · ${s.hz.toFixed(0)} Hz`}
+              selected={stringIdx === i}
+              onPress={() => setStringIdx(i)}
+              onLongPress={() => openLesson('string')}
+            />
+          ))}
+        </View>
+
+        {mode === 'fretted' ? (
+          <>
+            <Text style={styles.sectionHead}>FRET</Text>
+            <View style={styles.chipRow}>
+              {Array.from({ length: NUM_FRETS + 1 }, (_, n) => (
+                <LabChip
+                  key={n}
+                  label={n === 0 ? 'OPEN' : String(n)}
+                  selected={fret === n}
+                  onPress={() => setFret(n)}
+                  onLongPress={() => openLesson('fret')}
+                />
+              ))}
+            </View>
+          </>
+        ) : (
+          <>
+            <Text style={styles.sectionHead}>TOUCH NODE — FRACTION OF THE STRING</Text>
+            <View style={styles.chipRow}>
+              {NODES.map((nd, i) => (
+                <LabChip
+                  key={nd.n}
+                  label={`${nd.frac} · H${nd.n}`}
+                  selected={nodeIdx === i}
+                  onPress={() => setNodeIdx(i)}
+                  onLongPress={() => openLesson('harmonic_node')}
+                />
+              ))}
+            </View>
+          </>
+        )}
+      </CollapsibleSection>
+
+      <CollapsibleSection title="ACTIONS">
+        {/* PLAY lives in the header (▶) — real audio through the additive
+            engine (sine fallback on v2); the honest captions stay here. */}
+        {engineReady ? (
+          <>
+            <Text style={styles.caption}>
+              {additiveReady
+                ? mode === 'fretted'
+                  ? `PLAY (header ▶) — idealized plucked-string model, harmonic amplitudes ≈ 1/n through the additive engine (real strings vary with pluck position and pickup). Output ${GEN_LEVEL_DB} dBFS · uncalibrated.`
+                  : `PLAY (header ▶) — the single exact harmonic ${node.n} of the open ${str.label} string through the additive engine. Output ${GEN_LEVEL_DB} dBFS · uncalibrated.`
+                : 'This dev build predates the v3 additive engine — audio falls back to a pure sine at the target pitch; the fretboard and readouts are exact either way.'}
             </Text>
-          ) : null}
-          {genError ? <Text style={styles.error}>{genError}</Text> : null}
-        </>
-      ) : null}
+            {soundHz < SPEAKER_HPF_HZ ? (
+              <Text style={styles.advisory}>
+                {`Speaker high-pass (${SPEAKER_HPF_HZ} Hz): a ${soundHz.toFixed(0)} Hz fundamental is attenuated ${speakerGuardDb(soundHz).toFixed(1)} dB on the phone speaker — you mostly hear its harmonics. Use headphones for the true low end.`}
+              </Text>
+            ) : null}
+            {genError ? <Text style={styles.error}>{genError}</Text> : null}
+          </>
+        ) : null}
+      </CollapsibleSection>
 
       <GuidedLessonSheet
         visible={lessonOpen}

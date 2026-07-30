@@ -2,12 +2,19 @@
  * HarmonographLabScreen — Lab 16 "Harmonograph" (v4 MASTER §7) on the shared
  * LabShell. Frequency ratios ↔ musical intervals, made visible AND audible.
  *
+ * LAYOUT v2 (owner 2026-07-29): collapsible READOUTS → DISPLAY → CONTROLS →
+ * ACTIONS sections; PLAY INTERVAL is the compact HeaderPlayButton via
+ * LabShell's headerAction (disabled under detune / pre-v3 engines, same
+ * honesty rules as before); the shell renders the Guided-Lesson entry row.
+ *
  * FIGURE (analytic by nature): damped sinusoids drive the pen —
  *   x(t) = sin(n₁θ + φ)·e^(−kθ) · y(t) = sin(n₂(1+Δ)θ)·e^(−kθ)  (lateral)
  * plus a counter-rotating ROTARY variant. Deterministic path math (T1,
  * compute ~zero) rendered as a handful of phosphor-styled SVG path segments
- * (visual standards 2026-07-29); the drawing IS the model, so no measurement
- * claims arise.
+ * (visual standards 2026-07-29). Visual standards addendum: the figure DRAWS
+ * ITSELF on every selection change — a native strokeDashoffset reveal walks
+ * the pen along the full trace over ~3 s, then holds. The 8-segment phosphor
+ * styling (hot pen cooling to ember) is unchanged — the reveal rides on top.
  *
  * AUDIO (honest, real): "drive it from two oscillators" — a locked ratio n₁:n₂
  * plays as harmonics n₁ and n₂ of a shared 110 Hz fundamental through the v3
@@ -22,8 +29,15 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Svg, { Circle, Defs, Line, Path, RadialGradient, Rect, Stop } from 'react-native-svg';
+import Animated, {
+  Easing,
+  cancelAnimation,
+  useAnimatedProps,
+  useSharedValue,
+  withTiming,
+  type SharedValue,
+} from 'react-native-reanimated';
 import { ApeDsp, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
-import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { guardAdditiveForEngine, speakerGuardDb, SPEAKER_HPF_HZ } from '../../features/audio/speakerSafety';
@@ -31,7 +45,7 @@ import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../featu
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
-import { LabShell, LabChip } from './LabShell';
+import { LabShell, LabChip, CollapsibleSection, HeaderPlayButton } from './LabShell';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -177,124 +191,139 @@ export function HarmonographLabScreen() {
       subtitle="Frequency Ratios · Intervals · Beating"
       intro={INTRO}
       exploreCaption="Lock a ratio and watch the figure — then detune slightly and watch it precess: that drift is beating."
+      headerAction={
+        <HeaderPlayButton
+          playing={running}
+          disabled={!additiveReady || detune !== 0}
+          onPress={() => (running ? stopInterval() : void startInterval())}
+          label={running ? 'Stop' : 'Play interval'}
+        />
+      }
     >
       {!engineReady ? <EngineGate state={gate} /> : null}
 
-      <View style={styles.chipRow}>
-        <LabChip label="ⓘ GUIDED LESSON" selected={lessonOpen} onPress={() => openLesson()} />
-      </View>
-      <Text style={styles.caption}>Long-press a labeled control for its guided lesson.</Text>
-
-      <Text style={styles.sectionHead}>RATIO — INTERVAL</Text>
-      <View style={styles.chipRow}>
-        {RATIOS.map((r, i) => (
-          <LabChip
-            key={r.label}
-            label={`${r.label} ${r.interval}`}
-            selected={ratioIdx === i}
-            onPress={() => pickRatio(i)}
-            onLongPress={() => openLesson('ratio_lock')}
-          />
-        ))}
-      </View>
-
-      <Text style={styles.sectionHead}>PHASE · DAMPING · MODE · DETUNE</Text>
-      <View style={styles.chipRow}>
-        {PHASES.map((p) => (
-          <LabChip
-            key={p}
-            label={`φ ${p}°`}
-            selected={phase === p}
-            onPress={() => setPhase(p)}
-            onLongPress={() => openLesson('phase')}
-          />
-        ))}
-      </View>
-      <View style={styles.chipRow}>
-        {DAMPINGS.map((d) => (
-          <LabChip
-            key={d.key}
-            label={d.label}
-            selected={dampKey === d.key}
-            onPress={() => setDampKey(d.key)}
-            onLongPress={() => openLesson('damping')}
-          />
-        ))}
-        <LabChip
-          label={rotary ? 'ROTARY' : 'LATERAL'}
-          selected={rotary}
-          onPress={() => setRotary((v) => !v)}
-          onLongPress={() => openLesson('mode')}
-        />
-      </View>
-      <View style={styles.chipRow}>
-        {DETUNES.map((d) => (
-          <LabChip
-            key={d.key}
-            label={d.label}
-            selected={detune === d.key}
-            onPress={() => pickDetune(d.key)}
-            onLongPress={() => openLesson('ratio_lock')}
-          />
-        ))}
-      </View>
-
-      {/* THE FIGURE — deterministic path math (the model IS the drawing). */}
-      <View style={styles.panelCard}>
-        <Text style={styles.badge}>DETERMINISTIC FIGURE — DRAWN FROM THE EQUATIONS</Text>
-        <HarmonographFigure
-          n1={ratio.n1}
-          n2={ratio.n2}
-          phaseDeg={phase}
-          endAmp={damping.endAmp}
-          rotary={rotary}
-          detune={detune}
-        />
+      <CollapsibleSection title="READOUTS">
+        <Text style={styles.readMain}>
+          {ratio.label} — {ratio.interval} · {hz1} Hz : {hz2} Hz
+        </Text>
         <Text style={styles.caption}>
           {detune === 0
-            ? `${ratio.label} (${ratio.interval.toLowerCase()}) — a simple integer ratio closes into a stable figure.`
-            : `${ratio.label} detuned ${detune * 100}% — the near-miss never closes; the slow precession you see IS beating.`}
+            ? `Harmonics ${ratio.n1} and ${ratio.n2} of ${BASE_F0} Hz — an exact ${ratio.label} ratio; the figure closes.`
+            : `Detuned +${detune * 100}% — the near-miss never closes; the slow precession IS beating.`}
         </Text>
-        <DisplayGuideButton onPress={() => openLesson('display')} />
-      </View>
+      </CollapsibleSection>
 
-      {/* DRIVE FROM OSCILLATORS — real interval audio (v3 additive only). */}
-      {engineReady ? (
-        additiveReady ? (
-          detune === 0 ? (
-            <>
-              <GlassButton
-                label={running ? 'STOP' : stereoReady ? `PLAY INTERVAL — ${hz1} L · ${hz2} R` : `PLAY INTERVAL — ${hz2} + ${hz1} Hz`}
-                tint="green"
-                height={52}
-                fontSize={15}
-                onPress={() => (running ? stopInterval() : void startInterval())}
-              />
+      <CollapsibleSection title="DISPLAY">
+        {/* THE FIGURE — deterministic path math (the model IS the drawing);
+            it draws itself over ~3 s on every selection change, then holds. */}
+        <View style={styles.panelCard}>
+          <Text style={styles.badge}>DETERMINISTIC FIGURE — DRAWN FROM THE EQUATIONS</Text>
+          <HarmonographFigure
+            n1={ratio.n1}
+            n2={ratio.n2}
+            phaseDeg={phase}
+            endAmp={damping.endAmp}
+            rotary={rotary}
+            detune={detune}
+          />
+          <Text style={styles.caption}>
+            {detune === 0
+              ? `${ratio.label} (${ratio.interval.toLowerCase()}) — a simple integer ratio closes into a stable figure.`
+              : `${ratio.label} detuned ${detune * 100}% — the near-miss never closes; the slow precession you see IS beating.`}
+          </Text>
+          <DisplayGuideButton onPress={() => openLesson('display')} />
+        </View>
+      </CollapsibleSection>
+
+      <CollapsibleSection title="CONTROLS">
+        <Text style={styles.sectionHead}>RATIO — INTERVAL</Text>
+        <View style={styles.chipRow}>
+          {RATIOS.map((r, i) => (
+            <LabChip
+              key={r.label}
+              label={`${r.label} ${r.interval}`}
+              selected={ratioIdx === i}
+              onPress={() => pickRatio(i)}
+              onLongPress={() => openLesson('ratio_lock')}
+            />
+          ))}
+        </View>
+
+        <Text style={styles.sectionHead}>PHASE · DAMPING · MODE · DETUNE</Text>
+        <View style={styles.chipRow}>
+          {PHASES.map((p) => (
+            <LabChip
+              key={p}
+              label={`φ ${p}°`}
+              selected={phase === p}
+              onPress={() => setPhase(p)}
+              onLongPress={() => openLesson('phase')}
+            />
+          ))}
+        </View>
+        <View style={styles.chipRow}>
+          {DAMPINGS.map((d) => (
+            <LabChip
+              key={d.key}
+              label={d.label}
+              selected={dampKey === d.key}
+              onPress={() => setDampKey(d.key)}
+              onLongPress={() => openLesson('damping')}
+            />
+          ))}
+          <LabChip
+            label={rotary ? 'ROTARY' : 'LATERAL'}
+            selected={rotary}
+            onPress={() => setRotary((v) => !v)}
+            onLongPress={() => openLesson('mode')}
+          />
+        </View>
+        <View style={styles.chipRow}>
+          {DETUNES.map((d) => (
+            <LabChip
+              key={d.key}
+              label={d.label}
+              selected={detune === d.key}
+              onPress={() => pickDetune(d.key)}
+              onLongPress={() => openLesson('ratio_lock')}
+            />
+          ))}
+        </View>
+      </CollapsibleSection>
+
+      <CollapsibleSection title="ACTIONS">
+        {/* DRIVE FROM OSCILLATORS — real interval audio (v3 additive only);
+            the play/stop control itself is the header ▶. */}
+        {engineReady ? (
+          additiveReady ? (
+            detune === 0 ? (
+              <>
+                <Text style={styles.caption}>
+                  {stereoReady
+                    ? `PLAY (header ▶) is HARD-PANNED STEREO — ${hz1} Hz on LEFT, ${hz2} Hz on RIGHT (harmonics ${ratio.n1} & ${ratio.n2} of ${BASE_F0} Hz), an exact ${ratio.label} ratio. The XY figure as sound: X-drive left, Y-drive right — headphones split it cleanly.`
+                    : `PLAY (header ▶) sounds harmonics ${ratio.n2} and ${ratio.n1} of ${BASE_F0} Hz through the additive engine — an exact ${ratio.label} ratio. Output ${GEN_LEVEL_DB} dBFS · uncalibrated.`}
+                </Text>
+                <Text style={styles.advisory}>
+                  {`Speaker high-pass (${SPEAKER_HPF_HZ} Hz): the ${hz2} Hz tone is attenuated ${speakerGuardDb(hz2).toFixed(1)} dB` +
+                    `${ratio.n1 !== ratio.n2 ? `, the ${hz1} Hz tone ${speakerGuardDb(hz1).toFixed(1)} dB` : ''}. ` +
+                    `Use headphones for the full interval.`}
+                </Text>
+                {genError ? <Text style={styles.error}>{genError}</Text> : null}
+              </>
+            ) : (
               <Text style={styles.caption}>
-                {stereoReady
-                  ? `HARD-PANNED STEREO — ${hz1} Hz on LEFT, ${hz2} Hz on RIGHT (harmonics ${ratio.n1} & ${ratio.n2} of ${BASE_F0} Hz), an exact ${ratio.label} ratio. The XY figure as sound: X-drive left, Y-drive right — headphones split it cleanly.`
-                  : `Harmonics ${ratio.n2} and ${ratio.n1} of ${BASE_F0} Hz through the additive engine — an exact ${ratio.label} ratio. Output ${GEN_LEVEL_DB} dBFS · uncalibrated.`}
+                Audio pauses under detune — the additive engine renders exact integer harmonics, so a
+                detuned ratio cannot sound truthfully. Re-lock the ratio to play the interval.
               </Text>
-              <Text style={styles.advisory}>
-                {`Speaker high-pass (${SPEAKER_HPF_HZ} Hz): the ${hz2} Hz tone is attenuated ${speakerGuardDb(hz2).toFixed(1)} dB` +
-                  `${ratio.n1 !== ratio.n2 ? `, the ${hz1} Hz tone ${speakerGuardDb(hz1).toFixed(1)} dB` : ''}. ` +
-                  `Use headphones for the full interval.`}
-              </Text>
-              {genError ? <Text style={styles.error}>{genError}</Text> : null}
-            </>
+            )
           ) : (
             <Text style={styles.caption}>
-              Audio pauses under detune — the additive engine renders exact integer harmonics, so a
-              detuned ratio cannot sound truthfully. Re-lock the ratio to play the interval.
+              Interval audio needs the v3 additive engine — this dev build predates it. The figure and
+              lessons work fully; install the v3 build to hear the ratios.
             </Text>
           )
-        ) : (
-          <Text style={styles.caption}>
-            Interval audio needs the v3 additive engine — this dev build predates it. The figure and
-            lessons work fully; install the v3 build to hear the ratios.
-          </Text>
-        )
-      ) : null}
+        ) : null}
+      </CollapsibleSection>
 
       <GuidedLessonSheet
         visible={lessonOpen}
@@ -322,10 +351,60 @@ const TRACE_STEPS = [
   { color: '#9c5e1e', coreO: 0.36, glowO: 0.05 },
 ] as const;
 
+/** How long the pen takes to walk the full trace on a selection change. */
+const DRAW_MS = 3000;
+
+const AnimatedPath = Animated.createAnimatedComponent(Path);
+
+/** One phosphor pass (glow or core) of one trace segment, revealed by the
+ *  shared draw progress: segment i becomes visible across the progress window
+ *  [i/count, (i+1)/count] via a native strokeDashoffset sweep — the classic
+ *  self-drawing-path technique, zero JS per-frame work. The +4 offset while a
+ *  segment is still unstarted hides the round-cap dot at its first point. */
+function TracePass({
+  d,
+  len,
+  idx,
+  count,
+  progress,
+  color,
+  width,
+  opacity,
+}: {
+  d: string;
+  len: number;
+  idx: number;
+  count: number;
+  progress: SharedValue<number>;
+  color: string;
+  width: number;
+  opacity: number;
+}) {
+  const animatedProps = useAnimatedProps(() => {
+    const local = Math.min(Math.max(progress.value * count - idx, 0), 1);
+    return { strokeDashoffset: len * (1 - local) + (local <= 0 ? 4 : 0) };
+  });
+  return (
+    <AnimatedPath
+      d={d}
+      stroke={color}
+      strokeWidth={width}
+      strokeOpacity={opacity}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      fill="none"
+      strokeDasharray={`${len.toFixed(1)} ${len.toFixed(1)}`}
+      animatedProps={animatedProps}
+    />
+  );
+}
+
 /** The damped figure — same equations as ever (~3000 points, memoized, only
  *  recomputed on a control change); the 2026-07-29 retrofit changed RENDERING
  *  only: phosphor glow+core passes over a radial-fade disc with a styled
- *  axis/center hint (the pen's rest point). */
+ *  axis/center hint (the pen's rest point). 2026-07-29 (later): the figure
+ *  DRAWS ITSELF — a strokeDashoffset reveal walks the trace over ~3 s on every
+ *  selection change (and on mount), then holds. */
 function HarmonographFigure({
   n1,
   n2,
@@ -351,6 +430,8 @@ function HarmonographFigure({
     const f2 = n2 * (1 + detune);
     const cx = SIZE / 2;
     const r = SIZE / 2 - 12;
+    const xs = new Array<number>(N + 1);
+    const ys = new Array<number>(N + 1);
     const pts: string[] = new Array(N + 1);
     for (let i = 0; i <= N; i++) {
       const th = (i / N) * thetaMax;
@@ -364,19 +445,36 @@ function HarmonographFigure({
         x = Math.sin(n1 * th + phi) * env;
         y = Math.sin(f2 * th) * env;
       }
-      pts[i] = `${(cx + x * r).toFixed(1)} ${(cx - y * r).toFixed(1)}`;
+      xs[i] = cx + x * r;
+      ys[i] = cx - y * r;
+      pts[i] = `${xs[i].toFixed(1)} ${ys[i].toFixed(1)}`;
     }
     // Slice into TRACE_STEPS segments; adjacent segments share their boundary
-    // point so the polyline stays continuous.
+    // point so the polyline stays continuous. Each segment also carries its
+    // arc length for the dashoffset reveal.
     const per = Math.floor(N / TRACE_STEPS.length);
     return TRACE_STEPS.map((_, sIdx) => {
       const a = sIdx * per;
       const b = sIdx === TRACE_STEPS.length - 1 ? N : (sIdx + 1) * per;
       let d = `M${pts[a]}`;
-      for (let i = a + 1; i <= b; i++) d += `L${pts[i]}`;
-      return d;
+      let len = 0;
+      for (let i = a + 1; i <= b; i++) {
+        d += `L${pts[i]}`;
+        len += Math.hypot(xs[i] - xs[i - 1], ys[i] - ys[i - 1]);
+      }
+      return { d, len: Math.max(len, 1) };
     });
   }, [n1, n2, phaseDeg, endAmp, rotary, detune]);
+
+  // The pen: 0 → 1 walks the whole trace, restarted whenever the figure
+  // changes (segs identity), then HOLDS at 1.
+  const progress = useSharedValue(0);
+  useEffect(() => {
+    cancelAnimation(progress);
+    progress.value = 0;
+    progress.value = withTiming(1, { duration: DRAW_MS, easing: Easing.inOut(Easing.sin) });
+    return () => cancelAnimation(progress);
+  }, [segs, progress]);
 
   const c = SIZE / 2;
   return (
@@ -397,29 +495,31 @@ function HarmonographFigure({
       <Circle cx={c} cy={c} r={c - 12} fill="none" stroke="#1f1b10" strokeWidth={1} />
       <Circle cx={c} cy={c} r={2} fill="#4a3f24" />
       {/* Phosphor pass 1 — wide, soft glow under the whole trace. */}
-      {segs.map((d, i) => (
-        <Path
+      {segs.map((s, i) => (
+        <TracePass
           key={`glow${i}`}
-          d={d}
-          stroke={TRACE_STEPS[i].color}
-          strokeWidth={3.4}
-          strokeOpacity={TRACE_STEPS[i].glowO}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          fill="none"
+          d={s.d}
+          len={s.len}
+          idx={i}
+          count={segs.length}
+          progress={progress}
+          color={TRACE_STEPS[i].color}
+          width={3.4}
+          opacity={TRACE_STEPS[i].glowO}
         />
       ))}
       {/* Phosphor pass 2 — the crisp core stroke. */}
-      {segs.map((d, i) => (
-        <Path
+      {segs.map((s, i) => (
+        <TracePass
           key={`core${i}`}
-          d={d}
-          stroke={TRACE_STEPS[i].color}
-          strokeWidth={0.9}
-          strokeOpacity={TRACE_STEPS[i].coreO}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          fill="none"
+          d={s.d}
+          len={s.len}
+          idx={i}
+          count={segs.length}
+          progress={progress}
+          color={TRACE_STEPS[i].color}
+          width={0.9}
+          opacity={TRACE_STEPS[i].coreO}
         />
       ))}
     </Svg>
@@ -432,6 +532,7 @@ const styles = StyleSheet.create({
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   advisory: { fontFamily: fonts.barlowMedium, fontSize: 12, lineHeight: 16, color: colors.amber },
   error: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: '#ff6b5e' },
+  readMain: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.6, color: colors.textPrimary },
   panelCard: {
     gap: 8,
     borderRadius: 10,

@@ -13,20 +13,26 @@
  * LIVE + HONEST: the env meter and the running step highlight read the REAL
  * native modStatus (no fake meters, §1.7). Audio needs engineVersion ≥ 7 —
  * below it the diagram + lessons work and the build requirement is stated.
+ *
+ * LAYOUT v2 (owner 2026-07-29): collapsible DISPLAY → CONTROLS → ACTIONS
+ * sections (no separate READOUTS — the lab's live readouts ARE the diagram's
+ * env meter and step LEDs, which can't split out without faking them); the
+ * dominant start/stop (RUN SEQUENCE / PLAY DRONE) is the compact
+ * HeaderPlayButton via LabShell's headerAction; the shell renders the
+ * Guided-Lesson entry row itself.
  */
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Svg, { Circle, Defs, G, Line, LinearGradient, Path, RadialGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { ApeDsp, MOD_PARAM } from '../../../modules/ape-dsp';
-import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../features/lab/guidedLessons';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
-import { LabShell, LabChip } from './LabShell';
+import { LabShell, LabChip, CollapsibleSection, HeaderPlayButton } from './LabShell';
 
 const ACTIVITY_MS = 500;
 const STATUS_MS = 100; // live env/step poll while running (10 Hz)
@@ -253,26 +259,34 @@ export function ModularLabScreen() {
       subtitle="VCO · VCF · VCA · LFO · Envelope · Sequencer"
       intro={INTRO}
       exploreCaption="Route the modulators and listen to what each patch cable does — the diagram is the live signal flow."
+      headerAction={
+        <HeaderPlayButton
+          playing={running}
+          disabled={!modReady}
+          onPress={() => (running ? stop() : void start())}
+          label={running ? 'Stop' : patch.seqOn ? 'Run the sequence' : 'Play the drone'}
+        />
+      }
     >
       {!engineReady ? <EngineGate state={gate} /> : null}
 
-      <View style={styles.chipRow}>
-        <LabChip label="ⓘ GUIDED LESSON" selected={lessonOpen} onPress={() => openLesson()} />
-      </View>
+      <CollapsibleSection title="DISPLAY">
+        {/* HERO — the live patch-flow diagram (its env meter and step LEDs are
+            the lab's REAL readouts — native modStatus, §1.7). */}
+        <View style={styles.panelCard}>
+          <Text style={styles.badge}>SIGNAL FLOW — THE ACTUAL NATIVE PATH · ACTIVE ROUTINGS LIT</Text>
+          <PatchDiagram patch={patch} envLevel={envLevel} activeStep={activeStep} running={running} onBox={openLesson} />
+          <Text style={styles.caption}>
+            Audio (top row): VCO → VCF → VCA → output stage. Modulators (bottom): the envelope
+            always drives the VCA; everything else is a routing you choose. Tap any box for what it
+            does.
+          </Text>
+          <DisplayGuideButton onPress={() => openLesson('display')} />
+        </View>
+      </CollapsibleSection>
 
-      {/* HERO — the live patch-flow diagram. */}
-      <View style={styles.panelCard}>
-        <Text style={styles.badge}>SIGNAL FLOW — THE ACTUAL NATIVE PATH · ACTIVE ROUTINGS LIT</Text>
-        <PatchDiagram patch={patch} envLevel={envLevel} activeStep={activeStep} running={running} onBox={openLesson} />
-        <Text style={styles.caption}>
-          Audio (top row): VCO → VCF → VCA → output stage. Modulators (bottom): the envelope
-          always drives the VCA; everything else is a routing you choose. Tap any box for what it
-          does.
-        </Text>
-        <DisplayGuideButton onPress={() => openLesson('display')} />
-      </View>
-
-      <Text style={styles.sectionHead}>PATCH IDEAS — CLASSIC ROUTINGS</Text>
+      <CollapsibleSection title="CONTROLS">
+        <Text style={styles.sectionHead}>PATCH IDEAS — CLASSIC ROUTINGS</Text>
       <View style={styles.chipRow}>
         {PATCH_IDEAS.map((p) => (
           <LabChip
@@ -408,36 +422,33 @@ export function ModularLabScreen() {
           </View>
         ))}
       </View>
-      <Text style={styles.caption}>
-        Steps are semitone offsets from {BASE_FREQ} Hz; each active step retunes the VCO and
-        retriggers the envelope. The lit step is the REAL native sequencer position.
-      </Text>
+        <Text style={styles.caption}>
+          Steps are semitone offsets from {BASE_FREQ} Hz; each active step retunes the VCO and
+          retriggers the envelope. The lit step is the REAL native sequencer position.
+        </Text>
+      </CollapsibleSection>
 
-      {/* AUDIO — engine-gated ≥ v7, honest below. */}
-      {engineReady ? (
-        modReady ? (
-          <>
-            <GlassButton
-              label={running ? 'STOP' : patch.seqOn ? 'RUN SEQUENCE' : 'PLAY DRONE'}
-              tint="green"
-              height={52}
-              fontSize={15}
-              onPress={() => (running ? stop() : void start())}
-            />
+      <CollapsibleSection title="ACTIONS">
+        {/* AUDIO — engine-gated ≥ v7, honest below. RUN/PLAY lives in the
+            header (▶ = run sequence with SEQ on, play drone with it off). */}
+        {engineReady ? (
+          modReady ? (
+            <>
+              <Text style={styles.caption}>
+                {patch.seqOn ? 'RUN SEQUENCE' : 'PLAY DRONE'} (header ▶) outputs −18 dBFS ·
+                uncalibrated. The output stage saturates softly at high resonance (analog-style,
+                stated). Sequencer off = a sustained drone so every knob is explorable.
+              </Text>
+              {genError ? <Text style={styles.error}>{genError}</Text> : null}
+            </>
+          ) : (
             <Text style={styles.caption}>
-              Output −18 dBFS · uncalibrated. The output stage saturates softly at high resonance
-              (analog-style, stated). Sequencer off = a sustained drone so every knob is
-              explorable.
+              Modular audio needs the v7 engine build — this dev client predates it. The patch
+              diagram and lessons are fully functional; install the v7 build to hear the voice.
             </Text>
-            {genError ? <Text style={styles.error}>{genError}</Text> : null}
-          </>
-        ) : (
-          <Text style={styles.caption}>
-            Modular audio needs the v7 engine build — this dev client predates it. The patch
-            diagram and lessons are fully functional; install the v7 build to hear the voice.
-          </Text>
-        )
-      ) : null}
+          )
+        ) : null}
+      </CollapsibleSection>
 
       <GuidedLessonSheet
         visible={lessonOpen}

@@ -2,6 +2,11 @@
  * NoiseLabScreen — Lab 11 "Noise" (v4 MASTER §7) on the shared LabShell.
  * The noise-color lab: hear the colors, see their spectral slopes.
  *
+ * LAYOUT v2 (owner 2026-07-29): collapsible DISPLAY → CONTROLS → ACTIONS
+ * sections (no numeric readouts in this lab); primary PLAY/STOP is the
+ * compact HeaderPlayButton via LabShell's headerAction; the shell renders
+ * the Guided-Lesson entry row itself.
+ *
  * AUDIO (honest, real): white / pink / brown / blue / violet are NATIVE
  * generator modes (GEN_MODES 2–6) — every color chip plays the real thing.
  * Grey + the textured real-world sources (speech noise, HVAC, traffic, wind,
@@ -11,8 +16,11 @@
  * DISPLAY (analytic, labeled): the slope chart draws the IDEALIZED dB/octave
  * lines that DEFINE each color (white 0 · pink −3 · brown −6 · blue +3 ·
  * violet +6, anchored at 1 kHz) — mathematics, not a measurement, and badged
- * as such. The "why does white sound brighter than it looks" moment is the
- * point of the lab.
+ * as such. Visual standards 2026-07-29: a LIVE-NOISE SHIMMER trace (seeded
+ * hash jitter, ~14 fps while focused, tinted per color) breathes behind the
+ * selected ideal slope, and color switches EASE (Reanimated interpolateColor
+ * on the slope emphasis) instead of snapping. The shimmer is stylistic — the
+ * ideal lines remain the labeled mathematics.
  *
  * Sound lifecycle = the SignalGen idiom (gate → genSet/genStart → stale
  * guard → 2 Hz keepalive → stop on toggle/blur/unmount).
@@ -21,8 +29,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Svg, { Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import Animated, {
+  Easing,
+  interpolateColor,
+  useAnimatedProps,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import { ApeDsp, GEN_MODES } from '../../../modules/ape-dsp';
-import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { guardNoiseLevelForEngine, speakerGuardDb, SPEAKER_HPF_HZ } from '../../features/audio/speakerSafety';
@@ -30,7 +44,7 @@ import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../featu
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
-import { LabShell, LabChip, SpeakerOutputToggle } from './LabShell';
+import { LabShell, LabChip, SpeakerOutputToggle, CollapsibleSection, HeaderPlayButton } from './LabShell';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -45,6 +59,16 @@ const COLORS: { key: NoiseColor; label: string; mode: number; slope: number }[] 
   { key: 'blue', label: 'BLUE', mode: GEN_MODES.blue, slope: 3 },
   { key: 'violet', label: 'VIOLET', mode: GEN_MODES.violet, slope: 6 },
 ];
+
+/** Shimmer-trace tint per color — the color's own hue, not a claim of
+ *  measurement (the badge stays ANALYTIC). */
+const NOISE_TINTS: Record<NoiseColor, string> = {
+  white: '#e8e8f0',
+  pink: '#ff9db0',
+  brown: '#c98a5b',
+  blue: '#6fa8ff',
+  violet: '#b98aff',
+};
 
 const PENDING_SOURCES =
   'Grey · Speech noise · HVAC · Traffic · Wind · Hum · Buzz · RF · Crackle · Static · Ground loop';
@@ -135,86 +159,88 @@ export function NoiseLabScreen() {
       subtitle="Colors · Slopes · Floor & Masking"
       intro={INTRO}
       exploreCaption="Pick a color — switch colors WHILE it plays to hear the slope change."
+      headerAction={
+        <HeaderPlayButton
+          playing={running}
+          disabled={!engineReady}
+          onPress={() => (running ? stopNoise() : void startNoise())}
+          label={running ? 'Stop' : 'Play noise'}
+        />
+      }
     >
       {!engineReady ? <EngineGate state={gate} /> : null}
 
-      <View style={styles.chipRow}>
-        <LabChip label="ⓘ GUIDED LESSON" selected={lessonOpen} onPress={() => openLesson()} />
-      </View>
-      <Text style={styles.caption}>Long-press a color for its guided lesson.</Text>
+      <CollapsibleSection title="DISPLAY">
+        {/* HONESTY CONTROL — ideal slopes vs the speaker's low-frequency roll-off. */}
+        <SpeakerOutputToggle
+          value={speakerView}
+          onChange={setSpeakerView}
+          sub={
+            speakerView
+              ? `Selected color's slope with the ${SPEAKER_HPF_HZ} Hz high-pass applied — the low end the built-in speaker can't deliver.`
+              : 'Reference (ideal) slopes. Tick to see the speaker-output roll-off.'
+          }
+        />
 
-      <Text style={styles.sectionHead}>NOISE COLOR</Text>
-      <View style={styles.chipRow}>
-        {COLORS.map((c) => (
-          <LabChip
-            key={c.key}
-            label={c.label}
-            selected={color === c.key}
-            onPress={() => pickColor(c.key)}
-            onLongPress={() => openLesson(c.key)}
-          />
-        ))}
-      </View>
-
-      {/* HONESTY CONTROL — ideal slopes vs the speaker's low-frequency roll-off. */}
-      <SpeakerOutputToggle
-        value={speakerView}
-        onChange={setSpeakerView}
-        sub={
-          speakerView
-            ? `Selected color's slope with the ${SPEAKER_HPF_HZ} Hz high-pass applied — the low end the built-in speaker can't deliver.`
-            : 'Reference (ideal) slopes. Tick to see the speaker-output roll-off.'
-        }
-      />
-
-      {/* SLOPE CHART — the defining mathematics; speaker view adds the HPF. */}
-      <View style={styles.panelCard}>
-        <Text style={styles.badge}>
-          {speakerView
-            ? `PHONE SPEAKER OUTPUT — ${SPEAKER_HPF_HZ} Hz HPF ON ${selected.label}`
-            : 'IDEALIZED SPECTRAL SLOPES — ANALYTIC, NOT A MEASUREMENT'}
-        </Text>
-        <SlopeChart selectedKey={color} selectedSlope={selected.slope} speakerView={speakerView} />
-        <Text style={styles.caption}>
-          {speakerView
-            ? `Amber = ${selected.label.toLowerCase()} after the speaker high-pass; the ideal straight slopes stay dim behind it. Below ${SPEAKER_HPF_HZ} Hz the response rolls off at −12 dB/oct — that low energy never reaches the driver.`
-            : `${selected.label.charAt(0)}${selected.label.slice(1).toLowerCase()} = ${
-                selected.slope > 0 ? '+' : ''
-              }${selected.slope} dB per octave (anchored at 1 kHz). Equal energy per Hz sounds bright because every higher octave holds twice the bandwidth.`}
-        </Text>
-        <DisplayGuideButton onPress={() => openLesson('display')} />
-      </View>
-
-      {engineReady ? (
-        <>
-          <GlassButton
-            label={running ? 'STOP' : 'PLAY NOISE'}
-            tint="green"
-            height={52}
-            fontSize={15}
-            onPress={() => (running ? stopNoise() : void startNoise())}
-          />
+        {/* SLOPE CHART — the defining mathematics; speaker view adds the HPF. */}
+        <View style={styles.panelCard}>
+          <Text style={styles.badge}>
+            {speakerView
+              ? `PHONE SPEAKER OUTPUT — ${SPEAKER_HPF_HZ} Hz HPF ON ${selected.label}`
+              : 'IDEALIZED SPECTRAL SLOPES — ANALYTIC, NOT A MEASUREMENT'}
+          </Text>
+          <SlopeChart selectedKey={color} selectedSlope={selected.slope} speakerView={speakerView} />
           <Text style={styles.caption}>
-            {`Output ${GEN_LEVEL_DB} dBFS · uncalibrated — digital output level, not dB SPL.`}
+            {speakerView
+              ? `Amber = ${selected.label.toLowerCase()} after the speaker high-pass; the ideal straight slopes stay dim behind it. Below ${SPEAKER_HPF_HZ} Hz the response rolls off at −12 dB/oct — that low energy never reaches the driver.`
+              : `${selected.label.charAt(0)}${selected.label.slice(1).toLowerCase()} = ${
+                  selected.slope > 0 ? '+' : ''
+                }${selected.slope} dB per octave (anchored at 1 kHz). Equal energy per Hz sounds bright because every higher octave holds twice the bandwidth. The shimmering trace is a stylized live-noise hint around the exact slope.`}
           </Text>
-          <Text style={styles.advisory}>
-            {`Brown/pink are broadband, so this build reduces their overall LEVEL to protect the speaker ` +
-              `(${NOISE_GUARD_LABEL}); a true per-frequency high-pass on noise ships with the native engine ` +
-              `update. Tick PHONE SPEAKER OUTPUT to see the ${SPEAKER_HPF_HZ} Hz roll-off the speaker imposes.`}
-          </Text>
-          {genError ? <Text style={styles.error}>{genError}</Text> : null}
-        </>
-      ) : null}
+          <DisplayGuideButton onPress={() => openLesson('display')} />
+        </View>
+      </CollapsibleSection>
 
-      {/* Textured sources — honest status, no dead chips (§1.7). */}
-      <View style={styles.devNote}>
-        <Text style={styles.devNoteHead}>REAL-WORLD SOURCES — IN DEVELOPMENT</Text>
-        <Text style={styles.caption}>
-          {PENDING_SOURCES} need new native sources or recorded assets and will appear here when
-          they land. Their theory (hum vs buzz vs ground loop on a spectrogram) is in this lab’s
-          lesson (ⓘ).
-        </Text>
-      </View>
+      <CollapsibleSection title="CONTROLS">
+        <Text style={styles.sectionHead}>NOISE COLOR</Text>
+        <View style={styles.chipRow}>
+          {COLORS.map((c) => (
+            <LabChip
+              key={c.key}
+              label={c.label}
+              selected={color === c.key}
+              onPress={() => pickColor(c.key)}
+              onLongPress={() => openLesson(c.key)}
+            />
+          ))}
+        </View>
+      </CollapsibleSection>
+
+      <CollapsibleSection title="ACTIONS">
+        {engineReady ? (
+          <>
+            <Text style={styles.caption}>
+              {`PLAY (header ▶) outputs ${GEN_LEVEL_DB} dBFS · uncalibrated — digital output level, not dB SPL.`}
+            </Text>
+            <Text style={styles.advisory}>
+              {`Brown/pink are broadband, so this build reduces their overall LEVEL to protect the speaker ` +
+                `(${NOISE_GUARD_LABEL}); a true per-frequency high-pass on noise ships with the native engine ` +
+                `update. Tick PHONE SPEAKER OUTPUT to see the ${SPEAKER_HPF_HZ} Hz roll-off the speaker imposes.`}
+            </Text>
+            {genError ? <Text style={styles.error}>{genError}</Text> : null}
+          </>
+        ) : null}
+
+        {/* Textured sources — honest status, no dead chips (§1.7). */}
+        <View style={styles.devNote}>
+          <Text style={styles.devNoteHead}>REAL-WORLD SOURCES — IN DEVELOPMENT</Text>
+          <Text style={styles.caption}>
+            {PENDING_SOURCES} need new native sources or recorded assets and will appear here when
+            they land. Their theory (hum vs buzz vs ground loop on a spectrogram) is in this lab’s
+            lesson (ⓘ).
+          </Text>
+        </View>
+      </CollapsibleSection>
 
       <GuidedLessonSheet
         visible={lessonOpen}
@@ -226,10 +252,37 @@ export function NoiseLabScreen() {
   );
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+
+const AnimatedPath = Animated.createAnimatedComponent(Path);
+
+/** One ideal slope line whose emphasis EASES on selection change (visual
+ *  standards 2026-07-29 — no snaps): stroke color and width tween between the
+ *  dim reference look and the bright amber selected look. */
+function EasedSlopeLine({ d, active, dim }: { d: string; active: boolean; dim: boolean }) {
+  const p = useSharedValue(active ? 1 : 0);
+  useEffect(() => {
+    p.value = withTiming(active ? 1 : 0, { duration: 320, easing: Easing.out(Easing.cubic) });
+  }, [active, p]);
+  const animatedProps = useAnimatedProps(() => ({
+    stroke: interpolateColor(p.value, [0, 1], ['#3a3a44', colors.amber]),
+    strokeWidth: 1.2 + p.value,
+  }));
+  return <AnimatedPath d={d} fill="none" opacity={dim ? 0.5 : 1} animatedProps={animatedProps} />;
+}
+
+/** Deterministic seeded hash — same idiom as the foundations viz jitter. */
+function hash01(n: number): number {
+  const s = Math.sin(n) * 43758.5453123;
+  return s - Math.floor(s);
+}
+
 /** The five color slopes over a 20 Hz–20 kHz log axis, selected one bright. In
  *  speakerView, the selected color is redrawn with the high-pass applied (a
  *  sampled curve that rolls off below the corner) so the speaker's low-end limit
- *  is visible; the ideal straight slopes stay dim behind it. */
+ *  is visible; the ideal straight slopes stay dim behind it. A seeded-jitter
+ *  SHIMMER trace (re-rolled ~14 fps while the screen is focused, tinted per
+ *  color) breathes behind the exact line — live-noise styling, not data. */
 function SlopeChart({
   selectedKey,
   selectedSlope,
@@ -249,6 +302,32 @@ function SlopeChart({
 
   const xAt = (oct: number) => padL + ((oct - OCT_LO) / (OCT_HI - OCT_LO)) * (W - padL - padR);
   const yAt = (db: number) => H / 2 - (Math.max(-DB_RANGE, Math.min(DB_RANGE, db)) / DB_RANGE) * (H / 2 - 8);
+
+  // ~14 fps shimmer clock — runs only while the screen is focused so a
+  // blurred-but-mounted lab does zero animation work.
+  const [tick, setTick] = useState(0);
+  useFocusEffect(
+    useCallback(() => {
+      const id = setInterval(() => setTick((t) => (t + 1) % 100000), 70);
+      return () => clearInterval(id);
+    }, []),
+  );
+
+  // The shimmer trace: the selected color's exact response (ideal slope, plus
+  // the HPF in speaker view) with seeded hash jitter — a fresh roll per tick.
+  const shimmerPath = useMemo(() => {
+    const N = 48;
+    let s = '';
+    for (let i = 0; i <= N; i++) {
+      const oct = OCT_LO + (i / N) * (OCT_HI - OCT_LO);
+      const f = 1000 * Math.pow(2, oct);
+      const jit = (hash01(i * 12.9898 + tick * 78.233) - 0.5) * 5; // ±2.5 dB
+      const db = selectedSlope * oct + (speakerView ? speakerGuardDb(f) : 0) + jit;
+      s += `${i === 0 ? 'M' : 'L'}${xAt(oct).toFixed(1)} ${yAt(db).toFixed(1)}`;
+    }
+    return s;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tick, selectedSlope, speakerView]);
 
   // Selected color's response AFTER the speaker high-pass, sampled across the
   // axis (guard is a curve, so a straight line won't do). slope·oct + guardDb(f).
@@ -281,6 +360,7 @@ function SlopeChart({
     [],
   );
 
+  const tint = NOISE_TINTS[selectedKey];
   const freqTicks = [20, 200, 1000, 2000, 20000];
   return (
     <Svg width="100%" height={H + 16} viewBox={`0 0 ${W} ${H + 16}`}>
@@ -288,21 +368,20 @@ function SlopeChart({
       {/* 0 dB reference + 1 kHz anchor */}
       <Line x1={padL} y1={H / 2} x2={W - padR} y2={H / 2} stroke="#22222a" strokeWidth={1} />
       <Line x1={xAt(0)} y1={4} x2={xAt(0)} y2={H - 4} stroke="#22222a" strokeWidth={1} />
-      {lines.map((l) => {
+      {/* Live-noise shimmer — glow + core, BEHIND the ideal mathematics. */}
+      <Path d={shimmerPath} stroke={tint} strokeWidth={3.5} fill="none" opacity={0.16} strokeLinecap="round" />
+      <Path d={shimmerPath} stroke={tint} strokeWidth={1.2} fill="none" opacity={0.5} />
+      {lines.map((l) => (
         // In speaker view every ideal slope is dim reference; the bright line is
-        // the filtered curve below. Otherwise the selected color is bright.
-        const active = !speakerView && l.key === selectedKey;
-        return (
-          <Path
-            key={l.key}
-            d={l.d}
-            stroke={active ? colors.amber : '#3a3a44'}
-            strokeWidth={active ? 2.2 : 1.2}
-            fill="none"
-            opacity={speakerView ? 0.5 : 1}
-          />
-        );
-      })}
+        // the filtered curve below. Otherwise the selected color is bright —
+        // and the hand-off EASES rather than snapping.
+        <EasedSlopeLine
+          key={l.key}
+          d={l.d}
+          active={!speakerView && l.key === selectedKey}
+          dim={speakerView}
+        />
+      ))}
       {filteredPath ? <Path d={filteredPath} stroke={colors.amber} strokeWidth={2.4} fill="none" /> : null}
       {/* corner marker at the high-pass cutoff */}
       {speakerView ? (

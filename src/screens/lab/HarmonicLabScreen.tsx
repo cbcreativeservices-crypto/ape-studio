@@ -16,14 +16,25 @@
  * never a hard block — Learn/Practice/Test render without the engine.
  *
  * The stem-drag editor must win over the shell's ScrollView: the render-prop
- * child receives `setScrollLocked`, wired to HarmonicsView's onDragActive.
+ * child receives `setScrollLocked`, wired to HarmonicsView's onDragActive —
+ * AND (layout v2, owner 2026-07-29) the whole view sits in an InteractionZone,
+ * which claims the touch AT TOUCH-START so drags beat scroll from the first
+ * pixel. The two compose: the zone silences the ScrollView instantly; the
+ * legacy onDragActive wiring keeps it silenced for the drag's duration.
+ *
+ * LAYOUT v2 note: HarmonicsView is the self-contained hear-see-control
+ * centerpiece — it owns its readouts, displays, controls, actions AND audio
+ * lifecycle internally (off-limits to edit). It therefore does not split into
+ * the standard READOUTS/DISPLAY/CONTROLS/ACTIONS sections, and its play
+ * control cannot move to the header without editing it. Deliberately left
+ * whole (owner order: "where pieces don't cleanly split, use judgment").
  */
 import { useState } from 'react';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ApeDsp } from '../../../modules/ape-dsp';
 import { EngineGate } from '../tools/EngineGate';
 import { HarmonicsView } from './HarmonicsView';
-import { LabShell } from './LabShell';
+import { InteractionZone, LabShell } from './LabShell';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import type { RootStackParamList } from '../../navigation/types';
 
@@ -62,8 +73,12 @@ export function HarmonicLabScreen(_props: Props) {
 
           {/* HARMONICS / HEAR-SEE-CONTROL VIEW — the interactive centerpiece.
               HarmonicsView owns its state, sound, cleanup, and card chrome
-              entirely. onDragActive locks the shell's scroll during stem drags. */}
-          <HarmonicsView onDragActive={setScrollLocked} />
+              entirely. The InteractionZone claims the touch at touch-start so
+              stem drags win over scroll; onDragActive keeps the shell's scroll
+              locked for the drag's duration (they compose). */}
+          <InteractionZone>
+            <HarmonicsView onDragActive={setScrollLocked} />
+          </InteractionZone>
         </>
       )}
     </LabShell>

@@ -5,6 +5,10 @@
  * deliberately OUT of tune (fixed cents offsets), and the corrected pitch
  * bends onto the grid according to CORRECTION AMOUNT and RETUNE SPEED.
  *
+ * LAYOUT v2 (owner 2026-07-29): collapsible READOUTS → DISPLAY → CONTROLS →
+ * ACTIONS sections; PLAY/STOP is the compact HeaderPlayButton via LabShell's
+ * headerAction; the shell renders the Guided-Lesson entry row itself.
+ *
  * GENERATOR DEMO (honest): there is NO microphone here — the "singer" is the
  * app's own tone generator, so the correction is real, audible retuning of a
  * synthesized voice. The engine retunes phase-continuously, so the glide is
@@ -21,14 +25,13 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Svg, { Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { ApeDsp, GEN_MODES } from '../../../modules/ape-dsp';
-import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../features/lab/guidedLessons';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
-import { LabShell, LabChip } from './LabShell';
+import { LabShell, LabChip, CollapsibleSection, HeaderPlayButton } from './LabShell';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -194,85 +197,98 @@ export function AutotuneLabScreen() {
       subtitle="Pitch Correction · Cents Grid · Retune Speed"
       intro={INTRO}
       exploreCaption="Set the correction amount and retune speed, then play the out-of-tune melody and watch each note pull onto its gridline."
+      headerAction={
+        <HeaderPlayButton
+          playing={playing}
+          disabled={!engineReady}
+          onPress={() => (playing ? stop() : void play())}
+          label={playing ? 'Stop' : 'Play the out-of-tune melody'}
+        />
+      }
     >
       {!engineReady ? <EngineGate state={gate} /> : null}
 
-      <View style={styles.chipRow}>
-        <LabChip label="ⓘ GUIDED LESSON" selected={lessonOpen} onPress={() => openLesson()} />
-      </View>
-      <Text style={styles.caption}>Long-press a labeled control for its guided lesson.</Text>
-
-      <Text style={styles.sectionHead}>CORRECTION AMOUNT</Text>
-      <View style={styles.chipRow}>
-        {AMOUNTS.map((a) => (
-          <LabChip
-            key={a.key}
-            label={a.label}
-            selected={amount === a.key}
-            // A control change ends any running pass — the pass corrects with
-            // ONE setting, so graph and audio can never diverge (lockstep rule).
-            onPress={() => {
-              if (playing) stop();
-              setAmount(a.key);
-            }}
-            onLongPress={() => openLesson('correction')}
-          />
-        ))}
-      </View>
-
-      <Text style={styles.sectionHead}>RETUNE SPEED</Text>
-      <View style={styles.chipRow}>
-        {SPEEDS.map((s) => (
-          <LabChip
-            key={s.key}
-            label={s.label}
-            selected={speedKey === s.key}
-            onPress={() => {
-              if (playing) stop();
-              setSpeedKey(s.key);
-            }}
-            onLongPress={() => openLesson('retune_speed')}
-          />
-        ))}
-      </View>
-
-      {/* THE CENTS GRID — vertical semitone lines; notes bend onto them. */}
-      <View style={styles.panelCard}>
-        <Text style={styles.badge}>
-          CENTS GRID — THE DRAWN CURVE IS THE EXACT RETUNE MATH THE AUDIO FOLLOWS
+      <CollapsibleSection title="READOUTS">
+        <Text style={styles.readMain}>
+          {Math.round(amount * 100)}% correction · {SPEEDS.find((s) => s.key === speedKey)!.label.toLowerCase()} (τ ={' '}
+          {tau}s)
         </Text>
-        <CentsGrid amount={amount} tau={tau} activeNote={activeNote} />
         <Text style={styles.caption}>
-          Gray = as sung (out of tune) · amber = corrected pitch over the note’s duration (time runs
-          downward within each note). At {Math.round(amount * 100)}% correction a{' '}
-          {Math.abs(MELODY[3].offCents)}¢ error ends {Math.abs(remaining(MELODY[3].offCents))}¢ from
-          the line{amount === 1 ? ' — exactly on pitch' : ''}.
+          At {Math.round(amount * 100)}% correction a {Math.abs(MELODY[3].offCents)}¢ error ends{' '}
+          {Math.abs(remaining(MELODY[3].offCents))}¢ from the line
+          {amount === 1 ? ' — exactly on pitch' : ''}.
         </Text>
-        <DisplayGuideButton onPress={() => openLesson('cents_grid')} />
-      </View>
+      </CollapsibleSection>
 
-      {/* PLAY — real audible correction of the generator "singer". */}
-      {engineReady ? (
-        <>
-          <GlassButton
-            label={playing ? 'STOP' : 'PLAY OUT-OF-TUNE MELODY'}
-            tint="green"
-            height={52}
-            fontSize={15}
-            onPress={() => (playing ? stop() : void play())}
-          />
-          <Text style={styles.caption}>
-            GENERATOR DEMO — the “singer” is the app’s tone generator (no microphone), so the
-            correction you hear is real retuning of a synthesized voice.{' '}
-            {additiveReady
-              ? ''
-              : 'This dev build predates the v3 additive engine — the voice falls back to a pure sine. '}
-            Try FAST at 100% for the robotic hard-tune snap, then SLOW for a natural glide. Output{' '}
-            {GEN_LEVEL_DB} dBFS · uncalibrated.
+      <CollapsibleSection title="DISPLAY">
+        {/* THE CENTS GRID — vertical semitone lines; notes bend onto them. */}
+        <View style={styles.panelCard}>
+          <Text style={styles.badge}>
+            CENTS GRID — THE DRAWN CURVE IS THE EXACT RETUNE MATH THE AUDIO FOLLOWS
           </Text>
-          {genError ? <Text style={styles.error}>{genError}</Text> : null}
-        </>
-      ) : null}
+          <CentsGrid amount={amount} tau={tau} activeNote={activeNote} />
+          <Text style={styles.caption}>
+            Gray = as sung (out of tune) · amber = corrected pitch over the note’s duration (time runs
+            downward within each note).
+          </Text>
+          <DisplayGuideButton onPress={() => openLesson('cents_grid')} />
+        </View>
+      </CollapsibleSection>
+
+      <CollapsibleSection title="CONTROLS">
+        <Text style={styles.sectionHead}>CORRECTION AMOUNT</Text>
+        <View style={styles.chipRow}>
+          {AMOUNTS.map((a) => (
+            <LabChip
+              key={a.key}
+              label={a.label}
+              selected={amount === a.key}
+              // A control change ends any running pass — the pass corrects with
+              // ONE setting, so graph and audio can never diverge (lockstep rule).
+              onPress={() => {
+                if (playing) stop();
+                setAmount(a.key);
+              }}
+              onLongPress={() => openLesson('correction')}
+            />
+          ))}
+        </View>
+
+        <Text style={styles.sectionHead}>RETUNE SPEED</Text>
+        <View style={styles.chipRow}>
+          {SPEEDS.map((s) => (
+            <LabChip
+              key={s.key}
+              label={s.label}
+              selected={speedKey === s.key}
+              onPress={() => {
+                if (playing) stop();
+                setSpeedKey(s.key);
+              }}
+              onLongPress={() => openLesson('retune_speed')}
+            />
+          ))}
+        </View>
+      </CollapsibleSection>
+
+      <CollapsibleSection title="ACTIONS">
+        {/* PLAY lives in the header (▶) — real audible correction of the
+            generator "singer"; the honest captions stay here. */}
+        {engineReady ? (
+          <>
+            <Text style={styles.caption}>
+              GENERATOR DEMO — PLAY (header ▶) sings the demo melody with the app’s tone generator
+              (no microphone), so the correction you hear is real retuning of a synthesized voice.{' '}
+              {additiveReady
+                ? ''
+                : 'This dev build predates the v3 additive engine — the voice falls back to a pure sine. '}
+              Try FAST at 100% for the robotic hard-tune snap, then SLOW for a natural glide. Output{' '}
+              {GEN_LEVEL_DB} dBFS · uncalibrated.
+            </Text>
+            {genError ? <Text style={styles.error}>{genError}</Text> : null}
+          </>
+        ) : null}
+      </CollapsibleSection>
 
       <GuidedLessonSheet
         visible={lessonOpen}
@@ -401,6 +417,7 @@ const styles = StyleSheet.create({
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   sectionHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.5, color: colors.amber },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
+  readMain: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.6, color: colors.textPrimary },
   error: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: '#ff6b5e' },
   panelCard: {
     gap: 8,

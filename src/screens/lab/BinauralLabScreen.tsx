@@ -7,8 +7,16 @@
  *
  * INTERACTION: drag a source around the head — azimuth comes from the angle,
  * distance from the radius. Dragging locks the shell's scroll (render-prop
- * setScrollLocked) so the gesture wins. binSet is drag-rate safe: every target
- * is ramped natively (the ITD delay slews ≤1% Doppler — physically plausible).
+ * setScrollLocked) so the gesture wins — and (layout v2, owner 2026-07-29)
+ * the stage sits in an InteractionZone, which claims the touch AT TOUCH-START
+ * so the grab beats scroll from the first pixel (the two compose). binSet is
+ * drag-rate safe: every target is ramped natively (the ITD delay slews ≤1%
+ * Doppler — physically plausible).
+ *
+ * LAYOUT v2 (owner 2026-07-29): collapsible READOUTS → DISPLAY → CONTROLS →
+ * ACTIONS sections; PLAY/STOP is the compact HeaderPlayButton via LabShell's
+ * headerAction; the shell renders the Guided-Lesson entry row itself. The
+ * honesty badges stay unsectioned at the top — non-negotiable visibility.
  *
  * HONESTY: HEADPHONES-REQUIRED badge (crosstalk collapses the illusion on
  * speakers — the lesson says why); "simplified model" badge; the bus norm is
@@ -20,14 +28,13 @@ import { PanResponder, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Svg, { Circle, Line, Text as SvgText } from 'react-native-svg';
 import { ApeDsp, BIN_SRC } from '../../../modules/ape-dsp';
-import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../features/lab/guidedLessons';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
-import { LabShell, LabChip } from './LabShell';
+import { LabShell, LabChip, CollapsibleSection, HeaderPlayButton, InteractionZone } from './LabShell';
 
 const ACTIVITY_MS = 500;
 const MIN_DIST = 0.5;
@@ -155,14 +162,18 @@ export function BinauralLabScreen() {
       subtitle="ITD · ILD · Head Shadow · Localization"
       intro={INTRO}
       exploreCaption="Drag a sound object around the head — angle sets the time/level cues, radius sets distance. Use headphones."
+      headerAction={
+        <HeaderPlayButton
+          playing={running}
+          disabled={!binReady}
+          onPress={() => (running ? stop() : void start())}
+          label={running ? 'Stop' : 'Play the binaural mix'}
+        />
+      }
     >
       {({ setScrollLocked }) => (
         <>
           {!engineReady ? <EngineGate state={gate} /> : null}
-
-          <View style={styles.chipRow}>
-            <LabChip label="ⓘ GUIDED LESSON" selected={lessonOpen} onPress={() => openLesson()} />
-          </View>
 
           {/* Honesty badges — both non-negotiable for this lab. */}
           <View style={styles.badgeRow}>
@@ -170,59 +181,7 @@ export function BinauralLabScreen() {
             <Text style={styles.modelBadge}>SIMPLIFIED BINAURAL — NOT MEASURED HRTF</Text>
           </View>
 
-          <Text style={styles.sectionHead}>SOUND OBJECTS</Text>
-          <View style={styles.chipRow}>
-            {sources.map((s, i) => (
-              <LabChip
-                key={i}
-                label={`${i + 1} ${s.on ? '●' : '○'}`}
-                selected={selected === i}
-                onPress={() => setSelected(i)}
-                onLongPress={() => openLesson('objects')}
-              />
-            ))}
-            <LabChip
-              label={sel.on ? 'ON' : 'OFF'}
-              selected={sel.on}
-              onPress={() => updateSource(selected, { on: !sel.on })}
-              onLongPress={() => openLesson('objects')}
-            />
-          </View>
-          <View style={styles.chipRow}>
-            {TYPES.map((t) => (
-              <LabChip
-                key={t.label}
-                label={t.label}
-                selected={sel.type === t.v}
-                onPress={() => updateSource(selected, { type: t.v })}
-                onLongPress={() => openLesson('source_type')}
-              />
-            ))}
-            {sel.type === BIN_SRC.sine
-              ? TONE_FREQS.map((f) => (
-                  <LabChip
-                    key={f}
-                    label={`${f}`}
-                    selected={sel.freq === f}
-                    onPress={() => updateSource(selected, { freq: f })}
-                    onLongPress={() => openLesson('tone_freq')}
-                  />
-                ))
-              : null}
-          </View>
-
-          {/* THE STAGE — overhead view, draggable sources. */}
-          <View style={styles.panelCard}>
-            <Text style={styles.badge}>
-              OVERHEAD STAGE — DRAG A SOURCE · ANGLE = AZIMUTH · RADIUS = DISTANCE
-            </Text>
-            <Stage
-              sources={sources}
-              selected={selected}
-              onSelect={setSelected}
-              onMove={(i, azDeg, dist) => updateSource(i, { azDeg, dist })}
-              setScrollLocked={setScrollLocked}
-            />
+          <CollapsibleSection title="READOUTS">
             <Text style={styles.readout}>
               Object {selected + 1}: azimuth {sel.azDeg >= 0 ? '+' : ''}
               {sel.azDeg.toFixed(0)}° ({azimuthWord(sel.azDeg)}) · distance {sel.dist.toFixed(1)} m
@@ -233,36 +192,96 @@ export function BinauralLabScreen() {
               triangulates with. Behind-the-head is only gently hinted (front/back needs HRTF
               pinna cues this model deliberately doesn't fake).
             </Text>
-            <DisplayGuideButton onPress={() => openLesson('display')} />
-          </View>
+          </CollapsibleSection>
 
-          {/* AUDIO — engine-gated ≥ v7, honest below. */}
-          {engineReady ? (
-            binReady ? (
-              <>
-                <GlassButton
-                  label={running ? 'STOP' : 'PLAY BINAURAL MIX'}
-                  tint="green"
-                  height={52}
-                  fontSize={15}
-                  onPress={() => (running ? stop() : void start())}
-                />
-                <Text style={styles.caption}>
-                  All enabled objects mix to one binaural bus at {SRC_LEVEL_DB} dBFS each ·
-                  uncalibrated.
-                  {busNorm < 0.999
-                    ? ` Bus norm ${busNorm.toFixed(2)} — the peak bound is attenuating the sum (honest level).`
-                    : ''}
-                </Text>
-                {genError ? <Text style={styles.error}>{genError}</Text> : null}
-              </>
-            ) : (
-              <Text style={styles.caption}>
-                Binaural audio needs the v7 engine build — this dev client predates it. The stage
-                and lessons are fully functional; install the v7 build to hear the mix.
+          <CollapsibleSection title="DISPLAY">
+            {/* THE STAGE — overhead view, draggable sources. The
+                InteractionZone claims the touch at touch-start so grabs beat
+                scroll; the Stage's own setScrollLocked wiring keeps the shell
+                locked for the drag's duration (they compose). */}
+            <View style={styles.panelCard}>
+              <Text style={styles.badge}>
+                OVERHEAD STAGE — DRAG A SOURCE · ANGLE = AZIMUTH · RADIUS = DISTANCE
               </Text>
-            )
-          ) : null}
+              <InteractionZone>
+                <Stage
+                  sources={sources}
+                  selected={selected}
+                  onSelect={setSelected}
+                  onMove={(i, azDeg, dist) => updateSource(i, { azDeg, dist })}
+                  setScrollLocked={setScrollLocked}
+                />
+              </InteractionZone>
+              <DisplayGuideButton onPress={() => openLesson('display')} />
+            </View>
+          </CollapsibleSection>
+
+          <CollapsibleSection title="CONTROLS">
+            <Text style={styles.sectionHead}>SOUND OBJECTS</Text>
+            <View style={styles.chipRow}>
+              {sources.map((s, i) => (
+                <LabChip
+                  key={i}
+                  label={`${i + 1} ${s.on ? '●' : '○'}`}
+                  selected={selected === i}
+                  onPress={() => setSelected(i)}
+                  onLongPress={() => openLesson('objects')}
+                />
+              ))}
+              <LabChip
+                label={sel.on ? 'ON' : 'OFF'}
+                selected={sel.on}
+                onPress={() => updateSource(selected, { on: !sel.on })}
+                onLongPress={() => openLesson('objects')}
+              />
+            </View>
+            <View style={styles.chipRow}>
+              {TYPES.map((t) => (
+                <LabChip
+                  key={t.label}
+                  label={t.label}
+                  selected={sel.type === t.v}
+                  onPress={() => updateSource(selected, { type: t.v })}
+                  onLongPress={() => openLesson('source_type')}
+                />
+              ))}
+              {sel.type === BIN_SRC.sine
+                ? TONE_FREQS.map((f) => (
+                    <LabChip
+                      key={f}
+                      label={`${f}`}
+                      selected={sel.freq === f}
+                      onPress={() => updateSource(selected, { freq: f })}
+                      onLongPress={() => openLesson('tone_freq')}
+                    />
+                  ))
+                : null}
+            </View>
+          </CollapsibleSection>
+
+          <CollapsibleSection title="ACTIONS">
+            {/* AUDIO — engine-gated ≥ v7, honest below. PLAY lives in the
+                header (▶); the honest level captions stay here. */}
+            {engineReady ? (
+              binReady ? (
+                <>
+                  <Text style={styles.caption}>
+                    PLAY (header ▶) mixes all enabled objects to one binaural bus at {SRC_LEVEL_DB}{' '}
+                    dBFS each · uncalibrated.
+                    {busNorm < 0.999
+                      ? ` Bus norm ${busNorm.toFixed(2)} — the peak bound is attenuating the sum (honest level).`
+                      : ''}
+                  </Text>
+                  {genError ? <Text style={styles.error}>{genError}</Text> : null}
+                </>
+              ) : (
+                <Text style={styles.caption}>
+                  Binaural audio needs the v7 engine build — this dev client predates it. The stage
+                  and lessons are fully functional; install the v7 build to hear the mix.
+                </Text>
+              )
+            ) : null}
+          </CollapsibleSection>
 
           <GuidedLessonSheet
             visible={lessonOpen}

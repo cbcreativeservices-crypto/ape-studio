@@ -14,6 +14,13 @@
  * lifecycle — gate → genSet → genStart; STRIKE retriggers the index-decay
  * envelope click-free). Below v7 the visuals + lessons work fully and the
  * audio states the build requirement (§1.7).
+ *
+ * LAYOUT v2 (owner 2026-07-29): collapsible READOUTS → DISPLAY → CONTROLS →
+ * ACTIONS sections; the PRIMARY play/stop is the compact HeaderPlayButton
+ * (header ▶ strikes when idle, stops when running) — the STRIKE button stays
+ * in ACTIONS as the secondary retrigger (re-striking a running voice restarts
+ * the index-decay envelope, which a play/stop toggle can't express). The
+ * shell renders the Guided-Lesson entry row itself.
  */
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -27,7 +34,7 @@ import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../featu
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
-import { LabShell, LabChip } from './LabShell';
+import { LabShell, LabChip, CollapsibleSection, HeaderPlayButton } from './LabShell';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -166,79 +173,20 @@ export function FmLabScreen() {
       subtitle="Carrier · Modulator · Ratio · Index · Sidebands"
       intro={INTRO}
       exploreCaption="Pick a ratio and index, watch the Bessel sidebands, then strike the voice — the graph is the exact spectrum of what you hear."
+      headerAction={
+        <HeaderPlayButton
+          playing={running}
+          disabled={!fmReady}
+          onPress={() => (running ? stop() : void strike())}
+          label={running ? 'Stop' : 'Strike the FM voice'}
+        />
+      }
     >
       {!engineReady ? <EngineGate state={gate} /> : null}
 
-      <View style={styles.chipRow}>
-        <LabChip label="ⓘ GUIDED LESSON" selected={lessonOpen} onPress={() => openLesson()} />
-      </View>
-      <Text style={styles.caption}>Long-press a labeled control for its guided lesson.</Text>
-
-      <Text style={styles.sectionHead}>CARRIER</Text>
-      <View style={styles.chipRow}>
-        {CARRIERS.map((c) => (
-          <LabChip
-            key={c}
-            label={`${c} Hz`}
-            selected={carrier === c}
-            onPress={() => setCarrier(c)}
-            onLongPress={() => openLesson('carrier')}
-          />
-        ))}
-      </View>
-
-      <Text style={styles.sectionHead}>RATIO — fm = ratio × carrier (✳ = inharmonic)</Text>
-      <View style={styles.chipRow}>
-        {RATIOS.map((r, i) => (
-          <LabChip
-            key={r.label}
-            label={r.label}
-            selected={ratioIdx === i}
-            onPress={() => setRatioIdx(i)}
-            onLongPress={() => openLesson('ratio')}
-          />
-        ))}
-      </View>
-
-      <Text style={styles.sectionHead}>MODULATION INDEX (I)</Text>
-      <View style={styles.chipRow}>
-        {INDICES.map((v) => (
-          <LabChip
-            key={v}
-            label={String(v)}
-            selected={index === v}
-            onPress={() => setIndex(v)}
-            onLongPress={() => openLesson('index')}
-          />
-        ))}
-      </View>
-
-      <Text style={styles.sectionHead}>INDEX ENVELOPE</Text>
-      <View style={styles.chipRow}>
-        {ENVS.map((e) => (
-          <LabChip
-            key={e.key}
-            label={e.label}
-            selected={envKey === e.key}
-            onPress={() => setEnvKey(e.key)}
-            onLongPress={() => openLesson('index_env')}
-          />
-        ))}
-      </View>
-
-      {/* HERO — Bessel sideband spectrum (exact JS mirror of the voice math). */}
-      <View style={styles.panelCard}>
-        <Text style={styles.badge}>
-          SIDEBAND SPECTRUM — EXACT BESSEL AMPLITUDES J_k(I) · THE MATH THE VOICE PLAYS
-        </Text>
-        <SidebandGraph fc={carrier} fm={fm} index={index} />
-        <Text style={styles.caption}>
-          {index === 0
-            ? 'Index 0 — no modulation: the pure carrier alone.'
-            : `Sidebands at ${carrier} ± k·${fm.toFixed(0)} Hz, amplitudes |J_k(${index})|. ` +
-              (isInt
-                ? 'Integer ratio — sidebands land ON a harmonic series (pitched).'
-                : 'Non-integer ratio — sidebands fall BETWEEN harmonics (inharmonic: the bell/metallic family).')}
+      <CollapsibleSection title="READOUTS">
+        <Text style={styles.readMain}>
+          fc {carrier} Hz · fm {fm.toFixed(0)} Hz (ratio {RATIOS[ratioIdx].label.replace(' ✳', '')}) · I = {index}
         </Text>
         <Text style={carson > NYQUIST ? styles.advisory : styles.caption}>
           Carson bandwidth ≈ 2·fm·(I+1) = {(carson / 1000).toFixed(1)} kHz
@@ -246,42 +194,111 @@ export function FmLabScreen() {
             ? ' — EXCEEDS Nyquist (24 kHz): the top sidebands fold back (audible aliasing — itself a lesson).'
             : ` of ${NYQUIST / 1000} kHz available.`}
         </Text>
-        <DisplayGuideButton onPress={() => openLesson('display')} />
-      </View>
+      </CollapsibleSection>
 
-      {/* AUDIO — engine-gated ≥ v7, honest below. */}
-      {engineReady ? (
-        fmReady ? (
-          <>
-            <View style={styles.chipRow}>
-              <View style={{ flex: 1 }}>
-                <GlassButton
-                  label={env.decaySec > 0 ? 'STRIKE' : running ? 'RETUNE' : 'PLAY'}
-                  tint="green"
-                  height={52}
-                  fontSize={15}
-                  onPress={() => void strike()}
-                />
-              </View>
-              <View style={{ flex: 1 }}>
-                <GlassButton label="STOP" tint="orange" height={52} fontSize={15} onPress={stop} disabled={!running} />
-              </View>
-            </View>
-            <Text style={styles.caption}>
-              {env.decaySec > 0
-                ? `Each STRIKE restarts the index decay (τ = ${env.decaySec}s): bright attack fading to a pure tone — the FM ${envKey}.`
-                : 'Sustained index — controls retarget the running voice live (index and ratio glide natively, click-free).'}{' '}
-              Output {GEN_LEVEL_DB} dBFS · uncalibrated.
-            </Text>
-            {genError ? <Text style={styles.error}>{genError}</Text> : null}
-          </>
-        ) : (
-          <Text style={styles.caption}>
-            FM audio needs the v7 engine build — this dev client predates it. The sideband graph and
-            lessons are fully functional; install the v7 build to hear the voice.
+      <CollapsibleSection title="DISPLAY">
+        {/* HERO — Bessel sideband spectrum (exact JS mirror of the voice math). */}
+        <View style={styles.panelCard}>
+          <Text style={styles.badge}>
+            SIDEBAND SPECTRUM — EXACT BESSEL AMPLITUDES J_k(I) · THE MATH THE VOICE PLAYS
           </Text>
-        )
-      ) : null}
+          <SidebandGraph fc={carrier} fm={fm} index={index} />
+          <Text style={styles.caption}>
+            {index === 0
+              ? 'Index 0 — no modulation: the pure carrier alone.'
+              : `Sidebands at ${carrier} ± k·${fm.toFixed(0)} Hz, amplitudes |J_k(${index})|. ` +
+                (isInt
+                  ? 'Integer ratio — sidebands land ON a harmonic series (pitched).'
+                  : 'Non-integer ratio — sidebands fall BETWEEN harmonics (inharmonic: the bell/metallic family).')}
+          </Text>
+          <DisplayGuideButton onPress={() => openLesson('display')} />
+        </View>
+      </CollapsibleSection>
+
+      <CollapsibleSection title="CONTROLS">
+        <Text style={styles.sectionHead}>CARRIER</Text>
+        <View style={styles.chipRow}>
+          {CARRIERS.map((c) => (
+            <LabChip
+              key={c}
+              label={`${c} Hz`}
+              selected={carrier === c}
+              onPress={() => setCarrier(c)}
+              onLongPress={() => openLesson('carrier')}
+            />
+          ))}
+        </View>
+
+        <Text style={styles.sectionHead}>RATIO — fm = ratio × carrier (✳ = inharmonic)</Text>
+        <View style={styles.chipRow}>
+          {RATIOS.map((r, i) => (
+            <LabChip
+              key={r.label}
+              label={r.label}
+              selected={ratioIdx === i}
+              onPress={() => setRatioIdx(i)}
+              onLongPress={() => openLesson('ratio')}
+            />
+          ))}
+        </View>
+
+        <Text style={styles.sectionHead}>MODULATION INDEX (I)</Text>
+        <View style={styles.chipRow}>
+          {INDICES.map((v) => (
+            <LabChip
+              key={v}
+              label={String(v)}
+              selected={index === v}
+              onPress={() => setIndex(v)}
+              onLongPress={() => openLesson('index')}
+            />
+          ))}
+        </View>
+
+        <Text style={styles.sectionHead}>INDEX ENVELOPE</Text>
+        <View style={styles.chipRow}>
+          {ENVS.map((e) => (
+            <LabChip
+              key={e.key}
+              label={e.label}
+              selected={envKey === e.key}
+              onPress={() => setEnvKey(e.key)}
+              onLongPress={() => openLesson('index_env')}
+            />
+          ))}
+        </View>
+      </CollapsibleSection>
+
+      <CollapsibleSection title="ACTIONS">
+        {/* AUDIO — engine-gated ≥ v7, honest below. The header ▶ starts/stops;
+            STRIKE stays here as the secondary retrigger (restarts the
+            index-decay envelope on a running voice, click-free). */}
+        {engineReady ? (
+          fmReady ? (
+            <>
+              <GlassButton
+                label={env.decaySec > 0 ? 'STRIKE' : running ? 'RETUNE' : 'PLAY'}
+                tint="green"
+                height={52}
+                fontSize={15}
+                onPress={() => void strike()}
+              />
+              <Text style={styles.caption}>
+                {env.decaySec > 0
+                  ? `Each STRIKE restarts the index decay (τ = ${env.decaySec}s): bright attack fading to a pure tone — the FM ${envKey}. The header ▶ strikes once and ■ stops.`
+                  : 'Sustained index — controls retarget the running voice live (index and ratio glide natively, click-free). The header ▶ starts and ■ stops.'}{' '}
+                Output {GEN_LEVEL_DB} dBFS · uncalibrated.
+              </Text>
+              {genError ? <Text style={styles.error}>{genError}</Text> : null}
+            </>
+          ) : (
+            <Text style={styles.caption}>
+              FM audio needs the v7 engine build — this dev client predates it. The sideband graph and
+              lessons are fully functional; install the v7 build to hear the voice.
+            </Text>
+          )
+        ) : null}
+      </CollapsibleSection>
 
       <GuidedLessonSheet
         visible={lessonOpen}
@@ -382,6 +399,7 @@ const styles = StyleSheet.create({
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   advisory: { fontFamily: fonts.barlowMedium, fontSize: 12, lineHeight: 16, color: colors.amber },
   error: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: '#ff6b5e' },
+  readMain: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.6, color: colors.textPrimary },
   legend: { fontFamily: fonts.barlowRegular, fontSize: 10.5, color: colors.textSub, marginTop: 4 },
   panelCard: {
     gap: 8,
