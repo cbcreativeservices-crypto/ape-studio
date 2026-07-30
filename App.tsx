@@ -15,6 +15,7 @@ import { AudioBorderFrame } from './src/features/audio/AudioBorderFrame';
 import { MicFeedbackGuard } from './src/features/audio/MicFeedbackGuard';
 import { ShakeToMute } from './src/features/audio/ShakeToMute';
 import { LowLightDim } from './src/features/settings/LowLightLayer';
+import { touchLowLight } from './src/features/settings/lowLight';
 import { useAccountLocalSync } from './src/features/account/accountLocalSync';
 import { colors, fontAssets } from './src/theme/tokens';
 
@@ -55,8 +56,18 @@ export default function App() {
             login / foreground-idle auto-re-mute. Mounted once at the root. */}
         <AudioOutputGate>
           {/* Navigator + the global low-light dim wash (the toggle lives on the
-              Profile screen). pointer-transparent, so it never blocks touches. */}
-          <View style={{ flex: 1 }}>
+              Profile screen). pointer-transparent, so it never blocks touches.
+              The capture handler pings the low-light "last touched" clock on
+              every touch (owner 2026-07-30) — it returns false so children still
+              handle the touch normally; touchLowLight() is throttled + no-op
+              when low-light is off. */}
+          <View
+            style={{ flex: 1 }}
+            onStartShouldSetResponderCapture={() => {
+              touchLowLight();
+              return false;
+            }}
+          >
             <NavigationContainer theme={navTheme}>
               <RootNavigator />
             </NavigationContainer>

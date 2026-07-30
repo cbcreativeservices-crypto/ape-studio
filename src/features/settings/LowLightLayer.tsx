@@ -17,7 +17,7 @@ import { useEffect } from 'react';
 import { AppState, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fonts } from '../../theme/tokens';
-import { checkLowLightExpiry, LOW_LIGHT_DIM, toggleLowLight, touchLowLight, useLowLight } from './lowLight';
+import { checkLowLightExpiry, LOW_LIGHT_DIM, toggleLowLight, useLowLight } from './lowLight';
 
 // Burnt, darker, glowing orange (owner request 2026-07-26) — the low-light
 // indicator hue, deliberately distinct from the audio-output frame's red.
@@ -27,15 +27,13 @@ const EMBER = '#c2540f';
 export function LowLightDim() {
   const on = useLowLight();
   const insets = useSafeAreaInsets();
-  // Auto-revert after 12h untouched (owner 2026-07-30): each foreground checks
-  // expiry (reverts if stale) then refreshes the clock so active use keeps it
-  // on. Registered once at the root regardless of current state.
+  // Auto-revert after 12h UNTOUCHED (owner 2026-07-30): foreground only CHECKS
+  // expiry (reverts if the app was away past the window) — the clock is
+  // refreshed by real user touches via the root touch-capture (App.tsx),
+  // deliberately NOT by app-open. Registered once regardless of current state.
   useEffect(() => {
     const sub = AppState.addEventListener('change', (s) => {
-      if (s === 'active') {
-        checkLowLightExpiry();
-        touchLowLight();
-      }
+      if (s === 'active') checkLowLightExpiry();
     });
     return () => sub.remove();
   }, []);

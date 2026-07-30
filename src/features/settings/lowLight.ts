@@ -60,11 +60,15 @@ export function setLowLight(next: boolean): void {
   emit();
 }
 
-/** Refresh the "last touched" clock — called when the app is foregrounded
- *  while low-light is on, so active use keeps it on. */
+/** Refresh the "last touched" clock (owner 2026-07-30: reset on last user
+ *  INPUT, not on app open). Called from the root touch-capture on every touch
+ *  while low-light is on. Throttled to once a minute — minute granularity is
+ *  plenty for a 12h window and avoids an AsyncStorage write per touch. */
 export function touchLowLight(): void {
   if (!on) return;
-  touchedAt = Date.now();
+  const now = Date.now();
+  if (now - touchedAt < 60_000) return;
+  touchedAt = now;
   void AsyncStorage.setItem(KEY_AT, String(touchedAt));
 }
 
