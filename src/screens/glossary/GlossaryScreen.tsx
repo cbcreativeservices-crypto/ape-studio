@@ -336,8 +336,7 @@ function TermDetails({
   onLink,
   definition,
   begFirst = false,
-  commercial = false,
-  commonMistakesLocked = false,
+  mistakesReadable = false,
   term,
   onLabAction,
 }: {
@@ -353,10 +352,11 @@ function TermDetails({
   /** BEG order: plain-English is at the top block, so the first detail section
    *  is the technical DEFINITION (adv order = the reverse). */
   begFirst?: boolean;
-  /** CM4 (Booth 2026-07-11): commercial rendering — the Common Mistakes
-   *  HEADING always shows; the body is entitlement-gated. */
-  commercial?: boolean;
-  commonMistakesLocked?: boolean;
+  /** COMMON MISTAKES is ALWAYS shown (major selling point, owner 2026-07-29):
+   *  the section renders for everyone; only a current paying member reads the
+   *  text — everyone else sees the veiled tease + upgrade CTA. `true` iff the
+   *  viewer is an academy member (gated on real entitlement, never caps). */
+  mistakesReadable?: boolean;
   /** Audio-lab action handler. Present ⇒ the action row MAY render (only for
    *  terms with a READY Learning Profile — honest-metrics §1.7). Absent (e.g.
    *  no navigation context) ⇒ never rendered. */
@@ -431,35 +431,30 @@ function TermDetails({
         label="SCENARIOS"
         text={d.scenario_contexts?.length ? d.scenario_contexts.map((s) => `• ${s}`).join('\n') : null}
       />
-      {commercial ? (
-        // CM4: heading ALWAYS visible in commercial mode; body per
-        // entitlement — locked = the verbatim §2 lock message.
-        <View style={styles.detailSection}>
-          <Text style={styles.detailEyebrow}>COMMON MISTAKES</Text>
-          {commonMistakesLocked ? (
-            // Locked: the server sends common_mistakes = NULL (never the real
-            // text), so the veil is enciphered from a PLACEHOLDER only — we no
-            // longer garble real content client-side. The teasing "wisdom behind
-            // the curtain" drives conversion; the caption is the verbatim locked
-            // copy (Booth 2026-07-11).
-            <View style={styles.veilWrap}>
-              <Text style={styles.veilText} selectable={false} accessibilityElementsHidden>
-                {veilText(VEIL_PLACEHOLDER)}
-              </Text>
-              <LinearGradient
-                pointerEvents="none"
-                colors={['rgba(15,15,17,0)', 'rgba(15,15,17,0.85)']}
-                style={styles.veilFade}
-              />
-              <Text style={styles.veilLock}>🔒 {COPY.lockCommonMistakes}</Text>
-            </View>
-          ) : (
-            <Text style={styles.detailBody}>{mistakesText ?? '—'}</Text>
-          )}
-        </View>
-      ) : (
-        <DetailSection label="MISTAKES" text={mistakesText} />
-      )}
+      {/* COMMON MISTAKES — ALWAYS shown (major selling point, owner 2026-07-29).
+          Members read the real text; everyone else sees the VEILED tease + the
+          upgrade CTA (restoring the garble that regressed). The server only
+          sends common_mistakes for academy access, so the veil is enciphered
+          from a PLACEHOLDER (never real content) — the tease drives conversion
+          without leaking the wisdom behind the curtain. */}
+      <View style={styles.detailSection}>
+        <Text style={styles.detailEyebrow}>COMMON MISTAKES</Text>
+        {mistakesReadable ? (
+          <Text style={styles.detailBody}>{mistakesText ?? '—'}</Text>
+        ) : (
+          <View style={styles.veilWrap}>
+            <Text style={styles.veilText} selectable={false} accessibilityElementsHidden>
+              {veilText(VEIL_PLACEHOLDER)}
+            </Text>
+            <LinearGradient
+              pointerEvents="none"
+              colors={['rgba(15,15,17,0)', 'rgba(15,15,17,0.85)']}
+              style={styles.veilFade}
+            />
+            <Text style={styles.veilLock}>🔒 {COPY.lockCommonMistakes}</Text>
+          </View>
+        )}
+      </View>
       {d.related_terms?.length && linkable ? (
         // RELATED TERMS are TAPPABLE — each opens that term in the glossary
         // (Booth 2026-07-11). Terms with no glossary match render as plain pills.
@@ -570,7 +565,12 @@ export function GlossaryScreen({ route, navigation }: Props) {
   const [ttsBeg, setTtsBeg] = useState(false);
   // CM4: commercial rendering — Common Mistakes gating + no academic course
   // filter in public UI (§1 naming rule). Server owns entitlement; we render.
-  const { commercialMode, caps } = useEntitlement();
+  const { commercialMode, entitlement } = useEntitlement();
+  // Real membership (owner 2026-07-29): gate the mistakes veil + topic-filter
+  // links on ENTITLEMENT, never on caps (dev-bypassed) or the commercialMode
+  // compile flag — that regression hid both selling points. Only a current
+  // paying member (academy) reads the mistakes and can activate a topic.
+  const isMember = entitlement === 'academy';
   const listRef = useRef<FlatList<Entry>>(null);
   // Multiple simultaneous expansions in list view (user request 2026-07-18);
   // `focusedId` = the most-recently opened term (drives scroll + view-toggle).
@@ -870,7 +870,11 @@ export function GlossaryScreen({ route, navigation }: Props) {
   // applies in commercial mode only (flag OFF = today's institutional app, no
   // gate — and note the __DEV__ bypass in EntitlementProvider forces academy
   // caps, so this reads false on dev builds). Academy + institutional select normally.
-  const topicLinksLocked = commercialMode && !caps.allTopics;
+  // Topic list is ALWAYS visible + readable to everyone (owner 2026-07-29);
+  // only ACTIVATING a topic filter is member-gated. Gate on real entitlement
+  // so free/lapsed/anonymous users see the readable A–Z list with 🔒 MEMBERS
+  // per row (a membership sell point), independent of the commercialMode flag.
+  const topicLinksLocked = !isMember;
 
   // "Equations & Formulas" pseudo-topic (user request 2026-07-26): the count of
   // corpus terms that carry a symbolic formula. DELIBERATELY NOT member-gated —
@@ -1162,6 +1166,19 @@ export function GlossaryScreen({ route, navigation }: Props) {
           {/* BEG/ADV label now uses the standard amber header colour — the
               purple/blue tinting was removed (user request 2026-07-22). */}
           <Text style={styles.headerToggleText}>{ttsBeg ? 'BEG' : 'ADV'}</Text>
+        </Pressable>
+        {/* Σ — jump straight to the Audio Calculator Laboratory (owner
+            2026-07-29). Opened from the glossary, so its own ‹ back (goBack)
+            returns the user HERE, not to the lab menu. Purple to distinguish it
+            from the amber view toggles. */}
+        <Pressable
+          style={styles.sigmaBtn}
+          onPress={() => (navigation as any).navigate('CalcLab')}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel="Open the Audio Calculator Laboratory"
+        >
+          <Text style={styles.sigmaText}>Σ</Text>
         </Pressable>
         <View style={{ flex: 1 }} />
         {/* Current # of terms, WHITE — labeled "# of Terms" in the title font
@@ -1482,8 +1499,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
                       onLink={onLinkPress}
                       definition={item.definition}
                       begFirst={ttsBeg}
-                      commercial={commercialMode}
-                      commonMistakesLocked={!caps.commonMistakes}
+                      mistakesReadable={isMember}
                       onLabAction={onLabAction}
                     />
                   ) : (
@@ -1597,8 +1613,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
                             onLink={onLinkPress}
                             definition={item.definition}
                             begFirst={ttsBeg}
-                            commercial={commercialMode}
-                            commonMistakesLocked={!caps.commonMistakes}
+                            mistakesReadable={isMember}
                             onLabAction={onLabAction}
                           />
                         ) : (
@@ -1899,6 +1914,19 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     color: colors.amber,
   },
+  // Σ → Audio Calculator Laboratory (owner 2026-07-29), purple to set it apart
+  // from the amber view toggles; sized to match the toggle buttons' height.
+  sigmaBtn: {
+    paddingHorizontal: 11,
+    paddingVertical: 3,
+    borderRadius: 4.5,
+    borderWidth: 1,
+    borderColor: colors.purple,
+    backgroundColor: 'rgba(180,91,255,0.14)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sigmaText: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, lineHeight: 20, color: colors.purple },
   count: { textAlign: 'right', fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: colors.textPrimary },
   searchBox: {
     height: 44,
@@ -2011,7 +2039,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingBottom: 10,
   },
-  chip: { paddingVertical: 10, paddingHorizontal: 14, borderRadius: 4.5, borderWidth: 1 },
+  // minHeight + centering so the icon-only Bookmarks chip is the SAME height
+  // as the text chips beside it — top/bottom edges align (owner 2026-07-29).
+  chip: {
+    minHeight: 38,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 4.5,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1 },
   list: { paddingBottom: 16 },
   empty: { fontFamily: fonts.barlowRegular, fontSize: 14, color: colors.textSub, paddingTop: 12 },
