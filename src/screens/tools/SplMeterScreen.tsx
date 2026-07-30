@@ -26,6 +26,7 @@ import { GlassButton } from '../../components/GlassButton';
 import { requireVizMeters, type VizMetersModule } from '../lab/meter/skiaGate';
 import type { LiveMeterDrive, PeakHoldMode } from '../lab/meter/vizMeters';
 import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
+import { useRafFrameLoop } from '../../features/tools/engine/useRafFrameLoop';
 import { setSplCalibration, useSplCalibration } from '../../features/tools/measure/calibrationStore';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
@@ -432,44 +433,33 @@ export function SplMeterScreen({ navigation }: Props) {
   // the needles/LED on the UI thread's fast path — NO React state, NO whole-screen
   // re-render — which is what removes the ~1 s "slapback" lag. A slow throttle
   // (~10 Hz) mirrors the frame into `displayMeter` for the TEXT readouts only.
+  const lastTextRef = useRef(0);
+  useRafFrameLoop(running, (now) => {
+    const m = ApeDsp.getMeterFrame();
+    if (!m) return;
+    const lvl = selectedLevelDb(m, weightingRef.current, responseRef.current);
+    liveRmsDb.value = Number.isFinite(lvl) ? lvl : -120;
+    livePeakDb.value = Number.isFinite(m.peakDb) ? m.peakDb : -120;
+    // AUTO-RANGE feed: a smoothed EMA of the estimated SPL so the auto 0-VU
+    // reference tracks ambient (keeps the needle on-scale and moving).
+    if (Number.isFinite(lvl)) {
+      const splNow = lvl + (offsetRef.current ?? 100);
+      splEmaRef.current =
+        splEmaRef.current == null ? splNow : splEmaRef.current + (splNow - splEmaRef.current) * 0.15;
+    }
+    // Throttle the text-driving state to ~10 Hz.
+    if (now - lastTextRef.current >= 100) {
+      lastTextRef.current = now;
+      setDisplayMeter(m);
+    }
+  });
+  // Rest the needles when not capturing (paused / idle / blurred).
   useEffect(() => {
     if (!running) {
       liveRmsDb.value = -120;
       livePeakDb.value = -120;
-      return;
     }
-    let raf = 0;
-    let alive = true;
-    let lastText = 0;
-    const tick = (now: number) => {
-      if (!alive) return;
-      const m = ApeDsp.getMeterFrame();
-      if (m) {
-        const lvl = selectedLevelDb(m, weightingRef.current, responseRef.current);
-        liveRmsDb.value = Number.isFinite(lvl) ? lvl : -120;
-        livePeakDb.value = Number.isFinite(m.peakDb) ? m.peakDb : -120;
-        // AUTO-RANGE feed: a smoothed EMA of the estimated SPL so the auto 0-VU
-        // reference tracks ambient (keeps the needle on-scale and moving).
-        if (Number.isFinite(lvl)) {
-          const splNow = lvl + (offsetRef.current ?? 100);
-          splEmaRef.current =
-            splEmaRef.current == null ? splNow : splEmaRef.current + (splNow - splEmaRef.current) * 0.15;
-        }
-        // Throttle the text-driving state to ~10 Hz.
-        if (now - lastText >= 100) {
-          lastText = now;
-          setDisplayMeter(m);
-        }
-      }
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => {
-      alive = false;
-      cancelAnimationFrame(raf);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [running]);
+  }, [running, liveRmsDb, livePeakDb]);
 
   // AUTO range recompute — reads the smoothed EMA a few times a second and parks
   // the 0-VU reference 10 dB ABOVE the current level, so the live signal sits
