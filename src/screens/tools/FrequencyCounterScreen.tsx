@@ -2,19 +2,23 @@
  * FrequencyCounterScreen — Frequency Counter & Tuner (user request 2026-07-18;
  * merged with the Tuner per the spec of record 2026-07-23 — the counter and
  * tuner share ~90% of one frequency-estimation engine). Four modes:
- *   Sound       — mic estimate of a steady tone's frequency (needs the engine)
- *   Light Pulse — camera estimate of a flicker rate (needs the engine + more
- *                 device testing; shipped later per the recommendation)
+ *   Sound       — LIVE: mic estimate of a steady tone's frequency from the
+ *                 native engine's YIN pitch frames (Hz · period · BPM ·
+ *                 confidence · level · stability), with SAVE to the library.
+ *   Light Pulse — camera estimate of a flicker rate (needs the camera path +
+ *                 per-device testing; shipped later per the recommendation)
  *   Tap         — tap along with a repeating event; frequency/tempo computed
  *                 purely from tap TIMING, so it needs no mic/camera/DSP and is
- *                 LIVE now (built first, as recommended).
- *   Tuner       — musical interpretation of the detected frequency: note,
- *                 octave, cents vs a selectable A4 reference (needs the engine's
- *                 pitch detection — autocorrelation/YIN per the spec).
+ *                 LIVE (built first, as recommended).
+ *   Tuner       — LIVE: musical interpretation of the SAME pitch frames —
+ *                 note, octave, cents vs a selectable A4 reference, with a
+ *                 ±50¢ needle and a green ±5¢ in-tune zone.
  *
- * Integrity: Sound, Light and Tuner show an honest "measurement engine in
- * development" state — no simulated meters (tools spec §1.7). Tap shows REAL
- * values derived from the user's own taps, so it is not a fake meter.
+ * Integrity (tools spec §1.7): Sound and Tuner render ONLY from real engine
+ * pitch frames while capture runs — below the confidence/voiced gate the
+ * readout dims to the last-good value with an age hint (never presented as
+ * live), then falls to dashes. Light Pulse keeps an honest "engine in
+ * development" card. Tap shows REAL values derived from the user's own taps.
  *
  * Results (Tap): frequency (Hz), events/sec, period (ms), BPM, stability, and
  * the min/max readings, with Reset + Hold controls.
@@ -26,7 +30,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
 import { GlassButton } from '../../components/GlassButton';
 import { useToolUsage } from '../../features/tools/telemetry';
-import { useDspEngine } from '../../features/tools/engine/useDspEngine';
+import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO, type WarningFlag } from '../../features/tools/measure/types';
@@ -108,6 +112,9 @@ function computeTapStats(taps: number[]): TapStats | null {
 
 const fmtHz = (hz: number) => (hz < 10 ? hz.toFixed(2) : hz.toFixed(1));
 
+/** Period display: a 440 Hz tone's period is 2.27 ms, so sub-10 ms needs decimals. */
+const fmtMs = (ms: number) => (ms < 10 ? ms.toFixed(2) : ms < 100 ? ms.toFixed(1) : Math.round(ms).toString());
+
 function StatCell({ label, value, unit, help }: { label: string; value: string; unit?: string; help?: (key: string) => void }) {
   return (
     <Pressable
@@ -140,25 +147,213 @@ function EngineInDev({ extra }: { extra?: string }) {
 // counter; Tuner = musical interpretation (note/octave/cents vs a selectable
 // A4 reference). Both read the SAME YIN pitch frames — the merged-tool point.
 const NOTE_NAMES = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];
+// Spec Tool 7 required reference pitches (Custom entry ships later).
 const A4_CHOICES = [432, 435, 438, 440, 441, 442, 443, 444];
 
+// Honesty gating (§1.7): a value is presented as LIVE only when the native
+// tracker calls the frame voiced (YIN CMND < 0.15 — which by construction
+// means confidence > 0.85, Pitch.hpp), confidence also clears PITCH_CONF_MIN
+// (belt-and-braces under that), the input isn't starved, and freq > 0.
+// Anything else shows the last-good value DIMMED with an age hint (never as
+// live), then dashes once it is older than PITCH_HOLD_MAX_MS.
+const PITCH_CONF_MIN = 0.5;
+const PITCH_LOW_SIGNAL_DB = -60; // dBFS — below this the tracker is unreliable
+const PITCH_HOLD_MAX_MS = 4000;
+const PITCH_STATS_WINDOW_MS = 4000; // rolling stability / min / max window
+const PITCH_STATS_MIN_FRAMES = 8; // ~0.5–1 s of accepted frames before stats are real
+// Reliable range, disclosed on-screen: the FLOOR is documented native-side
+// (25 ms max lag → fs/maxLag ≈ 40 Hz at 48 kHz — EngineHub.hpp); the top is a
+// conservative ~4 kHz stated as APPROXIMATE — lag quantization erodes
+// precision well below the theoretical ceiling.
+const PITCH_RANGE_HZ = { min: 40, max: 4000 } as const;
+
 function noteFor(freq: number, a4: number): { name: string; octave: number; cents: number } {
-  const n = Math.round(12 * Math.log2(freq / a4)) + 69; // MIDI number
+  // Chromatic C-1..G9 — clamp to the MIDI range so out-of-range frequencies
+  // (already warned as approximate) can't name a note that doesn't exist.
+  const n = Math.max(0, Math.min(127, Math.round(12 * Math.log2(freq / a4)) + 69));
   const fNote = a4 * Math.pow(2, (n - 69) / 12);
   const cents = 1200 * Math.log2(freq / fNote);
   return { name: NOTE_NAMES[((n % 12) + 12) % 12], octave: Math.floor(n / 12) - 1, cents };
 }
 
-function LivePitchMode({ kind, help, helpAll }: { kind: 'sound' | 'tuner'; help: (key: string) => void; helpAll: () => void }) {
+type PitchStats = {
+  freq: number; // windowed mean of accepted frames
+  minFreq: number;
+  maxFreq: number;
+  stabilityPct: number;
+  stabilityLabel: string;
+  frames: number; // accepted frames averaged in
+};
+
+/** Stability from the rolling accepted-frame window — the same CV statistic
+ *  Tap mode uses, with tighter thresholds because pitch is finer-grained than
+ *  tap timing: 0.5% CV ≈ ±9 cents, 2% ≈ ±35 cents, 6% ≈ a semitone. */
+function computePitchStats(hist: { f: number; at: number }[]): PitchStats | null {
+  if (hist.length < PITCH_STATS_MIN_FRAMES) return null;
+  let sum = 0;
+  let min = Infinity;
+  let max = -Infinity;
+  for (const e of hist) {
+    sum += e.f;
+    if (e.f < min) min = e.f;
+    if (e.f > max) max = e.f;
+  }
+  const mean = sum / hist.length;
+  if (mean <= 0) return null;
+  const variance = hist.reduce((a, e) => a + (e.f - mean) ** 2, 0) / hist.length;
+  const cv = Math.sqrt(variance) / mean;
+  return {
+    freq: mean,
+    minFreq: min,
+    maxFreq: max,
+    stabilityPct: Math.max(0, Math.min(100, Math.round((1 - cv) * 100))),
+    stabilityLabel: cv < 0.005 ? 'Very stable' : cv < 0.02 ? 'Stable' : cv < 0.06 ? 'Fair' : 'Unstable',
+    frames: hist.length,
+  };
+}
+
+function LivePitchMode({
+  kind,
+  help,
+  helpAll,
+  onOpenLibrary,
+}: {
+  kind: 'sound' | 'tuner';
+  help: (key: string) => void;
+  helpAll: () => void;
+  onOpenLibrary: () => void;
+}) {
   const { state, frames, start, stop, lastError } = useDspEngine(
     { pitchEnabled: true },
     { meter: true, pitch: true },
   );
   const [a4, setA4] = useState(440);
-  const p = frames.pitch;
-  const lowSignal = p != null && p.levelDb < -60;
-  const showPitch = p != null && p.voiced && !lowSignal && p.freq > 0;
-  const note = p != null && showPitch ? { ...noteFor(p.freq, a4), freq: p.freq } : null;
+  const [justSaved, setJustSaved] = useState(false);
+  const savedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (savedTimer.current) clearTimeout(savedTimer.current);
+    },
+    [],
+  );
+
+  // Accepted-frame history (rolling window) + the last-good reading. Refs, not
+  // state — the hook's poll already re-renders this component every tick.
+  const histRef = useRef<{ f: number; at: number }[]>([]);
+  const lastGoodRef = useRef<{ f: number; at: number } | null>(null);
+  const lastSeqRef = useRef(-1);
+
+  const running = state === 'running';
+  // Readouts come ONLY from a live frame — stale frames after STOP are never
+  // shown (the SPL screen's integrity idiom).
+  const live = running ? frames.pitch : null;
+  const meter = running ? frames.meter : null;
+  const lowSignal = live != null && live.levelDb < PITCH_LOW_SIGNAL_DB;
+  const accepted =
+    live != null && live.voiced && live.confidence >= PITCH_CONF_MIN && !lowSignal && live.freq > 0;
+
+  // Fresh session per START — never carry a previous session's last-good.
+  useEffect(() => {
+    if (running) {
+      histRef.current = [];
+      lastGoodRef.current = null;
+      lastSeqRef.current = -1;
+    }
+  }, [running]);
+
+  // Fold each NEW accepted frame (sequence-deduped — the poll can return the
+  // same analysis frame twice) into the history + last-good refs.
+  useEffect(() => {
+    if (!running || live == null || live.sequence === lastSeqRef.current) return;
+    lastSeqRef.current = live.sequence;
+    const ok =
+      live.voiced && live.confidence >= PITCH_CONF_MIN && live.levelDb >= PITCH_LOW_SIGNAL_DB && live.freq > 0;
+    if (!ok) return;
+    const now = Date.now();
+    lastGoodRef.current = { f: live.freq, at: now };
+    const h = histRef.current;
+    h.push({ f: live.freq, at: now });
+    while (h.length && now - h[0].at > PITCH_STATS_WINDOW_MS) h.shift();
+  }, [running, live]);
+
+  // What the big readout shows: the live value, or the last-good DIMMED with
+  // an age hint (§1.7 — a stale number is never presented as live), then '—'.
+  const lastGood = lastGoodRef.current;
+  const heldAgeMs = !accepted && lastGood != null ? Date.now() - lastGood.at : null;
+  const isHeld = heldAgeMs != null && heldAgeMs <= PITCH_HOLD_MAX_MS;
+  const shownFreq = accepted && live != null ? live.freq : isHeld && lastGood != null ? lastGood.f : null;
+  const holdNote = accepted
+    ? null
+    : isHeld
+      ? `last stable reading · ${((heldAgeMs ?? 0) / 1000).toFixed(1)} s ago — not live`
+      : 'no stable pitch';
+
+  const note = shownFreq != null ? noteFor(shownFreq, a4) : null;
+  const stats = computePitchStats(histRef.current);
+  const outOfRange =
+    accepted && live != null && (live.freq < PITCH_RANGE_HZ.min || live.freq > PITCH_RANGE_HZ.max);
+  const statusLabel = accepted ? 'STABLE' : lowSignal ? 'LOW SIGNAL' : 'LISTENING';
+
+  // Quality flags: native meter conditions (clipping / OS-processed input /
+  // Bluetooth / stalled capture) via the SHARED mapping, plus this tool's own
+  // honest conditions — the same flags shown live are stored on save (§6).
+  const flags = meterWarningFlags(meter);
+  if (running && lowSignal && !flags.includes('insufficient_signal')) flags.push('insufficient_signal');
+  if (running && stats?.stabilityLabel === 'Unstable' && !flags.includes('unstable_measurement'))
+    flags.push('unstable_measurement');
+
+  /** SAVE (Sound mode) → Saved Measurement Library, mirroring Tap's shape:
+   *  the tool's shared frequency-log payload (freq/period/BPM/stability/
+   *  min/max) with mode disclosed in measurement_settings. */
+  const onSave = useCallback(() => {
+    const fr = state === 'running' ? frames.pitch : null;
+    const s = computePitchStats(histRef.current);
+    const ok =
+      fr != null &&
+      fr.voiced &&
+      fr.confidence >= PITCH_CONF_MIN &&
+      fr.levelDb >= PITCH_LOW_SIGNAL_DB &&
+      fr.freq > 0;
+    if (!ok || s == null) return;
+    const saveFlags = meterWarningFlags(state === 'running' ? frames.meter : null);
+    if (s.stabilityLabel === 'Unstable' && !saveFlags.includes('unstable_measurement'))
+      saveFlags.push('unstable_measurement');
+    saveMeasurement({
+      id: Crypto.randomUUID(),
+      tool_type: 'hzcounter',
+      created_at: new Date().toISOString(),
+      title: `Sound — ${fmtHz(s.freq)} Hz · ${s.stabilityLabel}`,
+      notes: '',
+      input_device: 'phone microphone',
+      // Every stored quantity is frequency-domain (the uncalibrated dBFS level
+      // is displayed live but never stored) and the timebase needs no field
+      // calibration — so this mirrors Tap's 'not_applicable'.
+      calibration_status: 'not_applicable',
+      sample_rate: null, // info polling is out of scope for this screen (SPL idiom)
+      measurement_settings: {
+        mode: 'sound',
+        conf_min: PITCH_CONF_MIN,
+        low_signal_db: PITCH_LOW_SIGNAL_DB,
+        stats_window_ms: PITCH_STATS_WINDOW_MS,
+      },
+      quality_state: evaluateQuality(saveFlags),
+      warning_flags: saveFlags,
+      data_payload: {
+        kind: 'tap_log', // the tool's shared frequency-log shape
+        freq: s.freq,
+        periodMs: 1000 / s.freq,
+        bpm: 60 * s.freq,
+        intervals: s.frames, // accepted pitch frames averaged in
+        stabilityPct: s.stabilityPct,
+        stabilityLabel: s.stabilityLabel,
+        minFreq: s.minFreq,
+        maxFreq: s.maxFreq,
+      },
+    });
+    setJustSaved(true);
+    if (savedTimer.current) clearTimeout(savedTimer.current);
+    savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
+  }, [state, frames.pitch, frames.meter]);
 
   if (state === 'absent' || state === 'spike' || state === 'denied' || state === 'error') {
     return <EngineGate state={state} lastError={lastError} />;
@@ -168,10 +363,20 @@ function LivePitchMode({ kind, help, helpAll }: { kind: 'sound' | 'tuner'; help:
       <>
         <Text style={styles.intro}>
           {kind === 'sound'
-            ? 'Measure the frequency of a steady sound with the microphone. Values are estimates — approximate unless calibrated.'
-            : 'Play or sing a sustained note. The tuner shows the nearest note and how many cents you are from it.'}
+            ? 'Measure the frequency of a steady sound with the microphone — frequency is the ' +
+              'measurement; pitch is the musical interpretation. The microphone captures only while ' +
+              'the counter runs.'
+            : 'Play or sing a sustained note. The tuner shows the nearest note and how many cents ' +
+              'you are from it, against a selectable A4 reference. The microphone captures only ' +
+              'while the tuner runs.'}
         </Text>
-        <GlassButton label={state === 'starting' ? 'STARTING…' : 'START'} tint="teal" height={52} onPress={() => void start()} />
+        <GlassButton
+          label={state === 'starting' ? 'STARTING…' : 'START'}
+          tint="teal"
+          height={52}
+          disabled={state === 'starting'}
+          onPress={() => void start()}
+        />
         <Text style={styles.disclaimer}>{DISCLAIMER}</Text>
       </>
     );
@@ -180,16 +385,22 @@ function LivePitchMode({ kind, help, helpAll }: { kind: 'sound' | 'tuner'; help:
     <>
       {kind === 'sound' ? (
         <View style={styles.readout}>
-          <Text style={styles.readoutValue}>{showPitch ? fmtHz(p.freq) : '—'}</Text>
+          <Text style={[styles.readoutValue, isHeld && styles.readoutDim]}>
+            {shownFreq != null ? fmtHz(shownFreq) : '—'}
+          </Text>
           <Text style={styles.readoutUnit}>Hz</Text>
         </View>
       ) : (
         <>
           <View style={styles.readout}>
-            <Text style={styles.readoutValue}>{note ? `${note.name}${note.octave}` : '—'}</Text>
+            <Text style={[styles.readoutValue, isHeld && styles.readoutDim]}>
+              {note ? `${note.name}${note.octave}` : '—'}
+            </Text>
           </View>
-          {/* Cents needle: real deviation on a ±50¢ scale. */}
+          {/* Cents needle: real deviation on a ±50¢ scale; the green band is
+              the ±5¢ in-tune zone. */}
           <View style={styles.centsScale}>
+            <View style={styles.centsZoneInTune} />
             <View style={styles.centsZero} />
             {note && (
               <View
@@ -197,21 +408,64 @@ function LivePitchMode({ kind, help, helpAll }: { kind: 'sound' | 'tuner'; help:
                   styles.centsNeedle,
                   { left: `${50 + Math.max(-50, Math.min(50, note.cents))}%` },
                   Math.abs(note.cents) < 5 ? styles.centsNeedleInTune : null,
+                  isHeld && styles.readoutDim,
                 ]}
               />
             )}
           </View>
-          <Text style={styles.centsLabel}>
-            {note ? `${note.cents >= 0 ? '+' : ''}${note.cents.toFixed(1)} cents · ${fmtHz(note.freq)} Hz` : 'no stable pitch'}
+          <Text
+            style={[
+              styles.centsLabel,
+              note != null && !isHeld && Math.abs(note.cents) < 5 && styles.centsLabelInTune,
+              isHeld && styles.readoutDim,
+            ]}
+          >
+            {note != null && shownFreq != null
+              ? `${note.cents >= 0 ? '+' : ''}${note.cents.toFixed(1)} cents · ${fmtHz(shownFreq)} Hz`
+              : 'no stable pitch'}
           </Text>
         </>
       )}
+      {/* The tuner's cents label already says "no stable pitch" — only the
+          age-hint adds information there. */}
+      {holdNote != null && (kind === 'sound' || isHeld) && <Text style={styles.holdNote}>{holdNote}</Text>}
 
-      <View style={styles.statGrid}>
-        <StatCell help={help} label="CONFIDENCE" value={p ? `${Math.round(p.confidence * 100)}%` : '—'} />
-        <StatCell help={help} label="INPUT LEVEL" value={p ? p.levelDb.toFixed(1) : '—'} unit="dBFS" />
-        <StatCell help={help} label="STATUS" value={showPitch ? 'STABLE' : lowSignal ? 'LOW SIGNAL' : 'LISTENING'} />
-      </View>
+      {kind === 'sound' ? (
+        <View style={styles.statGrid}>
+          <StatCell help={help} label="PERIOD" value={accepted && live != null ? fmtMs(1000 / live.freq) : '—'} unit="ms" />
+          <StatCell help={help} label="BPM" value={accepted && live != null ? Math.round(60 * live.freq).toString() : '—'} />
+          <StatCell help={help} label="CONFIDENCE" value={live ? `${Math.round(live.confidence * 100)}%` : '—'} />
+          <StatCell
+            help={help}
+            label="INPUT LEVEL"
+            value={live != null && Number.isFinite(live.levelDb) ? live.levelDb.toFixed(1) : '—'}
+            unit="dBFS"
+          />
+          <StatCell
+            help={help}
+            label="STABILITY"
+            value={stats?.stabilityLabel ?? '—'}
+            unit={stats != null ? `${stats.stabilityPct}%` : undefined}
+          />
+          <StatCell help={help} label="STATUS" value={statusLabel} />
+        </View>
+      ) : (
+        <View style={styles.statGrid}>
+          <StatCell help={help} label="CONFIDENCE" value={live ? `${Math.round(live.confidence * 100)}%` : '—'} />
+          <StatCell
+            help={help}
+            label="INPUT LEVEL"
+            value={live != null && Number.isFinite(live.levelDb) ? live.levelDb.toFixed(1) : '—'}
+            unit="dBFS"
+          />
+          <StatCell help={help} label="STATUS" value={statusLabel} />
+        </View>
+      )}
+      {/* Honest range + unit conventions (§1.4/§1.7 + spec Tool 7 warnings). */}
+      <Text style={styles.gridNote}>
+        Reads ONE steady tone, roughly {PITCH_RANGE_HZ.min} Hz – {PITCH_RANGE_HZ.max / 1000} kHz
+        (approximate). Input level is dBFS · uncalibrated — digital level, never SPL.
+      </Text>
       <DisplayGuideButton onPress={helpAll} />
 
       {kind === 'tuner' && (
@@ -236,14 +490,52 @@ function LivePitchMode({ kind, help, helpAll }: { kind: 'sound' | 'tuner'; help:
         </View>
       )}
 
-      {/* Plain-language live warnings (spec §6). */}
-      {lowSignal && (
+      {/* Plain-language live warnings (spec §6) — shared flags first, then the
+          tool's spec-required caveats (multiple tones / out of range). */}
+      {flags.map((f) => (
+        <Text key={f} style={styles.liveWarn}>
+          ⚠ {WARNING_INFO[f].message} {WARNING_INFO[f].hint}
+        </Text>
+      ))}
+      {live != null && !accepted && !lowSignal && (
         <Text style={styles.liveWarn}>
-          ⚠ {WARNING_INFO.insufficient_signal.message} {WARNING_INFO.insufficient_signal.hint}
+          ⚠ No stable pitch — sustain ONE steady tone. Chords, speech, or multiple tones at once do
+          not reduce to a single frequency.
         </Text>
       )}
-      {p != null && !p.voiced && !lowSignal && (
-        <Text style={styles.liveWarn}>⚠ No stable pitch detected — sustain a single note.</Text>
+      {outOfRange && (
+        <Text style={styles.liveWarn}>
+          ⚠ Frequency is outside the reliable range (≈{PITCH_RANGE_HZ.min} Hz–
+          {PITCH_RANGE_HZ.max / 1000} kHz) — treat this reading as approximate.
+        </Text>
+      )}
+
+      {/* SAVE (Sound mode only) — enabled once a live, confident pitch has held
+          long enough for real stats (Phase 2, spec §7). */}
+      {kind === 'sound' && (
+        <>
+          <View style={styles.controls}>
+            <Pressable
+              style={[
+                styles.ctrlBtn,
+                justSaved && styles.ctrlBtnSaved,
+                (!accepted || stats == null) && styles.ctrlBtnDisabled,
+              ]}
+              onPress={onSave}
+              disabled={!accepted || stats == null}
+              accessibilityRole="button"
+              accessibilityState={{ disabled: !accepted || stats == null }}
+              accessibilityLabel="Save measurement"
+            >
+              <Text style={[styles.ctrlText, justSaved && styles.ctrlTextSaved]}>
+                {justSaved ? 'SAVED ✓' : 'SAVE'}
+              </Text>
+            </Pressable>
+          </View>
+          <Pressable onPress={onOpenLibrary} accessibilityRole="button" accessibilityLabel="View saved measurements">
+            <Text style={styles.libraryLink}>VIEW SAVED MEASUREMENTS ›</Text>
+          </Pressable>
+        </>
       )}
 
       <GlassButton label="STOP" tint="steel" height={46} onPress={stop} />
@@ -491,7 +783,12 @@ export function FrequencyCounterScreen({ navigation }: Props) {
         ) : mode === 'sound' || mode === 'tuner' ? (
           // LIVE (engine build 2026-07-23): YIN pitch — numeric (Sound) or
           // musical (Tuner). Gates itself honestly when the engine is absent.
-          <LivePitchMode kind={mode} help={help} helpAll={helpAll} />
+          <LivePitchMode
+            kind={mode}
+            help={help}
+            helpAll={helpAll}
+            onOpenLibrary={() => navigation.navigate('ToolLibrary', { toolKey: 'hzcounter' })}
+          />
         ) : (
           // Light Pulse: honest in-development state (camera path not built).
           <>
@@ -545,6 +842,15 @@ const styles = StyleSheet.create({
   readout: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'center', gap: 8, marginTop: 4 },
   readoutValue: { fontFamily: fonts.oswaldBold, fontSize: 64, color: '#5fd9c4', letterSpacing: 1 },
   readoutUnit: { fontFamily: fonts.oswaldSemiBold, fontSize: 22, color: colors.amberLabel },
+  // Last-good hold (§1.7): dimmed, never presented as live.
+  readoutDim: { opacity: 0.35 },
+  holdNote: {
+    fontFamily: fonts.barlowRegular,
+    fontSize: 12.5,
+    color: colors.textSub,
+    textAlign: 'center',
+    marginTop: -6,
+  },
 
   // Tap target.
   tapPad: {
@@ -627,6 +933,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#3a3a3a',
     borderRadius: 1,
   },
+  // The ±5¢ in-tune zone — 10% of the ±50¢ scale, centered on zero.
+  centsZoneInTune: {
+    position: 'absolute',
+    left: '45%',
+    width: '10%',
+    top: 3,
+    bottom: 3,
+    borderRadius: 4,
+    backgroundColor: 'rgba(91,255,133,.10)',
+    borderWidth: 1,
+    borderColor: 'rgba(91,255,133,.28)',
+  },
   centsNeedle: {
     position: 'absolute',
     top: 2,
@@ -643,6 +961,9 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     textAlign: 'center',
   },
+  centsLabelInTune: { color: '#5bff85' },
+  // Honest range/unit footnote under the stat grid.
+  gridNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted },
   a4Row: { flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' },
   a4Label: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.textSub },
   a4Chip: {
