@@ -75,9 +75,6 @@ function VuTopMeter({
   live,
   vuW,
   vuH,
-  ledW,
-  ledH,
-  holdMode,
   live0Db,
   maxText,
   levelText,
@@ -88,40 +85,55 @@ function VuTopMeter({
   live: LiveMeterDrive;
   vuW: number;
   vuH: number;
-  ledW: number;
-  ledH: number;
-  holdMode: PeakHoldMode;
   live0Db: number;
   maxText: string;
   levelText: string;
   rangeText: string;
   brackets: { lowText: string; highText: string };
 }) {
-  // One clock drives both the VU needle and the LED columns (owner 2026-07-30:
-  // the LED sits to the RIGHT of the VU, sharing the top row 3/4 : 1/4).
   const phase = viz.usePhaseClock(true, 1 / VU_LOOP);
   return (
-    <View style={styles.topRow}>
-      <viz.VuMeterView
-        width={vuW}
-        height={vuH}
-        phase={phase}
-        live={live}
-        showPeakLed
-        loopSeconds={VU_LOOP}
-        live0Db={live0Db}
-        cornerReadouts={{ maxText, levelText, rangeText }}
-        scaleBrackets={brackets}
-      />
-      <viz.PeakAvgMeterView
-        width={ledW}
-        height={ledH}
-        phase={phase}
-        live={live}
-        loopSeconds={VU_LOOP}
-        holdMode={holdMode}
-      />
-    </View>
+    <viz.VuMeterView
+      width={vuW}
+      height={vuH}
+      phase={phase}
+      live={live}
+      showPeakLed
+      loopSeconds={VU_LOOP}
+      live0Db={live0Db}
+      cornerReadouts={{ maxText, levelText, rangeText }}
+      scaleBrackets={brackets}
+    />
+  );
+}
+
+/** Tall LED PEAK/AVERAGE meter down the RIGHT side (owner 2026-07-30): spans
+ *  from the top of the VU all the way down past the controls, ending above the
+ *  circle meter. Its own phase clock; reads the same live SharedValues. */
+function SideLed({
+  viz,
+  live,
+  ledW,
+  ledH,
+  holdMode,
+}: {
+  viz: VizMetersModule;
+  live: LiveMeterDrive;
+  ledW: number;
+  ledH: number;
+  holdMode: PeakHoldMode;
+}) {
+  const phase = viz.usePhaseClock(true, 1 / VU_LOOP);
+  if (ledH <= 0) return <View style={{ width: ledW }} />;
+  return (
+    <viz.PeakAvgMeterView
+      width={ledW}
+      height={ledH}
+      phase={phase}
+      live={live}
+      loopSeconds={VU_LOOP}
+      holdMode={holdMode}
+    />
   );
 }
 
@@ -228,16 +240,28 @@ function VuGlyphFallback() {
   );
 }
 
-function Chip({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
+function Chip({
+  label,
+  selected,
+  onPress,
+  compact,
+}: {
+  label: string;
+  selected: boolean;
+  onPress: () => void;
+  compact?: boolean;
+}) {
   return (
     <Pressable
-      style={[styles.chip, selected && styles.chipSelected]}
+      style={[styles.chip, compact && styles.chipCompact, selected && styles.chipSelected]}
       onPress={onPress}
       accessibilityRole="button"
       accessibilityState={{ selected }}
       accessibilityLabel={label}
     >
-      <Text style={[styles.chipText, selected && styles.chipTextSelected]}>{label}</Text>
+      <Text style={[styles.chipText, compact && styles.chipTextCompact, selected && styles.chipTextSelected]}>
+        {label}
+      </Text>
     </Pressable>
   );
 }
@@ -328,18 +352,20 @@ export function SplMeterScreen({ navigation }: Props) {
   // vs SPL (reference sounds). The node point rides the same arc in both.
   const [dialMode, setDialMode] = useState<'studio' | 'spl'>('studio');
   const { width: winW } = useWindowDimensions();
-  // TOP hero row (owner 2026-07-30): the wide VU (3/4 of the width) shares one
-  // row with the thin LED PEAK/AVERAGE meter (1/4) on its right; they align on a
-  // shared height.
-  const topAvail = winW - 32 - 10; // popup width − padding − gap
-  const vuW = Math.round(topAvail * 0.75);
-  const ledW = topAvail - vuW; // the remaining ~1/4
-  const vuH = Math.round(vuW * 0.6);
-  const ledH = vuH;
-  // Below the hero: the SPL gauge gets its OWN FULL-WIDTH row so its reference
-  // labels can sit OUTSIDE the arc with leader lines.
+  // TOP area (owner 2026-07-30): a LEFT column holds the VU plus the RANGE /
+  // WEIGHTING / PEAK-HOLD controls; a thin TALL LED meter runs down the RIGHT,
+  // spanning the full height of that column (top of the VU → just above the
+  // circle meter). The LED height is measured from the left column via onLayout.
+  const LED_GAP = 10;
+  const ledW = 78; // thin
+  const leftColW = winW - 32 - LED_GAP - ledW;
+  const vuW = leftColW; // the VU fills the left column width
+  const vuH = Math.round(vuW * 0.56);
+  const [leftColH, setLeftColH] = useState(0);
+  // Below the top area: the SPL gauge gets its OWN FULL-WIDTH row so its callout
+  // labels sit OUTSIDE the arc with leader lines.
   const dialW = winW - 32;
-  const dialH = Math.round(dialW * 0.74);
+  const dialH = Math.round(dialW * 0.82);
   // The popup meters are fed by pushing the SAME polled frame values into two
   // SharedValues — no second poll, no duplicated state. RMS = the selected
   // weighting × response level (set in the effect below); peak = the raw peak
@@ -469,14 +495,17 @@ export function SplMeterScreen({ navigation }: Props) {
           <Text style={styles.title}>{tool.name.toUpperCase()}</Text>
           {tool.subtitle ? <Text style={styles.subtitle}>{tool.subtitle}</Text> : null}
         </View>
-        {/* Mini-VU opener → the full-screen VU popup (owner 2026-07-29). */}
+        {/* Mini-VU opener → the full-screen VU popup (owner 2026-07-29). Larger
+            + enclosed in a framed container (owner 2026-07-30). */}
         <Pressable
           style={styles.vuOpenBtn}
           onPress={() => setVuOpen(true)}
           accessibilityRole="button"
           accessibilityLabel="Open full-screen VU meter"
         >
-          {viz ? <viz.VuGlyph size={38} /> : <VuGlyphFallback />}
+          <View style={styles.vuOpenFrame}>
+            {viz ? <viz.VuGlyph size={58} /> : <VuGlyphFallback />}
+          </View>
           <Text style={styles.vuOpenLabel}>VU</Text>
         </Pressable>
       </View>
@@ -549,7 +578,8 @@ export function SplMeterScreen({ navigation }: Props) {
               </Pressable>
               <Pressable style={styles.peakCell} onLongPress={() => help('peak_hold')} delayLongPress={260}>
                 <Text style={styles.cellLabel}>PEAK HOLD (dBFS)</Text>
-                <Text style={[styles.cellValue, meter != null && meter.peakHoldDb >= 0 && styles.cellValueHot]}>
+                {/* MAX / peak-hold reading in red (owner 2026-07-30). */}
+                <Text style={[styles.cellValue, styles.cellValueMax]}>
                   {meter ? fmtDb(meter.peakHoldDb) : '—'}
                 </Text>
               </Pressable>
@@ -783,41 +813,43 @@ export function SplMeterScreen({ navigation }: Props) {
               </Text>
             )}
 
-            {/* 2 — VU METER AT TOP (the wide horizontal hero, relative to RANGE). */}
-            {running &&
-              (viz ? (
-                <VuTopMeter
-                  viz={viz}
-                  live={live}
-                  vuW={vuW}
-                  vuH={vuH}
-                  ledW={ledW}
-                  ledH={ledH}
-                  holdMode={holdMode}
-                  live0Db={vuLive0}
-                  maxText={vuMaxText}
-                  levelText={vuLevelText}
-                  rangeText={vuRangeText}
-                  brackets={vuBrackets}
-                />
-              ) : (
-                /* Honest gate for pre-Skia clients (§1.7): readouts stay live. */
-                <View style={styles.vuUnavailCard}>
-                  <Text style={styles.vuUnavailTitle}>VU METER NEEDS THE NEW DEV BUILD</Text>
-                  <Text style={styles.vuUnavailBody}>
-                    This dev client predates the graphics engine the meters render on. The digital
-                    readouts below are fully live — install the newest dev build to see the needles.
-                  </Text>
-                </View>
-              ))}
-
             {running && (
               <>
-                {/* 3 — RANGE selector: the environmental SPL that reads 0 VU. The
-                    label opens the RANGE popup (owner 2026-07-30); the old inline
-                    note was removed so the readouts sit closer to the VU. */}
-                <View style={styles.chipGroup}>
-                  <HelpHead title={`RANGE · ${rangeRef} dB @0 VU${rangeAuto ? ' (AUTO)' : ''}`} onHelp={() => help('range')} style={styles.chipGroupLabel} />
+                {/* 2 — TOP AREA (owner 2026-07-30): LEFT column = VU + RANGE +
+                    WEIGHTING + PEAK HOLD (compact); a thin TALL LED runs down the
+                    RIGHT, spanning the column height (measured via onLayout) so it
+                    reaches from the top of the VU to just above the circle meter. */}
+                <View style={styles.topRow}>
+                  <View
+                    style={[styles.topLeftCol, { width: leftColW }]}
+                    onLayout={(e) => setLeftColH(Math.round(e.nativeEvent.layout.height))}
+                  >
+                    {viz ? (
+                      <VuTopMeter
+                        viz={viz}
+                        live={live}
+                        vuW={vuW}
+                        vuH={vuH}
+                        live0Db={vuLive0}
+                        maxText={vuMaxText}
+                        levelText={vuLevelText}
+                        rangeText={vuRangeText}
+                        brackets={vuBrackets}
+                      />
+                    ) : (
+                      /* Honest gate for pre-Skia clients (§1.7): readouts stay live. */
+                      <View style={styles.vuUnavailCard}>
+                        <Text style={styles.vuUnavailTitle}>VU METER NEEDS THE NEW DEV BUILD</Text>
+                        <Text style={styles.vuUnavailBody}>
+                          This dev client predates the graphics engine the meters render on. The
+                          digital readouts below are fully live — install the newest dev build to see
+                          the needles.
+                        </Text>
+                      </View>
+                    )}
+                    {/* 3 — RANGE selector (blue chips) — horizontal scroll. */}
+                    <View style={styles.chipGroup}>
+                      <HelpHead title={`RANGE · ${rangeRef} dB @0 VU${rangeAuto ? ' (AUTO)' : ''}`} onHelp={() => help('range')} style={styles.chipGroupLabel} />
                   {/* Single horizontal scroll row (owner 2026-07-30) — the values
                       no longer wrap to two rows. */}
                   <ScrollView
@@ -855,49 +887,46 @@ export function SplMeterScreen({ navigation }: Props) {
                   </ScrollView>
                 </View>
 
-                {/* Weighting × response + PEAK HOLD controls — moved ABOVE the
-                    circle meter (owner 2026-07-30). Same setters as the screen. */}
-                <View style={styles.chipsRow}>
-                  <View style={styles.chipGroup}>
-                    <Text style={styles.chipGroupLabel}>WEIGHTING</Text>
-                    <View style={styles.chipSet}>
-                      {WEIGHTINGS.map((w) => (
-                        <Chip key={w} label={w} selected={weighting === w} onPress={() => setWeighting(w)} />
-                      ))}
+                    {/* WEIGHTING × RESPONSE — compact to fit the left column. */}
+                    <View style={styles.chipsRow}>
+                      <View style={styles.chipGroup}>
+                        <Text style={styles.chipGroupLabel}>WEIGHTING</Text>
+                        <View style={styles.chipSetWrap}>
+                          {WEIGHTINGS.map((w) => (
+                            <Chip key={w} label={w} compact selected={weighting === w} onPress={() => setWeighting(w)} />
+                          ))}
+                        </View>
+                      </View>
+                      <View style={styles.chipGroup}>
+                        <Text style={styles.chipGroupLabel}>RESPONSE</Text>
+                        <View style={styles.chipSetWrap}>
+                          {RESPONSES.map((r) => (
+                            <Chip key={r} label={r.toUpperCase()} compact selected={response === r} onPress={() => setResponse(r)} />
+                          ))}
+                        </View>
+                      </View>
+                    </View>
+                    {/* PEAK HOLD (compact) + RESET. */}
+                    <View style={styles.chipGroup}>
+                      <Text style={styles.chipGroupLabel}>PEAK HOLD</Text>
+                      <View style={styles.chipSetWrap}>
+                        {HOLD_MODES.map((m) => (
+                          <Chip key={m} label={holdLabel(m)} compact selected={holdMode === m} onPress={() => setHoldMode(m)} />
+                        ))}
+                        <Pressable
+                          style={[styles.ctrlBtn, styles.holdResetBtnSm]}
+                          onPress={resetPeakHold}
+                          accessibilityRole="button"
+                          accessibilityLabel="Reset peak hold"
+                        >
+                          <Text style={styles.ctrlTextSm}>RESET</Text>
+                        </Pressable>
+                      </View>
                     </View>
                   </View>
-                  <View style={styles.chipGroup}>
-                    <Text style={styles.chipGroupLabel}>RESPONSE</Text>
-                    <View style={styles.chipSet}>
-                      {RESPONSES.map((r) => (
-                        <Chip key={r} label={r.toUpperCase()} selected={response === r} onPress={() => setResponse(r)} />
-                      ))}
-                    </View>
-                  </View>
-                </View>
-
-                {/* PEAK-HOLD user setting (governs the LED cap linger) + RESET
-                    PEAK. The peak/level numerals now live in the dial corners. */}
-                <View style={styles.chipsRow}>
-                  <View style={styles.chipGroup}>
-                    <Text style={styles.chipGroupLabel}>PEAK HOLD</Text>
-                    <View style={styles.chipSet}>
-                      {HOLD_MODES.map((m) => (
-                        <Chip key={m} label={holdLabel(m)} selected={holdMode === m} onPress={() => setHoldMode(m)} />
-                      ))}
-                    </View>
-                  </View>
-                  <View style={styles.chipGroup}>
-                    <Text style={styles.chipGroupLabel}> </Text>
-                    <Pressable
-                      style={[styles.ctrlBtn, styles.holdResetBtn]}
-                      onPress={resetPeakHold}
-                      accessibilityRole="button"
-                      accessibilityLabel="Reset peak hold"
-                    >
-                      <Text style={styles.ctrlText}>RESET PEAK</Text>
-                    </Pressable>
-                  </View>
+                  {viz ? (
+                    <SideLed viz={viz} live={live} ledW={ledW} ledH={leftColH} holdMode={holdMode} />
+                  ) : null}
                 </View>
 
                 {/* 4 — The round SPL "Noise'o'Meter" gauge (full-width row, external
@@ -917,44 +946,42 @@ export function SplMeterScreen({ navigation }: Props) {
                   />
                 ) : null}
 
-                {/* 7 — Mirrored session log + save (same handlers). */}
-                <View style={styles.logCard}>
-                  <Text style={styles.sectionHead}>SESSION LOG</Text>
+                {/* 7 — Mirrored session log + save (same handlers) — COMPACT in
+                    the VU popup (owner 2026-07-30: smaller readout + buttons). */}
+                <View style={[styles.logCard, styles.logCardSm]}>
+                  <Text style={styles.sectionHeadSm}>SESSION LOG</Text>
                   <View style={styles.logRow}>
                     <View style={styles.logCell}>
                       <Text style={styles.cellLabel}>Leq(A)</Text>
-                      <Text style={styles.cellValue}>{meter ? fmtDb(shown(meter.leqADb)) : '—'}</Text>
+                      <Text style={styles.cellValueSm}>{meter ? fmtDb(shown(meter.leqADb)) : '—'}</Text>
                     </View>
                     <View style={styles.logCell}>
                       <Text style={styles.cellLabel}>Leq(Z)</Text>
-                      <Text style={styles.cellValue}>{meter ? fmtDb(shown(meter.leqZDb)) : '—'}</Text>
+                      <Text style={styles.cellValueSm}>{meter ? fmtDb(shown(meter.leqZDb)) : '—'}</Text>
                     </View>
                     <View style={styles.logCell}>
                       <Text style={styles.cellLabel}>ELAPSED</Text>
-                      <Text style={styles.cellValue}>{meter ? fmtElapsed(meter.elapsedSec) : '—'}</Text>
+                      <Text style={styles.cellValueSm}>{meter ? fmtElapsed(meter.elapsedSec) : '—'}</Text>
                     </View>
                   </View>
-                  <Text style={styles.logNote}>
-                    Leq = equivalent continuous level over the session · {unitLabel}
-                  </Text>
                   <View style={styles.controls}>
                     <Pressable
-                      style={styles.ctrlBtn}
+                      style={[styles.ctrlBtn, styles.ctrlBtnSm]}
                       onPress={resetLeq}
                       accessibilityRole="button"
                       accessibilityLabel="Reset log"
                     >
-                      <Text style={styles.ctrlText}>RESET LOG</Text>
+                      <Text style={styles.ctrlTextSm}>RESET LOG</Text>
                     </Pressable>
                     <Pressable
-                      style={[styles.ctrlBtn, justSaved && styles.ctrlBtnSaved, !meter && styles.ctrlBtnDisabled]}
+                      style={[styles.ctrlBtn, styles.ctrlBtnSm, justSaved && styles.ctrlBtnSaved, !meter && styles.ctrlBtnDisabled]}
                       onPress={onSaveLog}
                       disabled={!meter}
                       accessibilityRole="button"
                       accessibilityState={{ disabled: !meter }}
                       accessibilityLabel="Save log"
                     >
-                      <Text style={[styles.ctrlText, justSaved && styles.ctrlTextSaved]}>
+                      <Text style={[styles.ctrlTextSm, justSaved && styles.ctrlTextSaved]}>
                         {justSaved ? 'SAVED ✓' : 'SAVE LOG'}
                       </Text>
                     </Pressable>
@@ -1097,10 +1124,12 @@ const styles = StyleSheet.create({
   intro: { fontFamily: fonts.barlowRegular, fontSize: 15.5, lineHeight: 23, color: colors.textSecondary },
 
   // Weighting / response chips.
-  chipsRow: { flexDirection: 'row', gap: 12 },
+  chipsRow: { flexDirection: 'row', gap: 10 },
   chipGroup: { flex: 1, gap: 6 },
   chipGroupLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textSub },
   chipSet: { flexDirection: 'row', gap: 8 },
+  // Compact chip set — wraps within the narrow left control column.
+  chipSetWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   chip: {
     flex: 1,
     borderRadius: 8,
@@ -1110,8 +1139,11 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     alignItems: 'center',
   },
+  // Smaller, non-stretching chip for the compacted left-column controls.
+  chipCompact: { flex: 0, paddingVertical: 6, paddingHorizontal: 11, minWidth: 34 },
   chipSelected: { borderColor: 'rgba(255,138,30,.65)', backgroundColor: '#1a1207' },
   chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1, color: colors.textSecondary },
+  chipTextCompact: { fontSize: 11.5, letterSpacing: 0.6 },
   chipTextSelected: { color: colors.orange },
 
   // Big readout card.
@@ -1144,6 +1176,7 @@ const styles = StyleSheet.create({
   cellLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textSub },
   cellValue: { fontFamily: fonts.mono, fontSize: 20, color: colors.textPrimary },
   cellValueHot: { color: colors.red },
+  cellValueMax: { color: '#e0362b' },
 
   // Session log card.
   logCard: {
@@ -1154,7 +1187,11 @@ const styles = StyleSheet.create({
     padding: 14,
     gap: 10,
   },
+  // Compact session log (VU popup) — smaller padding, values, and buttons.
+  logCardSm: { padding: 10, gap: 7 },
   sectionHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.8, color: colors.amberLabel },
+  sectionHeadSm: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.5, color: colors.amberLabel },
+  cellValueSm: { fontFamily: fonts.mono, fontSize: 14, color: colors.textPrimary },
   logRow: { flexDirection: 'row', gap: 10 },
   logCell: { flex: 1, gap: 4 },
   logNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted },
@@ -1170,6 +1207,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     alignItems: 'center',
   },
+  ctrlBtnSm: { paddingVertical: 8 },
   ctrlBtnSmall: {
     borderRadius: 10,
     borderWidth: 1,
@@ -1189,6 +1227,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   ctrlTextSaved: { color: '#5bff85' },
+  ctrlTextSm: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 0.8, color: colors.textSecondary, textAlign: 'center' },
 
   // Live quality warning line (spec §6) — house amber warning style.
   liveWarn: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18.5, color: colors.amber },
@@ -1222,7 +1261,14 @@ const styles = StyleSheet.create({
   bullet: { fontFamily: fonts.barlowRegular, fontSize: 14.5, lineHeight: 21, color: colors.textSecondary },
 
   // Mini-VU opener (header, right-aligned) + plain-RN fallback glyph.
-  vuOpenBtn: { marginLeft: 'auto', alignItems: 'center', gap: 1, paddingHorizontal: 4, paddingVertical: 2 },
+  vuOpenBtn: { marginLeft: 'auto', alignItems: 'center', gap: 2, paddingHorizontal: 2, paddingVertical: 2 },
+  vuOpenFrame: {
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: '#44454c',
+    backgroundColor: '#0e0e11',
+    padding: 5,
+  },
   vuOpenLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1.6, color: colors.textSub },
   vuGlyphFace: {
     width: 38,
@@ -1269,9 +1315,11 @@ const styles = StyleSheet.create({
   vuScroll: { padding: 16, paddingBottom: 40, gap: 14, alignItems: 'stretch' },
   // Below-the-VU row: round SPL gauge (left) + thin LED meter (right).
   heroRow: { flexDirection: 'row', gap: 12, alignItems: 'flex-start', justifyContent: 'center' },
-  // Top hero: VU (3/4) + LED (1/4), sharing one row and a baseline.
+  // Top area: LEFT control column + tall LED down the right.
   topRow: { flexDirection: 'row', gap: 10, alignItems: 'flex-start' },
+  topLeftCol: { gap: 12 },
   holdResetBtn: { flex: 0, paddingHorizontal: 16, justifyContent: 'center' },
+  holdResetBtnSm: { flex: 0, paddingHorizontal: 12, paddingVertical: 6, justifyContent: 'center' },
 
   // RANGE selector — stepped values in a single horizontal scroll row. BLUE
   // (owner 2026-07-30) to tie them to the blue −20/0 bracket on the VU face:

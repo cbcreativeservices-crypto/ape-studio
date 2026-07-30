@@ -755,11 +755,12 @@ export function VuMeterView(p: {
     const rI = R + 2;
     const oO = Skia.XYWHRect(cx - rO, py - rO, 2 * rO, 2 * rO);
     const oI = Skia.XYWHRect(cx - rI, py - rI, 2 * rI, 2 * rI);
-    // Red is the over-0 zone: nudge the FILL a hair above 0 so the 0 tick is the
-    // clean boundary and the "0" numeral (moved left, below) never sits on red.
-    const a0 = angDb(0.2) / DEG - 90;
+    // Red is the over-0 zone: start the FILL a touch above 0 (angDb(0.3)) so the
+    // 0 tick is the clean boundary and the "0" numeral — now CENTERED on its own
+    // 0 tick (below) — keeps clear daylight from the red.
+    const a0 = angDb(0.3) / DEG - 90;
     const a1 = angDb(3) / DEG - 90;
-    const st = pt(angDb(0.2), rO);
+    const st = pt(angDb(0.3), rO);
     wedge.moveTo(st.x, st.y);
     wedge.arcToOval(oO, a0, a1 - a0, false);
     const ie = pt(angDb(3), rI);
@@ -781,11 +782,12 @@ export function VuMeterView(p: {
     sheen.lineTo(fx + fw * 0.12, fy + fh - 2);
     sheen.close();
     // Label anchors for the RNText numerals (printed scale typography). The "0"
-    // numeral is nudged angularly toward −20 (left of the red boundary) so it
-    // reads in clean dark ink and is NOT buried in the red over-0 wedge.
+    // numeral is CENTERED on its own 0 tick (angDb(0)) — reading as the label at
+    // the END of the 0 line, with clear spacing from −1 — and seated a hair
+    // further out radially so it clears the red over-0 wedge in clean dark ink.
     const labels = majors.map((d) => {
-      const aOff = d === 0 ? -3.5 * DEG : 0;
-      const lp = pt(angDb(d) + aOff, R + 21);
+      const rOff = d === 0 ? R + 24 : R + 21;
+      const lp = pt(angDb(d), rOff);
       return { d, x: lp.x, y: lp.y };
     });
     // SPL-span bracket anchors on the INNER (concave) side of the arc — near the
@@ -1043,13 +1045,14 @@ export function VuMeterView(p: {
           {p.cornerReadouts.rangeText}
         </Lbl>
       ) : null}
-      {/* C4: MAX reference stays BOTTOM-LEFT, larger. */}
+      {/* C4: MAX reference stays BOTTOM-LEFT, larger. Colored RED (the peak-hold-
+          in-SPL reading) — both the caption and the value. */}
       {p.cornerReadouts?.maxText != null ? (
         <>
-          <Lbl x={fx + 12} y={py - 24} w={70} align="left" size={9} font={fonts.oswaldSemiBold} ls={1} color="#8a2f24">
+          <Lbl x={fx + 12} y={py - 24} w={70} align="left" size={9} font={fonts.oswaldSemiBold} ls={1} color="#b3271e">
             MAX
           </Lbl>
-          <Lbl x={fx + 12} y={py - 13} w={110} align="left" size={18} font={fonts.oswaldSemiBold} color="#2b2417">
+          <Lbl x={fx + 12} y={py - 13} w={110} align="left" size={18} font={fonts.oswaldSemiBold} color="#b3271e">
             {p.cornerReadouts.maxText}
           </Lbl>
         </>
@@ -1849,19 +1852,24 @@ export function SplDialView(p: {
   const A = 122; // half-sweep, degrees (244° total, gap at the bottom)
   const cx = w / 2;
   // A1 (owner 2026-07-30): the round metal housing is GONE — a dark rounded-rect
-  // plate fills the whole component (see G.plate). The cream dial face + arc sit
-  // in the UPPER portion; the BOTTOM band is reserved for the descriptive text
-  // (A4). Pivot shifted up and the radius shrunk to open that bottom space.
+  // plate fills the whole component (see G.plate). LAYOUT FLIPPED (owner
+  // 2026-07-30 v2): the parent draws STUDIO/SPL buttons absolute in the reserved
+  // TOP-LEFT (~110×30); the descriptive caption stack now sits at the TOP, centred,
+  // starting just below that button row. The dial (face + arc + node) is pushed
+  // DOWN into the LOWER portion so its top opens up — the callout labels live in
+  // the UPPER side margins and their leaders run DOWN-and-in onto the arc.
   const plateR = 14; // plate corner radius
-  const topPad = 6;
-  const bottomTextH = Math.max(96, Math.round(h * 0.3)); // reserved text band
-  // B2 (owner 2026-07-30): dial shrunk to ~72% of the fit radius, opening MORE
-  // horizontal room in the side margins for the callout labels.
-  const Rface = 0.72 * Math.max(40, Math.min(w / 2 - 6, (h - bottomTextH) / 2 - 3));
-  // B9 (owner 2026-07-30): drop the pivot LOWER — more vertically centred in the
-  // dial region, but biased so a little MORE room sits below the face than above.
-  const dialRegionH = h - bottomTextH;
-  const cy = topPad + Rface + Math.max(0, dialRegionH - 2 * Rface - topPad) * 0.4;
+  const bottomPad = 8;
+  // Reserved TOP caption band (wordmark + mode caption + ESTIMATED badge), below
+  // the STUDIO/SPL buttons. Its height sets how much room the dial gets below it.
+  const topTextH = Math.max(96, Math.round(h * 0.33));
+  // B2 (owner 2026-07-30): dial ~72% of the fit radius, opening horizontal room in
+  // the side margins for the callout labels.
+  const dialRegionH = h - topTextH - bottomPad;
+  const Rface = 0.72 * Math.max(40, Math.min(w / 2 - 6, dialRegionH / 2 - 3));
+  // Pivot pushed DOWN: seat the face near the bottom so the dial fills the lower
+  // portion and the whole top (above the arc) is free for high labels + captions.
+  const cy = h - bottomPad - Rface;
   const Rs = Rface / 1.28; // scale (tick) radius
   const wArc = Math.max(6, Rface * 0.09); // colored loudness-arc thickness
   const splPct = (spl: number) => (spl - SPL_MIN) / SPAN;
@@ -2009,6 +2017,9 @@ export function SplDialView(p: {
   // Used for BOTH the arc strokes and the zone-matched callout labels + leaders.
   const Z_GREEN = '#1f7a34';
   const Z_AMBER = '#b8860b';
+  // Darker amber for TEXT only (owner 2026-07-30 v2): the arc keeps Z_AMBER, but
+  // amber label text washed out on the darker medium-gray plate, so it goes deeper.
+  const Z_AMBER_TXT = '#8a6508';
   const Z_ORANGE = '#c9631a';
   const Z_RED = '#b3271e';
   // Dim/grey studio zone — darkened so the below-sweet-spot arc still reads on gray.
@@ -2045,24 +2056,29 @@ export function SplDialView(p: {
     // ty is derived from cy/Rface so slots track the (smaller, lower) dial. Slots
     // are ordered to match each anchor's height so leaders never cross.
     type CoItem = { side: 'L' | 'R'; spl: number; ty: number; color: string; lines: CoLine[] };
+    // Slots now sit in the UPPER side margins (above the lowered dial): ty is a
+    // small offset ABOVE the dial-top line (cy − Rface), ordered so that on each
+    // side the higher-on-the-arc anchor takes the higher slot — the leaders then
+    // fan DOWN-and-in onto their exact dB anchors and never cross.
+    const top = cy - Rface;
     const items: CoItem[] =
       mode === 'spl'
         ? [
             // Reference sounds (unchanged content) — precision + centred subtitles.
-            { side: 'R', spl: 79, ty: cy - Rface * 0.66, color: Z_AMBER, lines: [ { t: 'STUDIO LISTENING', size: 11, color: Z_AMBER, ls: 0.2 }, { t: '~79 dBC', size: 10, color: inkDim } ] },
-            { side: 'R', spl: 95, ty: cy - Rface * 0.12, color: Z_ORANGE, lines: [ { t: 'CONCERT', size: 13, color: Z_ORANGE, ls: 0.3 }, { t: '~95 dBC', size: 10, color: inkDim } ] },
-            { side: 'R', spl: 110, ty: cy + Rface * 0.34, color: Z_RED, lines: [ { t: '100+ dB', size: 13, color: Z_RED, ls: 0.3 }, { t: 'UNSAFE >15 MIN/DAY', size: 9, color: Z_RED } ] },
-            { side: 'L', spl: 60, ty: cy - Rface * 0.62, color: Z_GREEN, lines: [ { t: 'CONVERSATION', size: 13, color: Z_GREEN, ls: 0.3 }, { t: '~60 dBA', size: 10, color: inkDim } ] },
-            { side: 'L', spl: 37, ty: cy + Rface * 0.14, color: Z_GREEN, lines: [ { t: 'QUIET ROOM', size: 13, color: Z_GREEN, ls: 0.3 }, { t: '35–40 dBA', size: 10, color: inkDim } ] },
+            { side: 'R', spl: 79, ty: top - 48, color: Z_AMBER, lines: [ { t: 'STUDIO LISTENING', size: 11, color: Z_AMBER_TXT, ls: 0.2 }, { t: '~79 dBC', size: 10, color: inkDim } ] },
+            { side: 'R', spl: 95, ty: top - 16, color: Z_ORANGE, lines: [ { t: 'CONCERT', size: 13, color: Z_ORANGE, ls: 0.3 }, { t: '~95 dBC', size: 10, color: inkDim } ] },
+            { side: 'R', spl: 110, ty: top + 16, color: Z_RED, lines: [ { t: '100+ dB', size: 13, color: Z_RED, ls: 0.3 }, { t: 'UNSAFE >15 MIN/DAY', size: 9, color: Z_RED } ] },
+            { side: 'L', spl: 60, ty: top - 40, color: Z_GREEN, lines: [ { t: 'CONVERSATION', size: 13, color: Z_GREEN, ls: 0.3 }, { t: '~60 dBA', size: 10, color: inkDim } ] },
+            { side: 'L', spl: 37, ty: top - 4, color: Z_GREEN, lines: [ { t: 'QUIET ROOM', size: 13, color: Z_GREEN, ls: 0.3 }, { t: '35–40 dBA', size: 10, color: inkDim } ] },
           ]
         : [
             // B6: four long-term mixing bands. Lower dB on the LEFT (going up),
             // higher dB on the RIGHT — leaders don't cross. First three green, the
             // brief IMPACT CHECK orange.
-            { side: 'L', spl: 72, ty: cy - Rface * 0.62, color: Z_GREEN, lines: [ { t: 'GENERAL EDITING', size: 12, color: Z_GREEN, ls: 0.2 }, { t: '70–75 dB SPL', size: 10, color: inkDim } ] },
-            { side: 'L', spl: 62, ty: cy - Rface * 0.04, color: Z_GREEN, lines: [ { t: 'BACKGROUND · DETAIL', size: 10.5, color: Z_GREEN, ls: 0.1 }, { t: '60–65 dB SPL', size: 10, color: inkDim } ] },
-            { side: 'R', spl: 79, ty: cy - Rface * 0.62, color: Z_GREEN, lines: [ { t: 'CRITICAL BALANCE', size: 12, color: Z_GREEN, ls: 0.2 }, { t: '79 dB SPL C', size: 10, color: inkDim } ] },
-            { side: 'R', spl: 90, ty: cy - Rface * 0.02, color: Z_ORANGE, lines: [ { t: 'IMPACT CHECK', size: 13, color: Z_ORANGE, ls: 0.3 }, { t: '85–95 dB SPL · brief', size: 9.5, color: inkDim } ] },
+            { side: 'L', spl: 72, ty: top - 44, color: Z_GREEN, lines: [ { t: 'GENERAL EDITING', size: 12, color: Z_GREEN, ls: 0.2 }, { t: '70–75 dB SPL', size: 10, color: inkDim } ] },
+            { side: 'L', spl: 62, ty: top - 10, color: Z_GREEN, lines: [ { t: 'BACKGROUND · DETAIL', size: 10.5, color: Z_GREEN, ls: 0.1 }, { t: '60–65 dB SPL', size: 10, color: inkDim } ] },
+            { side: 'R', spl: 79, ty: top - 44, color: Z_GREEN, lines: [ { t: 'CRITICAL BALANCE', size: 12, color: Z_GREEN, ls: 0.2 }, { t: '79 dB SPL C', size: 10, color: inkDim } ] },
+            { side: 'R', spl: 90, ty: top - 10, color: Z_ORANGE, lines: [ { t: 'IMPACT CHECK', size: 13, color: Z_ORANGE, ls: 0.3 }, { t: '85–95 dB SPL · brief', size: 9.5, color: inkDim } ] },
           ];
     const laid = items.map((it) => {
       const bx = it.side === 'L' ? leftBx : rightBx;
@@ -2086,10 +2102,10 @@ export function SplDialView(p: {
       <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
         {/* A1/B1 — LIGHT-GRAY rounded-rect PLATE (owner 2026-07-30: was white).
             Flat and clean; the slightly-lighter gray face sits in the upper part. */}
-        <Path path={G.plate} color="#e6e6ea" />
-        <Path path={G.plate} color="#d2d2d8" style="stroke" strokeWidth={1} opacity={0.9} />
-        {/* Light-gray face (UPPER portion), a touch lighter than the plate. */}
-        <Path path={G.face} color="#f0f0f3" />
+        <Path path={G.plate} color="#c6c6cc" />
+        <Path path={G.plate} color="#adadb4" style="stroke" strokeWidth={1} opacity={0.9} />
+        {/* Medium-gray face (LOWER portion), a touch lighter than the plate. */}
+        <Path path={G.face} color="#d2d2d8" />
         {/* A3 — MAIN arc conveys each MODE's ranges (zone palette darkened to read
             on white). STUDIO: dim below the sweet spot, GREEN 79–85 dB(C), RED
             above. SPL: green→amber→orange→red loudness with 100+ emphasised red. */}
@@ -2130,7 +2146,7 @@ export function SplDialView(p: {
         <Path path={nodeCore} color="#2e2618" />
         <Path path={nodeCore} color="#fff5d8" style="stroke" strokeWidth={1.4} opacity={0.95} />
         {/* Face edge: subtle ring, a shade darker than the gray face for definition. */}
-        <Path path={G.face} color="#c8c8d0" style="stroke" strokeWidth={1.4} opacity={0.9} />
+        <Path path={G.face} color="#a6a6ae" style="stroke" strokeWidth={1.4} opacity={0.9} />
       </Canvas>
 
       {/* A2 — Printed numerals (larger + bold, red at 100+). */}
@@ -2184,33 +2200,40 @@ export function SplDialView(p: {
         </>
       ) : null}
 
-      {/* A4 — BOTTOM text band: a low-center dB SPL wordmark + one context caption
-          + the ESTIMATED badge, pinned below the dial so the CENTER of the face and
-          the arc stay clear. */}
-      <Lbl x={0} y={cy + Rface + 8} w={w} size={15} font={fonts.oswaldSemiBold} ls={3} color={ink}>
+      {/* A4 (owner 2026-07-30 v2) — TOP text band: the dB SPL wordmark + the mode
+          caption + the ESTIMATED badge, centred and stacked at the TOP of the
+          container, starting just below the reserved STUDIO/SPL button row
+          (y≈34) so nothing sits at the bottom anymore. */}
+      <Lbl x={0} y={34} w={w} size={15} font={fonts.oswaldSemiBold} ls={3} color={ink}>
         dB SPL
       </Lbl>
       {mode === 'studio' ? (
         <>
-          <Lbl x={0} y={cy + Rface + 30} w={w} size={11} font={fonts.oswaldSemiBold} ls={0.4} color={inkDim}>
+          <Lbl x={0} y={55} w={w} size={11} font={fonts.oswaldSemiBold} ls={0.4} color={inkDim}>
             CHECK 85–95 · WORK 70–75 · DETAIL 60–65
           </Lbl>
-          <Lbl x={0} y={cy + Rface + 46} w={w} size={12} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
+          <Lbl x={0} y={71} w={w} size={12} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
             C-WEIGHTED · SLOW
           </Lbl>
+          {/* ESTIMATED badge (uncalibrated) — never a certified reading (§1.7). */}
+          {!p.calibrated ? (
+            <Lbl x={0} y={89} w={w} size={9} font={fonts.oswaldSemiBold} ls={0.6} color={RED_INK}>
+              ESTIMATED · UNCALIBRATED
+            </Lbl>
+          ) : null}
         </>
       ) : (
-        <Lbl x={0} y={cy + Rface + 32} w={w} size={12} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
-          REFERENCE SOUNDS · dBA / dBC AS NOTED
-        </Lbl>
+        <>
+          <Lbl x={0} y={56} w={w} size={12} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
+            REFERENCE SOUNDS · dBA / dBC AS NOTED
+          </Lbl>
+          {!p.calibrated ? (
+            <Lbl x={0} y={74} w={w} size={9} font={fonts.oswaldSemiBold} ls={0.6} color={RED_INK}>
+              ESTIMATED · UNCALIBRATED
+            </Lbl>
+          ) : null}
+        </>
       )}
-
-      {/* ESTIMATED badge (uncalibrated) — never a certified reading (§1.7). */}
-      {!p.calibrated ? (
-        <Lbl x={0} y={cy + Rface + 66} w={w} size={9} font={fonts.oswaldSemiBold} ls={0.6} color={RED_INK}>
-          ESTIMATED · UNCALIBRATED
-        </Lbl>
-      ) : null}
     </View>
   );
 }
@@ -2415,18 +2438,20 @@ export function PeakAvgMeterView(p: {
       <Lbl x={10} y={7} w={w - 20} align="left" size={8} font={fonts.oswaldSemiBold} ls={1}>
         LEVEL · dBFS
       </Lbl>
+      {/* Tall-meter pass (owner 2026-07-30): reference text a couple px larger so the
+          dBFS scale + column labels read easily when the meter spans a full column. */}
       {[0, -6, -12, -24, -40, -60].map((d) => (
-        <Lbl key={d} x={(peakX + colW + avgX) / 2 - 13} y={yDb(d) - 4} w={26} size={6.5}>
+        <Lbl key={d} x={(peakX + colW + avgX) / 2 - 15} y={yDb(d) - 5} w={30} size={9}>
           {`${d}`}
         </Lbl>
       ))}
-      <Lbl x={peakX + colW / 2 - 18} y={barBot + 5} w={36} size={7.5} font={fonts.oswaldSemiBold} color="#e0a43a" ls={0.6}>
+      <Lbl x={peakX + colW / 2 - 20} y={barBot + 5} w={40} size={9.5} font={fonts.oswaldSemiBold} color="#e0a43a" ls={0.6}>
         PK
       </Lbl>
-      <Lbl x={avgX + colW / 2 - 18} y={barBot + 5} w={36} size={7.5} font={fonts.oswaldSemiBold} color="#4fd08a" ls={0.6}>
+      <Lbl x={avgX + colW / 2 - 20} y={barBot + 5} w={40} size={9.5} font={fonts.oswaldSemiBold} color="#4fd08a" ls={0.6}>
         AVG
       </Lbl>
-      <Lbl x={10} y={h - 13} w={w - 20} align="left" size={6.5}>
+      <Lbl x={10} y={h - 14} w={w - 20} align="left" size={8.5}>
         {`HOLD ${holdMode.toUpperCase()} · MONO`}
       </Lbl>
     </View>
@@ -2457,21 +2482,68 @@ export function VuGlyph({ size = 40 }: { size?: number }) {
     };
     const arcB = arcOf(-48, 20);
     const arcR = arcOf(20, 48);
+    // Scale ticks across the sweep (more detail — reads as a real VU face).
+    const pt = (deg: number, r: number) => ({
+      x: cx + Math.sin(deg * DEG) * r,
+      y: py - Math.cos(deg * DEG) * r,
+    });
+    const ticks = Skia.Path.Make();
+    for (const d of [-48, -36, -24, -12, 0, 12, 24, 36, 48]) {
+      const a = pt(d, R + 0.5);
+      const b = pt(d, R + (d % 24 === 0 ? 3.2 : 2));
+      ticks.moveTo(a.x, a.y);
+      ticks.lineTo(b.x, b.y);
+    }
+    // Diagonal glass sheen across the upper face.
+    const sheen = Skia.Path.Make();
+    sheen.moveTo(w * 0.5, 2);
+    sheen.lineTo(w * 0.74, 2);
+    sheen.lineTo(w * 0.34, h - 3);
+    sheen.lineTo(w * 0.16, h - 3);
+    sheen.close();
+    // Tapered needle + short counterweight tail.
     const nA = 14 * DEG;
+    const s = Math.sin(nA);
+    const c = Math.cos(nA);
+    const tipR = R + 1;
+    const tailR = -h * 0.12;
     const needle = Skia.Path.Make();
-    needle.moveTo(cx, py);
-    needle.lineTo(cx + Math.sin(nA) * (R + 1.5), py - Math.cos(nA) * (R + 1.5));
-    return { bezel, face, arcB, arcR, needle, cx, py };
+    needle.moveTo(cx + s * tailR + c * 1.2, py - c * tailR + s * 1.2);
+    needle.lineTo(cx + s * tipR, py - c * tipR);
+    needle.lineTo(cx + s * tailR - c * 1.2, py - c * tailR - s * 1.2);
+    needle.close();
+    return { bezel, face, arcB, arcR, ticks, sheen, needle, cx, py };
   }, [w, h]);
   return (
-    <Canvas style={{ width: w, height: h }}>
-      <Path path={G.bezel} color="#1b1c22" />
-      <Path path={G.bezel} color="#000000" style="stroke" strokeWidth={1} opacity={0.7} />
-      <Path path={G.face} color="#f0e0b4" />
-      <Path path={G.arcB} color="#2b2317" style="stroke" strokeWidth={1.6} />
-      <Path path={G.arcR} color="#c9382e" style="stroke" strokeWidth={2.6} />
-      <Path path={G.needle} color="#17130c" style="stroke" strokeWidth={1.3} />
-      <Circle cx={G.cx} cy={G.py} r={1.8} color="#17130c" />
-    </Canvas>
+    <View style={{ width: w, height: h }}>
+      <Canvas style={{ width: w, height: h }}>
+        <Path path={G.bezel} color="#1b1c22" />
+        <Path path={G.bezel} color="#000000" style="stroke" strokeWidth={1} opacity={0.7} />
+        <Path path={G.face}>
+          <LinearGradient start={vec(0, 0)} end={vec(0, h)} colors={['#f6e8c0', '#e6d09a']} />
+        </Path>
+        <Path path={G.arcB} color="#2b2317" style="stroke" strokeWidth={1.4} />
+        <Path path={G.arcR} color="#c9382e" style="stroke" strokeWidth={2.6} />
+        <Path path={G.ticks} color="#2b2317" style="stroke" strokeWidth={1} />
+        <Path path={G.sheen} color="#ffffff" opacity={0.12} />
+        <Path path={G.needle} color="#17130c" />
+        <Circle cx={G.cx} cy={G.py} r={size * 0.055} color="#17130c" />
+        <Circle cx={G.cx} cy={G.py} r={size * 0.055} color="#3a3226" style="stroke" strokeWidth={0.6} />
+      </Canvas>
+      <RNText
+        style={{
+          position: 'absolute',
+          top: h * 0.5,
+          width: w,
+          textAlign: 'center',
+          fontFamily: fonts.oswaldSemiBold,
+          fontSize: Math.max(6, size * 0.14),
+          letterSpacing: 1,
+          color: '#2b2417',
+        }}
+      >
+        VU
+      </RNText>
+    </View>
   );
 }
