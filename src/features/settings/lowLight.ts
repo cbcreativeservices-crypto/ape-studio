@@ -12,11 +12,18 @@ import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const KEY = 'ape:lowLight';
+const KEY_AT = 'ape:lowLightAt';
 
 /** Fraction of black laid over the app when ON (100% − 25% brightness). */
 export const LOW_LIGHT_DIM = 0.75;
 
+/** Auto-revert to full brightness after this long UNTOUCHED (owner 2026-07-30):
+ *  the clock refreshes each time the app is opened/foregrounded while low-light
+ *  is on; leave the app alone this long and it turns itself back off. */
+export const LOW_LIGHT_EXPIRY_MS = 12 * 60 * 60 * 1000; // 12 hours
+
 let on = false;
+let touchedAt = 0;
 let hydrated = false;
 const listeners = new Set<() => void>();
 
@@ -33,18 +40,40 @@ async function hydrate(): Promise<void> {
   try {
     const raw = await AsyncStorage.getItem(KEY);
     on = raw === '1';
+    const atRaw = await AsyncStorage.getItem(KEY_AT);
+    touchedAt = atRaw ? parseInt(atRaw, 10) || 0 : 0;
   } catch {
     // absent/corrupt → stays off
   }
   hydrated = true;
+  // Cold-launch expiry: if it was left on past the window, revert now.
+  checkLowLightExpiry();
   emit();
 }
 
 export function setLowLight(next: boolean): void {
   if (on === next) return;
   on = next;
+  touchedAt = next ? Date.now() : 0;
   void AsyncStorage.setItem(KEY, next ? '1' : '0');
+  void AsyncStorage.setItem(KEY_AT, String(touchedAt));
   emit();
+}
+
+/** Refresh the "last touched" clock — called when the app is foregrounded
+ *  while low-light is on, so active use keeps it on. */
+export function touchLowLight(): void {
+  if (!on) return;
+  touchedAt = Date.now();
+  void AsyncStorage.setItem(KEY_AT, String(touchedAt));
+}
+
+/** If low-light has been untouched past the expiry window, turn it back off.
+ *  Safe to call on hydrate and on every foreground. */
+export function checkLowLightExpiry(): void {
+  if (on && touchedAt > 0 && Date.now() - touchedAt > LOW_LIGHT_EXPIRY_MS) {
+    setLowLight(false);
+  }
 }
 
 export function toggleLowLight(): void {

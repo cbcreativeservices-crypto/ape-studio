@@ -13,10 +13,11 @@
  * and the warm ember reads gentler than red in a dark theater. The top line is
  * also thicker (doubled) to match the audio frame's new weight.
  */
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useEffect } from 'react';
+import { AppState, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fonts } from '../../theme/tokens';
-import { LOW_LIGHT_DIM, toggleLowLight, useLowLight } from './lowLight';
+import { checkLowLightExpiry, LOW_LIGHT_DIM, toggleLowLight, touchLowLight, useLowLight } from './lowLight';
 
 // Burnt, darker, glowing orange (owner request 2026-07-26) — the low-light
 // indicator hue, deliberately distinct from the audio-output frame's red.
@@ -26,6 +27,18 @@ const EMBER = '#c2540f';
 export function LowLightDim() {
   const on = useLowLight();
   const insets = useSafeAreaInsets();
+  // Auto-revert after 12h untouched (owner 2026-07-30): each foreground checks
+  // expiry (reverts if stale) then refreshes the clock so active use keeps it
+  // on. Registered once at the root regardless of current state.
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (s) => {
+      if (s === 'active') {
+        checkLowLightExpiry();
+        touchLowLight();
+      }
+    });
+    return () => sub.remove();
+  }, []);
   if (!on) return null;
   return (
     <>

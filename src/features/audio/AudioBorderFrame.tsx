@@ -8,10 +8,10 @@
  *  - 2026-07-26 (a): the original edge hairline was invisible on modern phones
  *    (hidden under the status bar / clipped by rounded corners) → moved to a
  *    solid frame INSET to the safe area, thickness doubled to ~6 px.
- *  - 2026-07-26 (b): owner refined it to TWO SIDE BARS ONLY — the top and
- *    bottom edges removed — and each side bar SHRUNK by 1/3 (spans 2/3 of the
- *    safe-area height, vertically centered). Less visually heavy while still
- *    unmistakable on the left and right edges.
+ *  - 2026-07-26 (b): owner refined it to two SIDE bars only.
+ *  - 2026-07-30 (c): owner moved the bars to the TOP and BOTTOM edges instead
+ *    (sides removed) — each spans 2/3 of the safe-area WIDTH, horizontally
+ *    centered (shrunk by 1/3, trimming 1/6 off each end).
  */
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -19,10 +19,9 @@ import { useAudioOutputEnabled } from './audioOutputStore';
 
 // Vivid warning red (brighter than the old #c90000 so it reads as a warning).
 const AUDIO_RED = '#ff2a2a';
-// Side-bar width. Thinned 57% from 6 px (owner request 2026-07-26): 6 × 0.43.
+// Bar thickness (matches the previous side-bar weight).
 const THICK = 2.58;
-// Each side bar spans 2/3 of the safe-area height, centered — i.e. shrunk by
-// 1/3, trimming 1/6 off the top and 1/6 off the bottom.
+// Each bar spans 2/3 of the safe-area width, centered.
 const INSET_PCT = `${100 / 6}%`;
 
 export function AudioBorderFrame() {
@@ -30,7 +29,7 @@ export function AudioBorderFrame() {
   const insets = useSafeAreaInsets();
   if (!on) return null;
   // Container spans the safe area (just inside the status/nav bars + rounded
-  // corners); the two bars sit on its left and right edges.
+  // corners); the two bars sit on its top and bottom edges.
   return (
     <View
       pointerEvents="none"
@@ -42,18 +41,18 @@ export function AudioBorderFrame() {
         right: insets.right + 2,
       }}
     >
-      <View style={[styles.side, { left: 0 }]} />
-      <View style={[styles.side, { right: 0 }]} />
+      <View style={[styles.bar, { top: 0 }]} />
+      <View style={[styles.bar, { bottom: 0 }]} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  side: {
+  bar: {
     position: 'absolute',
-    top: INSET_PCT,
-    bottom: INSET_PCT,
-    width: THICK,
+    left: INSET_PCT,
+    right: INSET_PCT,
+    height: THICK,
     backgroundColor: AUDIO_RED,
     borderRadius: THICK / 2,
   },

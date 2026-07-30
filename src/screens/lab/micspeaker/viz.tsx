@@ -981,25 +981,9 @@ function GripHand({
           {parts.fingers.map((f, i) => (
             <Path key={`t${i}`} path={f} color={tint} style="stroke" strokeWidth={hair * 0.9} opacity={0.4} />
           ))}
-          {/* Thumb crossing at a natural diagonal, over the fingers — filled
-              once, edge-lit once, never outlined as a closed shape. */}
-          <Path path={parts.thumb}>
-            <LinearGradient
-              start={vec(-3.2 * s, -15.8 * s)}
-              end={vec(20.5 * s, 5.5 * s)}
-              colors={['#9c7d62', SKIN_MID, SKIN_LO]}
-              positions={[0, 0.55, 1]}
-            />
-          </Path>
-          <Path path={parts.thumbShade} color="#1c130d" style="stroke" strokeWidth={hair} opacity={0.5} />
-          <Path
-            path={parts.thumbEdge}
-            color={tint}
-            style="stroke"
-            strokeWidth={hair}
-            strokeCap="round"
-            opacity={0.5}
-          />
+          {/* Thumb REMOVED (owner 2026-07-30): it kept drawing on top of the
+              fingers, which reads as a hand that can't hold anything and isn't
+              how a real grip looks. The wrapped fingers alone carry the grip. */}
         </>
       )}
     </Group>

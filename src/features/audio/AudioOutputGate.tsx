@@ -181,6 +181,13 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
               <Text style={styles.btnSecondaryText}>CANCEL</Text>
             </Pressable>
           </View>
+          {/* Shake-to-mute notice (owner 2026-07-30) — its own RED container
+              below the enable card, so users know the emergency mute exists. */}
+          <View style={styles.shakeCard}>
+            <Text style={styles.shakeText}>
+              ⚠ SHAKE THE PHONE AT ANY TIME TO INSTANTLY MUTE AUDIO OUTPUT.
+            </Text>
+          </View>
         </View>
       </Modal>
     </AudioOutputGateContext.Provider>
@@ -198,4 +205,16 @@ const styles = StyleSheet.create({
   btnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.8, color: GREEN },
   btnSecondary: { borderRadius: 9, borderWidth: 1, borderColor: '#3a3a3a', backgroundColor: '#141414', paddingVertical: 11, alignItems: 'center' },
   btnSecondaryText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.8, color: colors.textSecondary },
+  shakeCard: {
+    width: '100%',
+    maxWidth: 340,
+    marginTop: 10,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255,42,42,.7)',
+    backgroundColor: 'rgba(255,42,42,.12)',
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+  },
+  shakeText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 0.6, lineHeight: 18, color: '#ff6b5e', textAlign: 'center' },
 });
