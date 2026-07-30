@@ -691,9 +691,11 @@ export function VuMeterView(p: {
   cornerReadouts?: { maxText?: string; levelText?: string; rangeText?: string };
   /** SPL-span brackets printed on the INNER (concave) side of the arc (SPL popup,
    *  2026-07-30): `lowText` near the −20 mark, `highText` near the 0 mark — the SPL
-   *  range the VU deflection maps onto (low SPL at −20, high SPL at 0). Small dark
-   *  ink, opposite the outer −20..+3 numerals. Absent ⇒ nothing drawn. */
-  scaleBrackets?: { lowText: string; highText: string };
+   *  range the VU deflection maps onto (low SPL at −20, high SPL at 0). Small blue
+   *  ink, opposite the outer −20..+3 numerals. Two OPTIONAL middle numbers may be
+   *  added (2026-07-30): `mid10Text` at the −10 mark and `mid5Text` at the −5 mark,
+   *  filling in the span between low and high. Absent ⇒ nothing drawn. */
+  scaleBrackets?: { lowText: string; highText: string; mid10Text?: string; mid5Text?: string };
 }) {
   const w = p.width;
   const h = p.height ?? 230;
@@ -791,10 +793,15 @@ export function VuMeterView(p: {
       return { d, x: lp.x, y: lp.y };
     });
     // SPL-span bracket anchors on the INNER (concave) side of the arc — near the
-    // −20 and 0 marks, opposite the outer numerals (drawn only when scaleBrackets).
+    // −20, −10, −5 and 0 marks, opposite the outer numerals (drawn only when
+    // scaleBrackets). All share the R−15 concave radius; their tick angles are
+    // well-separated (−41°/−26°/−10°/+20°) so the four never collide, and the
+    // inner radius keeps them clear of the outer ticks and (at rest) the needle.
     const brLow = pt(angDb(-20), R - 15);
+    const brMid10 = pt(angDb(-10), R - 15);
+    const brMid5 = pt(angDb(-5), R - 15);
     const brHigh = pt(angDb(0), R - 15);
-    return { tickB, tickR, arcB, wedge, outer, face, topShade, sheen, labels, brLow, brHigh };
+    return { tickB, tickR, arcB, wedge, outer, face, topShade, sheen, labels, brLow, brMid10, brMid5, brHigh };
   }, [w, h]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Precomputed loop series: windowed RMS (needle target) + peak LED ──────
@@ -909,8 +916,8 @@ export function VuMeterView(p: {
     const tailR = -12;
     const wb = 3.0;
     const wt = 1.0;
-    const ox = 2.4;
-    const oy = 3.4;
+    const ox = 2.6;
+    const oy = 2.8;
     const bx = cx + s * tailR + ox;
     const by = py - c * tailR + oy;
     const tx = cx + s * tipR + ox;
@@ -938,6 +945,13 @@ export function VuMeterView(p: {
 
   const ledX = fx + fw - 22;
   const ledY = fy + 20;
+  // VU wordmark seat (owner 2026-07-30): the needle TIP traces a circle of radius
+  // tipR (= the blade length, R·0.92). At the vertical the blade reaches y = py −
+  // tipR, so the wordmark's BOTTOM is pinned a hair ABOVE that arc — the needle
+  // tip only grazes the boundary and never crosses the letters at any deflection.
+  const wmSize = 22;
+  const wmBottomY = py - R * 0.92 - 2;
+  const wmTopY = wmBottomY - wmSize;
   return (
     <View style={{ width: w, height: h }}>
       <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
@@ -977,8 +991,10 @@ export function VuMeterView(p: {
             <Circle cx={ledX} cy={ledY} r={5} color="#1d0c09" style="stroke" strokeWidth={1} />
           </>
         ) : null}
-        {/* Needle: soft drop shadow, tapered blade, pivot boss + screw. */}
-        <Path path={needleShadow} color="#000000" opacity={0.18}>
+        {/* Needle: soft ANIMATED drop shadow (offset down-right, blurred) that
+            tracks the blade every frame via needleShadow ← needleRad; drawn UNDER
+            the needle so the blade reads as floating above the face. */}
+        <Path path={needleShadow} color="#000000" opacity={0.4}>
           <BlurMask blur={3} style="normal" />
         </Path>
         <Path path={needlePath} color="#17130c" />
@@ -1021,6 +1037,16 @@ export function VuMeterView(p: {
           <Lbl x={G.brLow.x - 24} y={G.brLow.y - 5} w={48} size={9.5} font={fonts.oswaldSemiBold} ls={0.3} color="#1f5fd0">
             {p.scaleBrackets.lowText}
           </Lbl>
+          {p.scaleBrackets.mid10Text != null ? (
+            <Lbl x={G.brMid10.x - 24} y={G.brMid10.y - 5} w={48} size={9.5} font={fonts.oswaldSemiBold} ls={0.3} color="#1f5fd0">
+              {p.scaleBrackets.mid10Text}
+            </Lbl>
+          ) : null}
+          {p.scaleBrackets.mid5Text != null ? (
+            <Lbl x={G.brMid5.x - 24} y={G.brMid5.y - 5} w={48} size={9.5} font={fonts.oswaldSemiBold} ls={0.3} color="#1f5fd0">
+              {p.scaleBrackets.mid5Text}
+            </Lbl>
+          ) : null}
           <Lbl x={G.brHigh.x - 24} y={G.brHigh.y - 5} w={48} size={9.5} font={fonts.oswaldSemiBold} ls={0.3} color="#1f5fd0">
             {p.scaleBrackets.highText}
           </Lbl>
@@ -1029,7 +1055,7 @@ export function VuMeterView(p: {
       {/* VU wordmark: pinned a fixed gap ABOVE the pivot hub (owner 2026-07-30)
           so the black hub circle never overlaps the letters, whatever R works out
           to on-device. Center column is clear of the needle blade at rest. */}
-      <Lbl x={cx - 26} y={py - 44} w={52} size={26} font={fonts.oswaldSemiBold} color="#2b2417" ls={3}>
+      <Lbl x={cx - 26} y={wmTopY} w={52} size={wmSize} font={fonts.oswaldSemiBold} color="#2b2417" ls={3}>
         VU
       </Lbl>
       {showLed ? (
@@ -1049,10 +1075,10 @@ export function VuMeterView(p: {
           in-SPL reading) — both the caption and the value. */}
       {p.cornerReadouts?.maxText != null ? (
         <>
-          <Lbl x={fx + 12} y={py - 24} w={70} align="left" size={9} font={fonts.oswaldSemiBold} ls={1} color="#b3271e">
+          <Lbl x={fx + 18} y={py - 34} w={70} align="left" size={9} font={fonts.oswaldSemiBold} ls={1} color="#b3271e">
             MAX
           </Lbl>
-          <Lbl x={fx + 12} y={py - 13} w={110} align="left" size={18} font={fonts.oswaldSemiBold} color="#b3271e">
+          <Lbl x={fx + 18} y={py - 23} w={110} align="left" size={18} font={fonts.oswaldSemiBold} color="#b3271e">
             {p.cornerReadouts.maxText}
           </Lbl>
         </>
@@ -1814,10 +1840,12 @@ export function SplDialView(p: {
   calibrated: boolean;
   /** Which annotations the ring conveys (owner 2026-07-30). 'studio' = the
    *  control-room 79–85 dB(C) sweet-spot band + monitoring guidance; 'spl' =
-   *  common reference sounds at their dB along the arc + the 100+ exposure zone.
-   *  The colored 20–130 arc, ticks, numerals and the node point are identical in
-   *  both — only the labels swap. Default 'studio'. */
-  labelMode?: 'studio' | 'spl';
+   *  common reference sounds at their dB along the arc + the 100+ exposure zone;
+   *  'optimal' = optimal reference-listening zones (AMBIENT…LIMIT) at each range
+   *  midpoint, coloured by zone. The colored 20–130 arc, ticks, numerals and the
+   *  node point are identical in all three — only the labels + top title swap.
+   *  Default 'studio'. */
+  labelMode?: 'studio' | 'spl' | 'optimal';
   loopSeconds?: number;
   /** Legacy corner-readout props — the readouts moved to the VU; kept optional
    *  for prop-compat, not rendered by the gauge. */
@@ -2025,75 +2053,117 @@ export function SplDialView(p: {
   // Dim/grey studio zone — darkened so the below-sweet-spot arc still reads on gray.
   const Z_GREY = '#6b7078';
 
-  // ── CALLOUT LABELS (owner 2026-07-30 redesign): every descriptive/reference
-  // label lives OUTSIDE the arc in the wide side margins — left margin = low SPL,
-  // right margin = high SPL (the arc's geometry maps that way). Each label is
-  // connected to its EXACT dB point on the arc line by a thin LEADER hairline
-  // ending in a small dot ON the arc. Left labels are right-aligned, right labels
-  // left-aligned, and the vertical slots are ordered to match each anchor's
-  // height so the leaders never cross the arc or each other. Rebuilt only when
-  // the size or the label mode changes.
+  // ── CALLOUT LABELS (owner 2026-07-30 redesign v2 — distribute around the WHOLE
+  // circle): every descriptive/reference label is placed RADIALLY OUTSIDE its
+  // exact-dB anchor, so the labels ring the arc — lower-left (low dB) sweeping up
+  // and over to lower-right (high dB) — instead of parking only in the side
+  // margins. Each label is connected to its EXACT dB point on the arc line by a
+  // thin LEADER hairline ending in a small dot ON the arc. A per-side vertical
+  // de-collision keeps stacked neighbours apart while the leader still lands on
+  // the TRUE anchor. Rebuilt only when the size or the label mode changes.
   const CO = useMemo(() => {
     const arcR = Rs + 2;
-    // B3: the leader endpoint is EXACTLY angOf(spl) on the arc line — the dB in
+    // The leader endpoint is EXACTLY angOf(spl) on the arc line — the dB printed in
     // each label IS this anchor's spl, so the hairline lands right on its numeral.
     const anchor = (spl: number) => {
       const a = angOf(spl);
       return { x: cx + Math.sin(a) * arcR, y: cy - Math.cos(a) * arcR };
     };
-    // B4: labels live OUTSIDE the arc in the side margins, a clear 12 px gap from
-    // the ring; the leaders bridge that gap. Left margin holds a right/centred
-    // block, right margin a left/centred block.
-    const leftInnerX = Math.round(cx - arcR - 12);
-    const rightInnerX = Math.round(cx + arcR + 12);
-    const leftBx = 6;
-    const leftBw = Math.max(52, leftInnerX - 6 - 6);
-    const rightBx = rightInnerX + 4;
-    const rightBw = Math.max(52, w - rightBx - 6);
-    const lineH = 13;
+    const lineH = 15; // item 6: more line-to-line breathing room
     type CoLine = { t: string; size: number; color: string; ls?: number };
     // `color` = the zone colour that tints this callout's leader + anchor dot.
-    // ty is derived from cy/Rface so slots track the (smaller, lower) dial. Slots
-    // are ordered to match each anchor's height so leaders never cross.
-    type CoItem = { side: 'L' | 'R'; spl: number; ty: number; color: string; lines: CoLine[] };
-    // Slots now sit in the UPPER side margins (above the lowered dial): ty is a
-    // small offset ABOVE the dial-top line (cy − Rface), ordered so that on each
-    // side the higher-on-the-arc anchor takes the higher slot — the leaders then
-    // fan DOWN-and-in onto their exact dB anchors and never cross.
-    const top = cy - Rface;
-    const items: CoItem[] =
+    type CoDef = { spl: number; color: string; lines: CoLine[] };
+    const defs: CoDef[] =
       mode === 'spl'
         ? [
-            // Reference sounds (unchanged content) — precision + centred subtitles.
-            { side: 'R', spl: 79, ty: top - 48, color: Z_AMBER, lines: [ { t: 'STUDIO LISTENING', size: 11, color: Z_AMBER_TXT, ls: 0.2 }, { t: '~79 dBC', size: 10, color: inkDim } ] },
-            { side: 'R', spl: 95, ty: top - 16, color: Z_ORANGE, lines: [ { t: 'CONCERT', size: 13, color: Z_ORANGE, ls: 0.3 }, { t: '~95 dBC', size: 10, color: inkDim } ] },
-            { side: 'R', spl: 110, ty: top + 16, color: Z_RED, lines: [ { t: '100+ dB', size: 13, color: Z_RED, ls: 0.3 }, { t: 'UNSAFE >15 MIN/DAY', size: 9, color: Z_RED } ] },
-            { side: 'L', spl: 60, ty: top - 40, color: Z_GREEN, lines: [ { t: 'CONVERSATION', size: 13, color: Z_GREEN, ls: 0.3 }, { t: '~60 dBA', size: 10, color: inkDim } ] },
-            { side: 'L', spl: 37, ty: top - 4, color: Z_GREEN, lines: [ { t: 'QUIET ROOM', size: 13, color: Z_GREEN, ls: 0.3 }, { t: '35–40 dBA', size: 10, color: inkDim } ] },
+            // Common reference sounds at their dB along the arc.
+            { spl: 37, color: Z_GREEN, lines: [ { t: 'QUIET ROOM', size: 12.5, color: Z_GREEN, ls: 0.3 }, { t: '35–40 dBA', size: 10, color: inkDim } ] },
+            { spl: 60, color: Z_GREEN, lines: [ { t: 'CONVERSATION', size: 12.5, color: Z_GREEN, ls: 0.3 }, { t: '~60 dBA', size: 10, color: inkDim } ] },
+            { spl: 79, color: Z_AMBER, lines: [ { t: 'STUDIO LISTENING', size: 11, color: Z_AMBER_TXT, ls: 0.2 }, { t: '~79 dBC', size: 10, color: inkDim } ] },
+            { spl: 95, color: Z_ORANGE, lines: [ { t: 'CONCERT', size: 12.5, color: Z_ORANGE, ls: 0.3 }, { t: '~95 dBC', size: 10, color: inkDim } ] },
+            { spl: 110, color: Z_RED, lines: [ { t: '100+ dB', size: 12.5, color: Z_RED, ls: 0.3 }, { t: 'UNSAFE >15 MIN/DAY', size: 9, color: Z_RED } ] },
+          ]
+        : mode === 'optimal'
+        ? [
+            // Optimal reference-listening zones — leader anchored at each RANGE
+            // MIDPOINT, coloured by zone (item 9).
+            { spl: 50, color: Z_GREEN, lines: [ { t: 'AMBIENT', size: 12.5, color: Z_GREEN, ls: 0.3 }, { t: '40–59 dBA', size: 10, color: inkDim } ] },
+            { spl: 69, color: Z_AMBER, lines: [ { t: 'PROGRAM', size: 12.5, color: Z_AMBER_TXT, ls: 0.3 }, { t: '60–78 dBA', size: 10, color: inkDim } ] },
+            { spl: 81, color: Z_GREEN, lines: [ { t: 'REFERENCE', size: 12.5, color: Z_GREEN, ls: 0.3 }, { t: '79–84 dBA', size: 10, color: inkDim } ] },
+            { spl: 89, color: Z_ORANGE, lines: [ { t: 'SHOW', size: 12.5, color: Z_ORANGE, ls: 0.3 }, { t: '85–93 dBA', size: 10, color: inkDim } ] },
+            { spl: 95, color: Z_ORANGE, lines: [ { t: 'HIGH', size: 12.5, color: Z_ORANGE, ls: 0.3 }, { t: '94–96 dBA', size: 10, color: inkDim } ] },
+            { spl: 98, color: Z_RED, lines: [ { t: 'LIMIT', size: 12.5, color: Z_RED, ls: 0.3 }, { t: '97–99 dBA', size: 10, color: inkDim } ] },
+            { spl: 110, color: Z_RED, lines: [ { t: '100+ dB LAeq', size: 12, color: Z_RED, ls: 0.2 }, { t: 'WHO 15-MIN LIMIT', size: 9, color: Z_RED } ] },
           ]
         : [
-            // B6: four long-term mixing bands. Lower dB on the LEFT (going up),
-            // higher dB on the RIGHT — leaders don't cross. First three green, the
-            // brief IMPACT CHECK orange.
-            { side: 'L', spl: 72, ty: top - 44, color: Z_GREEN, lines: [ { t: 'GENERAL EDITING', size: 12, color: Z_GREEN, ls: 0.2 }, { t: '70–75 dB SPL', size: 10, color: inkDim } ] },
-            { side: 'L', spl: 62, ty: top - 10, color: Z_GREEN, lines: [ { t: 'BACKGROUND · DETAIL', size: 10.5, color: Z_GREEN, ls: 0.1 }, { t: '60–65 dB SPL', size: 10, color: inkDim } ] },
-            { side: 'R', spl: 79, ty: top - 44, color: Z_GREEN, lines: [ { t: 'CRITICAL BALANCE', size: 12, color: Z_GREEN, ls: 0.2 }, { t: '79 dB SPL C', size: 10, color: inkDim } ] },
-            { side: 'R', spl: 90, ty: top - 10, color: Z_ORANGE, lines: [ { t: 'IMPACT CHECK', size: 13, color: Z_ORANGE, ls: 0.3 }, { t: '85–95 dB SPL · brief', size: 9.5, color: inkDim } ] },
+            // Studio: four long-term mixing bands. First three green, the brief
+            // IMPACT CHECK orange.
+            { spl: 62, color: Z_GREEN, lines: [ { t: 'BACKGROUND · DETAIL', size: 10.5, color: Z_GREEN, ls: 0.1 }, { t: '60–65 dB SPL', size: 10, color: inkDim } ] },
+            { spl: 72, color: Z_GREEN, lines: [ { t: 'GENERAL EDITING', size: 12, color: Z_GREEN, ls: 0.2 }, { t: '70–75 dB SPL', size: 10, color: inkDim } ] },
+            { spl: 79, color: Z_GREEN, lines: [ { t: 'CRITICAL BALANCE', size: 12, color: Z_GREEN, ls: 0.2 }, { t: '79 dB SPL C', size: 10, color: inkDim } ] },
+            { spl: 90, color: Z_ORANGE, lines: [ { t: 'IMPACT CHECK', size: 12.5, color: Z_ORANGE, ls: 0.3 }, { t: '85–95 dB SPL · brief', size: 9.5, color: inkDim } ] },
           ];
-    const laid = items.map((it) => {
-      const bx = it.side === 'L' ? leftBx : rightBx;
-      const bw = it.side === 'L' ? leftBw : rightBw;
-      const innerX = it.side === 'L' ? leftInnerX : rightInnerX;
-      const a = anchor(it.spl);
-      const midY = it.ty + (it.lines.length * lineH) / 2;
-      const leaderPath = Skia.Path.Make();
-      leaderPath.moveTo(innerX, midY);
-      leaderPath.lineTo(a.x, a.y);
-      const dotPath = Skia.Path.Make();
-      dotPath.addCircle(a.x, a.y, 2.8);
-      return { ...it, bx, bw, innerX, ty: it.ty, lineH, ax: a.x, ay: a.y, leaderPath, dotPath };
+
+    // Place each label centre on the ray through its anchor, at radius labelR —
+    // clear OUTSIDE the arc ring. Side (L/C/R) follows the ray's horizontal sign
+    // so text hugs the correct margin (left = right-aligned, right = left-aligned,
+    // near-top = centred).
+    const gap = Math.max(30, Rface * 0.5);
+    const labelR = arcR + gap;
+    const bw = Math.min(Math.round(w * 0.44), 132);
+    const clampX = (x: number) => Math.max(4, Math.min(w - bw - 4, x));
+    type Placed = {
+      spl: number; color: string; lines: CoLine[];
+      side: 'L' | 'C' | 'R'; align: 'left' | 'center' | 'right';
+      bx: number; bw: number; ty: number; th: number; innerX: number; ax: number; ay: number;
+    };
+    const placed: Placed[] = defs.map((d) => {
+      const a = angOf(d.spl);
+      const sn = Math.sin(a);
+      const cs = Math.cos(a);
+      const lx = cx + sn * labelR;
+      const ly = cy - cs * labelR;
+      const th = d.lines.length * lineH;
+      const an = anchor(d.spl);
+      const side: 'L' | 'C' | 'R' = sn < -0.15 ? 'L' : sn > 0.15 ? 'R' : 'C';
+      let bx: number;
+      let align: 'left' | 'center' | 'right';
+      let innerX: number;
+      if (side === 'L') { align = 'right'; bx = clampX(lx - bw); innerX = bx + bw; }
+      else if (side === 'R') { align = 'left'; bx = clampX(lx); innerX = bx; }
+      else { align = 'center'; bx = clampX(lx - bw / 2); innerX = lx; }
+      return { spl: d.spl, color: d.color, lines: d.lines, side, align, bx, bw, ty: ly - th / 2, th, innerX, ax: an.x, ay: an.y };
     });
-    return { items: laid, leftInnerX, rightInnerX };
+
+    // Vertical de-collision per side (≥ minGap between stacked boxes), clamped to
+    // the component. The leaders (built after) still terminate on the true anchor.
+    const minGap = 8;
+    const topLimit = 6;
+    const botLimit = h - 4;
+    for (const s of ['L', 'C', 'R'] as const) {
+      const grp = placed.filter((p2) => p2.side === s).sort((a, b) => a.ty - b.ty);
+      for (let i = 0; i < grp.length; i++) {
+        if (grp[i].ty < topLimit) grp[i].ty = topLimit;
+        if (i > 0) {
+          const minTy = grp[i - 1].ty + grp[i - 1].th + minGap;
+          if (grp[i].ty < minTy) grp[i].ty = minTy;
+        }
+        if (grp[i].ty + grp[i].th > botLimit) grp[i].ty = botLimit - grp[i].th;
+      }
+    }
+
+    const laid = placed.map((p2) => {
+      const midY = p2.ty + p2.th / 2;
+      const fromX = p2.innerX;
+      const fromY = p2.side === 'C' ? p2.ty + p2.th : midY;
+      const leaderPath = Skia.Path.Make();
+      leaderPath.moveTo(fromX, fromY);
+      leaderPath.lineTo(p2.ax, p2.ay);
+      const dotPath = Skia.Path.Make();
+      dotPath.addCircle(p2.ax, p2.ay, 2.8);
+      return { ...p2, lineH, leaderPath, dotPath };
+    });
+    return { items: laid };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [w, h, mode]);
 
@@ -2102,10 +2172,10 @@ export function SplDialView(p: {
       <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
         {/* A1/B1 — LIGHT-GRAY rounded-rect PLATE (owner 2026-07-30: was white).
             Flat and clean; the slightly-lighter gray face sits in the upper part. */}
-        <Path path={G.plate} color="#c6c6cc" />
-        <Path path={G.plate} color="#adadb4" style="stroke" strokeWidth={1} opacity={0.9} />
+        <Path path={G.plate} color="#b2b2b8" />
+        <Path path={G.plate} color="#9a9aa1" style="stroke" strokeWidth={1} opacity={0.9} />
         {/* Medium-gray face (LOWER portion), a touch lighter than the plate. */}
-        <Path path={G.face} color="#d2d2d8" />
+        <Path path={G.face} color="#bebec4" />
         {/* A3 — MAIN arc conveys each MODE's ranges (zone palette darkened to read
             on white). STUDIO: dim below the sweet spot, GREEN 79–85 dB(C), RED
             above. SPL: green→amber→orange→red loudness with 100+ emphasised red. */}
@@ -2146,7 +2216,7 @@ export function SplDialView(p: {
         <Path path={nodeCore} color="#2e2618" />
         <Path path={nodeCore} color="#fff5d8" style="stroke" strokeWidth={1.4} opacity={0.95} />
         {/* Face edge: subtle ring, a shade darker than the gray face for definition. */}
-        <Path path={G.face} color="#a6a6ae" style="stroke" strokeWidth={1.4} opacity={0.9} />
+        <Path path={G.face} color="#949499" style="stroke" strokeWidth={1.4} opacity={0.9} />
       </Canvas>
 
       {/* A2 — Printed numerals (larger + bold, red at 100+). */}
@@ -2160,8 +2230,8 @@ export function SplDialView(p: {
           guidance label sits cleanly in a side margin, right-aligned on the left,
           left-aligned on the right, connected inward to its exact dB on the arc by
           the leader hairlines drawn in the Canvas above. */}
-      {/* B5: each callout is a CENTRED block — the title on top, the dB subtitle
-          centred directly beneath it (both share the block's centre). */}
+      {/* Each callout is a block anchored to its margin side — title on top, the dB
+          subtitle directly beneath it, both aligned to the block's side (item 7). */}
       {CO.items.map((it, idx) => (
         <View key={`co${idx}`}>
           {it.lines.map((ln, i) => (
@@ -2170,7 +2240,7 @@ export function SplDialView(p: {
               x={it.bx}
               y={Math.round(it.ty + i * it.lineH)}
               w={it.bw}
-              align="center"
+              align={it.align}
               size={ln.size}
               font={fonts.oswaldSemiBold}
               ls={ln.ls}
@@ -2191,10 +2261,10 @@ export function SplDialView(p: {
           {/* B7: the big centre number takes the LIVE zone colour when provided
               (green/amber/orange/red as the level crosses the arc zones); dark ink
               otherwise. The "dB SPL" sub-label stays neutral dark ink. */}
-          <Lbl x={0} y={cy - 21} w={w} size={30} font={fonts.oswaldSemiBold} color={p.centerColor ?? ink}>
+          <Lbl x={0} y={cy - 23} w={w} size={30} font={fonts.oswaldSemiBold} color={p.centerColor ?? ink}>
             {p.centerText}
           </Lbl>
-          <Lbl x={0} y={cy + 15} w={w} size={10} font={fonts.oswaldSemiBold} ls={1.5} color={inkDim}>
+          <Lbl x={0} y={cy + 17} w={w} size={10} font={fonts.oswaldSemiBold} ls={1.5} color={inkDim}>
             dB SPL
           </Lbl>
         </>
@@ -2204,31 +2274,50 @@ export function SplDialView(p: {
           caption + the ESTIMATED badge, centred and stacked at the TOP of the
           container, starting just below the reserved STUDIO/SPL button row
           (y≈34) so nothing sits at the bottom anymore. */}
-      <Lbl x={0} y={34} w={w} size={15} font={fonts.oswaldSemiBold} ls={3} color={ink}>
-        dB SPL
-      </Lbl>
       {mode === 'studio' ? (
         <>
-          <Lbl x={0} y={55} w={w} size={11} font={fonts.oswaldSemiBold} ls={0.4} color={inkDim}>
+          <Lbl x={0} y={34} w={w} size={15} font={fonts.oswaldSemiBold} ls={3} color={ink}>
+            dB SPL
+          </Lbl>
+          <Lbl x={0} y={58} w={w} size={11} font={fonts.oswaldSemiBold} ls={0.4} color={inkDim}>
             CHECK 85–95 · WORK 70–75 · DETAIL 60–65
           </Lbl>
-          <Lbl x={0} y={71} w={w} size={12} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
+          <Lbl x={0} y={76} w={w} size={12} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
             C-WEIGHTED · SLOW
           </Lbl>
           {/* ESTIMATED badge (uncalibrated) — never a certified reading (§1.7). */}
           {!p.calibrated ? (
-            <Lbl x={0} y={89} w={w} size={9} font={fonts.oswaldSemiBold} ls={0.6} color={RED_INK}>
+            <Lbl x={0} y={96} w={w} size={9} font={fonts.oswaldSemiBold} ls={0.6} color={RED_INK}>
+              ESTIMATED · UNCALIBRATED
+            </Lbl>
+          ) : null}
+        </>
+      ) : mode === 'spl' ? (
+        <>
+          {/* Item 8: two-line SPL title (the old "dB SPL" wordmark removed). */}
+          <Lbl x={0} y={34} w={w} size={15} font={fonts.oswaldSemiBold} ls={2} color={ink}>
+            SPL REFERENCE SOUNDS
+          </Lbl>
+          <Lbl x={0} y={58} w={w} size={12} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
+            dBA / dBC AS NOTED
+          </Lbl>
+          {!p.calibrated ? (
+            <Lbl x={0} y={80} w={w} size={9} font={fonts.oswaldSemiBold} ls={0.6} color={RED_INK}>
               ESTIMATED · UNCALIBRATED
             </Lbl>
           ) : null}
         </>
       ) : (
         <>
-          <Lbl x={0} y={56} w={w} size={12} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
-            REFERENCE SOUNDS · dBA / dBC AS NOTED
+          {/* Item 9: optimal reference-listening title. */}
+          <Lbl x={0} y={34} w={w} size={13} font={fonts.oswaldSemiBold} ls={1} color={ink}>
+            OPTIMAL REFERENCE LISTENING
+          </Lbl>
+          <Lbl x={0} y={57} w={w} size={12} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
+            dBA · LAeq WHERE NOTED
           </Lbl>
           {!p.calibrated ? (
-            <Lbl x={0} y={74} w={w} size={9} font={fonts.oswaldSemiBold} ls={0.6} color={RED_INK}>
+            <Lbl x={0} y={79} w={w} size={9} font={fonts.oswaldSemiBold} ls={0.6} color={RED_INK}>
               ESTIMATED · UNCALIBRATED
             </Lbl>
           ) : null}
@@ -2328,11 +2417,20 @@ export function PeakAvgMeterView(p: {
     const ra = liveRms.value;
     const pk = rp === rp && rp > -120 ? Math.min(6, rp) : -120;
     const av = ra === ra && ra > -120 ? Math.min(6, ra) : -120;
-    // PEAK: near-instant attack (Math.max jumps up), quick fall (owner 2026-07-30).
+    // PEAK: TRUE instant attack — Math.max latches the new level the SAME frame it
+    // arrives (zero attack smoothing, so the LED can never lag a rise), with a
+    // quick 62 dB/s fall on the way down (owner 2026-07-30).
     lPk.value = Math.max(pk, lPk.value - 62 * dt);
-    // AVERAGE: livelier — tc 0.15 s (was 0.3), faster silence decay.
-    const a = 1 - Math.exp(-dt / 0.15);
-    lAvg.value = av > -120 ? lAvg.value + (av - lAvg.value) * a : Math.max(-120, lAvg.value - 34 * dt);
+    // AVERAGE: lively, ASYMMETRIC (owner 2026-07-30) — a very short 0.05 s attack
+    // so it rises almost immediately with the peak, and a slower 0.2 s musical
+    // release; in silence it decays at 34 dB/s.
+    if (av > -120) {
+      const tcA = av > lAvg.value ? 0.05 : 0.2;
+      const a = 1 - Math.exp(-dt / tcA);
+      lAvg.value = lAvg.value + (av - lAvg.value) * a;
+    } else {
+      lAvg.value = Math.max(-120, lAvg.value - 34 * dt);
+    }
     if (showCap) {
       if (pk >= lHold.value) {
         lHold.value = pk;
@@ -2435,13 +2533,15 @@ export function PeakAvgMeterView(p: {
         <Path path={cap} color="#f2f5fa" />
         <Path path={G.ticks} color="#565a64" style="stroke" strokeWidth={1} />
       </Canvas>
-      <Lbl x={10} y={7} w={w - 20} align="left" size={8} font={fonts.oswaldSemiBold} ls={1}>
+      {/* Item 12: the meter's gray reference text is lightened to #b6bac4 so it
+          reads clearly on the dark meter background (was the dim #767a85 default). */}
+      <Lbl x={10} y={7} w={w - 20} align="left" size={8} font={fonts.oswaldSemiBold} ls={1} color="#b6bac4">
         LEVEL · dBFS
       </Lbl>
       {/* Tall-meter pass (owner 2026-07-30): reference text a couple px larger so the
           dBFS scale + column labels read easily when the meter spans a full column. */}
       {[0, -6, -12, -24, -40, -60].map((d) => (
-        <Lbl key={d} x={(peakX + colW + avgX) / 2 - 15} y={yDb(d) - 5} w={30} size={9}>
+        <Lbl key={d} x={(peakX + colW + avgX) / 2 - 15} y={yDb(d) - 5} w={30} size={9} color="#b6bac4">
           {`${d}`}
         </Lbl>
       ))}
@@ -2451,7 +2551,7 @@ export function PeakAvgMeterView(p: {
       <Lbl x={avgX + colW / 2 - 20} y={barBot + 5} w={40} size={9.5} font={fonts.oswaldSemiBold} color="#4fd08a" ls={0.6}>
         AVG
       </Lbl>
-      <Lbl x={10} y={h - 14} w={w - 20} align="left" size={8.5}>
+      <Lbl x={10} y={h - 14} w={w - 20} align="left" size={8.5} color="#b6bac4">
         {`HOLD ${holdMode.toUpperCase()} · MONO`}
       </Lbl>
     </View>

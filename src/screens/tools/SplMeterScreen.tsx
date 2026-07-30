@@ -89,7 +89,7 @@ function VuTopMeter({
   maxText: string;
   levelText: string;
   rangeText: string;
-  brackets: { lowText: string; highText: string };
+  brackets: { lowText: string; highText: string; mid10Text?: string; mid5Text?: string };
 }) {
   const phase = viz.usePhaseClock(true, 1 / VU_LOOP);
   return (
@@ -159,8 +159,8 @@ function VuHero({
   dialH: number;
   splOffset: number;
   calibrated: boolean;
-  dialMode: 'studio' | 'spl';
-  onDialMode: (m: 'studio' | 'spl') => void;
+  dialMode: DialMode;
+  onDialMode: (m: DialMode) => void;
   centerText: string;
   centerColor?: string;
 }) {
@@ -183,14 +183,16 @@ function VuHero({
         centerColor={centerColor}
       />
       <View style={styles.dialModeCorner}>
-        {(['studio', 'spl'] as const).map((m) => (
+        {(['studio', 'spl', 'optimal'] as const).map((m) => (
           <Pressable
             key={m}
             style={[styles.dialModeChip, dialMode === m && styles.chipSelected]}
             onPress={() => onDialMode(m)}
             accessibilityRole="button"
             accessibilityState={{ selected: dialMode === m }}
-            accessibilityLabel={m === 'studio' ? 'Studio labels' : 'SPL reference labels'}
+            accessibilityLabel={
+              m === 'studio' ? 'Studio labels' : m === 'spl' ? 'SPL reference labels' : 'Optimal reference listening labels'
+            }
           >
             <Text style={[styles.dialModeChipText, dialMode === m && styles.chipTextSelected]}>
               {m.toUpperCase()}
@@ -205,22 +207,33 @@ function VuHero({
 /** RANGE — the environmental SPL that reads 0 VU. The VU shows the signal
  *  RELATIVE to this reference (current SPL − RANGE), so RANGE centres the meter
  *  on the room's noise level. Default 100 dB. AUTO (below) tracks ambient. */
-const RANGE_VALUES = [20, 40, 60, 80, 100, 120] as const;
+const RANGE_VALUES = [40, 60, 80, 100, 120] as const;
 
 // Circle-gauge zone palette (matches SplDialView's darkened arc colors) — used to
 // tint the live centre readout so the number turns the colour of the zone it sits
 // in as the level moves (owner 2026-07-30).
 const ZONE = { green: '#1f7a34', amber: '#b8860b', orange: '#c9631a', red: '#b3271e', dim: '#6b7078' } as const;
-function splZoneColor(spl: number, mode: 'studio' | 'spl'): string {
-  if (mode === 'spl') {
-    if (spl < 60) return ZONE.green;
-    if (spl < 78) return ZONE.amber;
-    if (spl < 95) return ZONE.orange;
+type DialMode = 'studio' | 'spl' | 'optimal';
+function splZoneColor(spl: number, mode: DialMode): string {
+  if (mode === 'studio') {
+    // studio: dim below the sweet spot, green across 79–85, red above
+    if (spl < 79) return ZONE.dim;
+    if (spl <= 85) return ZONE.green;
     return ZONE.red;
   }
-  // studio: dim below the sweet spot, green across 79–85, red above
-  if (spl < 79) return ZONE.dim;
-  if (spl <= 85) return ZONE.green;
+  if (mode === 'optimal') {
+    // optimal reference listening bands: ambient/program/reference green-ish,
+    // show/high orange, limit/100+ red.
+    if (spl < 60) return ZONE.green;
+    if (spl < 79) return ZONE.amber;
+    if (spl <= 84) return ZONE.green;
+    if (spl < 97) return ZONE.orange;
+    return ZONE.red;
+  }
+  // spl reference-sounds loudness zones
+  if (spl < 60) return ZONE.green;
+  if (spl < 78) return ZONE.amber;
+  if (spl < 95) return ZONE.orange;
   return ZONE.red;
 }
 
@@ -350,7 +363,7 @@ export function SplMeterScreen({ navigation }: Props) {
   const splEmaRef = useRef<number | null>(null);
   // Circle-meter label mode (owner 2026-07-30): STUDIO (control-room sweet-spot)
   // vs SPL (reference sounds). The node point rides the same arc in both.
-  const [dialMode, setDialMode] = useState<'studio' | 'spl'>('studio');
+  const [dialMode, setDialMode] = useState<DialMode>('studio');
   const { width: winW } = useWindowDimensions();
   // TOP area (owner 2026-07-30): a LEFT column holds the VU plus the RANGE /
   // WEIGHTING / PEAK-HOLD controls; a thin TALL LED meter runs down the RIGHT,
@@ -423,7 +436,12 @@ export function SplMeterScreen({ navigation }: Props) {
   const vuRangeText = rangeAuto ? `AUTO ${rangeRef}` : `RANGE ${rangeRef}`;
   // SPL bracket printed inside the arc (BLUE — the 0 value equals the blue RANGE
   // button): low number at −20 (= RANGE − 20), high at 0 (= RANGE).
-  const vuBrackets = { lowText: `${rangeRef - 20}`, highText: `${rangeRef}` };
+  const vuBrackets = {
+    lowText: `${rangeRef - 20}`,
+    mid10Text: `${rangeRef - 10}`,
+    mid5Text: `${rangeRef - 5}`,
+    highText: `${rangeRef}`,
+  };
   // VU corner readouts (printed inside the glass): MAX = peak-hold in SPL terms,
   // LEVEL = the current selected weighting × response, both via the screen's
   // shown()/fmtDb so every number on the screen agrees.
@@ -1324,20 +1342,20 @@ const styles = StyleSheet.create({
   // RANGE selector — stepped values in a single horizontal scroll row. BLUE
   // (owner 2026-07-30) to tie them to the blue −20/0 bracket on the VU face:
   // the selected value IS the number shown at 0 VU.
-  rangeScroll: { flexDirection: 'row', gap: 6, paddingRight: 4 },
+  rangeScroll: { flexDirection: 'row', gap: 4, paddingRight: 2 },
   rangeChip: {
-    borderRadius: 7,
+    borderRadius: 6,
     borderWidth: 1,
     borderColor: '#2f5fbf',
     backgroundColor: '#101a2e',
-    paddingVertical: 8,
-    width: 44,
+    paddingVertical: 7,
+    width: 37,
     alignItems: 'center',
   },
-  rangeChipText: { fontFamily: fonts.mono, fontSize: 13, color: '#7fa8ff' },
+  rangeChipText: { fontFamily: fonts.mono, fontSize: 12, color: '#7fa8ff' },
   rangeChipSelected: { borderColor: '#5d97ff', backgroundColor: '#20407e' },
   rangeChipTextSelected: { color: '#e4edff' },
-  rangeChipAuto: { width: 56 },
+  rangeChipAuto: { width: 46 },
   rangeNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted },
 
   // STUDIO / SPL chooser — pinned to the TOP-LEFT corner of the circle meter.
@@ -1368,8 +1386,8 @@ const styles = StyleSheet.create({
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 9,
     letterSpacing: 1,
-    lineHeight: 13,
-    color: colors.textSub,
+    lineHeight: 14,
+    color: '#c2c6ce',
   },
   vuUnavailCard: {
     gap: 6,
