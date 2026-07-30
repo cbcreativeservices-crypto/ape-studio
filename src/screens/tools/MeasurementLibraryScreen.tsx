@@ -107,6 +107,31 @@ function payloadLines(m: SavedMeasurement): { label: string; value: string }[] {
       { label: 'DYNAMIC RANGE', value: `${p.dynamicRangeDb} dB · ${p.fftPreset}` },
     ];
   }
+  // Pro Audio MultiMeter snapshot (owner 2026-07-29) — summary rows. All
+  // levels dBFS · uncalibrated; detections are likely conditions, not
+  // guarantees (the payload's own contract).
+  if (p.kind === 'multimeter_snapshot') {
+    return [
+      { label: 'SPL (LAF)', value: `${p.splDb.toFixed(1)} dBFS` },
+      { label: 'PEAK / RMS', value: `${p.peakDb.toFixed(1)} / ${p.rmsDb.toFixed(1)} dBFS` },
+      { label: 'PEAK HOLD', value: `${p.peakHoldDb.toFixed(1)} dBFS` },
+      {
+        label: 'DOMINANT',
+        value:
+          p.dominantHz != null
+            ? `${fmtHz(p.dominantHz)} Hz${p.note ? ` · ${p.note}${p.cents != null ? ` (${p.cents >= 0 ? '+' : ''}${p.cents.toFixed(1)}¢)` : ''}` : ''} · ${p.dominantSource ?? '—'}`
+            : '—',
+      },
+      { label: 'BANDS', value: `${p.bandsHz.length} × 1/3 octave` },
+      {
+        label: 'DETECTIONS',
+        value: p.detections.length > 0 ? p.detections.map((d) => d.label).join(' · ') : 'none',
+      },
+      ...(p.spectrogram
+        ? [{ label: 'SPECTROGRAM', value: `${p.spectrogram.grid.length} cols × ${p.spectrogram.rows} rows · ${p.spectrogram.dynamicRangeDb} dB` }]
+        : []),
+    ];
+  }
   return [{ label: 'DATA', value: (p as { kind: string }).kind.replace(/_/g, ' ') }];
 }
 

@@ -24,7 +24,8 @@ export type ToolKey =
   | 'spectrogram'
   | 'rt60'
   | 'signalgen'
-  | 'hzcounter'; // 'tuner' merged INTO 'hzcounter' — "Frequency Counter & Tuner" (spec of record 2026-07-23: ~90% shared engine)
+  | 'hzcounter' // 'tuner' merged INTO 'hzcounter' — "Frequency Counter & Tuner" (spec of record 2026-07-23: ~90% shared engine)
+  | 'multimeter'; // Pro Audio MultiMeter (Mono) — all-in-one live meter (owner spec 2026-07-29)
 
 export type ToolDef = {
   key: ToolKey;
@@ -188,6 +189,40 @@ TOOLS.push({
     'Several simultaneous frequencies at once (it tracks one dominant rate)',
     'Chords or dense polyphonic material (single dominant pitch only)',
     'Loudness, level, spectral content, or timbre — two instruments on the same note read identically',
+  ],
+});
+
+// Pro Audio MultiMeter (Mono) — owner spec 2026-07-29: the all-in-one live
+// meter (status bar + spectrum/FFT overlay + spectrogram + oscilloscope +
+// frequency/note + smart detection + snapshot). Like the Frequency Counter it
+// has its own full screen (MultiMeterScreen) and skips ToolInfo — this catalog
+// entry backs the hub tile, the library, and the shared honesty copy.
+TOOLS.push({
+  key: 'multimeter',
+  num: 8,
+  name: 'Pro Audio MultiMeter',
+  subtitle: 'All-In-One Live Meter · Mono',
+  tint: 'steel',
+  purpose:
+    'Every meter on one screen: weighted level with peak/RMS and peak hold, a 31-band spectrum ' +
+    'with a fine FFT overlay and cursor, a scrolling spectrogram, a live oscilloscope, dominant ' +
+    'frequency with musical note and cents, and smart detection of likely signal conditions ' +
+    '(hum, clipping, feedback onset, rumble). One tap saves the whole state as a snapshot. ' +
+    'Every level is dBFS, uncalibrated — a seeing instrument, not a certified meter.',
+  measures: [
+    'Weighted level (A-weighted Fast), digital peak/RMS and peak hold (all dBFS)',
+    'Energy per 1/3-octave band plus a fine FFT spectrum overlay with a tap/drag cursor',
+    'Frequency content over time (compact scrolling spectrogram)',
+    'Amplitude vs time with clipping markers (compact oscilloscope)',
+    'Dominant frequency, musical note and cents deviation (A4 = 440 Hz)',
+    'Likely signal conditions — mains hum family, 120 Hz harmonics, pink-noise character, clipping, possible mic overload, feedback onset, LF rumble, narrowband whistle',
+  ],
+  notMeasures: [
+    'True dB SPL — every level is dBFS from an uncalibrated phone microphone',
+    'Certified or legal sound levels (not an IEC 61672 instrument)',
+    'Guaranteed diagnoses — detections are likely conditions inferred from the signal, never certainties',
+    'CPU load or microphone input gain — the engine does not expose them, so they are not shown',
+    'Stereo relationships (this meter is mono)',
   ],
 });
 

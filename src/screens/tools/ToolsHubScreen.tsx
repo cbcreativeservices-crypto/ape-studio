@@ -35,6 +35,7 @@ const ICON_COLOR: Record<ToolKey, string> = {
   rt60: '#5bff85',
   signalgen: '#ffd24d',
   hzcounter: '#4dd0e1',
+  multimeter: '#c9d6e4', // steel — matches the tool's glass-key tint
 };
 
 /** Tiny static ICON per tool (iconography, not a meter — spec §1.7). */
@@ -132,6 +133,22 @@ function ToolIcon({ tool }: { tool: ToolKey }) {
           <Circle cx={32} cy={26} r={2.2} fill={c} />
         </Svg>
       );
+    case 'multimeter':
+      // quad-panel glyph — bars · wave · raster · gauge (one meter, four views)
+      return (
+        <Svg width={40} height={30} viewBox="0 0 40 30">
+          {[3, 8, 13].map((x, i) => {
+            const h = [8, 12, 6][i];
+            return <Rect key={x} x={x} y={13 - h} width={3.5} height={h} rx={1} fill={c} />;
+          })}
+          <Path d="M22 8 Q 25 2, 28 8 T 34 8" stroke={c} strokeWidth={1.8} fill="none" strokeLinecap="round" />
+          {[3, 8, 13].map((x, i) => (
+            <Rect key={`r${x}`} x={x} y={19} width={4} height={8} rx={1} fill={c} opacity={[0.85, 0.4, 0.6][i]} />
+          ))}
+          <Path d="M22 27 A 6.5 6.5 0 0 1 35 27" stroke={c} strokeWidth={1.8} fill="none" strokeLinecap="round" />
+          <Line x1={28.5} y1={27} x2={32} y2={21} stroke={c} strokeWidth={1.8} strokeLinecap="round" />
+        </Svg>
+      );
   }
 }
 
@@ -214,11 +231,15 @@ export function ToolsHubScreen({ navigation }: Props) {
                 key={t.key}
                 style={[styles.tile, { borderColor: ICON_COLOR[t.key] + '66' }]}
                 onPress={() =>
-                  // The Frequency Counter has its own modes+results screen; the
-                  // rest open their educational info screen (Booth 2026-07-18).
+                  // The Frequency Counter and the MultiMeter have their own
+                  // full live screens (each owns its useToolUsage telemetry);
+                  // the rest open their educational info screen (Booth
+                  // 2026-07-18; MultiMeter owner spec 2026-07-29).
                   t.key === 'hzcounter'
                     ? navigation.navigate('FrequencyCounter')
-                    : navigation.navigate('ToolInfo', { toolKey: t.key })
+                    : t.key === 'multimeter'
+                      ? navigation.navigate('MultiMeter')
+                      : navigation.navigate('ToolInfo', { toolKey: t.key })
                 }
                 accessibilityRole="button"
                 accessibilityLabel={t.name}

@@ -94,6 +94,12 @@ export type RootStackParamList = {
    *  request 2026-07-18; tuner merged in 2026-07-23). Tap mode is live;
    *  Sound/Light/Tuner need the engine. */
   FrequencyCounter: undefined;
+  /** Pro Audio MultiMeter (Mono) — the all-in-one live meter (owner spec
+   *  2026-07-29): status bar + spectrum/FFT overlay + spectrogram +
+   *  oscilloscope + frequency/note + smart detection + snapshot. Its own full
+   *  screen (skips ToolInfo, like FrequencyCounter); gates itself honestly via
+   *  EngineGate when the engine isn't in the build. */
+  MultiMeter: undefined;
   /** Tool Learn mode — per-tool guided tutorial (Phase 1, spec of record
    *  2026-07-23). Academy-gated (tools stay free to open; tutorials are the
    *  academy unlock per the ratified marketing copy). */

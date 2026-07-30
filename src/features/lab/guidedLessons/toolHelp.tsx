@@ -21,7 +21,8 @@ export type ToolId =
   | 'spl'
   | 'waveform'
   | 'freqcounter'
-  | 'rt60';
+  | 'rt60'
+  | 'multimeter';
 
 export const TOOL_LESSONS: Record<ToolId, LessonContent> = {
   // ── Signal Generator ──────────────────────────────────────────────────────
@@ -229,6 +230,48 @@ export const TOOL_LESSONS: Record<ToolId, LessonContent> = {
       'If T20 and T30 disagree a lot, the decay isn’t a clean straight line — trust EDT/T20 and note the room is complex.',
     ],
     formula: 'Schroeder backward integration → decay curve; linear fit over −5…−25 dB (T20 ×3) or −5…−35 dB (T30 ×2) extrapolated to −60 dB. R² = fit straightness; RT60 is frequency-dependent.',
+  },
+
+  // ── Pro Audio MultiMeter (Mono) — owner spec 2026-07-29 ──────────────────
+  multimeter: {
+    name: 'Pro Audio MultiMeter',
+    tagline: 'Every meter at once.',
+    whatItIs:
+      'One live instrument combining the level meter, spectrum analyzer, spectrogram, ' +
+      'oscilloscope, frequency counter and a smart signal-condition readout. Everything reads ' +
+      'from the same microphone capture, so the panels always agree. Every level is dBFS ' +
+      '(uncalibrated digital level) — never true dB SPL.',
+    controls: [
+      { key: 'spl', name: 'SPL·LAF (readout)', definition: 'The A-weighted FAST level — the same convention the SPL Reference Meter shows as its big number. Here it is dBFS-referenced and UNCALIBRATED: read it as relative level, not true sound pressure.' },
+      { key: 'peak', name: 'Peak (readout)', definition: 'The highest instantaneous sample level right now, in dBFS. It turns red at ≥ 0 dBFS — the converter itself is clipping, regardless of how loud the room actually is.' },
+      { key: 'rms', name: 'RMS (readout)', definition: 'The unweighted (Z) FAST level — the average signal energy in dBFS. The gap between RMS and PEAK is the signal’s crest factor: big gap = transient material, small gap = dense/compressed.' },
+      { key: 'pk_hold', name: 'Peak hold (readout)', definition: 'The maximum peak seen since the last reset — it latches brief overloads your eye would miss. Long-press the cell (or tap ⟲) to reset it; that also resets the per-band holds on the spectrum.' },
+      { key: 'spectrum', name: 'Live spectrum (display)', definition: 'The hero: 31 gradient LED columns are the native 1/3-octave bands; the cyan curve is the fine FFT spectrum; the amber curve is its exponential AVERAGE; the bright floating dashes are per-band peak holds. Gray slots are bands the engine flags unresolvable — dimmed honestly, never faked.' },
+      { key: 'cursor', name: 'Cursor', definition: 'Tap or drag on the spectrum to read the nearest point of the FFT curve — the chip shows its frequency (Hz) and level (dB). Dragging on the plot never scrolls the page; tap CURSOR ✕ to clear.' },
+      { key: 'zoom', name: 'Zoom', definition: 'Re-maps the frequency axis to a window: FULL (20 Hz–20 kHz), LOW (20–500 Hz), MID (200 Hz–5 kHz), HIGH (2–20 kHz). Display-only — bands outside the window hide and the FFT overlay re-samples; capture is unchanged.' },
+      { key: 'smoothing', name: 'Smoothing', definition: 'How much the bands and the average trace settle over time (an exponential average). LOW reacts instantly; HIGH steadies a jumpy display so you can read the trend. Changing it restarts the band average and peak holds (new settings epoch).' },
+      { key: 'spectrogram', name: 'Mini spectrogram (display)', definition: 'A compact scrolling picture of frequency (vertical, log) over time (horizontal, newest right); color is level relative to the observed maximum over a 60 dB range — the same construction as the full Spectrogram tool, miniaturized.' },
+      { key: 'oscilloscope', name: 'Mini oscilloscope (display)', definition: 'Amplitude over the last 3 seconds: the filled shape is the min/max envelope per 50 ms, the inner band is RMS energy, red ticks in the top lane flag clipped moments. The fixed center line is zero pressure — a signal riding above or below it reveals DC offset.' },
+      { key: 'dominant', name: 'Dominant frequency (readout)', definition: 'The strongest frequency right now, with its SOURCE labeled: “from pitch tracker” when the tracker is voiced and confident, else “from spectrum peak” (the loudest FFT bin). Two different estimators — the label tells you which one you are reading.' },
+      { key: 'note', name: 'Musical note (readout)', definition: 'The nearest note (A4 = 440 Hz fixed here) with its deviation in cents — shown only while the pitch tracker is confident. A dimmed value with an age hint is the LAST stable reading, not live; dashes mean no stable pitch.' },
+      { key: 'cents', name: 'Cents indicator', definition: 'The needle shows deviation from the nearest note on a ±50¢ scale; the center zone is the ±5¢ in-tune window, which glows green when locked.' },
+      { key: 'counter', name: 'Frequency counter (readout)', definition: 'The tracked pitch in Hz with the tracker’s confidence. Below the confidence gate the value dims (last stable reading) and then falls to dashes — a number is never presented as live when it isn’t.' },
+      { key: 'detection', name: 'Smart detection (panel)', definition: 'Heuristics watching the live spectrum for signatures: mains hum (50 or 60 Hz family), 120 Hz supply harmonics, pink-noise character, clipping, possible mic overload, feedback beginning (one narrowband component rising), LF rumble, and a narrowband whistle. These are likely conditions based on the measured signal — not guarantees.' },
+      { key: 'snapshot', name: 'Measurement snapshot', definition: 'Saves the whole instrument state — spectrum bands + holds, recent spectrogram history, levels, dominant frequency/note, active detections, date/time and your notes — to the Measurement Library. Numbers only, never audio.' },
+      { key: 'display', name: 'What the display shows', definition: 'Top bar: the four headline levels (all dBFS · uncalibrated). Hero: energy per frequency, low (left) → high (right) — columns are 1/3-octave bands, the cyan curve the fine FFT, amber its average. Lower left: frequency over TIME (color = level). Lower right: amplitude over time around the zero line. Bottom: the dominant frequency read musically, then system facts and any detected signal conditions.' },
+    ],
+    commonMistakes: [
+      'Reading the SPL·LAF number as true dB SPL — every level here is uncalibrated dBFS from a phone mic; only the dedicated SPL meter offers field calibration.',
+      'Trusting the note/cents readout when the counter is dimmed — a dimmed value is the LAST stable reading, not what is sounding now.',
+      'Treating detection chips as diagnoses — they are likely conditions inferred from the signal; confirm by ear and by isolating the source.',
+      'Judging tonal balance while smoothing is LOW — raise it so the average trace settles before you read the trend.',
+    ],
+    proTips: [
+      'Play pink noise: the 1/3-octave columns should read roughly even, the detector should flag PINK-NOISE CHARACTER, and the average trace shows your system’s tilt.',
+      'Watch PEAK vs RMS while the oscilloscope runs — you can see crest factor in both panels at once.',
+      'If FEEDBACK BEGINNING appears, the chip names the frequency — pull that region on your EQ before it blooms.',
+    ],
+    formula: 'Bands: 1/3-octave energy sums (10·log₁₀ Σ power, dBFS). Overlay: FFT bins, exponentially averaged (αₑ). Note: n = round(12·log₂(f/440)) + 69; cents = 1200·log₂(f/f_note). Pink slope ≈ −3 dB/oct.',
   },
 };
 

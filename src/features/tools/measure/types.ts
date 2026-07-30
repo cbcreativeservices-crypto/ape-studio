@@ -181,13 +181,56 @@ export type ImpulseResponsePayload = {
   decayStepSec: number;
 };
 
+/** Pro Audio MultiMeter snapshot (owner spec 2026-07-29): one tap captures the
+ *  whole instrument state — NUMBERS only, never audio. Every level is dBFS ·
+ *  uncalibrated (the "SPL" figure is the SPL screen's LAF convention:
+ *  dBFS-referenced, never true dB SPL). GPS + room photo are deliberately NOT
+ *  part of this payload — the native modules aren't in the installed build;
+ *  they ship with a future release, and the save sheet says so. */
+export type MultimeterSnapshotPayload = {
+  kind: 'multimeter_snapshot';
+  /** Resolvable 1/3-octave bands only (Q2 — the spectrum_trace rule: storing a
+   *  flagged-unresolvable level would fabricate data on replay). */
+  bandsHz: number[];
+  levelsDb: number[];
+  bandPeakHoldDb: number[];
+  /** Top-bar levels — all dBFS. splDb = A-weighted FAST (LAF); rmsDb =
+   *  Z-weighted FAST (the frame's RMS-style level). */
+  splDb: number;
+  peakDb: number;
+  rmsDb: number;
+  peakHoldDb: number;
+  dominantHz: number | null;
+  /** Which estimator produced dominantHz — disclosed, never conflated. */
+  dominantSource: 'pitch' | 'spectrum' | null;
+  /** Musical interpretation (A4 = 440 Hz) — present only when the pitch
+   *  tracker was voiced + confident at capture. */
+  note: string | null;
+  cents: number | null;
+  pitchConfidence: number | null;
+  /** Smart detections active at capture — likely conditions inferred from the
+   *  measured signal, never guarantees or diagnoses. */
+  detections: { label: string; detail: string; severity: 'amber' | 'red' }[];
+  /** The mini raster's recent history (display-resolution dB grid — ~44×64,
+   *  well under the spectrogram tool's own save size; never audio). */
+  spectrogram: {
+    rows: number;
+    fMinHz: number;
+    fMaxHz: number;
+    timeStepSec: number;
+    dynamicRangeDb: number;
+    grid: number[][];
+  } | null;
+};
+
 export type MeasurementPayload =
   | TapLogPayload
   | SplLogPayload
   | SpectrumTracePayload
   | WaveformSnapshotPayload
   | SpectrogramSnapshotPayload
-  | ImpulseResponsePayload;
+  | ImpulseResponsePayload
+  | MultimeterSnapshotPayload;
 
 // ---------------------------------------------------------------------------
 // The saved measurement record (spec §7 required metadata — every field).

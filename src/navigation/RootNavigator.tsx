@@ -29,6 +29,7 @@ import { SignalGenScreen } from '../screens/tools/SignalGenScreen';
 import { SpectrogramScreen } from '../screens/tools/SpectrogramScreen';
 import { Rt60Screen } from '../screens/tools/Rt60Screen';
 import { FrequencyCounterScreen } from '../screens/tools/FrequencyCounterScreen';
+import { MultiMeterScreen } from '../screens/tools/MultiMeterScreen';
 import { DspDebugScreen } from '../screens/tools/DspDebugScreen';
 import { EarLabScreen } from '../screens/lab/EarLabScreen';
 import { HarmonicLabScreen } from '../screens/lab/HarmonicLabScreen';
@@ -114,6 +115,8 @@ export function RootNavigator() {
       <Stack.Screen name="Rt60Live" component={Rt60Screen} />
       {/* Frequency Counter & Tuner tool (2026-07-18; tuner merged 2026-07-23). */}
       <Stack.Screen name="FrequencyCounter" component={FrequencyCounterScreen} />
+      {/* Pro Audio MultiMeter (Mono) — all-in-one live meter (owner 2026-07-29). */}
+      <Stack.Screen name="MultiMeter" component={MultiMeterScreen} />
       {/* Spike-0 dev-only debug (entry rendered only when __DEV__). */}
       <Stack.Screen name="DspDebug" component={DspDebugScreen} />
       {/* Audio Learning Lab (v4 MASTER §13) — the pinned Home card opens the
