@@ -5,8 +5,9 @@
  * FIGURE (analytic by nature): damped sinusoids drive the pen —
  *   x(t) = sin(n₁θ + φ)·e^(−kθ) · y(t) = sin(n₂(1+Δ)θ)·e^(−kθ)  (lateral)
  * plus a counter-rotating ROTARY variant. Deterministic path math (T1,
- * compute ~zero) rendered as one SVG path; the drawing IS the model, so no
- * measurement claims arise.
+ * compute ~zero) rendered as a handful of phosphor-styled SVG path segments
+ * (visual standards 2026-07-29); the drawing IS the model, so no measurement
+ * claims arise.
  *
  * AUDIO (honest, real): "drive it from two oscillators" — a locked ratio n₁:n₂
  * plays as harmonics n₁ and n₂ of a shared 110 Hz fundamental through the v3
@@ -20,7 +21,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import Svg, { Path, Rect } from 'react-native-svg';
+import Svg, { Circle, Defs, Line, Path, RadialGradient, Rect, Stop } from 'react-native-svg';
 import { ApeDsp, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
@@ -305,9 +306,26 @@ export function HarmonographLabScreen() {
   );
 }
 
-/** The damped figure as one SVG path. Lateral = Lissajous with decay; rotary =
- *  counter-rotating circular pair (petal figures). ~3000 points, memoized —
- *  recomputed only on a control change. */
+/** Phosphor style-steps along the trace (visual standards 2026-07-29): the pen
+ *  starts HOT — near-white amber — and cools into a dim ember as the damping
+ *  bleeds energy away, so hue+opacity shift WITH the decay. The 3000-point
+ *  trace is sliced into these ≤8 polyline segments (not per-point elements);
+ *  each segment is a wide low-opacity glow stroke under a crisp core stroke. */
+const TRACE_STEPS = [
+  { color: '#fff6dc', coreO: 0.95, glowO: 0.28 },
+  { color: '#ffe9ad', coreO: 0.92, glowO: 0.24 },
+  { color: '#ffd970', coreO: 0.88, glowO: 0.2 },
+  { color: '#ffc64d', coreO: 0.82, glowO: 0.16 },
+  { color: '#f7ae35', coreO: 0.72, glowO: 0.13 },
+  { color: '#e3922a', coreO: 0.6, glowO: 0.1 },
+  { color: '#c47722', coreO: 0.48, glowO: 0.07 },
+  { color: '#9c5e1e', coreO: 0.36, glowO: 0.05 },
+] as const;
+
+/** The damped figure — same equations as ever (~3000 points, memoized, only
+ *  recomputed on a control change); the 2026-07-29 retrofit changed RENDERING
+ *  only: phosphor glow+core passes over a radial-fade disc with a styled
+ *  axis/center hint (the pen's rest point). */
 function HarmonographFigure({
   n1,
   n2,
@@ -324,7 +342,7 @@ function HarmonographFigure({
   detune: number;
 }) {
   const SIZE = 320;
-  const d = useMemo(() => {
+  const segs = useMemo(() => {
     const C = 24; // base cycles drawn
     const N = 3000;
     const thetaMax = 2 * Math.PI * C;
@@ -333,7 +351,7 @@ function HarmonographFigure({
     const f2 = n2 * (1 + detune);
     const cx = SIZE / 2;
     const r = SIZE / 2 - 12;
-    let s = '';
+    const pts: string[] = new Array(N + 1);
     for (let i = 0; i <= N; i++) {
       const th = (i / N) * thetaMax;
       const env = Math.exp(-k * th);
@@ -346,17 +364,64 @@ function HarmonographFigure({
         x = Math.sin(n1 * th + phi) * env;
         y = Math.sin(f2 * th) * env;
       }
-      const px = (cx + x * r).toFixed(1);
-      const py = (cx - y * r).toFixed(1);
-      s += i === 0 ? `M${px} ${py}` : `L${px} ${py}`;
+      pts[i] = `${(cx + x * r).toFixed(1)} ${(cx - y * r).toFixed(1)}`;
     }
-    return s;
+    // Slice into TRACE_STEPS segments; adjacent segments share their boundary
+    // point so the polyline stays continuous.
+    const per = Math.floor(N / TRACE_STEPS.length);
+    return TRACE_STEPS.map((_, sIdx) => {
+      const a = sIdx * per;
+      const b = sIdx === TRACE_STEPS.length - 1 ? N : (sIdx + 1) * per;
+      let d = `M${pts[a]}`;
+      for (let i = a + 1; i <= b; i++) d += `L${pts[i]}`;
+      return d;
+    });
   }, [n1, n2, phaseDeg, endAmp, rotary, detune]);
 
+  const c = SIZE / 2;
   return (
     <Svg width="100%" height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`}>
-      <Rect x={0} y={0} width={SIZE} height={SIZE} fill="#0c0c0f" />
-      <Path d={d} stroke={colors.amber} strokeWidth={0.8} strokeOpacity={0.85} fill="none" />
+      <Defs>
+        <RadialGradient id="hgDisc" cx="50%" cy="50%" r="50%">
+          <Stop offset="0%" stopColor="#221b0e" stopOpacity={1} />
+          <Stop offset="62%" stopColor="#161208" stopOpacity={0.9} />
+          <Stop offset="100%" stopColor="#0c0c0f" stopOpacity={0} />
+        </RadialGradient>
+      </Defs>
+      <Rect x={0} y={0} width={SIZE} height={SIZE} rx={10} fill="#0c0c0f" />
+      {/* Radial-fade disc — the figure floats on a faint warm pool of light. */}
+      <Circle cx={c} cy={c} r={c - 4} fill="url(#hgDisc)" />
+      {/* Axis + center hint: the pen's rest point and the swing axes. */}
+      <Line x1={c} y1={14} x2={c} y2={SIZE - 14} stroke="#282213" strokeWidth={1} />
+      <Line x1={14} y1={c} x2={SIZE - 14} y2={c} stroke="#282213" strokeWidth={1} />
+      <Circle cx={c} cy={c} r={c - 12} fill="none" stroke="#1f1b10" strokeWidth={1} />
+      <Circle cx={c} cy={c} r={2} fill="#4a3f24" />
+      {/* Phosphor pass 1 — wide, soft glow under the whole trace. */}
+      {segs.map((d, i) => (
+        <Path
+          key={`glow${i}`}
+          d={d}
+          stroke={TRACE_STEPS[i].color}
+          strokeWidth={3.4}
+          strokeOpacity={TRACE_STEPS[i].glowO}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          fill="none"
+        />
+      ))}
+      {/* Phosphor pass 2 — the crisp core stroke. */}
+      {segs.map((d, i) => (
+        <Path
+          key={`core${i}`}
+          d={d}
+          stroke={TRACE_STEPS[i].color}
+          strokeWidth={0.9}
+          strokeOpacity={TRACE_STEPS[i].coreO}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          fill="none"
+        />
+      ))}
     </Svg>
   );
 }

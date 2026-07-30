@@ -14,10 +14,10 @@
  * native modStatus (no fake meters, §1.7). Audio needs engineVersion ≥ 7 —
  * below it the diagram + lessons work and the build requirement is stated.
  */
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import Svg, { G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle, Defs, G, Line, LinearGradient, Path, RadialGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { ApeDsp, MOD_PARAM } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
@@ -263,7 +263,7 @@ export function ModularLabScreen() {
       {/* HERO — the live patch-flow diagram. */}
       <View style={styles.panelCard}>
         <Text style={styles.badge}>SIGNAL FLOW — THE ACTUAL NATIVE PATH · ACTIVE ROUTINGS LIT</Text>
-        <PatchDiagram patch={patch} envLevel={envLevel} running={running} onBox={openLesson} />
+        <PatchDiagram patch={patch} envLevel={envLevel} activeStep={activeStep} running={running} onBox={openLesson} />
         <Text style={styles.caption}>
           Audio (top row): VCO → VCF → VCA → output stage. Modulators (bottom): the envelope
           always drives the VCA; everything else is a routing you choose. Tap any box for what it
@@ -456,15 +456,21 @@ const D_H = 176;
 /** The live patch-flow diagram: audio boxes VCO→VCF→VCA→OUT on top, mod
  *  sources LFO · ENV · SEQ below; patch cables drawn ONLY for active routings
  *  (env→VCA always; env→cutoff / LFO→dest / SEQ→pitch as configured). The env
- *  box doubles as the REAL env meter while running. */
+ *  box doubles as the REAL env meter while running; the SEQ box carries 8 step
+ *  LEDs lit from the REAL native sequencer position. 2026-07-29 visual-
+ *  standards re-skin: gradient module plates with screws + engraved labels,
+ *  sagging glow-stroked cables with jack plugs — same layout, taps, and state. */
 function PatchDiagram({
   patch,
   envLevel,
+  activeStep,
   running,
   onBox,
 }: {
   patch: Patch;
   envLevel: number;
+  /** REAL native sequencer position (−1 when idle) — lights the step LEDs. */
+  activeStep: number;
   running: boolean;
   /** Tap a box → open that section's "what it does" help. */
   onBox: (key: string) => void;
@@ -485,44 +491,92 @@ function PatchDiagram({
   const mxs = [0, 1, 2].map((i) => 30 + i * ((w - 60 - boxW) / 2));
   const cx = (i: number, top: boolean) => (top ? xs[i] : mxs[i]) + boxW / 2;
 
-  /** A patch cable (curved) from mod box mi to audio box ai. */
+  /** Corner screws for one module plate (panel-hardware detail). */
+  const screws = (x: number, y: number, key: string) =>
+    (
+      [
+        [x + 5, y + 5],
+        [x + boxW - 5, y + 5],
+        [x + 5, y + boxH - 5],
+        [x + boxW - 5, y + boxH - 5],
+      ] as const
+    ).map(([sx, sy], k) => (
+      <Fragment key={`${key}${k}`}>
+        <Circle cx={sx} cy={sy} r={1.7} fill="url(#mdScrew)" />
+        <Line x1={sx - 1} y1={sy + 1} x2={sx + 1} y2={sy - 1} stroke="#0d0d11" strokeWidth={0.6} />
+      </Fragment>
+    ));
+
+  /** Engraved-style label: dark inset copy under the lit face. */
+  const label = (x: number, y: number, text: string, fill: string, key: string) => (
+    <Fragment key={key}>
+      <SvgText x={x} y={y + 1} fill="#000000" fillOpacity={0.55} fontSize={11.5} fontWeight="bold" textAnchor="middle">
+        {text}
+      </SvgText>
+      <SvgText x={x} y={y} fill={fill} fontSize={11.5} fontWeight="bold" textAnchor="middle">
+        {text}
+      </SvgText>
+    </Fragment>
+  );
+
+  /** A patch cable from mod box mi up to audio box ai: sagging bezier (it
+   *  hangs below the straight run, staying between the rows), color-coded,
+   *  glow-stroked — every drawn cable IS an active routing — with jack plugs
+   *  at both ends. Same endpoints as before the re-skin. */
   const cable = (mi: number, ai: number, color: string, key: string) => {
     const x1 = cx(mi, false);
     const y1 = botY;
     const x2 = cx(ai, true);
     const y2 = topY + boxH;
+    const sagY = (y1 + y2) / 2 + 14;
+    const d = `M${x1} ${y1} C ${x1 + (x2 - x1) * 0.2} ${sagY}, ${x1 + (x2 - x1) * 0.8} ${sagY}, ${x2} ${y2}`;
     return (
-      <Path
-        key={key}
-        d={`M${x1} ${y1} C ${x1} ${y1 - 30}, ${x2} ${y2 + 30}, ${x2} ${y2}`}
-        stroke={color}
-        strokeWidth={2}
-        fill="none"
-        opacity={0.9}
-      />
+      <Fragment key={key}>
+        <Path d={d} stroke={color} strokeWidth={6} fill="none" opacity={0.18} strokeLinecap="round" />
+        <Path d={d} stroke={color} strokeWidth={2.2} fill="none" opacity={0.95} strokeLinecap="round" />
+        <Path d={d} stroke="#ffffff" strokeWidth={0.7} fill="none" opacity={0.28} strokeLinecap="round" />
+        <Circle cx={x1} cy={y1} r={3.4} fill="#0c0c0f" stroke={color} strokeWidth={1.8} />
+        <Circle cx={x2} cy={y2} r={3.4} fill="#0c0c0f" stroke={color} strokeWidth={1.8} />
+      </Fragment>
     );
   };
 
   const lfoColor = '#6fa8ff';
   const envColor = '#5bff85';
   const seqColor = '#ff8d7a';
+  const envW = (boxW - 4) * Math.max(0, Math.min(1, envLevel));
 
   return (
     <View onLayout={(e) => setW(Math.round(e.nativeEvent.layout.width))}>
       <Svg width={w} height={D_H}>
-        <Rect x={0} y={0} width={w} height={D_H} fill="#0c0c0f" />
-        {/* Audio path arrows. */}
-        {[0, 1, 2].map((i) => (
-          <Line
-            key={i}
-            x1={xs[i] + boxW}
-            y1={topY + boxH / 2}
-            x2={xs[i + 1]}
-            y2={topY + boxH / 2}
-            stroke={colors.amber}
-            strokeWidth={2.5}
-          />
-        ))}
+        <Defs>
+          <LinearGradient id="mdBg" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0%" stopColor="#14141a" />
+            <Stop offset="100%" stopColor="#0a0a0e" />
+          </LinearGradient>
+          {/* Module plate: brushed-panel gradient, lit from the top. */}
+          <LinearGradient id="mdPlate" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0%" stopColor="#26262e" />
+            <Stop offset="45%" stopColor="#17171c" />
+            <Stop offset="100%" stopColor="#101014" />
+          </LinearGradient>
+          <RadialGradient id="mdScrew" cx="35%" cy="30%" r="80%">
+            <Stop offset="0%" stopColor="#b9b9c4" />
+            <Stop offset="100%" stopColor="#52525c" />
+          </RadialGradient>
+        </Defs>
+        <Rect x={0} y={0} width={w} height={D_H} rx={8} fill="url(#mdBg)" />
+        {/* Audio path: glow-backed amber run with arrowheads. */}
+        {[0, 1, 2].map((i) => {
+          const y = topY + boxH / 2;
+          return (
+            <Fragment key={i}>
+              <Line x1={xs[i] + boxW} y1={y} x2={xs[i + 1]} y2={y} stroke={colors.amber} strokeWidth={5.5} opacity={0.15} />
+              <Line x1={xs[i] + boxW} y1={y} x2={xs[i + 1] - 4} y2={y} stroke={colors.amber} strokeWidth={2.2} />
+              <Path d={`M${xs[i + 1] - 6.5} ${y - 4} L${xs[i + 1]} ${y} L${xs[i + 1] - 6.5} ${y + 4} Z`} fill={colors.amber} />
+            </Fragment>
+          );
+        })}
         {/* Active patch cables. */}
         {cable(1, 2, envColor, 'env-vca') /* env → VCA — always */}
         {patch.envToCut > 0 ? cable(1, 1, envColor, 'env-vcf') : null}
@@ -533,67 +587,70 @@ function PatchDiagram({
         {/* Audio boxes — tap for what each does. */}
         {audio.map((name, i) => (
           <G key={name} onPress={() => onBox(audioKeys[i])}>
-            <Rect
-              x={xs[i]}
-              y={topY}
-              width={boxW}
-              height={boxH}
-              rx={6}
-              fill="#17171c"
-              stroke={colors.amber}
-              strokeWidth={1.5}
-            />
-            <SvgText
-              x={xs[i] + boxW / 2}
-              y={topY + boxH / 2 + 4}
-              fill={colors.textPrimary}
-              fontSize={11.5}
-              fontWeight="bold"
-              textAnchor="middle"
-            >
-              {name}
-            </SvgText>
+            <Rect x={xs[i] + 1.5} y={topY + 2.5} width={boxW} height={boxH} rx={7} fill="#000000" opacity={0.45} />
+            <Rect x={xs[i]} y={topY} width={boxW} height={boxH} rx={7} fill="url(#mdPlate)" stroke={colors.amber} strokeWidth={1.4} />
+            <Rect x={xs[i] + 1.5} y={topY + 1.5} width={boxW - 3} height={boxH - 3} rx={5.5} fill="none" stroke="#ffffff" strokeOpacity={0.07} strokeWidth={1} />
+            {screws(xs[i], topY, `as${i}`)}
+            {label(xs[i] + boxW / 2, topY + boxH / 2 + 4, name, colors.textPrimary, `al${i}`)}
           </G>
         ))}
-        {/* Mod boxes (ENV doubles as the real env meter while running). */}
+        {/* Mod boxes (ENV doubles as the real env meter while running; SEQ
+            carries the real step LEDs). */}
         {mods.map((name, i) => {
           const color = i === 0 ? lfoColor : i === 1 ? envColor : seqColor;
           const active =
             i === 0 ? patch.lfoDepth > 0 && patch.lfoDest > 0 : i === 1 ? true : patch.seqOn;
           return (
             <G key={name} onPress={() => onBox(modKeys[i])}>
+              <Rect x={mxs[i] + 1.5} y={botY + 2.5} width={boxW} height={boxH} rx={7} fill="#000000" opacity={0.45} />
               <Rect
                 x={mxs[i]}
                 y={botY}
                 width={boxW}
                 height={boxH}
-                rx={6}
-                fill="#17171c"
+                rx={7}
+                fill="url(#mdPlate)"
                 stroke={color}
-                strokeWidth={1.5}
+                strokeWidth={1.4}
                 opacity={active ? 1 : 0.35}
               />
+              <Rect x={mxs[i] + 1.5} y={botY + 1.5} width={boxW - 3} height={boxH - 3} rx={5.5} fill="none" stroke="#ffffff" strokeOpacity={0.07} strokeWidth={1} />
+              {screws(mxs[i], botY, `ms${i}`)}
               {i === 1 && running ? (
-                <Rect
-                  x={mxs[i] + 2}
-                  y={botY + 2}
-                  width={(boxW - 4) * Math.max(0, Math.min(1, envLevel))}
-                  height={boxH - 4}
-                  rx={4}
-                  fill={envColor}
-                  opacity={0.25}
-                />
+                <Fragment key="meter">
+                  {/* Lit-LED env meter: glow halo + fill + hot leading edge. */}
+                  <Rect x={mxs[i] + 0.5} y={botY + 0.5} width={envW + 3} height={boxH - 1} rx={5} fill={envColor} opacity={0.12} />
+                  <Rect x={mxs[i] + 2} y={botY + 2} width={envW} height={boxH - 4} rx={4} fill={envColor} opacity={0.3} />
+                  <Line x1={mxs[i] + 2 + envW} y1={botY + 4} x2={mxs[i] + 2 + envW} y2={botY + boxH - 4} stroke="#c9ffd9" strokeWidth={1.5} opacity={0.9} />
+                </Fragment>
               ) : null}
-              <SvgText
-                x={mxs[i] + boxW / 2}
-                y={botY + boxH / 2 + 4}
-                fill={active ? colors.textPrimary : colors.textSub}
-                fontSize={11.5}
-                fontWeight="bold"
-                textAnchor="middle"
-              >
-                {name}
-              </SvgText>
+              {i === 2
+                ? patch.steps.map((s, k) => {
+                    const lx = mxs[i] + (boxW / 9) * (k + 1);
+                    const ly = botY + boxH - 6;
+                    const lit = running && patch.seqOn && activeStep === k;
+                    const gated = s >= 0;
+                    return (
+                      <Fragment key={`led${k}`}>
+                        {lit ? <Circle cx={lx} cy={ly} r={4.5} fill={seqColor} opacity={0.35} /> : null}
+                        <Circle
+                          cx={lx}
+                          cy={ly}
+                          r={1.8}
+                          fill={lit ? '#ffd9cf' : gated ? seqColor : '#3a3a42'}
+                          opacity={lit ? 1 : gated ? (patch.seqOn ? 0.55 : 0.3) : 0.8}
+                        />
+                      </Fragment>
+                    );
+                  })
+                : null}
+              {label(
+                mxs[i] + boxW / 2,
+                botY + boxH / 2 + (i === 2 ? 1 : 4),
+                name,
+                active ? colors.textPrimary : colors.textSub,
+                `ml${i}`,
+              )}
             </G>
           );
         })}

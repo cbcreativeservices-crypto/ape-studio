@@ -26,7 +26,7 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import Svg, { Circle, Line, Path, Rect } from 'react-native-svg';
+import Svg, { Circle, Defs, LinearGradient, Line, Path, RadialGradient, Rect, Stop } from 'react-native-svg';
 import { ApeDsp, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
@@ -364,16 +364,22 @@ const STRING_TOP = 42;
 /** String rows drawn TAB-style: G on top … E on the bottom. */
 const ROW_TO_STRING = [3, 2, 1, 0] as const;
 
-// Instrument look behind the strings (owner request 2026-07-26): a WOOD neck
-// (the fretted region) meeting a BLUE body with a round SOUND HOLE toward the
-// bridge. Frets/inlays are lightened to metal + pearl so they read on the wood.
-const WOOD = '#3a2716'; // dark-walnut neck
-const BODY_BLUE = '#1e5290'; // blue body around the sound hole
-const SOUND_HOLE = '#08080a'; // the hole itself
-const ROSETTE = '#123f70'; // thin ring around the hole
-const FRET_METAL = '#9a9aa2';
-const NUT_BONE = '#d8d2c4';
-const INLAY = '#cfc8b8'; // mother-of-pearl marker dots
+// Instrument look behind the strings (owner request 2026-07-26, RAISED per the
+// visual standards 2026-07-29): a wood-grain gradient neck meeting a sunburst
+// blue body with edge binding, a round sound hole, and a bridge with saddle +
+// pins. Frets get a specular metal pass; inlays are gradient pearl. Geometry
+// (fret positions, string rows, tap mapping) is untouched — this is a re-skin.
+const GRAIN = '#1f1206'; // wood-grain streak lines over the neck gradient
+const ROSETTE = '#0f3a68'; // outer decorative ring around the hole
+const ROSETTE_PEARL = '#cfc8b8'; // fine pearl inlay ring inside the rosette
+const FRET_BASE = '#4b4b53'; // fret wire body (dark nickel)
+const FRET_SPEC = '#d8d8e0'; // fret wire specular highlight
+const BINDING = '#e8dfc8'; // cream edge binding on the body
+const STRING_STEEL = '#8d8d99';
+const STRING_SPEC = '#eceef4';
+const STRING_SEL = '#e6b84e'; // selected string — amber-tinted steel
+// Static pseudo-random grain rows (fractions of FB_H) — drawn once, cheap.
+const GRAIN_ROWS = [0.12, 0.27, 0.41, 0.57, 0.72, 0.88] as const;
 // The neck→body seam sits just past the 12th fret (fretPos(12) = 0.5).
 const BODY_START_FRAC = 0.52;
 
@@ -432,9 +438,11 @@ function Fretboard({
   );
 
   // Standing wave on the selected string: FRETTED = one lobe over the vibrating
-  // length (fret → bridge) · HARMONICS = n lobes over the full string.
-  const wavePath = useMemo(() => {
-    if (w <= 0) return '';
+  // length (fret → bridge) · HARMONICS = n lobes over the full string. Same
+  // sample math as ever; the 2026-07-29 re-skin ALSO emits the closed envelope
+  // (top curve + mirrored bottom curve) for a translucent gradient fill.
+  const wave = useMemo(() => {
+    if (w <= 0) return { top: '', env: '' };
     const row = ROW_TO_STRING.indexOf(stringIdx as 0 | 1 | 2 | 3);
     const y0 = STRING_TOP + row * STRING_GAP;
     const amp = 12;
@@ -442,14 +450,20 @@ function Fretboard({
     const len = w - x0;
     const lobes = mode === 'fretted' ? 1 : harmonicN;
     const N = 120;
-    let d = '';
+    const px: string[] = new Array(N + 1);
+    const py: number[] = new Array(N + 1);
+    let top = '';
     for (let i = 0; i <= N; i++) {
       const t = i / N;
       const x = x0 + t * len;
       const y = y0 - Math.sin(Math.PI * lobes * t) * amp;
-      d += i === 0 ? `M${x.toFixed(1)} ${y.toFixed(1)}` : `L${x.toFixed(1)} ${y.toFixed(1)}`;
+      px[i] = x.toFixed(1);
+      py[i] = y;
+      top += i === 0 ? `M${px[i]} ${y.toFixed(1)}` : `L${px[i]} ${y.toFixed(1)}`;
     }
-    return d;
+    let env = top;
+    for (let i = N; i >= 0; i--) env += `L${px[i]} ${(2 * y0 - py[i]).toFixed(1)}`;
+    return { top, env: `${env}Z` };
   }, [w, mode, stringIdx, fret, harmonicN]);
 
   const selRow = ROW_TO_STRING.indexOf(stringIdx as 0 | 1 | 2 | 3);
@@ -472,93 +486,200 @@ function Fretboard({
           accessibilityLabel="Fretboard — tap a string and fret"
         >
           <Svg width={w} height={FB_H}>
-            {/* Instrument body behind the strings: WOOD neck → BLUE body with a
-                round SOUND HOLE (owner request 2026-07-26). */}
-            <Rect x={0} y={0} width={w} height={FB_H} fill={WOOD} />
-            <Rect x={bodyStart} y={0} width={w - bodyStart} height={FB_H} fill={BODY_BLUE} />
-            {/* Neck→body seam. */}
+            <Defs>
+              {/* Wood: vertical walnut gradient (light from upper-left). */}
+              <LinearGradient id="fbWood" x1="0" y1="0" x2="0" y2="1">
+                <Stop offset="0%" stopColor="#4a3018" />
+                <Stop offset="28%" stopColor="#38250f" />
+                <Stop offset="55%" stopColor="#452c15" />
+                <Stop offset="82%" stopColor="#2f1d0d" />
+                <Stop offset="100%" stopColor="#241608" />
+              </LinearGradient>
+              {/* Body: blue sunburst — bright near the hole, deep at the rim. */}
+              <RadialGradient id="fbBody" cx="45%" cy="40%" r="90%">
+                <Stop offset="0%" stopColor="#2f6fb8" />
+                <Stop offset="55%" stopColor="#1e5290" />
+                <Stop offset="100%" stopColor="#0d2c50" />
+              </RadialGradient>
+              {/* Sound hole bore: near-black with a lit inner rim (depth). */}
+              <RadialGradient id="fbHole" cx="42%" cy="38%" r="70%">
+                <Stop offset="0%" stopColor="#020203" />
+                <Stop offset="78%" stopColor="#08080a" />
+                <Stop offset="100%" stopColor="#171207" />
+              </RadialGradient>
+              <RadialGradient id="fbPearl" cx="35%" cy="30%" r="80%">
+                <Stop offset="0%" stopColor="#fdf9ee" />
+                <Stop offset="60%" stopColor="#cfc8b8" />
+                <Stop offset="100%" stopColor="#a09681" />
+              </RadialGradient>
+              <RadialGradient id="fbFinger" cx="35%" cy="30%" r="80%">
+                <Stop offset="0%" stopColor="#ffe08a" />
+                <Stop offset="60%" stopColor="#ffc64d" />
+                <Stop offset="100%" stopColor="#e8940f" />
+              </RadialGradient>
+              <LinearGradient id="fbNut" x1="0" y1="0" x2="1" y2="0">
+                <Stop offset="0%" stopColor="#efe9da" />
+                <Stop offset="100%" stopColor="#b3ab97" />
+              </LinearGradient>
+              {/* Standing-wave envelope: brightest at the lobe extremes. */}
+              <LinearGradient id="fbEnv" x1="0" y1="0" x2="0" y2="1">
+                <Stop offset="0%" stopColor={colors.amber} stopOpacity={0.3} />
+                <Stop offset="50%" stopColor={colors.amber} stopOpacity={0.05} />
+                <Stop offset="100%" stopColor={colors.amber} stopOpacity={0.3} />
+              </LinearGradient>
+            </Defs>
+            {/* WOOD neck (gradient + static grain streaks) → sunburst body. */}
+            <Rect x={0} y={0} width={w} height={FB_H} fill="url(#fbWood)" />
+            {GRAIN_ROWS.map((g, i) => (
+              <Path
+                key={`grain${i}`}
+                d={`M0 ${(g * FB_H).toFixed(1)} Q ${(bodyStart * 0.5).toFixed(1)} ${(g * FB_H + (i % 2 === 0 ? -4 : 4)).toFixed(1)} ${bodyStart.toFixed(1)} ${(g * FB_H).toFixed(1)}`}
+                stroke={GRAIN}
+                strokeWidth={i % 2 === 0 ? 1.2 : 0.7}
+                opacity={0.4}
+                fill="none"
+              />
+            ))}
+            <Rect x={bodyStart} y={0} width={w - bodyStart} height={FB_H} fill="url(#fbBody)" />
+            {/* Cream edge binding along the body rim + the neck→body seam. */}
+            <Line x1={bodyStart} y1={1} x2={w} y2={1} stroke={BINDING} strokeWidth={2} opacity={0.55} />
+            <Line x1={bodyStart} y1={FB_H - 1} x2={w} y2={FB_H - 1} stroke={BINDING} strokeWidth={2} opacity={0.55} />
+            <Line x1={w - 1} y1={0} x2={w - 1} y2={FB_H} stroke={BINDING} strokeWidth={2} opacity={0.4} />
             <Line x1={bodyStart} y1={0} x2={bodyStart} y2={FB_H} stroke="#0a0a0c" strokeWidth={2} />
-            {/* Sound hole (rosette ring + dark bore) — behind the strings. */}
-            <Circle cx={holeCX} cy={holeCY} r={holeR + 3} fill="none" stroke={ROSETTE} strokeWidth={3} />
-            <Circle cx={holeCX} cy={holeCY} r={holeR} fill={SOUND_HOLE} />
-            {/* Frets (0 = nut, heavier) — metal on the wood neck. */}
+            {/* Sound hole: rosette + fine pearl rings + shaded bore. */}
+            <Circle cx={holeCX} cy={holeCY} r={holeR + 4} fill="none" stroke={ROSETTE} strokeWidth={5} />
+            <Circle cx={holeCX} cy={holeCY} r={holeR + 6} fill="none" stroke={ROSETTE_PEARL} strokeWidth={0.8} opacity={0.65} />
+            <Circle cx={holeCX} cy={holeCY} r={holeR + 1.5} fill="none" stroke={ROSETTE_PEARL} strokeWidth={0.8} opacity={0.65} />
+            <Circle cx={holeCX} cy={holeCY} r={holeR} fill="url(#fbHole)" />
+            {/* Bridge: ebony base, bone saddle, pearl-ringed string pins. */}
+            <Rect x={w - 13} y={STRING_TOP - 24} width={10} height={3 * STRING_GAP + 48} rx={5} fill="#150f08" />
+            <Line x1={w - 8} y1={STRING_TOP - 18} x2={w - 8} y2={STRING_TOP + 3 * STRING_GAP + 18} stroke="#e8e2d2" strokeWidth={2} />
+            {ROW_TO_STRING.map((si, row) => (
+              <Circle
+                key={`pin${si}`}
+                cx={w - 4}
+                cy={STRING_TOP + row * STRING_GAP}
+                r={1.8}
+                fill="#0c0c0f"
+                stroke={ROSETTE_PEARL}
+                strokeWidth={0.7}
+              />
+            ))}
+            {/* Frets: dark nickel wire + specular highlight (0 = bone nut). */}
             {Array.from({ length: NUM_FRETS + 1 }, (_, n) => {
               const x = fretPos(n) * w;
-              return (
-                <Line
-                  key={n}
-                  x1={x}
-                  y1={STRING_TOP - 18}
-                  x2={x}
-                  y2={STRING_TOP + 3 * STRING_GAP + 18}
-                  stroke={n === 0 ? NUT_BONE : FRET_METAL}
-                  strokeWidth={n === 0 ? 4 : 1.5}
-                />
+              const y1 = STRING_TOP - 18;
+              const y2 = STRING_TOP + 3 * STRING_GAP + 18;
+              return n === 0 ? (
+                <Rect key={n} x={x} y={y1} width={4.5} height={y2 - y1} fill="url(#fbNut)" />
+              ) : (
+                <Fragment key={n}>
+                  <Line x1={x} y1={y1} x2={x} y2={y2} stroke={FRET_BASE} strokeWidth={3} />
+                  <Line x1={x - 0.7} y1={y1} x2={x - 0.7} y2={y2} stroke={FRET_SPEC} strokeWidth={1.1} opacity={0.85} />
+                </Fragment>
               );
             })}
-            {/* Fret markers (pearl inlay dots at 3·5·7·9, double at 12). */}
+            {/* Fret markers (gradient-pearl inlays at 3·5·7·9, double at 12). */}
             {[3, 5, 7, 9, 12].map((n) => {
               const x = ((fretPos(n - 1) + fretPos(n)) / 2) * w;
               const cy = STRING_TOP + 1.5 * STRING_GAP;
               return n === 12 ? (
                 <Fragment key={n}>
-                  <Circle cx={x} cy={cy - 22} r={3.5} fill={INLAY} />
-                  <Circle cx={x} cy={cy + 22} r={3.5} fill={INLAY} />
+                  <Circle cx={x} cy={cy - 22} r={4} fill="url(#fbPearl)" />
+                  <Circle cx={x} cy={cy + 22} r={4} fill="url(#fbPearl)" />
                 </Fragment>
               ) : (
-                <Circle key={n} cx={x} cy={cy} r={3.5} fill={INLAY} />
+                <Circle key={n} cx={x} cy={cy} r={4} fill="url(#fbPearl)" />
               );
             })}
-            {/* Strings (G top … E bottom); thicker toward E. */}
+            {/* Strings (G top … E bottom): gauge grows toward the low E; each
+                gets a shadow pass + specular highlight; selection = amber glow. */}
             {ROW_TO_STRING.map((si, row) => {
               const y = STRING_TOP + row * STRING_GAP;
               const sel = si === stringIdx;
+              const gauge = 1 + row * 0.8; // E (bottom row) is the heaviest
               return (
-                <Line
-                  key={si}
-                  x1={0}
-                  y1={y}
-                  x2={w}
-                  y2={y}
-                  stroke={sel ? 'rgba(255,198,77,.5)' : '#55555e'}
-                  strokeWidth={1 + (3 - row) * 0.7}
-                />
+                <Fragment key={si}>
+                  {sel ? (
+                    <Line x1={0} y1={y} x2={w} y2={y} stroke={colors.amber} strokeWidth={gauge + 5} opacity={0.16} />
+                  ) : null}
+                  <Line x1={0} y1={y + gauge * 0.5} x2={w} y2={y + gauge * 0.5} stroke="#000000" strokeWidth={gauge} opacity={0.35} />
+                  <Line x1={0} y1={y} x2={w} y2={y} stroke={sel ? STRING_SEL : STRING_STEEL} strokeWidth={gauge} />
+                  <Line
+                    x1={0}
+                    y1={y - gauge * 0.25}
+                    x2={w}
+                    y2={y - gauge * 0.25}
+                    stroke={STRING_SPEC}
+                    strokeWidth={Math.max(0.6, gauge * 0.28)}
+                    opacity={sel ? 0.9 : 0.6}
+                  />
+                </Fragment>
               );
             })}
-            {/* FRETTED: dim the dead length (nut → fret) + finger dot. */}
+            {/* FRETTED: dim the dead length (nut → fret) + domed finger dot. */}
             {mode === 'fretted' && fret > 0 ? (
               <>
-                <Line
-                  x1={0}
-                  y1={selY}
-                  x2={fretPos(fret) * w}
-                  y2={selY}
-                  stroke="#1c1c22"
-                  strokeWidth={4}
-                />
-                <Circle cx={fretPos(fret) * w} cy={selY} r={7} fill={colors.amber} />
+                <Line x1={0} y1={selY} x2={fretPos(fret) * w} y2={selY} stroke="#1c1c22" strokeWidth={5.5} />
+                <Circle cx={fretPos(fret) * w} cy={selY} r={13} fill={colors.amber} opacity={0.18} />
+                <Circle cx={fretPos(fret) * w} cy={selY} r={7} fill="url(#fbFinger)" />
+                <Circle cx={fretPos(fret) * w - 2.2} cy={selY - 2.2} r={1.8} fill="#ffffff" opacity={0.55} />
               </>
             ) : null}
-            {/* HARMONICS: node ticks at 1/n across the full string + touch dot. */}
-            {mode === 'harmonics'
-              ? Array.from({ length: harmonicN - 1 }, (_, k) => {
-                  const x = ((k + 1) / harmonicN) * w;
-                  return <Circle key={k} cx={x} cy={selY} r={4} fill="#5bff85" opacity={0.9} />;
-                })
-              : null}
-            {mode === 'harmonics' ? (
-              <Circle cx={(1 / harmonicN) * w} cy={selY} r={7} fill="none" stroke={colors.amber} strokeWidth={2} />
-            ) : null}
-            {/* The standing wave (mirrored lobes). */}
-            <Path d={wavePath} stroke={colors.amber} strokeWidth={1.6} fill="none" opacity={0.9} />
+            {/* The standing wave: translucent gradient ENVELOPE + glow-stroked
+                mirrored lobes (same sampled math as before the re-skin). */}
+            <Path d={wave.env} fill="url(#fbEnv)" />
+            <Path d={wave.top} stroke={colors.amber} strokeWidth={5} fill="none" opacity={0.18} strokeLinecap="round" />
             <Path
-              d={wavePath}
+              d={wave.top}
+              stroke={colors.amber}
+              strokeWidth={5}
+              fill="none"
+              opacity={0.1}
+              strokeLinecap="round"
+              transform={`translate(0, ${2 * selY}) scale(1, -1)`}
+            />
+            <Path d={wave.top} stroke={colors.amber} strokeWidth={1.6} fill="none" opacity={0.95} strokeLinecap="round" />
+            <Path
+              d={wave.top}
               stroke={colors.amber}
               strokeWidth={1.6}
               fill="none"
-              opacity={0.45}
+              opacity={0.5}
+              strokeLinecap="round"
               transform={`translate(0, ${2 * selY}) scale(1, -1)`}
             />
+            {/* HARMONICS: glowing NODE markers at k/n + faint ANTINODE dots at
+                the lobe peaks + the amber touch ring at 1/n. */}
+            {mode === 'harmonics'
+              ? Array.from({ length: harmonicN - 1 }, (_, k) => {
+                  const x = ((k + 1) / harmonicN) * w;
+                  return (
+                    <Fragment key={k}>
+                      <Circle cx={x} cy={selY} r={9} fill="#5bff85" opacity={0.16} />
+                      <Circle cx={x} cy={selY} r={4} fill="#5bff85" opacity={0.95} />
+                      <Circle cx={x - 1.2} cy={selY - 1.2} r={1.3} fill="#eafff0" opacity={0.9} />
+                    </Fragment>
+                  );
+                })
+              : null}
+            {mode === 'harmonics'
+              ? Array.from({ length: harmonicN }, (_, k) => {
+                  const x = ((k + 0.5) / harmonicN) * w;
+                  return (
+                    <Fragment key={`an${k}`}>
+                      <Circle cx={x} cy={selY - 12} r={6} fill={colors.amber} opacity={0.14} />
+                      <Circle cx={x} cy={selY - 12} r={2.2} fill={colors.amber} opacity={0.8} />
+                    </Fragment>
+                  );
+                })
+              : null}
+            {mode === 'harmonics' ? (
+              <>
+                <Circle cx={(1 / harmonicN) * w} cy={selY} r={7} fill="none" stroke={colors.amber} strokeWidth={6} opacity={0.2} />
+                <Circle cx={(1 / harmonicN) * w} cy={selY} r={7} fill="none" stroke={colors.amber} strokeWidth={2} />
+              </>
+            ) : null}
           </Svg>
         </Pressable>
       ) : (
