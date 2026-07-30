@@ -1,0 +1,29 @@
+// ape-optical — Android build (owner 2026-07-29). Pure Kotlin (CameraX), no
+// native C++/CMake. Mirrors the SDK-57 installed-module style: the
+// expo-module-gradle-plugin supplies Kotlin + expo-modules-core +
+// compileSdk/minSdk/targetSdk — do NOT set those here (drift risk).
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'com.cbcreativeservices.apeoptical'
+version = '0.1.0'
+
+android {
+  namespace "expo.modules.apeoptical"
+
+  defaultConfig {
+    versionCode 1
+    versionName "0.1.0"
+  }
+}
+
+dependencies {
+  // CameraX (stable). Provides ProcessCameraProvider + ImageAnalysis; the
+  // analyzer reads the Y plane for a mean-luminance value per frame.
+  def camerax = "1.3.4"
+  implementation "androidx.camera:camera-core:${camerax}"
+  implementation "androidx.camera:camera-camera2:${camerax}"
+  implementation "androidx.camera:camera-lifecycle:${camerax}"
+}

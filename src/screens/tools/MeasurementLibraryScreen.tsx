@@ -130,6 +130,15 @@ function payloadLines(m: SavedMeasurement): { label: string; value: string }[] {
       ...(p.spectrogram
         ? [{ label: 'SPECTROGRAM', value: `${p.spectrogram.grid.length} cols × ${p.spectrogram.rows} rows · ${p.spectrogram.dynamicRangeDb} dB` }]
         : []),
+      // Optional gated captures (owner 2026-07-29) — text only; the image is
+      // never rendered in the list (keep the row light).
+      ...(p.geo
+        ? [{
+            label: 'LOCATION',
+            value: `📍 ${p.geo.latitude.toFixed(5)}, ${p.geo.longitude.toFixed(5)}${p.geo.accuracyM != null ? ` (±${Math.round(p.geo.accuracyM)}m)` : ''}`,
+          }]
+        : []),
+      ...(p.photoUri ? [{ label: 'PHOTO', value: 'photo attached' }] : []),
     ];
   }
   return [{ label: 'DATA', value: (p as { kind: string }).kind.replace(/_/g, ' ') }];

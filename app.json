@@ -12,7 +12,9 @@
       "bundleIdentifier": "com.cbcreativeservices.apestudio",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "NSMicrophoneUsageDescription": "Used to measure sound levels and analyze audio in the measurement tools. Audio is processed on this device and is not recorded or uploaded."
+        "NSMicrophoneUsageDescription": "Used to measure sound levels and analyze audio in the measurement tools. Audio is processed on this device and is not recorded or uploaded.",
+        "NSCameraUsageDescription": "Used by the Light-Pulse frequency counter to measure how fast a light flashes (overall image brightness only), and to add an optional photo to a measurement snapshot. No photo or video is uploaded.",
+        "NSLocationWhenInUseUsageDescription": "Used only when you choose to tag a measurement snapshot with where it was taken. Location is stored with the snapshot on this device and never shared automatically."
       }
     },
     "android": {
@@ -23,7 +25,12 @@
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.cbcreativeservices.apestudio"
+      "package": "com.cbcreativeservices.apestudio",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"

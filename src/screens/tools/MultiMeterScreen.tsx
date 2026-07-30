@@ -52,6 +52,7 @@
  */
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import {
+  Image,
   Modal,
   Pressable,
   ScrollView,
@@ -72,6 +73,10 @@ import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO, type MultimeterSnapshotPayload } from '../../features/tools/measure/types';
 import { useToolUsage } from '../../features/tools/telemetry';
+import { PermissionPrompt, usePermissionFlow } from '../../features/permissions/PermissionPrompt';
+import * as photo from '../../features/tools/capture/photo';
+import * as location from '../../features/tools/capture/location';
+import type { GeoFix } from '../../features/tools/capture/location';
 import { colors, fonts } from '../../theme/tokens';
 import { EngineGate } from './EngineGate';
 import { InteractionZone } from '../lab/LabShell';
@@ -650,6 +655,43 @@ export function MultiMeterScreen({ navigation }: Props) {
   const [draft, setDraft] = useState<SnapshotDraft | null>(null);
   const [notes, setNotes] = useState('');
   const [justSaved, setJustSaved] = useState(false);
+
+  // ---- Optional room-photo + GPS capture (owner 2026-07-29) -----------------
+  // Both are HONEST-GATED: the controls only appear when the native module is
+  // actually in this build (isAvailable()); otherwise a one-liner says the
+  // capability needs the next dev build. Nothing is uploaded — the photo URI
+  // and fix live on-device with the snapshot. isAvailable() is a runtime probe
+  // of the optional-require gate, stable for the app's lifetime → read once.
+  const photoAvailable = useMemo(() => photo.isAvailable(), []);
+  const locationAvailable = useMemo(() => location.isAvailable(), []);
+  const photoFlow = usePermissionFlow('photo', photo.requestPermission);
+  const locationFlow = usePermissionFlow('location', location.requestPermission);
+  const [photoUri, setPhotoUri] = useState<string | null>(null);
+  const [geo, setGeo] = useState<GeoFix | null>(null);
+  const [photoBlocked, setPhotoBlocked] = useState(false);
+  const [locationBlocked, setLocationBlocked] = useState(false);
+
+  const onAddPhoto = useCallback(async () => {
+    const r = await photoFlow.request();
+    if (r === 'granted') {
+      setPhotoBlocked(false);
+      const uri = await photo.capture(); // launches the system camera
+      if (uri) setPhotoUri(uri);
+    } else if (r === 'blocked') {
+      setPhotoBlocked(true); // OS access is off — point to Settings
+    }
+  }, [photoFlow]);
+
+  const onTagLocation = useCallback(async () => {
+    const r = await locationFlow.request();
+    if (r === 'granted') {
+      setLocationBlocked(false);
+      const fix = await location.getFix();
+      if (fix) setGeo(fix);
+    } else if (r === 'blocked') {
+      setLocationBlocked(true);
+    }
+  }, [locationFlow]);
   const savedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(
     () => () => {
@@ -717,10 +759,31 @@ export function MultiMeterScreen({ navigation }: Props) {
       routeName,
     });
     setNotes('');
+    // Fresh sheet = fresh optional capture (a prior photo/fix would mis-tag).
+    setPhotoUri(null);
+    setGeo(null);
+    setPhotoBlocked(false);
+    setLocationBlocked(false);
   }, [state, chips, sgHistory, specView]);
 
   const confirmSnapshot = useCallback(() => {
     if (!draft) return;
+    // Fold in the optional, gated captures (additive — omitted when absent, so
+    // a snapshot with neither saves exactly as before).
+    const payload: MultimeterSnapshotPayload = {
+      ...draft.payload,
+      ...(photoUri ? { photoUri } : {}),
+      ...(geo
+        ? {
+            geo: {
+              latitude: geo.latitude,
+              longitude: geo.longitude,
+              accuracyM: geo.accuracyM,
+              timestamp: geo.timestamp,
+            },
+          }
+        : {}),
+    };
     saveMeasurement({
       id: Crypto.randomUUID(),
       tool_type: 'multimeter',
@@ -739,13 +802,13 @@ export function MultiMeterScreen({ navigation }: Props) {
       },
       quality_state: evaluateQuality(draft.flags),
       warning_flags: draft.flags,
-      data_payload: draft.payload,
+      data_payload: payload,
     });
     setDraft(null);
     setJustSaved(true);
     if (savedTimer.current) clearTimeout(savedTimer.current);
     savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
-  }, [draft, notes, smoothing, zoom]);
+  }, [draft, notes, smoothing, zoom, photoUri, geo]);
 
   // ---- Derived render data ---------------------------------------------------
   const liveFlags = running ? meterWarningFlags(meter) : [];
@@ -1301,10 +1364,71 @@ export function MultiMeterScreen({ navigation }: Props) {
               multiline
               maxLength={280}
             />
-            <Text style={styles.sheetFuture}>
-              GPS location and a room photo are coming with a future release — this build saves
-              numbers and notes only.
-            </Text>
+            {/* Optional room photo — gated: only when the module is in this
+                build. Nothing is uploaded; the URI is stored with the snapshot. */}
+            {photoAvailable ? (
+              photoUri ? (
+                <View style={styles.captureRow}>
+                  <Image source={{ uri: photoUri }} style={styles.captureThumb} />
+                  <View style={styles.captureRowBody}>
+                    <Text style={styles.captureLabel}>ROOM PHOTO ATTACHED</Text>
+                    <View style={styles.captureActions}>
+                      <Pressable onPress={onAddPhoto} hitSlop={6} accessibilityRole="button" accessibilityLabel="Retake photo">
+                        <Text style={styles.captureAction}>RETAKE</Text>
+                      </Pressable>
+                      <Pressable onPress={() => setPhotoUri(null)} hitSlop={6} accessibilityRole="button" accessibilityLabel="Remove photo">
+                        <Text style={styles.captureActionRemove}>REMOVE</Text>
+                      </Pressable>
+                    </View>
+                  </View>
+                </View>
+              ) : (
+                <Pressable style={styles.captureBtn} onPress={onAddPhoto} accessibilityRole="button" accessibilityLabel="Add room photo">
+                  <Text style={styles.captureBtnText}>+ ADD PHOTO</Text>
+                </Pressable>
+              )
+            ) : (
+              <Text style={styles.sheetFuture}>Photo capture needs the next dev build.</Text>
+            )}
+            {photoAvailable && photoBlocked && (
+              <Text style={styles.captureBlocked}>
+                Camera access is off — enable it in your device Settings to add a photo.
+              </Text>
+            )}
+
+            {/* Optional GPS tag — gated the same way. */}
+            {locationAvailable ? (
+              geo ? (
+                <View style={styles.captureRow}>
+                  <View style={styles.captureRowBody}>
+                    <Text style={styles.captureLabel}>LOCATION TAGGED</Text>
+                    <Text style={styles.captureGeo}>
+                      📍 {geo.latitude.toFixed(5)}, {geo.longitude.toFixed(5)}
+                      {geo.accuracyM != null ? ` (±${Math.round(geo.accuracyM)}m)` : ''}
+                    </Text>
+                    <View style={styles.captureActions}>
+                      <Pressable onPress={onTagLocation} hitSlop={6} accessibilityRole="button" accessibilityLabel="Re-tag location">
+                        <Text style={styles.captureAction}>RE-TAG</Text>
+                      </Pressable>
+                      <Pressable onPress={() => setGeo(null)} hitSlop={6} accessibilityRole="button" accessibilityLabel="Remove location">
+                        <Text style={styles.captureActionRemove}>REMOVE</Text>
+                      </Pressable>
+                    </View>
+                  </View>
+                </View>
+              ) : (
+                <Pressable style={styles.captureBtn} onPress={onTagLocation} accessibilityRole="button" accessibilityLabel="Tag location">
+                  <Text style={styles.captureBtnText}>📍 TAG LOCATION</Text>
+                </Pressable>
+              )
+            ) : (
+              <Text style={styles.sheetFuture}>Location tagging needs the next dev build.</Text>
+            )}
+            {locationAvailable && locationBlocked && (
+              <Text style={styles.captureBlocked}>
+                Location access is off — enable it in your device Settings to tag this snapshot.
+              </Text>
+            )}
             <View style={styles.sheetBtnRow}>
               <Pressable style={styles.sheetBtn} onPress={() => setDraft(null)} accessibilityRole="button" accessibilityLabel="Cancel">
                 <Text style={styles.sheetBtnText}>CANCEL</Text>
@@ -1316,6 +1440,10 @@ export function MultiMeterScreen({ navigation }: Props) {
           </View>
         </View>
       </Modal>
+
+      {/* Pre-permission explainers — rendered once; open above the sheet. */}
+      <PermissionPrompt {...photoFlow.promptProps} />
+      <PermissionPrompt {...locationFlow.promptProps} />
       {sheet}
     </View>
   );
@@ -1577,6 +1705,36 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   sheetFuture: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 12, lineHeight: 16, color: colors.textMuted },
+
+  // Optional photo + GPS capture (gated).
+  captureBtn: {
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: '#3a3d46',
+    backgroundColor: '#17171c',
+    paddingVertical: 11,
+    alignItems: 'center',
+  },
+  captureBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.2, color: colors.textSecondary },
+  captureRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: '#2c2f38',
+    backgroundColor: '#101013',
+    padding: 8,
+  },
+  captureRowBody: { flex: 1, gap: 3 },
+  captureThumb: { width: 48, height: 48, borderRadius: 6, backgroundColor: '#000' },
+  captureLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.2, color: colors.amberLabel },
+  captureGeo: { fontFamily: fonts.mono, fontSize: 12.5, color: colors.textSecondary },
+  captureActions: { flexDirection: 'row', gap: 16, marginTop: 1 },
+  captureAction: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, color: '#4dd0e1' },
+  captureActionRemove: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, color: '#ff8d7a' },
+  captureBlocked: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16, color: colors.amber },
+
   sheetBtnRow: { flexDirection: 'row', gap: 12 },
   sheetBtn: {
     flex: 1,

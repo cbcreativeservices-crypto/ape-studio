@@ -184,9 +184,10 @@ export type ImpulseResponsePayload = {
 /** Pro Audio MultiMeter snapshot (owner spec 2026-07-29): one tap captures the
  *  whole instrument state — NUMBERS only, never audio. Every level is dBFS ·
  *  uncalibrated (the "SPL" figure is the SPL screen's LAF convention:
- *  dBFS-referenced, never true dB SPL). GPS + room photo are deliberately NOT
- *  part of this payload — the native modules aren't in the installed build;
- *  they ship with a future release, and the save sheet says so. */
+ *  dBFS-referenced, never true dB SPL). GPS + room photo are OPTIONAL, gated
+ *  additive fields (owner 2026-07-29): captured only when the user taps the
+ *  snapshot sheet's controls AND the expo-location / expo-image-picker modules
+ *  are in the running build; a snapshot with neither still saves as before. */
 export type MultimeterSnapshotPayload = {
   kind: 'multimeter_snapshot';
   /** Resolvable 1/3-octave bands only (Q2 — the spectrum_trace rule: storing a
@@ -221,6 +222,16 @@ export type MultimeterSnapshotPayload = {
     dynamicRangeDb: number;
     grid: number[][];
   } | null;
+  /** Optional room photo — a device-local image URI captured via the system
+   *  camera (expo-image-picker, gated). Stored on-device with the snapshot;
+   *  nothing is uploaded. Absent when the module isn't in the build or the
+   *  user skipped it. */
+  photoUri?: string;
+  /** Optional GPS tag — a single foreground fix (expo-location, gated).
+   *  accuracyM is the OS-reported horizontal accuracy in metres (null when
+   *  unknown). Absent when the module isn't in the build or the user skipped
+   *  it. */
+  geo?: { latitude: number; longitude: number; accuracyM: number | null; timestamp: number };
 };
 
 export type MeasurementPayload =

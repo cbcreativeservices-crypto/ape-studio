@@ -17,6 +17,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Toggle } from '../../components/Toggle';
 import { resetCoachMarks } from '../../lib/coachMark';
 import { resetScreenIntros } from '../../features/intro/screenIntros';
+import { resetAskModes } from '../../features/permissions/permissionStore';
 import { sendFeedback } from '../../lib/feedback';
 import { supabase } from '../../lib/supabase';
 import { colors, fonts } from '../../theme/tokens';
@@ -298,6 +299,20 @@ export function SettingsScreen({ navigation }: Props) {
             }
           >
             <Text style={styles.rowLabel}>Reset onboarding hints</Text>
+            <Text style={[styles.mono, { color: colors.amber }]}>RESET</Text>
+          </Pressable>
+          <Pressable
+            style={styles.row}
+            onPress={() =>
+              resetAskModes().then(() =>
+                Alert.alert(
+                  'Permission prompts reset',
+                  'The camera, location, and photo explainer popups will ask again next time — including if you had chosen “always allow.” This does not change what you’ve allowed in your device Settings.',
+                ),
+              )
+            }
+          >
+            <Text style={styles.rowLabel}>Reset permission prompts</Text>
             <Text style={[styles.mono, { color: colors.amber }]}>RESET</Text>
           </Pressable>
         </View>

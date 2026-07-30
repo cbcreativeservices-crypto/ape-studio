@@ -24,7 +24,7 @@
  * the min/max readings, with Reset + Hold controls.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { PermissionsAndroid, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
@@ -38,6 +38,9 @@ import { colors, fonts } from '../../theme/tokens';
 import { EngineGate } from './EngineGate';
 import { ENGINE_NOTE } from './toolsData';
 import { useToolHelp, DisplayGuideButton, readoutKey } from '../../features/lab/guidedLessons';
+import { useOpticalCounter } from '../../features/tools/capture/opticalCounter';
+import * as Optical from '../../../modules/ape-optical';
+import { PermissionPrompt, usePermissionFlow } from '../../features/permissions/PermissionPrompt';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'FrequencyCounter'>;
@@ -210,6 +213,121 @@ function computePitchStats(hist: { f: number; at: number }[]): PitchStats | null
     stabilityLabel: cv < 0.005 ? 'Very stable' : cv < 0.02 ? 'Stable' : cv < 0.06 ? 'Fair' : 'Unstable',
     frames: hist.length,
   };
+}
+
+/** Camera-luma OS permission request (owner 2026-07-29): on Android do the
+ *  real CAMERA request up front so ape-optical.start() finds it granted; on
+ *  iOS ape-optical.start()'s AVCaptureDevice.requestAccess shows the dialog, so
+ *  report the pre-check status here. */
+async function requestCameraOs(): Promise<'granted' | 'denied' | 'blocked'> {
+  if (Platform.OS === 'android') {
+    try {
+      const res = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA);
+      if (res === PermissionsAndroid.RESULTS.GRANTED) return 'granted';
+      if (res === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) return 'blocked';
+      return 'denied';
+    } catch {
+      return 'denied';
+    }
+  }
+  return Optical.getPermissionStatus() === 'denied' ? 'denied' : 'granted';
+}
+
+/** LIGHT PULSE — optical (camera-brightness) frequency counter (ape-optical).
+ *  Honest gates: absent native module → "needs the new dev build"; permission
+ *  declined → Settings pointer; readings above the camera's Nyquist refused. */
+function LightPulseMode({ blurb, help, helpAll }: { blurb: string; help: (key: string) => void; helpAll: () => void }) {
+  const available = Optical.isAvailable();
+  const [armed, setArmed] = useState(false);
+  const [blocked, setBlocked] = useState(false);
+  const { request, promptProps } = usePermissionFlow('camera', requestCameraOs);
+  const { state, reading, lastError } = useOpticalCounter(armed);
+
+  const onStart = useCallback(async () => {
+    const r = await request();
+    if (r === 'granted') {
+      setBlocked(false);
+      setArmed(true);
+    } else if (r === 'blocked') {
+      setBlocked(true);
+    }
+  }, [request]);
+
+  if (!available) {
+    return (
+      <>
+        <Text style={styles.intro}>{blurb}</Text>
+        <EngineInDev extra="Light-Pulse uses a native camera module that isn't in this installed build yet — install the next dev build to enable it. It measures overall image brightness over time (no photo or video is saved) and estimates the flash rate; rolling-shutter and frame-rate limits cap what a phone camera can resolve, so it's for slow flashing lights, strobes, and marked rotating machinery, not audio-rate signals." />
+        <Text style={styles.disclaimer}>{DISCLAIMER}</Text>
+      </>
+    );
+  }
+
+  const freq = reading?.freq ?? null;
+  const nyq = reading?.nyquistHz ?? 0;
+  const steady = reading != null && reading.depth < 0.01;
+
+  return (
+    <>
+      <Text style={styles.intro}>{blurb}</Text>
+      <DisplayGuideButton onPress={helpAll} />
+
+      {!armed ? (
+        <GlassButton label="START CAMERA" onPress={onStart} tint="gold" />
+      ) : (
+        <View style={styles.controls}>
+          <Pressable style={styles.ctrlBtn} onPress={() => setArmed(false)} accessibilityRole="button" accessibilityLabel="Stop">
+            <Text style={styles.ctrlText}>STOP</Text>
+          </Pressable>
+        </View>
+      )}
+
+      {blocked && (
+        <Text style={styles.liveWarn}>
+          ⚠ Camera access is off. Turn it on for this app in your device Settings to use Light Pulse.
+        </Text>
+      )}
+
+      {armed && (
+        <>
+          <View style={styles.readout}>
+            <Text style={[styles.readoutValue, (state !== 'running' || freq == null) && styles.readoutDim]}>
+              {freq != null ? freq.toFixed(freq < 10 ? 2 : 1) : '– –'}
+            </Text>
+            <Text style={styles.readoutUnit}>Hz</Text>
+          </View>
+          <View style={styles.statGrid}>
+            <StatCell label="PERIOD" value={freq != null ? fmtMs(1000 / freq) : '—'} unit="ms" help={help} />
+            <StatCell label="BPM" value={freq != null ? Math.round(freq * 60).toString() : '—'} help={help} />
+            <StatCell label="MOD DEPTH" value={reading != null ? `${Math.round(reading.depth * 100)}` : '—'} unit="%" help={help} />
+            <StatCell label="CAMERA FPS" value={reading != null ? Math.round(reading.fps).toString() : '—'} help={help} />
+            <StatCell label="MAX RESOLVABLE" value={nyq > 0 ? nyq.toFixed(0) : '—'} unit="Hz" help={help} />
+          </View>
+
+          {state === 'starting' && <Text style={styles.liveWarn}>Opening the camera…</Text>}
+          {state === 'denied' && (
+            <Text style={styles.liveWarn}>⚠ Camera access is off — enable it in Settings to use Light Pulse.</Text>
+          )}
+          {state === 'error' && <Text style={styles.liveWarn}>⚠ Camera error: {lastError || 'could not start capture'}.</Text>}
+          {state === 'running' && steady && (
+            <Text style={styles.liveWarn}>Point the camera at the flashing light — the image looks steady right now (little brightness change).</Text>
+          )}
+          {reading?.nearLimit && (
+            <Text style={styles.liveWarn}>
+              ⚠ This reading is near the camera's limit (~{nyq.toFixed(0)} Hz) — treat it as approximate; faster
+              flicker can alias to a wrong, lower rate.
+            </Text>
+          )}
+          <Text style={styles.disclaimer}>
+            A camera can only resolve flicker up to about half its frame rate. Best for slow flashing
+            indicators, strobes, and rotating machinery with a marker. Overall image brightness only —
+            no photo or video is recorded.
+          </Text>
+        </>
+      )}
+      <PermissionPrompt {...promptProps} />
+    </>
+  );
 }
 
 function LivePitchMode({
@@ -790,12 +908,9 @@ export function FrequencyCounterScreen({ navigation }: Props) {
             onOpenLibrary={() => navigation.navigate('ToolLibrary', { toolKey: 'hzcounter' })}
           />
         ) : (
-          // Light Pulse: honest in-development state (camera path not built).
-          <>
-            <Text style={styles.intro}>{modeMeta?.blurb}</Text>
-            <EngineInDev extra="The camera light-pulse mode also needs careful per-device testing: rolling-shutter and frame-rate limits cap what a phone camera can resolve, and fast flicker can alias to the wrong rate. It ships after that testing." />
-            <Text style={styles.disclaimer}>{DISCLAIMER}</Text>
-          </>
+          // Light Pulse: camera-luma optical counter (ape-optical). Gates
+          // itself honestly when the native module isn't in the build.
+          <LightPulseMode blurb={modeMeta?.blurb ?? ''} help={help} helpAll={helpAll} />
         )}
       </ScrollView>
       {sheet}
