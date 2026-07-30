@@ -155,6 +155,7 @@ function VuHero({
   onDialMode,
   centerText,
   centerColor,
+  sweetSpot,
 }: {
   viz: VizMetersModule;
   live: LiveMeterDrive;
@@ -166,6 +167,7 @@ function VuHero({
   onDialMode: (m: DialMode) => void;
   centerText: string;
   centerColor?: string;
+  sweetSpot: boolean;
 }) {
   const phase = viz.usePhaseClock(true, 1 / VU_LOOP);
   return (
@@ -184,6 +186,7 @@ function VuHero({
         loopSeconds={VU_LOOP}
         centerText={centerText}
         centerColor={centerColor}
+        sweetSpot={sweetSpot}
       />
       <View style={styles.dialModeCorner}>
         {(['studio', 'spl', 'optimal'] as const).map((m) => (
@@ -483,6 +486,9 @@ export function SplMeterScreen({ navigation }: Props) {
   const dialSpl = meter ? Math.round(selectedLevelDb(meter, weighting, response) + splOffset) : null;
   const dialCenterText = dialSpl != null ? `${dialSpl}` : '—';
   const dialCenterColor = dialSpl != null ? splZoneColor(dialSpl, dialMode) : undefined;
+  // Control-room sweet spot (owner 2026-07-30): in STUDIO mode only, a live level
+  // in 78–82 dB lights a glowing gold frame around the gauge. Never in SPL/OPTIMAL.
+  const inSweetSpot = dialMode === 'studio' && dialSpl != null && dialSpl >= 78 && dialSpl <= 82;
 
   /** SAVE LOG → Saved Measurement Library (spec §7; payload = SplLogPayload). */
   const onSaveLog = useCallback(() => {
@@ -1026,6 +1032,7 @@ export function SplMeterScreen({ navigation }: Props) {
                     onDialMode={setDialMode}
                     centerText={dialCenterText}
                     centerColor={dialCenterColor}
+                    sweetSpot={inSweetSpot}
                   />
                 ) : null}
 

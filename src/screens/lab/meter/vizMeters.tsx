@@ -1000,14 +1000,15 @@ export function VuMeterView(p: {
 
   const ledX = fx + fw - 22;
   const ledY = fy + 20;
-  // VU wordmark seat (owner 2026-07-30, DROPPED DOWN): the wordmark was riding too
-  // high, up near the scale numerals. Seat it instead in the lower-centre OPEN area
-  // — clearly BELOW the blue in-arc bracket numbers (radius ≈ R−15) yet comfortably
-  // ABOVE the needle base / pivot hub (radius ~10). Pin its BOTTOM a fixed gap above
-  // the hub and size it so its TOP still clears the R−15 blue-number radius.
+  // VU wordmark seat (owner 2026-07-30, RAISED to the midpoint): the wordmark was
+  // riding too LOW, down near the pivot hub. Seat its CENTRE at the MIDPOINT between
+  // the blue in-arc bracket numbers (radius ≈ R−15 from the pivot) and the needle
+  // base / pivot hub (radius ~0) — i.e. at radius (R−15)/2 straight up the vertical
+  // centreline. That keeps it clear of BOTH the blue numbers above and the pivot/
+  // needle below.
   const wmSize = Math.min(18, Math.max(12, Math.round(0.06 * R + 6)));
-  const wmBottomY = py - 16;
-  const wmTopY = wmBottomY - wmSize;
+  const wmCenterY = py - (R - 15) / 2;
+  const wmTopY = wmCenterY - wmSize / 2;
   return (
     <View style={{ width: w, height: h }}>
       <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
@@ -1111,9 +1112,9 @@ export function VuMeterView(p: {
           </Lbl>
         </>
       ) : null}
-      {/* VU wordmark: pinned a fixed gap ABOVE the pivot hub (owner 2026-07-30)
-          so the black hub circle never overlaps the letters, whatever R works out
-          to on-device. Center column is clear of the needle blade at rest. */}
+      {/* VU wordmark: centred at the MIDPOINT between the blue in-arc numbers
+          (radius ≈ R−15) and the pivot hub (owner 2026-07-30) — raised up out of
+          the pivot zone. Center column is clear of the needle blade at rest. */}
       <Lbl x={cx - 26} y={wmTopY} w={52} size={wmSize} font={fonts.oswaldSemiBold} color="#2b2417" ls={3}>
         VU
       </Lbl>
@@ -1924,6 +1925,13 @@ export function SplDialView(p: {
    *  as the level moves through the arc's colour zones. Absent ⇒ dark ink. The
    *  small "dB SPL" sub-label stays neutral dark ink regardless. */
   centerColor?: string;
+  /** SWEET-SPOT gold frame (owner 2026-07-30): when true, the plate border becomes
+   *  a GLOWING GOLD frame (gold stroke + soft BlurMask glow around the plate
+   *  rounded-rect) instead of the normal grey border. The parent passes true ONLY
+   *  in studio mode when the live level sits in the 78–82 dB sweet spot, so this
+   *  renders the glow purely off the prop — no mode gating here. Absent/false ⇒
+   *  the normal plate border. */
+  sweetSpot?: boolean;
 }) {
   const w = p.width;
   const h = p.height ?? Math.round(w * 1.02);
@@ -2025,17 +2033,31 @@ export function SplDialView(p: {
       sizeTicks.lineTo(q1.x, q1.y);
     }
 
-    // Numeric dB scale sits INSIDE the arc line (kept clean, nothing overlaps).
+    // THE 100 BOUNDARY (owner 2026-07-30): 100 dB is where RED begins — the red arc
+    // band already starts exactly at 100 (arcRed = arcStroke(100, …)). Mark it with a
+    // heavier, LONGER tick straddling the arc so the red-zone start reads clearly, and
+    // print a "100" numeral on the scale (below).
+    const boundaryTick = Skia.Path.Make();
+    {
+      const a = angOf(100);
+      const b0 = pt(a, Rs - 3);
+      const b1 = pt(a, Rs + 14);
+      boundaryTick.moveTo(b0.x, b0.y);
+      boundaryTick.lineTo(b1.x, b1.y);
+    }
+
+    // Numeric dB scale sits INSIDE the arc line (kept clean, nothing overlaps). 100 is
+    // included as the labelled red-zone boundary (rendered in red ink below).
     const numAt = (s: number, r: number) => {
       const lp = pt(angOf(s), r);
       return { x: lp.x, y: lp.y };
     };
-    const numLabels = [30, 50, 70, 90, 110].map((s) => ({ s, ...numAt(s, Rs - 13) }));
+    const numLabels = [30, 50, 70, 90, 100, 110].map((s) => ({ s, ...numAt(s, Rs - 13) }));
 
     return {
       plate, face, sheen, arcYellow, arcOrange, arcRed,
       arcStudioGray, arcStudioGreen, arcSplGray, arcSplGreen, majors, minors, sizeTicks,
-      numLabels,
+      boundaryTick, numLabels,
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [w, h]);
@@ -2103,6 +2125,9 @@ export function SplDialView(p: {
   // washed out on gray, so it goes DARKER for clear contrast.
   const inkDim = '#3f3a30';
   const RED_INK = '#b3271e';
+  // Sweet-spot GOLD (owner 2026-07-30): a readable gold on the gray plate, used for
+  // the studio CRITICAL BALANCE callout + leader to mark the sweet spot on the chart.
+  const GOLD_INK = '#d4a017';
   // Zone palette — darkened to read on the LIGHT-GRAY face (owner 2026-07-30).
   // Used for BOTH the arc strokes and the zone-matched callout labels + leaders.
   const Z_GREEN = '#1f7a34';
@@ -2122,11 +2147,14 @@ export function SplDialView(p: {
   // Driven live off the same rmsDb+splOffset the centre readout uses, so the plate
   // reads as a big ambient level indicator. Kept faint (~0.15) so text stays crisp.
   const greenStart = mode === 'studio' ? 60 : 40;
-  const tintGrey = withAlpha(Z_GREY, 0.14);
-  const tintGreen = withAlpha(Z_GREEN, 0.15);
-  const tintYellow = withAlpha(Z_AMBER, 0.16);
-  const tintOrange = withAlpha(Z_ORANGE, 0.17);
-  const tintRed = withAlpha(Z_RED, 0.18);
+  // Tint intensity (owner 2026-07-30): the old washed-out "mint" green is replaced by
+  // noticeably MORE saturated/vivid zone colours at higher opacity, so green reads as
+  // a clear green and yellow/orange/red are unmistakable. GRAY stays subtle as before.
+  const tintGrey = withAlpha(Z_GREY, 0.14); // unchanged (owner: leave gray subtle)
+  const tintGreen = withAlpha('#1faa3f', 0.3);
+  const tintYellow = withAlpha('#e6b220', 0.3);
+  const tintOrange = withAlpha('#e8701c', 0.32);
+  const tintRed = withAlpha('#dd352a', 0.34);
   const tintColor = useDerivedValue(() => {
     const raw = liveRms.value;
     const spl = raw === raw && raw > -120 ? raw + p.splOffset : SPL_MIN;
@@ -2165,26 +2193,30 @@ export function SplDialView(p: {
             { spl: 60, color: Z_GREEN, lines: [ { t: 'CONVERSATION', size: 12.5, color: Z_GREEN, ls: 0.3 }, { t: '~60 dBA', size: 10, color: inkDim } ] },
             { spl: 79, color: Z_AMBER, lines: [ { t: 'STUDIO LISTENING', size: 11, color: Z_AMBER_TXT, ls: 0.2 }, { t: '~79 dBC', size: 10, color: inkDim } ] },
             { spl: 95, color: Z_ORANGE, lines: [ { t: 'CONCERT', size: 12.5, color: Z_ORANGE, ls: 0.3 }, { t: '~95 dBC', size: 10, color: inkDim } ] },
-            { spl: 110, color: Z_RED, lines: [ { t: '100+ dB', size: 12.5, color: Z_RED, ls: 0.3 }, { t: 'UNSAFE >15 MIN/DAY', size: 9, color: Z_RED } ] },
+            // 100+ exposure zone — leader lands EXACTLY on the 100 red-zone boundary.
+            { spl: 100, color: Z_RED, lines: [ { t: '100+ dB', size: 12.5, color: Z_RED, ls: 0.3 }, { t: 'UNSAFE >15 MIN/DAY', size: 9, color: Z_RED } ] },
           ]
         : mode === 'optimal'
         ? [
             // Optimal reference-listening zones — leader anchored at each RANGE
             // MIDPOINT, coloured by zone (item 9).
             { spl: 50, color: Z_GREEN, lines: [ { t: 'AMBIENT', size: 12.5, color: Z_GREEN, ls: 0.3 }, { t: '40–59 dBA', size: 10, color: inkDim } ] },
-            { spl: 69, color: Z_AMBER, lines: [ { t: 'PROGRAM', size: 12.5, color: Z_AMBER_TXT, ls: 0.3 }, { t: '60–78 dBA', size: 10, color: inkDim } ] },
+            // PROGRAM · 60–78 dBA = GREEN, not amber (owner 2026-07-30).
+            { spl: 69, color: Z_GREEN, lines: [ { t: 'PROGRAM', size: 12.5, color: Z_GREEN, ls: 0.3 }, { t: '60–78 dBA', size: 10, color: inkDim } ] },
             { spl: 81, color: Z_GREEN, lines: [ { t: 'REFERENCE', size: 12.5, color: Z_GREEN, ls: 0.3 }, { t: '79–84 dBA', size: 10, color: inkDim } ] },
             { spl: 89, color: Z_ORANGE, lines: [ { t: 'SHOW', size: 12.5, color: Z_ORANGE, ls: 0.3 }, { t: '85–93 dBA', size: 10, color: inkDim } ] },
             { spl: 95, color: Z_ORANGE, lines: [ { t: 'HIGH', size: 12.5, color: Z_ORANGE, ls: 0.3 }, { t: '94–96 dBA', size: 10, color: inkDim } ] },
             { spl: 98, color: Z_RED, lines: [ { t: 'LIMIT', size: 12.5, color: Z_RED, ls: 0.3 }, { t: '97–99 dBA', size: 10, color: inkDim } ] },
-            { spl: 110, color: Z_RED, lines: [ { t: '100+ dB LAeq', size: 12, color: Z_RED, ls: 0.2 }, { t: 'WHO 15-MIN LIMIT', size: 9, color: Z_RED } ] },
+            // 100+ exposure zone — leader lands EXACTLY on the 100 red-zone boundary.
+            { spl: 100, color: Z_RED, lines: [ { t: '100+ dB LAeq', size: 12, color: Z_RED, ls: 0.2 }, { t: 'WHO 15-MIN LIMIT', size: 9, color: Z_RED } ] },
           ]
         : [
             // Studio: four long-term mixing bands. First three green, the brief
             // IMPACT CHECK orange.
             { spl: 62, color: Z_GREEN, lines: [ { t: 'BACKGROUND · DETAIL', size: 10.5, color: Z_GREEN, ls: 0.1 }, { t: '60–65 dB SPL', size: 10, color: inkDim } ] },
             { spl: 72, color: Z_GREEN, lines: [ { t: 'GENERAL EDITING', size: 12, color: Z_GREEN, ls: 0.2 }, { t: '70–75 dB SPL', size: 10, color: inkDim } ] },
-            { spl: 79, color: Z_GREEN, lines: [ { t: 'CRITICAL BALANCE', size: 12, color: Z_GREEN, ls: 0.2 }, { t: '79 dB SPL C', size: 10, color: inkDim } ] },
+            // CRITICAL BALANCE = the sweet spot — GOLD callout + leader (owner 2026-07-30).
+            { spl: 79, color: GOLD_INK, lines: [ { t: 'CRITICAL BALANCE', size: 12, color: GOLD_INK, ls: 0.2 }, { t: '79 dB SPL C', size: 10, color: inkDim } ] },
             { spl: 90, color: Z_ORANGE, lines: [ { t: 'IMPACT CHECK', size: 12.5, color: Z_ORANGE, ls: 0.3 }, { t: '85–95 dB SPL · brief', size: 9.5, color: inkDim } ] },
           ];
 
@@ -2200,16 +2232,21 @@ export function SplDialView(p: {
     // horizontal position is pinned to the column so text always clears the arc.
     const arcOuter = arcR + wArc / 2;      // outer edge of the coloured arc stroke
     const edgePad = 4;
-    const colPad = 8;                       // clearance from the arc to a side column
+    // Callout spread (owner 2026-07-30): SPL & OPTIMAL callouts were sitting too CLOSE
+    // to the arc. Push their columns FARTHER out (bigger colPad) and give them a LONGER
+    // leader / larger label ray radius so they ring the circle like STUDIO's do. STUDIO
+    // keeps its existing (already well-spread) values.
+    const wide = mode !== 'studio';
+    const colPad = wide ? 16 : 8;               // clearance from the arc to a side column
     const leftInner = cx - arcOuter - colPad;   // right edge of the LEFT column
     const rightInner = cx + arcOuter + colPad;  // left edge of the RIGHT column
     const centerHalf = Math.min((rightInner - leftInner) / 2, 74);
-    const labelR = arcOuter + Math.max(26, Rface * 0.42); // ray radius for vertical
+    const labelR = arcOuter + Math.max(wide ? 42 : 26, Rface * (wide ? 0.6 : 0.42)); // ray radius for vertical
     const CENTER_SIN = 0.2;                 // |sin| below this ⇒ a top-centre anchor
     // Keep every callout below the top caption/title block and above the bottom.
-    // Floor at 134 so the (now-lowered, start y≈46) title stack — which bottoms out
-    // around y≈130 for the tallest STUDIO + ESTIMATED case — is always cleared even
-    // when the trimmed topTextH would otherwise seat callouts higher.
+    // Floor at 134 so the title stack (now start y≈56, two-line title + ESTIMATED
+    // badge, bottoming out around y≈112) is always cleared with margin even when the
+    // trimmed topTextH would otherwise seat callouts higher.
     const topLimit = Math.max(topTextH + 12, 134);
     const botLimit = h - 6;
     const minGap = 7;
@@ -2295,7 +2332,11 @@ export function SplDialView(p: {
         {/* A1/B1 — LIGHT-GRAY rounded-rect PLATE (owner 2026-07-30: was white).
             Flat and clean; the slightly-lighter gray face sits in the upper part. */}
         <Path path={G.plate} color="#b2b2b8" />
-        <Path path={G.plate} color="#9a9aa1" style="stroke" strokeWidth={1} opacity={0.9} />
+        {/* Normal grey plate border — replaced by the gold sweet-spot frame (drawn
+            last, below) when `sweetSpot` is true. */}
+        {!p.sweetSpot ? (
+          <Path path={G.plate} color="#9a9aa1" style="stroke" strokeWidth={1} opacity={0.9} />
+        ) : null}
         {/* Medium-gray face (LOWER portion), a touch lighter than the plate. */}
         <Path path={G.face} color="#bebec4" />
         {/* LIVE zone tint (owner 2026-07-30): a soft colour wash over the whole
@@ -2325,6 +2366,12 @@ export function SplDialView(p: {
         )}
         <Path path={G.minors} color="#4a4436" style="stroke" strokeWidth={1.1} opacity={0.85} />
         <Path path={G.majors} color={ink} style="stroke" strokeWidth={1.6} />
+        {/* 100 = RED-zone boundary: a heavier, longer RED tick marking exactly where
+            red begins (owner 2026-07-30). Soft glow under a crisp core. */}
+        <Path path={G.boundaryTick} color={withAlpha(RED_INK, 0.5)} style="stroke" strokeWidth={5}>
+          <BlurMask blur={3} style="normal" />
+        </Path>
+        <Path path={G.boundaryTick} color={RED_INK} style="stroke" strokeWidth={2.8} />
         {mode === 'studio' ? (
           <Path path={G.sizeTicks} color={Z_GREEN} style="stroke" strokeWidth={1.8} />
         ) : null}
@@ -2346,6 +2393,18 @@ export function SplDialView(p: {
         <Path path={nodeCore} color="#fff5d8" style="stroke" strokeWidth={1.4} opacity={0.95} />
         {/* Face edge: subtle ring, a shade darker than the gray face for definition. */}
         <Path path={G.face} color="#949499" style="stroke" strokeWidth={1.4} opacity={0.9} />
+        {/* SWEET-SPOT GOLD FRAME (owner 2026-07-30): when `sweetSpot`, draw a glowing
+            gold frame around the whole plate — a soft BlurMask glow under a crisp gold
+            stroke. Drawn LAST so it reads bright over the live tint. The parent passes
+            true only in the studio 78–82 dB sweet spot, so no mode gating here. */}
+        {p.sweetSpot ? (
+          <>
+            <Path path={G.plate} color="#ffcf40" style="stroke" strokeWidth={5} opacity={0.55}>
+              <BlurMask blur={8} style="normal" />
+            </Path>
+            <Path path={G.plate} color="#ffcf40" style="stroke" strokeWidth={2.4} opacity={0.95} />
+          </>
+        ) : null}
       </Canvas>
 
       {/* A2 — Printed numerals (larger + bold, red at 100+). */}
@@ -2405,24 +2464,19 @@ export function SplDialView(p: {
           (y≈34) so nothing sits at the bottom anymore. */}
       {mode === 'studio' ? (
         <>
-          {/* Item 6: two-line centered title matching the SPL / OPTIMAL modes.
-              Pushed DOWN (owner 2026-07-30, start y≈46) to clear the STUDIO/SPL
-              buttons with breathing room. */}
-          <Lbl x={0} y={46} w={w} size={15} font={fonts.oswaldSemiBold} ls={2} color={ink}>
+          {/* Item 6: two-line centered title ONLY (owner 2026-07-30: the
+              "CHECK 85–95 · WORK 70–75 · DETAIL 60–65" and "C-WEIGHTED · SLOW"
+              guidance lines were removed). Pushed DOWN further (start y≈56, +10px)
+              for more gap below the STUDIO/SPL button strip. */}
+          <Lbl x={0} y={56} w={w} size={15} font={fonts.oswaldSemiBold} ls={2} color={ink}>
             STUDIO MONITORING
           </Lbl>
-          <Lbl x={0} y={69} w={w} size={12} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
+          <Lbl x={0} y={79} w={w} size={12} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
             dB SPL(C) · MIXING LEVELS
-          </Lbl>
-          <Lbl x={0} y={87} w={w} size={11} font={fonts.oswaldSemiBold} ls={0.4} color={inkDim}>
-            CHECK 85–95 · WORK 70–75 · DETAIL 60–65
-          </Lbl>
-          <Lbl x={0} y={103} w={w} size={11} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
-            C-WEIGHTED · SLOW
           </Lbl>
           {/* ESTIMATED badge (uncalibrated) — never a certified reading (§1.7). */}
           {!p.calibrated ? (
-            <Lbl x={0} y={119} w={w} size={9} font={fonts.oswaldSemiBold} ls={0.6} color={RED_INK}>
+            <Lbl x={0} y={101} w={w} size={9} font={fonts.oswaldSemiBold} ls={0.6} color={RED_INK}>
               ESTIMATED · UNCALIBRATED
             </Lbl>
           ) : null}
@@ -2430,31 +2484,32 @@ export function SplDialView(p: {
       ) : mode === 'spl' ? (
         <>
           {/* Item 8: two-line SPL title (the old "dB SPL" wordmark removed). Pushed
-              DOWN (owner 2026-07-30, start y≈46) to clear the mode buttons. */}
-          <Lbl x={0} y={46} w={w} size={15} font={fonts.oswaldSemiBold} ls={2} color={ink}>
+              DOWN further (owner 2026-07-30, start y≈56, +10px) for more gap below
+              the mode button strip. */}
+          <Lbl x={0} y={56} w={w} size={15} font={fonts.oswaldSemiBold} ls={2} color={ink}>
             SPL REFERENCE SOUNDS
           </Lbl>
-          <Lbl x={0} y={70} w={w} size={12} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
+          <Lbl x={0} y={80} w={w} size={12} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
             dBA / dBC AS NOTED
           </Lbl>
           {!p.calibrated ? (
-            <Lbl x={0} y={92} w={w} size={9} font={fonts.oswaldSemiBold} ls={0.6} color={RED_INK}>
+            <Lbl x={0} y={102} w={w} size={9} font={fonts.oswaldSemiBold} ls={0.6} color={RED_INK}>
               ESTIMATED · UNCALIBRATED
             </Lbl>
           ) : null}
         </>
       ) : (
         <>
-          {/* Item 9: optimal reference-listening title. Pushed DOWN (owner
-              2026-07-30, start y≈46) to clear the mode buttons. */}
-          <Lbl x={0} y={46} w={w} size={13} font={fonts.oswaldSemiBold} ls={1} color={ink}>
+          {/* Item 9: optimal reference-listening title. Pushed DOWN further (owner
+              2026-07-30, start y≈56, +10px) for more gap below the mode buttons. */}
+          <Lbl x={0} y={56} w={w} size={13} font={fonts.oswaldSemiBold} ls={1} color={ink}>
             OPTIMAL REFERENCE LISTENING
           </Lbl>
-          <Lbl x={0} y={69} w={w} size={12} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
+          <Lbl x={0} y={79} w={w} size={12} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
             dBA · LAeq WHERE NOTED
           </Lbl>
           {!p.calibrated ? (
-            <Lbl x={0} y={91} w={w} size={9} font={fonts.oswaldSemiBold} ls={0.6} color={RED_INK}>
+            <Lbl x={0} y={101} w={w} size={9} font={fonts.oswaldSemiBold} ls={0.6} color={RED_INK}>
               ESTIMATED · UNCALIBRATED
             </Lbl>
           ) : null}
