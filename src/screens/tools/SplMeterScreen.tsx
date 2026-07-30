@@ -18,11 +18,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useSharedValue, type SharedValue } from 'react-native-reanimated';
+import { useSharedValue } from 'react-native-reanimated';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
 import { GlassButton } from '../../components/GlassButton';
 import { requireVizMeters, type VizMetersModule } from '../lab/meter/skiaGate';
+import type { LiveMeterDrive, PeakHoldMode } from '../lab/meter/vizMeters';
 import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
 import { setSplCalibration, useSplCalibration } from '../../features/tools/measure/calibrationStore';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
@@ -64,36 +65,78 @@ const fmtElapsed = (sec: number) => {
  *  clock runs at 1/VU_LOOP Hz so the ballistics integrate real time. */
 const VU_LOOP = 4;
 
-/** The popup's Skia meters (mounted only while the popup is open AND the viz
- *  module gate passed): the flagship VU face + the 66-segment LED bar, both
- *  live-driven by the screen's polled RMS/peak SharedValues. */
-function VuPopupMeters({
+/** The popup's Skia hero (mounted only while the popup is open AND the viz
+ *  module gate passed): LEFT the circular dB-SPL dial (two arc scales + mixing
+ *  sweet-spot band + ballistic needle + corner readouts), RIGHT the thin live
+ *  LED meter (PEAK + AVERAGE columns with a user peak-hold). Both are driven by
+ *  the SAME polled RMS/peak SharedValues off one shared phase clock. */
+function VuHero({
   viz,
-  rmsDb,
-  peakDb,
-  width,
+  live,
+  dialW,
+  ledW,
+  dialH,
+  holdMode,
+  splOffset,
+  calibrated,
+  levelLabel,
+  levelValue,
+  levelUnit,
+  peakValue,
+  peakHoldValue,
+  peakHot,
+  peakHoldHot,
 }: {
   viz: VizMetersModule;
-  rmsDb: SharedValue<number>;
-  peakDb: SharedValue<number>;
-  width: number;
+  live: LiveMeterDrive;
+  dialW: number;
+  ledW: number;
+  dialH: number;
+  holdMode: PeakHoldMode;
+  splOffset: number;
+  calibrated: boolean;
+  levelLabel: string;
+  levelValue: string;
+  levelUnit: string;
+  peakValue: string;
+  peakHoldValue: string;
+  peakHot: boolean;
+  peakHoldHot: boolean;
 }) {
   const phase = viz.usePhaseClock(true, 1 / VU_LOOP);
-  const live = useMemo(() => ({ rmsDb, peakDb }), [rmsDb, peakDb]);
   return (
-    <View style={{ gap: 14 }}>
-      <viz.VuMeterView
-        width={width}
-        height={Math.min(300, Math.round(width * 0.64))}
+    <View style={styles.heroRow}>
+      <viz.SplDialView
+        width={dialW}
+        height={dialH}
         phase={phase}
         live={live}
-        showPeakLed
+        splOffset={splOffset}
+        calibrated={calibrated}
         loopSeconds={VU_LOOP}
+        levelLabel={levelLabel}
+        levelValue={levelValue}
+        levelUnit={levelUnit}
+        peakValue={peakValue}
+        peakHoldValue={peakHoldValue}
+        peakHot={peakHot}
+        peakHoldHot={peakHoldHot}
       />
-      <viz.PeakMeterView width={width} height={220} phase={phase} live={live} loopSeconds={VU_LOOP} />
+      <viz.PeakAvgMeterView
+        width={ledW}
+        height={dialH}
+        phase={phase}
+        live={live}
+        loopSeconds={VU_LOOP}
+        holdMode={holdMode}
+      />
     </View>
   );
 }
+
+/** Peak-hold linger options for the LED meter's user setting. */
+const HOLD_MODES: PeakHoldMode[] = ['off', '1s', '3s', 'inf'];
+const holdLabel = (m: PeakHoldMode) => (m === 'off' ? 'OFF' : m === 'inf' ? '∞' : m);
 
 /** Plain-RN mini-VU fallback for pre-Skia clients (cream face, red zone,
  *  tilted needle) — the opener must read as a tiny VU even without Skia. */
@@ -169,18 +212,44 @@ export function SplMeterScreen({ navigation }: Props) {
   // Skia meters load ONLY through the meter gate (§1.7 honest fallback).
   const viz = useMemo(() => requireVizMeters(), []);
   const [vuOpen, setVuOpen] = useState(false);
+  // User setting for the LED meter's peak-hold cap linger (owner 2026-07-30).
+  const [holdMode, setHoldMode] = useState<PeakHoldMode>('1s');
   const { width: winW } = useWindowDimensions();
-  const vuMeterW = Math.min(560, winW - 32);
+  // Side-by-side hero sizing (dial LEFT ~60%, thin LED RIGHT ~34%), capped so
+  // it never overflows portrait; the two share a height for a clean baseline.
+  const heroAvail = winW - 32 - 12;
+  const dialW = Math.min(300, Math.round(heroAvail * 0.6));
+  const ledW = Math.min(138, Math.round(heroAvail * 0.36));
+  const dialH = Math.round(dialW * 1.02);
   // The popup meters are fed by pushing the SAME polled frame values into two
-  // SharedValues — no second poll, no duplicated state. RMS = Z-weighted FAST
-  // (the frame's unweighted RMS-style level); peak = the raw peak (F1: may
-  // exceed 0 dBFS, never clamped). −120 stands in for silence/no-frame.
+  // SharedValues — no second poll, no duplicated state. RMS = the selected
+  // weighting × response level (set in the effect below); peak = the raw peak
+  // (F1: may exceed 0 dBFS, never clamped). −120 stands in for silence/no-frame.
   const liveRmsDb = useSharedValue(-120);
   const livePeakDb = useSharedValue(-120);
+  // The needle + LED AVERAGE chase the SELECTED weighting × response level (what
+  // the user is metering); peak is the raw peak (F1: may exceed 0 dBFS).
   useEffect(() => {
-    liveRmsDb.value = meter && Number.isFinite(meter.zFastDb) ? meter.zFastDb : -120;
+    const lvl = meter ? selectedLevelDb(meter, weighting, response) : -120;
+    liveRmsDb.value = Number.isFinite(lvl) ? lvl : -120;
     livePeakDb.value = meter && Number.isFinite(meter.peakDb) ? meter.peakDb : -120;
-  }, [meter, liveRmsDb, livePeakDb]);
+  }, [meter, weighting, response, liveRmsDb, livePeakDb]);
+  const live = useMemo<LiveMeterDrive>(() => ({ rmsDb: liveRmsDb, peakDb: livePeakDb }), [liveRmsDb, livePeakDb]);
+
+  // ── Dial mapping + corner readouts (single source: the screen's shown()/unit
+  // math, so the needle's SPL position matches every number elsewhere) ────────
+  // splOffset = the field-calibration offset, or a nominal 100 dB estimate when
+  // uncalibrated (0 dBFS ≈ 100 dB SPL on a typical phone mic). calibrated=false
+  // badges the dial ESTIMATED — never a certified SPL reading (§1.7).
+  const splOffset = offset ?? 100;
+  const calibrated = offset != null;
+  const dialLevelLabel = `L${weighting}${response === 'fast' ? 'F' : 'S'}`;
+  const dialLevelValue = meter ? fmtDb(shown(selectedLevelDb(meter, weighting, response))) : '—';
+  const dialLevelUnit = offset != null ? 'dB SPL' : 'dBFS · est';
+  const dialPeakValue = meter ? fmtDb(meter.peakDb) : '—';
+  const dialPeakHoldValue = meter ? fmtDb(meter.peakHoldDb) : '—';
+  const dialPeakHot = meter != null && meter.peakDb >= 0;
+  const dialPeakHoldHot = meter != null && meter.peakHoldDb >= 0;
 
   /** SAVE LOG → Saved Measurement Library (spec §7; payload = SplLogPayload). */
   const onSaveLog = useCallback(() => {
@@ -538,40 +607,46 @@ export function SplMeterScreen({ navigation }: Props) {
 
             {running &&
               (viz ? (
-                <VuPopupMeters viz={viz} rmsDb={liveRmsDb} peakDb={livePeakDb} width={vuMeterW} />
+                <VuHero
+                  viz={viz}
+                  live={live}
+                  dialW={dialW}
+                  ledW={ledW}
+                  dialH={dialH}
+                  holdMode={holdMode}
+                  splOffset={splOffset}
+                  calibrated={calibrated}
+                  levelLabel={dialLevelLabel}
+                  levelValue={dialLevelValue}
+                  levelUnit={dialLevelUnit}
+                  peakValue={dialPeakValue}
+                  peakHoldValue={dialPeakHoldValue}
+                  peakHot={dialPeakHot}
+                  peakHoldHot={dialPeakHoldHot}
+                />
               ) : (
                 /* Honest gate for pre-Skia clients (§1.7): readouts stay live. */
                 <View style={styles.vuUnavailCard}>
-                  <Text style={styles.vuUnavailTitle}>VU DISPLAY NEEDS THE NEW DEV BUILD</Text>
+                  <Text style={styles.vuUnavailTitle}>SPL DIAL NEEDS THE NEW DEV BUILD</Text>
                   <Text style={styles.vuUnavailBody}>
-                    This dev client predates the graphics engine the VU face renders on. The
-                    digital readouts below are fully live — install the newest dev build to see
-                    the needle.
+                    This dev client predates the graphics engine the dial renders on. The digital
+                    readouts below are fully live — install the newest dev build to see the needle.
                   </Text>
                 </View>
               ))}
 
-            {/* House honesty line: the needle rides raw dBFS — a phone VU is
-                not a calibrated 0 VU = +4 dBu reference. */}
+            {/* House honesty line: the dial's SPL scale is calibrated-approximate
+                at best (and an ESTIMATE when uncalibrated); the sweet-spot band
+                is a mixing REFERENCE (C-weighted), not a guarantee. */}
             <Text style={styles.vuBadge}>
-              NEEDLE: dBFS · UNCALIBRATED — 0 VU here = −18 dBFS by convention, not a calibrated
-              0 VU = +4 dBu reference
+              {calibrated
+                ? 'DIAL: dB SPL · FIELD-CALIBRATED (APPROXIMATE) — the 79/82/85 dB(C) mix band is a reference, not a guarantee'
+                : 'DIAL: ESTIMATED · UNCALIBRATED — SPL numbers are an estimate; calibrate against a real SPL meter for true readings. The mix band is most meaningful once calibrated'}
             </Text>
 
             {running && (
               <>
-                {/* Mirrored digital readout (same shown()/unitLabel math). */}
-                <View style={styles.readoutCard}>
-                  <Text style={styles.readoutEyebrow}>
-                    {`L${weighting}${response === 'fast' ? 'F' : 'S'} · ${weighting}-WEIGHTED · ${response.toUpperCase()}`}
-                  </Text>
-                  <Text style={styles.readoutValue}>
-                    {meter ? fmtDb(shown(selectedLevelDb(meter, weighting, response))) : '—'}
-                  </Text>
-                  <Text style={styles.readoutSub}>{unitLabel}</Text>
-                </View>
-
-                {/* Mirrored weighting × response controls (same setters). */}
+                {/* Weighting × response controls (same setters as the screen). */}
                 <View style={styles.chipsRow}>
                   <View style={styles.chipGroup}>
                     <Text style={styles.chipGroupLabel}>WEIGHTING</Text>
@@ -591,28 +666,113 @@ export function SplMeterScreen({ navigation }: Props) {
                   </View>
                 </View>
 
-                {/* Mirrored PEAK / PEAK HOLD + reset (raw dBFS, F1 red ≥ 0). */}
-                <View style={styles.peakRow}>
-                  <View style={styles.peakCell}>
-                    <Text style={styles.cellLabel}>PEAK (dBFS)</Text>
-                    <Text style={[styles.cellValue, meter != null && meter.peakDb >= 0 && styles.cellValueHot]}>
-                      {meter ? fmtDb(meter.peakDb) : '—'}
+                {/* PEAK-HOLD user setting (governs the LED cap linger) + RESET
+                    PEAK. The peak/level numerals now live in the dial corners. */}
+                <View style={styles.chipsRow}>
+                  <View style={styles.chipGroup}>
+                    <Text style={styles.chipGroupLabel}>PEAK HOLD</Text>
+                    <View style={styles.chipSet}>
+                      {HOLD_MODES.map((m) => (
+                        <Chip key={m} label={holdLabel(m)} selected={holdMode === m} onPress={() => setHoldMode(m)} />
+                      ))}
+                    </View>
+                  </View>
+                  <View style={styles.chipGroup}>
+                    <Text style={styles.chipGroupLabel}> </Text>
+                    <Pressable
+                      style={[styles.ctrlBtn, styles.holdResetBtn]}
+                      onPress={resetPeakHold}
+                      accessibilityRole="button"
+                      accessibilityLabel="Reset peak hold"
+                    >
+                      <Text style={styles.ctrlText}>RESET PEAK</Text>
+                    </Pressable>
+                  </View>
+                </View>
+
+                {/* Field calibration (ruling R1) — same store as the screen, so
+                    the dial's SPL scale updates the instant it is set/cleared. */}
+                <View style={styles.calCard}>
+                  <View style={styles.calHeadRow}>
+                    <Text style={styles.sectionHead}>CALIBRATION</Text>
+                    <Text style={[styles.calStatus, offset != null && styles.calStatusOn]}>
+                      {offset != null ? `FIELD-CALIBRATED · +${offset.toFixed(1)} dB` : 'UNCALIBRATED'}
                     </Text>
                   </View>
-                  <View style={styles.peakCell}>
-                    <Text style={styles.cellLabel}>PEAK HOLD (dBFS)</Text>
-                    <Text style={[styles.cellValue, meter != null && meter.peakHoldDb >= 0 && styles.cellValueHot]}>
-                      {meter ? fmtDb(meter.peakHoldDb) : '—'}
-                    </Text>
-                  </View>
-                  <Pressable
-                    style={styles.ctrlBtnSmall}
-                    onPress={resetPeakHold}
-                    accessibilityRole="button"
-                    accessibilityLabel="Reset peak hold"
-                  >
-                    <Text style={styles.ctrlText}>RESET{'\n'}PEAK</Text>
-                  </Pressable>
+                  {!calibrating ? (
+                    <View style={styles.controls}>
+                      <Pressable
+                        style={styles.ctrlBtn}
+                        onPress={() => {
+                          setDraftOffset(offset ?? 100);
+                          setCalibrating(true);
+                        }}
+                        accessibilityRole="button"
+                        accessibilityLabel="Calibrate against a reference meter"
+                      >
+                        <Text style={styles.ctrlText}>{offset != null ? 'RE-CALIBRATE' : 'CALIBRATE'}</Text>
+                      </Pressable>
+                      {offset != null && (
+                        <Pressable
+                          style={styles.ctrlBtn}
+                          onPress={() => setSplCalibration(null)}
+                          accessibilityRole="button"
+                          accessibilityLabel="Clear calibration"
+                        >
+                          <Text style={styles.ctrlText}>CLEAR</Text>
+                        </Pressable>
+                      )}
+                    </View>
+                  ) : (
+                    <>
+                      <Text style={styles.calHint}>
+                        Play steady pink noise and adjust until this reading matches your reference
+                        sound-level meter (same weighting and response on both).
+                      </Text>
+                      <Text style={styles.calDraftValue}>
+                        {meter ? fmtDb(shown(selectedLevelDb(meter, weighting, response), true)) : '—'}
+                        <Text style={styles.calDraftUnit}>  dB SPL (candidate)</Text>
+                      </Text>
+                      <View style={styles.controls}>
+                        {[-5, -0.5, +0.5, +5].map((step) => (
+                          <Pressable
+                            key={step}
+                            style={styles.ctrlBtn}
+                            onPress={() => setDraftOffset((d) => Math.round((d + step) * 2) / 2)}
+                            accessibilityRole="button"
+                            accessibilityLabel={`Adjust ${step > 0 ? 'up' : 'down'} ${Math.abs(step)} dB`}
+                          >
+                            <Text style={styles.ctrlText}>{step > 0 ? `+${step}` : step}</Text>
+                          </Pressable>
+                        ))}
+                      </View>
+                      <View style={styles.controls}>
+                        <Pressable
+                          style={styles.ctrlBtn}
+                          onPress={() => setCalibrating(false)}
+                          accessibilityRole="button"
+                          accessibilityLabel="Cancel calibration"
+                        >
+                          <Text style={styles.ctrlText}>CANCEL</Text>
+                        </Pressable>
+                        <Pressable
+                          style={[styles.ctrlBtn, styles.ctrlBtnSaved]}
+                          onPress={() => {
+                            setSplCalibration(draftOffset);
+                            setCalibrating(false);
+                          }}
+                          accessibilityRole="button"
+                          accessibilityLabel="Set calibration"
+                        >
+                          <Text style={[styles.ctrlText, styles.ctrlTextSaved]}>SET</Text>
+                        </Pressable>
+                      </View>
+                    </>
+                  )}
+                  <Text style={styles.calNote}>
+                    Field calibration is stored on this device only and stays approximate — it is
+                    not a certified instrument calibration.
+                  </Text>
                 </View>
 
                 {/* Mirrored live quality warnings (same flags as on save). */}
@@ -865,6 +1025,9 @@ const styles = StyleSheet.create({
   vuModalTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 1.6, color: colors.textPrimary },
   vuClose: { fontFamily: fonts.oswaldSemiBold, fontSize: 22, color: colors.textSecondary, padding: 4 },
   vuScroll: { padding: 16, paddingBottom: 40, gap: 14, alignItems: 'stretch' },
+  // Side-by-side hero: circular SPL dial (left) + thin LED meter (right).
+  heroRow: { flexDirection: 'row', gap: 12, alignItems: 'flex-start', justifyContent: 'center' },
+  holdResetBtn: { flex: 0, paddingHorizontal: 16, justifyContent: 'center' },
   vuBadge: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 9,

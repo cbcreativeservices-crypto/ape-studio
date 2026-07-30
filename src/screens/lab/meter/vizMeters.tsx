@@ -73,6 +73,11 @@ export type LiveMeterDrive = {
   peakDb: SharedValue<number>;
 };
 
+/** Peak-hold linger setting for the live LED meter (SPL popup, 2026-07-30):
+ *  how long a peak cap sits before it decays. 'off' hides the cap entirely;
+ *  'inf' latches the loudest peak until the input rises past it. */
+export type PeakHoldMode = 'off' | '1s' | '3s' | 'inf';
+
 function withAlpha(hex: string, a: number): string {
   const r = parseInt(hex.slice(1, 3), 16);
   const g = parseInt(hex.slice(3, 5), 16);
@@ -1696,6 +1701,543 @@ export function ScopeView(p: {
           TRIG
         </Lbl>
       ) : null}
+    </View>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SplDial ⭐ — the SPL screen's circular needle meter (owner 2026-07-30)
+
+/** The cream-face dB-SPL dial for the SPL-meter VU popup. TWO concentric arc
+ *  scales — an outer everyday-loudness reference (whisper → concert) and an
+ *  inner control-room MIXING SWEET-SPOT band (79/82/85 dB(C)) with hearing-risk
+ *  (above) and bass-accuracy (below) annotations — plus a physically ballistic
+ *  needle and digital corner readouts printed on the face.
+ *
+ *  HONESTY (§1.7): the SPL scale is field-calibrated-approximate at best. Drive
+ *  `calibrated=false` and the whole dial is badged ESTIMATED; `splOffset` is the
+ *  dB added to the live dBFS to display dB SPL (the screen's calibration offset,
+ *  or a nominal 100 dB estimate) — so the needle position ALWAYS matches the
+ *  numbers the rest of the screen prints. All corner strings are formatted by
+ *  the caller (single source of the shown()/unit math). */
+export function SplDialView(p: {
+  width: number;
+  height?: number;
+  phase: SharedValue<number>;
+  /** Live drive — the needle chases rmsDb (the selected weighting level). */
+  live: LiveMeterDrive;
+  /** dB added to a live dBFS value to display dB SPL (offset, or 100 nominal). */
+  splOffset: number;
+  /** True ⇒ field-calibrated (approximate); false ⇒ badge the dial ESTIMATED. */
+  calibrated: boolean;
+  loopSeconds?: number;
+  /** Corner readouts (pre-formatted so the SPL math matches the whole screen). */
+  levelLabel: string;
+  levelValue: string;
+  levelUnit: string;
+  peakValue: string;
+  peakHoldValue: string;
+  peakHot?: boolean;
+  peakHoldHot?: boolean;
+}) {
+  const w = p.width;
+  const h = p.height ?? Math.round(w * 1.02);
+  const LOOP = p.loopSeconds ?? 4;
+  const liveRms = p.live.rmsDb;
+
+  // Scale: 30..110 dB SPL across a ±A° sweep, pivot low-of-centre so the bottom
+  // wedge is free for the printed digital readouts.
+  const SPL_MIN = 30;
+  const SPL_MAX = 110;
+  const SPAN = SPL_MAX - SPL_MIN;
+  const A = 122; // half-sweep, degrees (244° total, gap at the bottom)
+  const cx = w / 2;
+  const Rface = w * 0.47;
+  const cy = Rface + 4; // face circle top-aligned; pivot at its centre
+  const Rs = Rface / 1.28; // scale (tick) radius
+  const splPct = (spl: number) => (spl - SPL_MIN) / SPAN;
+  const angOf = (spl: number) => (-A + 2 * A * splPct(spl)) * DEG; // radians from top
+
+  // ── Printed face: arcs, ticks, sweet-spot band, zone arcs (all static) ─────
+  const G = useMemo(() => {
+    const pt = (ang: number, r: number) => ({ x: cx + Math.sin(ang) * r, y: cy - Math.cos(ang) * r });
+    // Ring-segment (filled arc wedge) between two SPL angles and two radii.
+    const ringSeg = (spl0: number, spl1: number, rI: number, rO: number) => {
+      const path = Skia.Path.Make();
+      const a0 = angOf(spl0);
+      const a1 = angOf(spl1);
+      const oO = Skia.XYWHRect(cx - rO, cy - rO, 2 * rO, 2 * rO);
+      const oI = Skia.XYWHRect(cx - rI, cy - rI, 2 * rI, 2 * rI);
+      const s0 = a0 / DEG - 90;
+      const s1 = a1 / DEG - 90;
+      const st = pt(a0, rO);
+      path.moveTo(st.x, st.y);
+      path.arcToOval(oO, s0, s1 - s0, false);
+      const ie = pt(a1, rI);
+      path.lineTo(ie.x, ie.y);
+      path.arcToOval(oI, s1, s0 - s1, false);
+      path.close();
+      return path;
+    };
+    // Stroked arc (open) along a single radius between two SPL angles.
+    const arcStroke = (spl0: number, spl1: number, r: number) => {
+      const path = Skia.Path.Make();
+      const a0 = angOf(spl0);
+      const a1 = angOf(spl1);
+      path.addArc(Skia.XYWHRect(cx - r, cy - r, 2 * r, 2 * r), a0 / DEG - 90, (a1 - a0) / DEG);
+      return path;
+    };
+
+    // Bezel + cream face plates.
+    const outer = Skia.Path.Make();
+    outer.addCircle(cx, cy, Rface + 3);
+    const face = Skia.Path.Make();
+    face.addCircle(cx, cy, Rface);
+    // Diagonal glass sheen band across the upper face.
+    const sheen = Skia.Path.Make();
+    sheen.moveTo(cx - Rface * 0.5, cy - Rface * 0.92);
+    sheen.lineTo(cx + Rface * 0.1, cy - Rface * 0.92);
+    sheen.lineTo(cx - Rface * 0.55, cy + Rface * 0.2);
+    sheen.lineTo(cx - Rface * 0.95, cy + Rface * 0.1);
+    sheen.close();
+
+    // Outer reference arc + major/minor ticks (30..110 dB).
+    const refArc = arcStroke(SPL_MIN, SPL_MAX, Rs + 2);
+    const majors = Skia.Path.Make();
+    const minors = Skia.Path.Make();
+    for (let s = SPL_MIN; s <= SPL_MAX; s += 5) {
+      const a = angOf(s);
+      const isMaj = s % 10 === 0;
+      const p0 = pt(a, Rs + 2);
+      const p1 = pt(a, Rs + (isMaj ? 11 : 6));
+      (isMaj ? majors : minors).moveTo(p0.x, p0.y);
+      (isMaj ? majors : minors).lineTo(p1.x, p1.y);
+    }
+
+    // Inner MIXING SWEET-SPOT: dim (below) / green (79–85) / red (above) arc,
+    // plus the filled green band and its 79/82/85 room-size ticks.
+    const Rb = Rs * 0.63;
+    const bandI = Rb - Rs * 0.05;
+    const bandO = Rb + Rs * 0.05;
+    const zoneDim = arcStroke(SPL_MIN, 79, Rb);
+    const zoneRisk = arcStroke(85, SPL_MAX, Rb);
+    const band = ringSeg(79, 85, bandI, bandO);
+    const bandTicks = Skia.Path.Make();
+    for (const s of [79, 82, 85]) {
+      const a = angOf(s);
+      const q0 = pt(a, bandI - 2);
+      const q1 = pt(a, bandO + 2);
+      bandTicks.moveTo(q0.x, q0.y);
+      bandTicks.lineTo(q1.x, q1.y);
+    }
+
+    // Label anchors.
+    const numAt = (s: number, r: number) => {
+      const lp = pt(angOf(s), r);
+      return { x: lp.x, y: lp.y };
+    };
+    const numLabels = [30, 50, 70, 90, 110].map((s) => ({ s, ...numAt(s, Rs - 12) }));
+    const exSrc: { s: number; t: string }[] = [
+      { s: 30, t: 'WHISPER' },
+      { s: 40, t: 'QUIET' },
+      { s: 60, t: 'SPEECH' },
+      { s: 85, t: 'TRAFFIC' },
+      { s: 105, t: 'CONCERT' },
+    ];
+    const examples = exSrc.map((e) => ({ s: e.s, t: e.t, ...numAt(e.s, Rs + 22) }));
+    const bandLabels = [
+      { s: 79, t: 'SM' },
+      { s: 82, t: 'MD' },
+      { s: 85, t: 'LG' },
+    ].map((e) => ({ ...e, ...numAt(e.s, bandI - 11) }));
+    const riskAnchor = numAt(101, Rb + 12);
+    const bassAnchor = numAt(46, Rb + 12);
+
+    return {
+      outer, face, sheen, refArc, majors, minors, zoneDim, zoneRisk, band, bandTicks,
+      numLabels, examples, bandLabels, riskAnchor, bassAnchor, Rb,
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [w, h]);
+
+  // ── REAL ballistics — 300 ms first-order integrator chasing live SPL, with a
+  // lightly under-damped follower for the mechanical needle overshoot (the
+  // vuStep idiom, matching VuMeterView). Integrates true wall-time via the
+  // phase-clock delta. −Infinity/NaN silence parks the needle at SPL_MIN.
+  const val = useSharedValue(0);
+  const nx = useSharedValue(0);
+  const nv = useSharedValue(0);
+  const lastPh = useSharedValue(-1);
+  const needleRad = useDerivedValue(() => {
+    const ph = p.phase.value;
+    let dt = 0;
+    if (lastPh.value >= 0) {
+      let d = ph - lastPh.value;
+      if (d < 0) d = 0;
+      dt = (d / (Math.PI * 2)) * LOOP;
+      if (dt > 0.08) dt = 0.08;
+    }
+    lastPh.value = ph;
+    const raw = liveRms.value;
+    const spl = raw === raw && raw > -120 ? raw + p.splOffset : SPL_MIN;
+    let target = (spl - SPL_MIN) / SPAN;
+    if (target < 0) target = 0;
+    if (target > 1.04) target = 1.04;
+    const a = 1 - Math.exp(-dt / 0.3);
+    val.value = val.value + (target - val.value) * a;
+    const acc = (val.value - nx.value) * 340 - nv.value * 27;
+    nv.value = nv.value + acc * dt;
+    nx.value = nx.value + nv.value * dt;
+    let pct = nx.value;
+    if (pct < -0.02) pct = -0.02;
+    if (pct > 1.05) pct = 1.05;
+    return (-A + 2 * A * pct) * DEG;
+  }, [p.phase, liveRms, p.splOffset, LOOP]);
+
+  const mkNeedle = (ox: number, oy: number) => {
+    'worklet';
+    const th = needleRad.value;
+    const s = Math.sin(th);
+    const c = Math.cos(th);
+    const tipR = Rs + 4;
+    const tailR = -Rface * 0.16;
+    const wb = 3.0;
+    const wt = 1.0;
+    const bx = cx + s * tailR + ox;
+    const by = cy - c * tailR + oy;
+    const tx = cx + s * tipR + ox;
+    const ty = cy - c * tipR + oy;
+    const pth = Skia.Path.Make();
+    pth.moveTo(bx + c * wb, by + s * wb);
+    pth.lineTo(tx + c * wt, ty + s * wt);
+    pth.lineTo(tx - c * wt, ty - s * wt);
+    pth.lineTo(bx - c * wb, by - s * wb);
+    pth.close();
+    return pth;
+  };
+  const needlePath = useDerivedValue(() => mkNeedle(0, 0), [needleRad]);
+  const needleShadow = useDerivedValue(() => mkNeedle(2.2, 3.2), [needleRad]);
+
+  const ink = '#2e2618';
+  const inkDim = '#7a6f57';
+  const RED_INK = '#b3271e';
+  return (
+    <View style={{ width: w, height: h }}>
+      <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
+        {/* Housing: dark rim + corner-lit bezel. */}
+        <Circle cx={cx} cy={cy} r={Rface + 3}>
+          <LinearGradient start={vec(0, cy - Rface)} end={vec(0, cy + Rface)} colors={['#26272e', '#131418', '#0b0b0e']} positions={[0, 0.6, 1]} />
+        </Circle>
+        <Path path={G.outer} color="#000000" style="stroke" strokeWidth={1.4} opacity={0.7} />
+        {/* Warm cream face: radial light + edge vignette. */}
+        <Path path={G.face}>
+          <RadialGradient c={vec(cx, cy - Rface * 0.3)} r={Rface * 1.35} colors={['#f8eecf', '#f0e0b4', '#e2cd98']} />
+        </Path>
+        <Path path={G.face}>
+          <RadialGradient
+            c={vec(cx, cy)}
+            r={Rface * 1.02}
+            colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0)', 'rgba(84,52,18,0.28)']}
+            positions={[0, 0.74, 1]}
+          />
+        </Path>
+        {/* Inner sweet-spot zone arcs: dim below, green band, red above. */}
+        <Path path={G.zoneDim} color="#b8ab8c" style="stroke" strokeWidth={3} opacity={0.8} />
+        <Path path={G.zoneRisk} color="#c9382e" style="stroke" strokeWidth={3} opacity={0.85} />
+        <Path path={G.band} color={withAlpha(GREEN, 0.32)} />
+        <Path path={G.band} color="#2f9d54" style="stroke" strokeWidth={1.2} opacity={0.9} />
+        <Path path={G.bandTicks} color="#1f6c39" style="stroke" strokeWidth={1.3} />
+        {/* Outer reference arc + ticks. */}
+        <Path path={G.refArc} color={ink} style="stroke" strokeWidth={1.6} />
+        <Path path={G.minors} color="#5a5442" style="stroke" strokeWidth={1.1} />
+        <Path path={G.majors} color={ink} style="stroke" strokeWidth={1.5} />
+        {/* Needle: soft drop shadow, tapered blade, pivot boss. */}
+        <Path path={needleShadow} color="#000000" opacity={0.16}>
+          <BlurMask blur={3} style="normal" />
+        </Path>
+        <Path path={needlePath} color="#17130c" />
+        <Circle cx={cx} cy={cy} r={9}>
+          <RadialGradient c={vec(cx - 3, cy - 3)} r={15} colors={['#4a4c55', '#232429', '#101114']} />
+        </Circle>
+        <Circle cx={cx} cy={cy} r={3.2} color="#0c0d10" />
+        {/* Glass: diagonal specular sheen + inner lip. */}
+        <Path path={G.sheen}>
+          <LinearGradient
+            start={vec(cx - Rface * 0.4, cy - Rface)}
+            end={vec(cx - Rface * 0.6, cy + Rface * 0.2)}
+            colors={['rgba(255,255,255,0.13)', 'rgba(255,255,255,0.01)']}
+          />
+        </Path>
+        <Path path={G.face} color="#07080a" style="stroke" strokeWidth={2.6} opacity={0.9} />
+        <Path path={G.face} color="#4b4e57" style="stroke" strokeWidth={0.8} opacity={0.5} />
+      </Canvas>
+
+      {/* Printed numerals + example words (mono/condensed ink on cream). */}
+      {G.numLabels.map((l) => (
+        <Lbl key={`n${l.s}`} x={l.x - 12} y={l.y - 5} w={24} size={9} color={l.s > 85 ? RED_INK : ink}>
+          {`${l.s}`}
+        </Lbl>
+      ))}
+      {G.examples.map((e) => (
+        <Lbl key={`e${e.s}`} x={e.x - 24} y={e.y - 4} w={48} size={6.5} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
+          {e.t}
+        </Lbl>
+      ))}
+      {G.bandLabels.map((b) => (
+        <Lbl key={`b${b.s}`} x={b.x - 12} y={b.y - 4} w={24} size={6.5} font={fonts.oswaldSemiBold} color="#1f6c39">
+          {b.t}
+        </Lbl>
+      ))}
+      <Lbl x={G.riskAnchor.x - 26} y={G.riskAnchor.y - 4} w={52} size={6} font={fonts.oswaldSemiBold} ls={0.4} color={RED_INK}>
+        HEARING RISK
+      </Lbl>
+      <Lbl x={G.bassAnchor.x - 28} y={G.bassAnchor.y - 4} w={56} size={6} font={fonts.oswaldSemiBold} ls={0.4} color={inkDim}>
+        BASS LESS ACCURATE
+      </Lbl>
+
+      {/* Face branding + the MIX-target caption. */}
+      <Lbl x={cx - 40} y={cy - Rface * 0.52} w={80} size={16} font={fonts.oswaldSemiBold} ls={2} color={ink}>
+        dB SPL
+      </Lbl>
+      <Lbl x={cx - 60} y={cy - Rface * 0.32} w={120} size={6.5} color="#2f7d49">
+        MIX SWEET SPOT · 79–85 dB(C)
+      </Lbl>
+
+      {/* ESTIMATED badge (uncalibrated) — never a certified reading (§1.7). */}
+      {!p.calibrated ? (
+        <Lbl x={cx - 70} y={cy - Rface * 0.18} w={140} size={7} font={fonts.oswaldSemiBold} ls={0.6} color={RED_INK}>
+          ESTIMATED · UNCALIBRATED
+        </Lbl>
+      ) : null}
+
+      {/* Bottom-LEFT corner: PEAK + PEAK HOLD (raw dBFS headroom). */}
+      <Lbl x={cx - Rface * 0.86} y={cy + Rface * 0.14} w={Rface * 0.62} align="left" size={6.5} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
+        PEAK dBFS
+      </Lbl>
+      <Lbl x={cx - Rface * 0.86} y={cy + Rface * 0.24} w={Rface * 0.62} align="left" size={13} color={p.peakHot ? RED_INK : ink}>
+        {p.peakValue}
+      </Lbl>
+      <Lbl x={cx - Rface * 0.86} y={cy + Rface * 0.44} w={Rface * 0.62} align="left" size={6.5} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
+        PEAK HOLD
+      </Lbl>
+      <Lbl x={cx - Rface * 0.86} y={cy + Rface * 0.54} w={Rface * 0.62} align="left" size={11} color={p.peakHoldHot ? RED_INK : ink}>
+        {p.peakHoldValue}
+      </Lbl>
+
+      {/* Bottom-RIGHT corner: the small selected-weighting level readout. */}
+      <Lbl x={cx + Rface * 0.22} y={cy + Rface * 0.14} w={Rface * 0.64} align="right" size={7} font={fonts.oswaldSemiBold} ls={0.8} color="#8a6a1e">
+        {p.levelLabel}
+      </Lbl>
+      <Lbl x={cx + Rface * 0.1} y={cy + Rface * 0.23} w={Rface * 0.76} align="right" size={19} color={ink}>
+        {p.levelValue}
+      </Lbl>
+      <Lbl x={cx + Rface * 0.1} y={cy + Rface * 0.52} w={Rface * 0.76} align="right" size={6.5} color={inkDim}>
+        {p.levelUnit}
+      </Lbl>
+    </View>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PeakAvg — thin live LED meter: PEAK + AVERAGE columns + user peak-hold
+
+/** M2-family LED meter for the SPL popup (owner 2026-07-30): TWO thin columns —
+ *  instantaneous PEAK (amber, red over 0 dBFS) beside AVERAGE/RMS (green) — with
+ *  a floating PEAK-HOLD cap whose linger is user-selectable via `holdMode`.
+ *  Live-only (phone mic is mono): both columns follow the live SharedValues.
+ *  dBFS headroom scale (−60..0), honest — peak may exceed 0 dBFS (F1). */
+export function PeakAvgMeterView(p: {
+  width: number;
+  height?: number;
+  phase: SharedValue<number>;
+  live: LiveMeterDrive;
+  loopSeconds?: number;
+  /** Peak-hold cap linger (default '1s'). 'off' hides the cap; 'inf' latches. */
+  holdMode?: PeakHoldMode;
+}) {
+  const w = p.width;
+  const h = p.height ?? 260;
+  const LOOP = p.loopSeconds ?? 4;
+  const holdMode = p.holdMode ?? '1s';
+  const livePeak = p.live.peakDb;
+  const liveRms = p.live.rmsDb;
+  const holdSecs = holdMode === '1s' ? 1 : holdMode === '3s' ? 3 : holdMode === 'inf' ? 1e9 : 0;
+  const showCap = holdMode !== 'off';
+
+  const wellX = 7;
+  const wellY = 28;
+  const wellW = w - 14;
+  const wellH = h - wellY - 30;
+  const padI = 8;
+  const colGap = 12;
+  const colW = (wellW - padI * 2 - colGap) / 2;
+  const peakX = wellX + padI;
+  const avgX = peakX + colW + colGap;
+  const barTop = wellY + 7;
+  const barBot = wellY + wellH - 7;
+  const span = barBot - barTop;
+  const SEG = 60;
+  const segH = span / SEG;
+  const yDb = (d: number) => barBot - ((d + 60) / 60) * span;
+
+  // Static geometry: brushed panel, bezel well, unlit LED stacks, ticks.
+  const G = useMemo(() => {
+    const unlitPk = Skia.Path.Make();
+    const unlitAv = Skia.Path.Make();
+    for (let i = 0; i < SEG; i++) {
+      const hi = -60 + ((i + 1) * 60) / SEG;
+      const y = yDb(hi);
+      unlitPk.addRect(Skia.XYWHRect(peakX, y, colW, segH - 1));
+      unlitAv.addRect(Skia.XYWHRect(avgX, y, colW, segH - 1));
+    }
+    const well = Skia.Path.Make();
+    well.addRRect(Skia.RRectXY(Skia.XYWHRect(wellX - 4, wellY - 4, wellW + 8, wellH + 8), 7, 7));
+    const ticks = Skia.Path.Make();
+    for (const d of [0, -6, -12, -24, -40, -60]) {
+      const y = yDb(d);
+      ticks.moveTo(peakX + colW + 1, y);
+      ticks.lineTo(peakX + colW + 4, y);
+      ticks.moveTo(avgX - 4, y);
+      ticks.lineTo(avgX - 1, y);
+    }
+    return { unlitPk, unlitAv, well, ticks };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [w, h]);
+
+  // ── Live ballistics: instant-attack / 37 dB-s release PEAK, 300 ms AVERAGE,
+  // floating hold governed by holdMode. dt from the phase-clock delta (the VU
+  // idiom). lPk is the returned engine value; lAvg/lHold are side-effect
+  // SharedValues read by the average column and the cap (one-frame lag is
+  // invisible — same pattern as PeakMeterView above).
+  const lPk = useSharedValue(-120);
+  const lAvg = useSharedValue(-120);
+  const lHold = useSharedValue(-120);
+  const lHoldAge = useSharedValue(0);
+  const lLastPh = useSharedValue(-1);
+  const engine = useDerivedValue(() => {
+    const ph = p.phase.value;
+    let dt = 0;
+    if (lLastPh.value >= 0) {
+      let d = ph - lLastPh.value;
+      if (d < 0) d = 0;
+      dt = (d / (Math.PI * 2)) * LOOP;
+      if (dt > 0.08) dt = 0.08;
+    }
+    lLastPh.value = ph;
+    const rp = livePeak.value;
+    const ra = liveRms.value;
+    const pk = rp === rp && rp > -120 ? Math.min(6, rp) : -120;
+    const av = ra === ra && ra > -120 ? Math.min(6, ra) : -120;
+    lPk.value = Math.max(pk, lPk.value - 37 * dt);
+    const a = 1 - Math.exp(-dt / 0.3);
+    lAvg.value = av > -120 ? lAvg.value + (av - lAvg.value) * a : Math.max(-120, lAvg.value - 20 * dt);
+    if (showCap) {
+      if (pk >= lHold.value) {
+        lHold.value = pk;
+        lHoldAge.value = 0;
+      } else {
+        lHoldAge.value += dt;
+        if (holdSecs < 1e8 && lHoldAge.value > holdSecs) lHold.value = Math.max(-120, lHold.value - 14 * dt);
+      }
+    }
+    return lPk.value;
+  }, [p.phase, livePeak, liveRms, holdSecs, showCap, LOOP]);
+
+  const litPeak = useDerivedValue(() => {
+    const lv = engine.value;
+    const pth = Skia.Path.Make();
+    for (let i = 0; i < 60; i++) {
+      const lo = -60 + (i * 60) / 60;
+      const hi = lo + 60 / 60;
+      if (lv <= lo) break;
+      pth.addRect(Skia.XYWHRect(peakX, barBot - ((hi + 60) / 60) * span, colW, segH - 1));
+    }
+    return pth;
+  }, [engine]);
+
+  const litPeakOver = useDerivedValue(() => {
+    const lv = engine.value;
+    const pth = Skia.Path.Make();
+    if (lv > 0) {
+      for (let i = 0; i < 60; i++) {
+        const lo = -60 + (i * 60) / 60;
+        const hi = lo + 60 / 60;
+        if (hi <= 0) continue;
+        if (lv <= lo) break;
+        pth.addRect(Skia.XYWHRect(peakX, barBot - ((hi + 60) / 60) * span, colW, segH - 1));
+      }
+    }
+    return pth;
+  }, [engine]);
+
+  const litAvg = useDerivedValue(() => {
+    const lv = lAvg.value;
+    const pth = Skia.Path.Make();
+    for (let i = 0; i < 60; i++) {
+      const lo = -60 + (i * 60) / 60;
+      const hi = lo + 60 / 60;
+      if (lv <= lo) break;
+      pth.addRect(Skia.XYWHRect(avgX, barBot - ((hi + 60) / 60) * span, colW, segH - 1));
+    }
+    return pth;
+  }, [lAvg, engine]);
+
+  const cap = useDerivedValue(() => {
+    const pth = Skia.Path.Make();
+    if (showCap) {
+      const hv = Math.max(-59, Math.min(0.4, lHold.value));
+      pth.addRect(Skia.XYWHRect(peakX, barBot - ((hv + 60) / 60) * span - 1.2, colW, 2.4));
+    }
+    return pth;
+  }, [lHold, engine, showCap]);
+
+  return (
+    <View style={{ width: w, height: h }}>
+      <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
+        <BrushedPanel w={w} h={h} />
+        <Screw x={11} y={11} r={3.4} slotDeg={25} />
+        <Screw x={w - 11} y={11} r={3.4} slotDeg={80} />
+        <Screw x={11} y={h - 11} r={3.4} slotDeg={130} />
+        <Screw x={w - 11} y={h - 11} r={3.4} slotDeg={60} />
+        {/* Inset bezel well. */}
+        <Path path={G.well} color="#08090b" />
+        <Path path={G.well} color="#000000" style="stroke" strokeWidth={1.6} opacity={0.8} />
+        <Path path={G.well} color="#3d4049" style="stroke" strokeWidth={0.8} opacity={0.5} />
+        {/* Unlit LED stacks. */}
+        <Path path={G.unlitPk} color="#2a2312" opacity={0.95} />
+        <Path path={G.unlitAv} color="#122419" opacity={0.95} />
+        {/* Lit PEAK column (amber, red over 0) + AVERAGE column (green). */}
+        <Path path={litPeak}>
+          <LinearGradient start={vec(0, barTop)} end={vec(0, barBot)} colors={['#ffb43a', '#c9861d']} />
+        </Path>
+        <Path path={litPeakOver} color="#ff5f4e" opacity={0.6}>
+          <BlurMask blur={4} style="normal" />
+        </Path>
+        <Path path={litPeakOver} color="#ff5f4e" />
+        <Path path={litAvg}>
+          <LinearGradient start={vec(0, barTop)} end={vec(0, barBot)} colors={['#43e97b', '#2f9d6a']} />
+        </Path>
+        {/* Floating user peak-hold cap. */}
+        <Path path={cap} color="#f2f5fa" />
+        <Path path={G.ticks} color="#565a64" style="stroke" strokeWidth={1} />
+      </Canvas>
+      <Lbl x={10} y={7} w={w - 20} align="left" size={8} font={fonts.oswaldSemiBold} ls={1}>
+        LEVEL · dBFS
+      </Lbl>
+      {[0, -6, -12, -24, -40, -60].map((d) => (
+        <Lbl key={d} x={(peakX + colW + avgX) / 2 - 13} y={yDb(d) - 4} w={26} size={6.5}>
+          {`${d}`}
+        </Lbl>
+      ))}
+      <Lbl x={peakX + colW / 2 - 18} y={barBot + 5} w={36} size={7.5} font={fonts.oswaldSemiBold} color="#e0a43a" ls={0.6}>
+        PK
+      </Lbl>
+      <Lbl x={avgX + colW / 2 - 18} y={barBot + 5} w={36} size={7.5} font={fonts.oswaldSemiBold} color="#4fd08a" ls={0.6}>
+        AVG
+      </Lbl>
+      <Lbl x={10} y={h - 13} w={w - 20} align="left" size={6.5}>
+        {`HOLD ${holdMode.toUpperCase()} · MONO`}
+      </Lbl>
     </View>
   );
 }
