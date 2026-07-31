@@ -281,19 +281,21 @@ const SpectrogramGrid = memo(function SpectrogramGrid({
   anchor,
   dynRange,
   width,
-  pollMs,
+  speed,
 }: {
   history: SpectroColumnData[];
   anchor: number | null;
   dynRange: number;
   width: number;
-  pollMs: number;
+  speed: number;
 }) {
   if (width <= 0 || history.length === 0 || anchor == null) return null;
-  const colW = width / HISTORY_COLS;
+  // Each column is `speed`× wider → the waterfall scrolls `speed`× faster and
+  // shows ~HISTORY_COLS/speed columns; the rest scroll off the (clipped) left.
+  const colW = (width / HISTORY_COLS) * speed;
   const newestId = history[history.length - 1].id;
   const tx = width - (newestId + 1) * colW;
-  const colsPer5s = 5000 / pollMs;
+  const colsPer5s = 5000 / SPECTRO_POLL_MS; // 5 s of real time in columns (cadence is fixed)
   return (
     <Svg width={width} height={GRID_H}>
       {/* Subtle static grid — frequency decades + 5 s time marks (from "now"). */}
@@ -351,9 +353,14 @@ export function SpectrogramScreen({ navigation }: Props) {
 
   const [history, setHistory] = useState<SpectroColumnData[]>([]);
   const [dynRange, setDynRange] = useState<number>(60);
-  // Scroll speed (owner 2026-07-31): 1× / 2× / 3× the base column cadence.
+  // Scroll speed (owner 2026-07-31; reworked 2026-08-01): a DISPLAY-only zoom of
+  // the column WIDTH — each column is `speed`× wider, so the waterfall scrolls
+  // `speed`× faster and shows less history, GUARANTEED visible regardless of the
+  // native FFT frame rate. The capture cadence (one column per real 125 ms
+  // native frame) is unchanged, so saves and the time axis stay honest — the old
+  // "poll faster" approach was capped by the native frame rate + SVG rebuild
+  // cost, so 2×/3× looked identical.
   const [speed, setSpeed] = useState<1 | 2 | 3>(1);
-  const effPollMs = SPECTRO_POLL_MS / speed;
   const [frozen, setFrozen] = useState(false);
   const frozenRef = useRef(false);
   const [chartW, setChartW] = useState(0);
@@ -380,9 +387,9 @@ export function SpectrogramScreen({ navigation }: Props) {
       setHistory((h) =>
         h.length >= HISTORY_COLS ? [...h.slice(h.length - HISTORY_COLS + 1), col] : [...h, col],
       );
-    }, effPollMs);
+    }, SPECTRO_POLL_MS);
     return () => clearInterval(id);
-  }, [state, effPollMs]);
+  }, [state]);
 
   /** True observed maximum across the visible history (per-column maxes are
    *  precomputed at downsample time — 160 comparisons per column push). */
@@ -470,7 +477,9 @@ export function SpectrogramScreen({ navigation }: Props) {
         kind: 'spectrogram_snapshot',
         grid: history.map((c) => [...c.cells]),
         bandsHz: [...CELL_CENTERS_HZ],
-        timeStepSec: effPollMs / 1000,
+        // Each column is one native frame at the fixed base cadence — speed is a
+        // display zoom only, so the stored time step is unaffected.
+        timeStepSec: SPECTRO_POLL_MS / 1000,
         dynamicRangeDb: dynRange,
         fftPreset: FFT_PRESET,
       },
@@ -478,7 +487,7 @@ export function SpectrogramScreen({ navigation }: Props) {
     setJustSaved(true);
     if (savedTimer.current) clearTimeout(savedTimer.current);
     savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
-  }, [state, history, frames, dynRange, effPollMs]);
+  }, [state, history, frames, dynRange]);
 
   const liveFlags = state === 'running' ? meterWarningFlags(frames.meter) : [];
   const meter = frames.meter;
@@ -534,7 +543,7 @@ export function SpectrogramScreen({ navigation }: Props) {
               <View style={styles.panelHead}>
                 <Text style={styles.panelEyebrow}>LIVE SPECTROGRAM</Text>
                 <Text style={styles.panelSettings}>
-                  FFT {FFT_SIZE} · {effPollMs.toFixed(0)} ms/col
+                  FFT {FFT_SIZE} · {SPECTRO_POLL_MS} ms/col · {speed}× scroll
                 </Text>
               </View>
 
@@ -561,7 +570,7 @@ export function SpectrogramScreen({ navigation }: Props) {
                     anchor={anchor}
                     dynRange={dynRange}
                     width={chartW}
-                    pollMs={effPollMs}
+                    speed={speed}
                   />
                   {history.length === 0 && (
                     <Text style={styles.waitingText}>waiting for first spectrum frames…</Text>
@@ -569,9 +578,10 @@ export function SpectrogramScreen({ navigation }: Props) {
                 </Pressable>
               </View>
 
-              {/* Time axis note (spec §12: time is horizontal, newest right). */}
+              {/* Time axis note (spec §12: time is horizontal, newest right).
+                  Higher speed = faster scroll = a shorter visible window. */}
               <Text style={styles.timeLine}>
-                time → · ~{((HISTORY_COLS * effPollMs) / 1000).toFixed(0)} s history · {Math.round(1000 / effPollMs)} col/s · {ROWS} freq rows
+                time → · ~{((HISTORY_COLS / speed) * SPECTRO_POLL_MS / 1000).toFixed(0)} s visible · {speed}× scroll · {ROWS} freq rows
               </Text>
 
               {/* Color-scale legend strip — dark → blue → … → red, with the dB
