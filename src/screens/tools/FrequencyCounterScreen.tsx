@@ -153,6 +153,16 @@ const NOTE_NAMES = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A'
 // Spec Tool 7 required reference pitches (Custom entry ships later).
 const A4_CHOICES = [432, 435, 438, 440, 441, 442, 443, 444];
 
+// Tuner detection band (owner 2026-07-31): a VARIABLE low-cut (high-pass) and
+// high-cut (low-pass) that restrict which detected pitches the tuner will lock
+// to. Narrowing the band forces the correct OCTAVE (rejects the ½×/2× octave
+// error the YIN tracker can make) and ignores rumble below / harmonics + hiss
+// above. NOTE: this filters the pitch-DETECTION range in JS — it is not an
+// audio-DSP EQ on the microphone signal (that would need the native engine).
+const TUNER_LOW_CUT_HZ = [40, 60, 80, 110, 160, 220]; // high-pass cutoffs (Hz)
+const TUNER_HIGH_CUT_HZ = [500, 800, 1200, 2000, 4000]; // low-pass cutoffs (Hz)
+const fmtCut = (hz: number) => (hz >= 1000 ? `${hz / 1000} kHz` : `${hz} Hz`);
+
 // Honesty gating (§1.7): a value is presented as LIVE only when the native
 // tracker calls the frame voiced (YIN CMND < 0.15 — which by construction
 // means confidence > 0.85, Pitch.hpp), confidence also clears PITCH_CONF_MIN
@@ -346,6 +356,11 @@ function LivePitchMode({
     { meter: true, pitch: true },
   );
   const [a4, setA4] = useState(440);
+  // Tuner-only variable detection band (high-pass low-cut + low-pass high-cut).
+  // Defaults span the full reliable range, so the tuner is unrestricted until
+  // the user narrows it to force an octave.
+  const [lowCut, setLowCut] = useState(TUNER_LOW_CUT_HZ[0]); // 40 Hz
+  const [highCut, setHighCut] = useState(TUNER_HIGH_CUT_HZ[TUNER_HIGH_CUT_HZ.length - 1]); // 4 kHz
   const [justSaved, setJustSaved] = useState(false);
   const savedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(
@@ -384,8 +399,19 @@ function LivePitchMode({
   const live = running ? frames.pitch : null;
   const meter = running ? frames.meter : null;
   const lowSignal = live != null && live.levelDb < PITCH_LOW_SIGNAL_DB;
+  // Tuner detection band — Sound mode is never band-limited (it counts any
+  // frequency); only the Tuner locks within [lowCut, highCut].
+  const inBand = useCallback(
+    (f: number) => kind !== 'tuner' || (f >= lowCut && f <= highCut),
+    [kind, lowCut, highCut],
+  );
   const accepted =
-    live != null && live.voiced && live.confidence >= PITCH_CONF_MIN && !lowSignal && live.freq > 0;
+    live != null &&
+    live.voiced &&
+    live.confidence >= PITCH_CONF_MIN &&
+    !lowSignal &&
+    live.freq > 0 &&
+    inBand(live.freq);
 
   // Fresh session per START — never carry a previous session's last-good.
   useEffect(() => {
@@ -402,14 +428,18 @@ function LivePitchMode({
     if (!running || live == null || live.sequence === lastSeqRef.current) return;
     lastSeqRef.current = live.sequence;
     const ok =
-      live.voiced && live.confidence >= PITCH_CONF_MIN && live.levelDb >= PITCH_LOW_SIGNAL_DB && live.freq > 0;
+      live.voiced &&
+      live.confidence >= PITCH_CONF_MIN &&
+      live.levelDb >= PITCH_LOW_SIGNAL_DB &&
+      live.freq > 0 &&
+      inBand(live.freq);
     if (!ok) return;
     const now = Date.now();
     lastGoodRef.current = { f: live.freq, at: now };
     const h = histRef.current;
     h.push({ f: live.freq, at: now });
     while (h.length && now - h[0].at > PITCH_STATS_WINDOW_MS) h.shift();
-  }, [running, live]);
+  }, [running, live, inBand]);
 
   // What the big readout shows: the live value, or the last-good DIMMED with
   // an age hint (§1.7 — a stale number is never presented as live), then '—'.
@@ -597,6 +627,9 @@ function LivePitchMode({
         </View>
       ) : (
         <View style={styles.statGrid}>
+          {/* Explicit octave detection (owner 2026-07-31) — the octave the
+              nearest note sits in, e.g. A4 → 4. Band controls below force it. */}
+          <StatCell help={help} label="OCTAVE" value={note != null ? String(note.octave) : '—'} />
           <StatCell help={help} label="CONFIDENCE" value={live ? `${Math.round(live.confidence * 100)}%` : '—'} />
           <StatCell
             help={help}
@@ -636,6 +669,52 @@ function LivePitchMode({
         </View>
       )}
 
+      {/* Variable detection band (owner 2026-07-31): a low-cut (high-pass) and
+          high-cut (low-pass) that bracket the frequencies the tuner will lock
+          to — narrow it to force the octave and reject rumble / harmonics. */}
+      {kind === 'tuner' && (
+        <View style={styles.bandControls}>
+          <Text style={styles.bandTitle}>DETECTION BAND — narrow to force the octave</Text>
+          <View style={styles.a4Row}>
+            <Text style={styles.a4Label}>LOW-CUT</Text>
+            {TUNER_LOW_CUT_HZ.map((v) => (
+              <Pressable
+                key={v}
+                style={[styles.a4Chip, lowCut === v && styles.a4ChipOn]}
+                onPress={() => setLowCut(v)}
+                accessibilityRole="button"
+                accessibilityState={{ selected: lowCut === v }}
+                accessibilityLabel={`Low cut ${v} hertz high-pass`}
+              >
+                <Text style={[styles.a4ChipText, lowCut === v && styles.a4ChipTextOn]}>{v}</Text>
+              </Pressable>
+            ))}
+          </View>
+          <View style={styles.a4Row}>
+            <Text style={styles.a4Label}>HIGH-CUT</Text>
+            {TUNER_HIGH_CUT_HZ.map((v) => (
+              <Pressable
+                key={v}
+                style={[styles.a4Chip, highCut === v && styles.a4ChipOn]}
+                onPress={() => setHighCut(v)}
+                accessibilityRole="button"
+                accessibilityState={{ selected: highCut === v }}
+                accessibilityLabel={`High cut ${v} hertz low-pass`}
+              >
+                <Text style={[styles.a4ChipText, highCut === v && styles.a4ChipTextOn]}>
+                  {v >= 1000 ? `${v / 1000}k` : v}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+          <Text style={styles.gridNote}>
+            The tuner locks only to pitches between {fmtCut(lowCut)} and {fmtCut(highCut)}. Narrow the
+            band to force the correct octave and ignore rumble or harmonics. This limits the detection
+            range, not the microphone signal itself.
+          </Text>
+        </View>
+      )}
+
       {/* Plain-language live warnings (spec §6) — shared flags first, then the
           tool's spec-required caveats (multiple tones / out of range). */}
       {flags.map((f) => (
@@ -655,6 +734,18 @@ function LivePitchMode({
           {PITCH_RANGE_HZ.max / 1000} kHz) — treat this reading as approximate.
         </Text>
       )}
+      {kind === 'tuner' &&
+        live != null &&
+        live.voiced &&
+        live.confidence >= PITCH_CONF_MIN &&
+        !lowSignal &&
+        live.freq > 0 &&
+        !inBand(live.freq) && (
+          <Text style={styles.liveWarn}>
+            ⚠ A pitch at {fmtHz(live.freq)} Hz is outside the detection band ({fmtCut(lowCut)}–
+            {fmtCut(highCut)}). Widen or move the band to include your note.
+          </Text>
+        )}
 
       {/* SAVE (Sound mode only) — enabled once a live, confident pitch has held
           long enough for real stats (Phase 2, spec §7). */}
@@ -1113,6 +1204,9 @@ const styles = StyleSheet.create({
   // Honest range/unit footnote under the stat grid.
   gridNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted },
   a4Row: { flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' },
+  // Variable detection-band controls (low-cut / high-cut) — tuner only.
+  bandControls: { gap: 8 },
+  bandTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.amberLabel },
   a4Label: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.textSub },
   a4Chip: {
     borderRadius: 6,
