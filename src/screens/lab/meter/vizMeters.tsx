@@ -2209,30 +2209,43 @@ export function SplDialView(p: {
   // Dim/grey studio zone — darkened so the below-sweet-spot arc still reads on gray.
   const Z_GREY = '#6b7078';
 
-  // ── LIVE CONTAINER TINT (owner 2026-07-30): a soft, low-opacity colour wash
-  // over the WHOLE plate that reflects the CURRENT level's zone — GRAY below the
-  // green start, then GREEN → YELLOW → ORANGE → RED as the live level rises (red
-  // at 100+). Same thresholds as the arc bands, with the mode-aware green start.
-  // Driven live off the same rmsDb+splOffset the centre readout uses, so the plate
-  // reads as a big ambient level indicator. Kept faint (~0.15) so text stays crisp.
-  const greenStart = mode === 'studio' ? 60 : 40;
-  // Tint intensity (owner 2026-07-30): the old washed-out "mint" green is replaced by
-  // noticeably MORE saturated/vivid zone colours at higher opacity, so green reads as
-  // a clear green and yellow/orange/red are unmistakable. GRAY stays subtle as before.
-  const tintGrey = withAlpha(Z_GREY, 0.14); // unchanged (owner: leave gray subtle)
+  // ── LIVE CONTAINER TINT (owner 2026-07-30; mode-matched 2026-08-01): a soft
+  // colour wash over the WHOLE plate (the container) that reflects the CURRENT
+  // level's zone. The thresholds now MATCH EACH MODE'S OWN ARC BANDS exactly, so
+  // the container always lights up the same colour as the section the needle is in
+  // for that view — STUDIO (grey→green→GOLD sweet spot→yellow→orange), SPL
+  // (green→yellow→orange→red at 96), OPTIMAL (green→yellow→orange→red at 100).
+  // Driven live off the same rmsDb+splOffset the centre readout uses.
+  const tintGrey = withAlpha(Z_GREY, 0.14); // subtle
   const tintGreen = withAlpha('#1faa3f', 0.3);
+  const tintGold = withAlpha('#e8b53a', 0.3); // studio sweet-spot gold band
   const tintYellow = withAlpha('#e6b220', 0.3);
   const tintOrange = withAlpha('#e8701c', 0.32);
   const tintRed = withAlpha('#dd352a', 0.34);
   const tintColor = useDerivedValue(() => {
     const raw = liveRms.value;
     const spl = raw === raw && raw > -120 ? raw + p.splOffset : SPL_MIN;
-    if (spl < greenStart) return tintGrey;
+    if (mode === 'studio') {
+      // grey 50–60 · green 60–79 · GOLD sweet spot 79–85 · yellow 85–95 · orange 95+
+      if (spl < 60) return tintGrey;
+      if (spl < 79) return tintGreen;
+      if (spl < 85) return tintGold;
+      if (spl < 95) return tintYellow;
+      return tintOrange;
+    }
+    if (mode === 'spl') {
+      // green 50–85 · yellow 85–90 · orange 90–96 · red 96+
+      if (spl < 85) return tintGreen;
+      if (spl < 90) return tintYellow;
+      if (spl < 96) return tintOrange;
+      return tintRed;
+    }
+    // optimal — green 50–85 · yellow 85–95 · orange 95–100 · red 100+
     if (spl < 85) return tintGreen;
     if (spl < 95) return tintYellow;
     if (spl < 100) return tintOrange;
     return tintRed;
-  }, [liveRms, p.splOffset, greenStart]);
+  }, [liveRms, p.splOffset, mode]);
 
   // ── SWEET-SPOT GOLD GLOW (owner 2026-07-30 v3 — STATIC, no animation): the
   // shimmer/pulse is GONE. Both the CRITICAL BALANCING callout glow (studio mode)
