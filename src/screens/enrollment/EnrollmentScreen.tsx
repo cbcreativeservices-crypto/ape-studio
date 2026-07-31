@@ -241,13 +241,19 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   // Required core courses auto-RESERVE a Home slot while incomplete, and auto-
   // free it once completed (user request 2026-07-22) — so 3 of the 20 Home
   // slots stay reserved for cores. Their cards carry no manual Home toggle.
+  // Owner 2026-07-30: the requisite cores appear in the menu ONLY WHILE the user
+  // holds a certificate/program — added when the first credential is enrolled,
+  // gone when they complete it OR when the LAST certificate is removed from the
+  // "my enrollments" list. (Pro Audio Safety's free taster card is separate and
+  // always present regardless.)
+  const hasCredential = bundles.some((b) => b.kind === 'cert' || b.kind === 'program');
   useEffect(() => {
     for (const gs of COREQ_TOPIC_GS) {
       const done = (prog.get(gs)?.pct ?? 0) >= 100;
-      if (enrolledGs.has(gs) && !done) ensureHome(gs);
+      if (hasCredential && !done) ensureHome(gs);
       else removeHome(gs);
     }
-  }, [enrolledGs, prog]);
+  }, [hasCredential, prog]);
   const nameFor = (gs: number) => topicIndex.get(gs)?.name ?? `Topic gs${gs}`;
   const subjectFor = (gs: number) => topicIndex.get(gs)?.subject ?? '';
 
