@@ -45,7 +45,7 @@ import { MethodIcon, METHOD_COLORS, type MethodKey } from '../../components/Meth
 import { StudioButton } from '../../components/StudioButton';
 import { SwitchButton } from '../../components/SwitchButton';
 import { TrophyImage } from '../../components/TrophyImage';
-import { JogWheel } from '../../components/JogWheel';
+import { JogWheelTrigger, JogPopup } from '../../components/JogWheel';
 import { TrophyModal } from '../../components/TrophyModal';
 import { colors, fonts, spacing } from '../../theme/tokens';
 import {
@@ -312,6 +312,9 @@ export function DashboardScreen() {
   const [errorCode, setErrorCode] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [topicIdx, setTopicIdx] = useState(0);
+  // Jog-wheel popup (owner 2026-08-01): touching the small wheel opens a large
+  // wheel in the lower 2/3 of the screen; releasing it closes the popup.
+  const [jogOpen, setJogOpen] = useState(false);
   // CM6 (Booth 2026-07-11): commercialMode renders a PUBLIC course (seq order
   // from the seed) through this same screen; institutional path unchanged.
   const { commercialMode, caps } = useEntitlement();
@@ -830,10 +833,11 @@ export function DashboardScreen() {
                   {swipeHint ? `  ·  ${swipeHint}` : ''}
                 </Text>
               </Pressable>
-              {/* % overall progress sits directly under the topic/# line. */}
-              <View style={styles.pctRow}>
-                <Text style={styles.pctBig}>{overallPct}%</Text>
+              {/* Overall progress — label left-justified, the amber % below it
+                  (owner 2026-08-01); both keep their existing text sizes. */}
+              <View style={styles.pctBlock}>
                 <Text style={styles.pctLabel}>OVERALL TOPIC PROGRESS</Text>
+                <Text style={styles.pctBig}>{overallPct}%</Text>
               </View>
             </View>
 
@@ -852,10 +856,10 @@ export function DashboardScreen() {
                   fallback={<View style={styles.topicTrophyEmpty} />}
                 />
               </Pressable>
-              {/* Jog wheel — spin to click through the deck's topics (same as the
-                  swipe); it visibly turns and clicks, ~7 per full spin. */}
+              {/* Jog wheel — touching it opens the big-wheel popup (owner
+                  2026-08-01); turning that scrolls the deck's topics. */}
               <View style={styles.topicJog}>
-                <JogWheel size={96} disabled={topics.length <= 1} onStep={(d) => goTo(topicIdx + d)} />
+                <JogWheelTrigger size={96} disabled={topics.length <= 1} onPress={() => setJogOpen(true)} />
               </View>
             </View>
 
@@ -1254,6 +1258,17 @@ export function DashboardScreen() {
         <LowLightDim />
       </Modal>
 
+      {/* Big-wheel jog popup (owner 2026-08-01) — turn to scroll topics, release
+          to close. */}
+      <JogPopup
+        visible={jogOpen}
+        onClose={() => setJogOpen(false)}
+        onStep={(d) => goTo(topicIdx + d)}
+        label={topic?.name ?? ''}
+        sublabel={topic ? `TOPIC ${topicIdx + 1} OF ${topics.length}` : undefined}
+        disabled={topics.length <= 1}
+      />
+
       {/* Method-cards intro placeholder (Booth 2026-07-18). */}
       <ScreenIntroOverlay introKey="dashboard" />
 
@@ -1452,7 +1467,7 @@ const styles = StyleSheet.create({
     color: colors.textSub,
     marginTop: 2,
   },
-  pctRow: { flexDirection: 'row', alignItems: 'baseline', gap: 8, marginTop: 4 },
+  pctBlock: { alignItems: 'flex-start', marginTop: 6, gap: 1 },
   pctBig: {
     fontFamily: fonts.oswaldBold,
     fontSize: 32,

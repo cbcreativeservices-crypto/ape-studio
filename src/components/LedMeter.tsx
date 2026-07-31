@@ -125,7 +125,27 @@ const styles = StyleSheet.create({
   housingFull: { width: '100%', alignSelf: 'stretch' },
   // Vertical VU column — stack bottom→top so segment 0 (green) sits at the
   // bottom and the fill climbs upward. Self-sizes to its 21 blocks.
-  housingVert: { width: 'auto', height: 'auto', alignSelf: 'center', flexDirection: 'column-reverse' },
+  //
+  // Re-light the FRAME for a tall column (owner 2026-08-01): the base housing's
+  // heavy dark RIGHT border dominates a narrow vertical meter and reads as a
+  // side light — mismatching the top-lit horizontal meters below. Override so
+  // the TOP lip catches the light and the BOTTOM falls into shadow, with the two
+  // long side edges near-symmetric, so the column reads lit from ABOVE like the
+  // rest.
+  housingVert: {
+    width: 'auto',
+    height: 'auto',
+    alignSelf: 'center',
+    flexDirection: 'column-reverse',
+    borderTopWidth: 2,
+    borderTopColor: '#474748',
+    borderBottomWidth: 2.5,
+    borderBottomColor: '#000000',
+    borderLeftWidth: 1.5,
+    borderLeftColor: '#303032',
+    borderRightWidth: 1.5,
+    borderRightColor: '#161617',
+  },
   segVert: { width: 16, height: 7, borderRadius: 1 },
   segFull: { flex: 1, height: 10, borderRadius: 1 },
   seg: { flex: 1, height: 10, borderRadius: 1 },
