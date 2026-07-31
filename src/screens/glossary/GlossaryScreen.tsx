@@ -151,13 +151,19 @@ type TermIndex = {
 
 const normPhrase = (s: string) => s.toLowerCase().replace(/[’‘]/g, "'").replace(/\s+/g, ' ').trim();
 
+/** Mid-word substring matching kicks in only at this query length (owner
+ *  2026-08-01). Short queries — acronyms like "SSL" — match at word boundaries
+ *  ONLY, so they don't drag in unrelated terms whose NAME merely contains the
+ *  letters (e.g. "lo·ssl·ess" → Apple Lossless / ATRAC Advanced Lossless). At 5+
+ *  chars, mid-word substrings are almost always intentional, so "polar" finds
+ *  "bipolar", "linear" finds "nonlinearity", etc. */
+const SUBSTRING_MIN_LEN = 5;
+
 /**
  * Search relevance rank for a term against a lowercased query (lower = better;
- * 99 = no match, excluded). Matches only at WORD BOUNDARIES:
- *   0 exact · 1 term starts with query · 2 a WORD in the term starts with query.
- * The old "substring anywhere" tier is GONE (owner 2026-08-01): it surfaced
- * unrelated terms — e.g. "SSL" matched "lo·ssl·ess" ("Apple Lossless", "ATRAC
- * Advanced Lossless"). Real SSL terms still match via the word-prefix tier.
+ * 99 = no match, excluded). Tiers:
+ *   0 exact · 1 term starts with query · 2 a WORD in the term starts with query
+ *   · 3 substring anywhere (ONLY for queries ≥ SUBSTRING_MIN_LEN chars).
  * Callers break ties alphabetically within a tier.
  */
 function searchRank(termLower: string, q: string): number {
@@ -166,6 +172,8 @@ function searchRank(termLower: string, q: string): number {
   // Word-boundary prefix: any token (split on non-alphanumerics) starting with q.
   const words = termLower.split(/[^a-z0-9]+/);
   for (const w of words) if (w.startsWith(q)) return 2;
+  // Mid-word substring only for longer queries (short acronyms stay clean).
+  if (q.length >= SUBSTRING_MIN_LEN && termLower.includes(q)) return 3;
   return 99;
 }
 
