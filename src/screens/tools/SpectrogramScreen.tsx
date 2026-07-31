@@ -44,7 +44,7 @@ import * as Crypto from 'expo-crypto';
 import Svg, { G, Line, Path, Rect } from 'react-native-svg';
 import { ApeDsp, type EngineConfig } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
-import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
+import { meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO } from '../../features/tools/measure/types';
@@ -440,6 +440,10 @@ export function SpectrogramScreen({ navigation }: Props) {
     stop();
   }, [stop]);
 
+  // Open straight into the live spectrogram — no redundant START screen (owner
+  // 2026-08-01).
+  useToolAutoStart(state, onStart);
+
   const toggleFreeze = useCallback(() => {
     frozenRef.current = !frozenRef.current;
     setFrozen(frozenRef.current);
@@ -510,23 +514,9 @@ export function SpectrogramScreen({ navigation }: Props) {
             when the engine is usable. */}
         <EngineGate state={state} lastError={lastError} />
 
+        {/* Opens straight into the live spectrogram (auto-start). */}
         {!micPaused && (state === 'idle' || state === 'starting') && (
-          <>
-            <Text style={styles.intro}>
-              Watch frequency content scroll across time — time runs horizontally, frequency
-              vertically, and color shows signal level relative to the selected scale. Levels are
-              digital level at the microphone input (dBFS), uncalibrated and approximate. Press
-              START to begin capture; nothing is simulated while stopped.
-            </Text>
-            <GlassButton
-              label={state === 'starting' ? 'STARTING…' : 'START'}
-              tint="purple"
-              height={52}
-              fontSize={15}
-              disabled={state === 'starting'}
-              onPress={onStart}
-            />
-          </>
+          <Text style={styles.intro}>Starting the spectrogram…</Text>
         )}
 
         {(state === 'running' || micPaused) && (

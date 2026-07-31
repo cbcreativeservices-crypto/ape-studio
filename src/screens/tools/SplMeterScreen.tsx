@@ -27,7 +27,7 @@ import * as Crypto from 'expo-crypto';
 import { GlassButton } from '../../components/GlassButton';
 import { requireVizMeters, type VizMetersModule } from '../lab/meter/skiaGate';
 import type { LiveMeterDrive, PeakHoldMode } from '../lab/meter/vizMeters';
-import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
+import { meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { useRafFrameLoop } from '../../features/tools/engine/useRafFrameLoop';
 import { setSplCalibration, useSplCalibration } from '../../features/tools/measure/calibrationStore';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
@@ -438,6 +438,10 @@ export function SplMeterScreen({ navigation }: Props) {
     }, [start]),
   );
 
+  // Open straight into the live meter — no redundant START screen (owner
+  // 2026-08-01). Fires once; a deliberate STOP still holds the tool on-screen.
+  useToolAutoStart(state, startMeter);
+
   const [weighting, setWeighting] = useState<Weighting>('A');
   const [response, setResponse] = useState<MeterResponse>('fast');
   const [justSaved, setJustSaved] = useState(false);
@@ -713,21 +717,9 @@ export function SplMeterScreen({ navigation }: Props) {
         {/* Honest not-ready states: absent / spike / denied / error. */}
         <EngineGate state={state} lastError={lastError} />
 
+        {/* Opens straight into the live meter (auto-start). */}
         {!micPaused && (state === 'idle' || state === 'starting') && (
-          <>
-            <Text style={styles.intro}>
-              Live digital level metering with A/C/Z weighting and Fast/Slow response, plus a
-              session Leq log you can save. Every value is dBFS — digital level from the phone
-              microphone, uncalibrated and approximate — never dB SPL. The microphone captures
-              only while the meter runs.
-            </Text>
-            <GlassButton
-              label={state === 'starting' ? 'STARTING…' : 'START METER'}
-              tint="gold"
-              disabled={state === 'starting'}
-              onPress={startMeter}
-            />
-          </>
+          <Text style={styles.intro}>Starting the meter…</Text>
         )}
 
         {showMeter && (

@@ -30,7 +30,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
 import { GlassButton } from '../../components/GlassButton';
 import { useToolUsage } from '../../features/tools/telemetry';
-import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
+import { meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO, type WarningFlag } from '../../features/tools/measure/types';
@@ -394,6 +394,10 @@ function LivePitchMode({
     stop();
   }, [stop]);
 
+  // Open straight into the live counter/tuner once this mode is chosen — no
+  // redundant START screen (owner 2026-08-01).
+  useToolAutoStart(state, onStart);
+
   // Readouts come ONLY from a live frame — stale frames after STOP are never
   // shown (the SPL screen's integrity idiom).
   const live = running ? frames.pitch : null;
@@ -524,27 +528,8 @@ function LivePitchMode({
     return <EngineGate state={state} lastError={lastError} />;
   }
   if (state !== 'running' && !micPaused) {
-    return (
-      <>
-        <Text style={styles.intro}>
-          {kind === 'sound'
-            ? 'Measure the frequency of a steady sound with the microphone — frequency is the ' +
-              'measurement; pitch is the musical interpretation. The microphone captures only while ' +
-              'the counter runs.'
-            : 'Play or sing a sustained note. The tuner shows the nearest note and how many cents ' +
-              'you are from it, against a selectable A4 reference. The microphone captures only ' +
-              'while the tuner runs.'}
-        </Text>
-        <GlassButton
-          label={state === 'starting' ? 'STARTING…' : 'START'}
-          tint="teal"
-          height={52}
-          disabled={state === 'starting'}
-          onPress={onStart}
-        />
-        <Text style={styles.disclaimer}>{DISCLAIMER}</Text>
-      </>
-    );
+    // Opens straight into the live counter/tuner (auto-start).
+    return <Text style={styles.intro}>Starting the {kind === 'sound' ? 'counter' : 'tuner'}…</Text>;
   }
   return (
     <>

@@ -37,7 +37,7 @@ import Svg, { Defs, G, Line, LinearGradient, Path, Rect, Stop, Text as SvgText }
 import * as Crypto from 'expo-crypto';
 import { ApeDsp, type WaveBucket } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
-import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
+import { meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
@@ -142,6 +142,10 @@ export function WaveformScreen({ navigation }: Props) {
     setClipBase(0); // native clip counter restarts at 0 on capture start
     void start();
   }, [start]);
+
+  // Open straight into the live oscilloscope — no redundant START screen (owner
+  // 2026-08-01).
+  useToolAutoStart(state, onStart);
 
   /** Save the on-screen envelope to the library (Phase 2, spec §7) —
    *  numbers only, never audio. */
@@ -304,26 +308,9 @@ export function WaveformScreen({ navigation }: Props) {
           <GlassButton label="TRY AGAIN" tint="teal" height={52} fontSize={15} onPress={() => void start()} />
         ) : null}
 
+        {/* Opens straight into the live oscilloscope (auto-start). */}
         {!micPaused && (state === 'idle' || state === 'starting') ? (
-          <>
-            <Text style={styles.intro}>
-              A live oscilloscope of the microphone signal: min/max amplitude envelope over the last
-              few seconds, RMS energy band, and clipping markers. Nothing is drawn until real capture
-              is running — press START to begin.
-            </Text>
-            <GlassButton
-              label={state === 'starting' ? 'STARTING…' : 'START'}
-              tint="teal"
-              height={56}
-              fontSize={16}
-              disabled={state === 'starting'}
-              onPress={onStart}
-            />
-            <Text style={styles.footnote}>
-              Capture starts only when you press START and stops when you leave this screen. Audio is
-              processed on-device; saved snapshots contain numbers only, never audio.
-            </Text>
-          </>
+          <Text style={styles.intro}>Starting the oscilloscope…</Text>
         ) : null}
 
         {showView ? (

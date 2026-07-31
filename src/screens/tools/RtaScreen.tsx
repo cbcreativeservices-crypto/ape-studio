@@ -53,7 +53,7 @@ import * as Crypto from 'expo-crypto';
 import Svg, { Defs, G, Line, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { ApeDsp, type BandsFrame, type EngineConfig } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
-import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
+import { meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO } from '../../features/tools/measure/types';
@@ -623,6 +623,10 @@ export function RtaScreen({ navigation }: Props) {
     stop();
   }, [stop]);
 
+  // Go straight to the live tool on open — no redundant START screen (owner
+  // 2026-08-01). A manual STOP still holds the tool on-screen (micPaused).
+  useToolAutoStart(state, onStart);
+
   /** SAVE TRACE (spec §10 View 2 → §7 library). Real polled data only — always
    *  the NATIVE frame: display-time regrouping (7/15/61) never alters the
    *  stored payload, which stays the engine's 1/1 or 1/3-octave truth. */
@@ -688,22 +692,10 @@ export function RtaScreen({ navigation }: Props) {
             when the engine is usable. */}
         <EngineGate state={state} lastError={lastError} />
 
+        {/* Opens straight into the live tool (auto-start); a brief starting note
+            bridges the mic warm-up instead of a redundant intro screen. */}
         {!micPaused && (state === 'idle' || state === 'starting') && (
-          <>
-            <Text style={styles.intro}>
-              Watch signal energy across frequency in real time — 7 to 61 bands with peak hold.
-              Levels are digital level at the microphone input (dBFS), uncalibrated and
-              approximate. Press START to begin capture; nothing is simulated while stopped.
-            </Text>
-            <GlassButton
-              label={state === 'starting' ? 'STARTING…' : 'START'}
-              tint="blue"
-              height={52}
-              fontSize={15}
-              disabled={state === 'starting'}
-              onPress={onStart}
-            />
-          </>
+          <Text style={styles.intro}>Starting the analyzer…</Text>
         )}
 
         {(state === 'running' || micPaused) && (

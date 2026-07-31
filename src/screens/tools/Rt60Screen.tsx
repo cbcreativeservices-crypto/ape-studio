@@ -35,7 +35,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
 import { ApeDsp, type Rt60Band, type Rt60Frame } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
-import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
+import { meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO, type WarningFlag } from '../../features/tools/measure/types';
@@ -283,6 +283,10 @@ export function Rt60Screen({ navigation }: Props) {
     stop();
   }, [stop]);
 
+  // Open straight into the live capture panel — no redundant START screen
+  // (owner 2026-08-01). The user still ARMS each measurement explicitly.
+  useToolAutoStart(state, onStart);
+
   /** Final flag set: the capture window's conditions + the engine's verdict. */
   const flags = useMemo<WarningFlag[]>(() => {
     const f = [...windowFlags];
@@ -480,21 +484,11 @@ export function Rt60Screen({ navigation }: Props) {
           </>
         ) : state !== 'running' && !micPaused ? (
           <>
-            <Text style={styles.intro}>
-              Measure how long sound takes to decay in this room, per octave band. You will make a
-              loud, short sound — the engine triggers automatically, records 3.5 seconds, and fits
-              the decay. Get the phone away from soft surfaces and hold still during the capture.
-            </Text>
-            {/* Show the decay viewer up front (owner 2026-07-31) — the plot frame,
-                fit-region markers and axes render before any capture, so the
-                screen isn't blank while waiting for a measurement. */}
+            {/* Opens straight into the live capture (auto-start); the decay
+                viewer is already up so the screen isn't blank while the mic
+                warms up. */}
+            <Text style={styles.intro}>Starting the RT60 capture…</Text>
             <DecayCurve curveDb={rt60?.curveDb ?? []} stepSec={rt60?.curveStepSec ?? 0.05} />
-            <GlassButton
-              label={state === 'starting' ? 'STARTING…' : 'START'}
-              tint="green"
-              height={52}
-              onPress={onStart}
-            />
           </>
         ) : (
           <>

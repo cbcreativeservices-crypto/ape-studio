@@ -170,6 +170,23 @@ export function useDspEngine(config: EngineConfig, poll: {
   return { state, frames, start, stop, lastError, resetPeakHold: ApeDsp.resetPeakHold, resetLeq: () => ApeDsp.resetLeq() };
 }
 
+/** Auto-start capture ONCE on mount when the engine is ready (owner 2026-08-01:
+ *  opening a tool goes straight to the live tool — the redundant intro/START
+ *  screen between the tool-info page and the tool is removed). Fires only while
+ *  state is 'idle' and only once, so a deliberate manual STOP (which returns the
+ *  state to 'idle') never silently re-arms the mic. No-op for absent / spike /
+ *  denied / error — those keep showing the honest EngineGate. */
+export function useToolAutoStart(state: EngineState, start: () => void): void {
+  const done = useRef(false);
+  useEffect(() => {
+    if (done.current) return;
+    if (state === 'idle') {
+      done.current = true;
+      start();
+    }
+  }, [state, start]);
+}
+
 /** Map live native conditions → the Phase-2 quality flags (spec §6). The SAME
  *  flags shown live are stored on save, so screen and library always agree. */
 export function meterWarningFlags(m: MeterFrame | null): WarningFlag[] {
