@@ -594,6 +594,28 @@ export function GlossaryScreen({ route, navigation }: Props) {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const searchRef = useRef<TextInput>(null);
+  // Search-field colour (owner 2026-08-01): the typed query goes GREEN once the
+  // search has SETTLED (results shown), and reverts to WHITE while the user is
+  // editing (any keystroke/delete) or when the field is empty. A short debounce
+  // detects "done typing"; each edit resets it back to white first.
+  const [searchGreen, setSearchGreen] = useState(false);
+  const settleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const onSearchChange = (text: string) => {
+    setSearch(text);
+    setSearchGreen(false); // editing → white immediately
+    if (settleTimer.current) clearTimeout(settleTimer.current);
+    if (text.trim().length > 0) {
+      settleTimer.current = setTimeout(() => setSearchGreen(true), 400); // settled → green
+    }
+  };
+  const clearSearch = () => {
+    if (settleTimer.current) clearTimeout(settleTimer.current);
+    setSearchGreen(false);
+    setSearch('');
+  };
+  useEffect(() => () => {
+    if (settleTimer.current) clearTimeout(settleTimer.current);
+  }, []);
   const [filter, setFilter] = useState<Filter>('all');
   const [topicPickerOpen, setTopicPickerOpen] = useState(false);
   // Member gate for the topic filter (user request 2026-07-25): free/lapsed/
@@ -1230,9 +1252,9 @@ export function GlossaryScreen({ route, navigation }: Props) {
         {/* Search glyph always on the left (Booth 2026-07-15). */}
         <Text style={styles.searchGlyph}>⌕</Text>
         <TextInput
-          style={styles.searchInput}
+          style={[styles.searchInput, searchGreen && styles.searchInputDone]}
           value={search}
-          onChangeText={setSearch}
+          onChangeText={onSearchChange}
           placeholder="Search by term"
           placeholderTextColor={colors.textMuted}
           autoCorrect={false}
@@ -1244,7 +1266,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
             drag-to-dismiss) replaces the old DONE button (Booth 2026-07-15). */}
         {search.length > 0 ? (
           <Pressable
-            onPress={() => setSearch('')}
+            onPress={clearSearch}
             hitSlop={12}
             accessibilityRole="button"
             accessibilityLabel="Clear search"
@@ -1989,6 +2011,8 @@ const styles = StyleSheet.create({
   searchGlyph: { fontSize: 16, color: colors.textMuted },
   searchClear: { fontSize: 15, color: colors.textSub, paddingHorizontal: 1 },
   searchInput: { flex: 1, fontFamily: fonts.barlowRegular, fontSize: 15, color: colors.textPrimary, paddingVertical: 0 },
+  // GREEN once a search has settled and its results are shown (owner 2026-08-01).
+  searchInputDone: { color: '#37e05f' },
   // Constrain the horizontal filter scroller so it can't grow to fill the
   // column and shove the list down (Booth 2026-07-09 black-gap fix).
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, alignItems: 'center' },
