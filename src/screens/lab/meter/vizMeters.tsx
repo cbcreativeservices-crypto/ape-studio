@@ -1991,10 +1991,11 @@ export function SplDialView(p: {
   const liveRms = p.live.rmsDb;
   const mode = p.labelMode ?? 'studio';
 
-  // Scale: 20..130 dB SPL across a ±A° sweep, pivot low-of-centre so the bottom
-  // wedge is free for the sweet-spot band / reference labels.
-  const SPL_MIN = 30;
-  const SPL_MAX = 120;
+  // Scale: 50..100 dB SPL across a ±A° sweep (owner 2026-07-31: bottom-left starts
+  // at 50 dB, top peaks at 100 dB), pivot low-of-centre so the bottom wedge is free
+  // for the sweet-spot band / reference labels.
+  const SPL_MIN = 50;
+  const SPL_MAX = 100;
   const SPAN = SPL_MAX - SPL_MIN;
   const A = 122; // half-sweep, degrees (244° total, gap at the bottom)
   const cx = w / 2;
@@ -2064,9 +2065,10 @@ export function SplDialView(p: {
     // 79→85 dB drawn over the green zone — the monitoring sweet spot the parent also
     // lights the gold FRAME for. Distinct gold region, not green.
     const arcStudioGold = arcStroke(79, 85, Rs + 2);
-    // SPL / OPTIMAL: gray 30–40, green 40–85.
-    const arcSplGray = arcStroke(SPL_MIN, 40, Rs + 2);
-    const arcSplGreen = arcStroke(40, 85, Rs + 2);
+    // SPL / OPTIMAL: green runs from the new 50 dB floor up to 85 (no gray run
+    // below it now that the scale starts at 50 — owner 2026-07-31).
+    const arcSplGray = arcStroke(SPL_MIN, SPL_MIN, Rs + 2); // empty
+    const arcSplGreen = arcStroke(SPL_MIN, 85, Rs + 2);
     // SPL-specific bands (owner 2026-07-30, item 7): yellow 85–90, ORANGE concert
     // emphasis 90–96, RED from 96 (red begins right after the concert band). The 100
     // boundary tick + "100" numeral + 100+ callout still sit at 100 (drawn elsewhere).
@@ -2114,7 +2116,7 @@ export function SplDialView(p: {
       const lp = pt(angOf(s), r);
       return { x: lp.x, y: lp.y };
     };
-    const numLabels = [30, 50, 70, 90, 100, 110].map((s) => ({ s, ...numAt(s, Rs - 13) }));
+    const numLabels = [50, 60, 70, 80, 90, 100].map((s) => ({ s, ...numAt(s, Rs - 13) }));
 
     return {
       plate, face, sheen, arcYellow, arcOrange, arcRed,
@@ -2280,8 +2282,8 @@ export function SplDialView(p: {
     const defs: CoDef[] =
       mode === 'spl'
         ? [
-            // Common reference sounds at their dB along the arc.
-            { spl: 37, color: Z_GREEN, lines: [ { t: 'QUIET ROOM', size: 12.5, color: Z_GREEN, ls: 0.3 }, { t: '35–40 dBA', size: 10, color: inkDim } ] },
+            // Common reference sounds at their dB along the arc. (QUIET ROOM removed
+            // — owner 2026-07-31; it sat below the new 50 dB floor anyway.)
             { spl: 60, color: Z_GREEN, lines: [ { t: 'CONVERSATION', size: 12.5, color: Z_GREEN, ls: 0.3 }, { t: '~60 dBA', size: 10, color: inkDim } ] },
             // Colour COHERENCE (owner final polish): 79 dBC sits squarely in the
             // GREEN reference band, so the marker is GREEN (was amber, which read as a
@@ -2316,9 +2318,10 @@ export function SplDialView(p: {
             { spl: 89, color: Z_AMBER, lines: [ { t: 'SHOW', size: 12.5, color: Z_AMBER_TXT, ls: 0.3 }, { t: '85–93 dBA', size: 10, color: inkDim } ] },
             { spl: 95, color: Z_ORANGE, lines: [ { t: 'HIGH', size: 12.5, color: Z_ORANGE, ls: 0.3 }, { t: '94–96 dBA', size: 10, color: inkDim } ] },
             { spl: 98, color: Z_RED, lines: [ { t: 'LIMIT', size: 12.5, color: Z_RED, ls: 0.3 }, { t: '97–99 dBA', size: 10, color: inkDim } ] },
-            // 100+ exposure zone — anchored at 110, seated at the BOTTOM of the right
-            // column by the even-spacing stack; leader lands on its exact dB in the red zone.
-            { spl: 110, color: Z_RED, lines: [ { t: '100+ dB LAeq', size: 12, color: Z_RED, ls: 0.2 }, { t: 'WHO 15-MIN LIMIT', size: 9, color: Z_RED } ] },
+            // 100+ exposure zone — anchored at the 100 dB top of the scale (owner
+            // 2026-07-31: the scale now peaks at 100), seated at the BOTTOM of the
+            // right column by the even-spacing stack.
+            { spl: 100, color: Z_RED, lines: [ { t: '100+ dB LAeq', size: 12, color: Z_RED, ls: 0.2 }, { t: 'WHO 15-MIN LIMIT', size: 9, color: Z_RED } ] },
           ]
         : [
             // Studio: four long-term mixing bands. First three green, the brief
@@ -2664,14 +2667,13 @@ export function SplDialView(p: {
           nothing drawn. */}
       {p.centerText != null ? (
         <>
-          {/* B7: the big centre number takes the LIVE zone colour when provided
-              (green/amber/orange/red as the level crosses the arc zones); dark ink
-              otherwise. The "dB SPL" sub-label stays neutral dark ink. */}
-          <Lbl x={0} y={cy - 23} w={w} size={30} font={fonts.oswaldSemiBold} color={p.centerColor ?? ink}>
+          {/* The big centre number is the AVERAGE (RMS) level — BLACK, +1 pt (owner
+              2026-07-31); the citation below notes AVG so it never reads as a peak. */}
+          <Lbl x={0} y={cy - 24} w={w} size={31} font={fonts.oswaldSemiBold} color="#0a0a0a">
             {p.centerText}
           </Lbl>
           <Lbl x={0} y={cy + 17} w={w} size={10} font={fonts.oswaldSemiBold} ls={1.5} color={inkDim}>
-            dB SPL
+            dB SPL · AVG
           </Lbl>
         </>
       ) : null}
