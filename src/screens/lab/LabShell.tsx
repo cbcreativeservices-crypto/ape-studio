@@ -37,6 +37,16 @@ const MODES: { key: LabMode; label: string }[] = [
   { key: 'test', label: 'TEST' },
 ];
 
+/** Fixed per-mode tab color (owner 2026-07-31): LEARN green · EXPLORE amber ·
+ *  PRACTICE blue · TEST purple — always on, across every lab that shows these
+ *  four buttons. */
+export const MODE_COLORS: Record<LabMode, string> = {
+  learn: colors.green,
+  explore: colors.amber,
+  practice: colors.blue,
+  test: colors.purple,
+};
+
 /** Shared chip control (SignalGen/HarmonicsView idiom). Long-press opens the
  *  control's Guided Lesson where wired (v4 §5). */
 export function LabChip({
@@ -253,10 +263,13 @@ export function LabShell({
       <View style={styles.tabRow}>
         {MODES.map((m) => {
           const selected = mode === m.key;
+          const c = MODE_COLORS[m.key];
           return (
             <Pressable
               key={m.key}
-              style={[styles.tab, selected && styles.tabSelected]}
+              // Selected tab is boxed in its own mode color; the label always
+              // carries that color (dimmed a touch when not selected).
+              style={[styles.tab, selected && { borderColor: c, backgroundColor: c + '1e' }]}
               onPress={() => {
                 // A tab press can land mid-drag; free the scroll lock too.
                 setScrollLocked(false);
@@ -266,7 +279,7 @@ export function LabShell({
               accessibilityState={{ selected }}
               accessibilityLabel={`${m.label} mode`}
             >
-              <Text style={[styles.tabText, selected && styles.tabTextSelected]}>{m.label}</Text>
+              <Text style={[styles.tabText, { color: c, opacity: selected ? 1 : 0.72 }]}>{m.label}</Text>
             </Pressable>
           );
         })}
@@ -395,9 +408,7 @@ const styles = StyleSheet.create({
     paddingVertical: 9,
     alignItems: 'center',
   },
-  tabSelected: { borderColor: 'rgba(255,198,77,.65)', backgroundColor: '#1a1409' },
   tabText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textSecondary },
-  tabTextSelected: { color: colors.amber },
 
   panel: { gap: 12 },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSub },
