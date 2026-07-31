@@ -2163,8 +2163,9 @@ export function SplDialView(p: {
   // the studio CRITICAL BALANCE callout + leader to mark the sweet spot on the chart.
   const GOLD_INK = '#d4a017';
   // Brighter gold for the studio SWEET-SPOT arc band (79–85) so it reads as its own
-  // zone over the green (owner 2026-07-30, item 5).
-  const GOLD_BAND = '#e8b62a';
+  // zone over the green (owner 2026-07-30, item 5). Pushed BRIGHTER/more saturated
+  // (final polish) so the 79–85 sweet-spot band pops clearly off the darker green.
+  const GOLD_BAND = '#f5c024';
   // Zone palette — darkened to read on the LIGHT-GRAY face (owner 2026-07-30).
   // Used for BOTH the arc strokes and the zone-matched callout labels + leaders.
   const Z_GREEN = '#1f7a34';
@@ -2253,7 +2254,10 @@ export function SplDialView(p: {
             // Common reference sounds at their dB along the arc.
             { spl: 37, color: Z_GREEN, lines: [ { t: 'QUIET ROOM', size: 12.5, color: Z_GREEN, ls: 0.3 }, { t: '35–40 dBA', size: 10, color: inkDim } ] },
             { spl: 60, color: Z_GREEN, lines: [ { t: 'CONVERSATION', size: 12.5, color: Z_GREEN, ls: 0.3 }, { t: '~60 dBA', size: 10, color: inkDim } ] },
-            { spl: 79, color: Z_AMBER, lines: [ { t: 'STUDIO LISTENING', size: 11, color: Z_AMBER_TXT, ls: 0.2 }, { t: '~79 dBC', size: 10, color: inkDim } ] },
+            // Colour COHERENCE (owner final polish): 79 dBC sits squarely in the
+            // GREEN reference band, so the marker is GREEN (was amber, which read as a
+            // zone mismatch pointing into green). Reads as the reference-level marker.
+            { spl: 79, color: Z_GREEN, lines: [ { t: 'STUDIO LISTENING', size: 11, color: Z_GREEN, ls: 0.2 }, { t: '~79 dBC', size: 10, color: inkDim } ] },
             // CONCERT = the 90–96 dB ORANGE emphasis band; leader lands mid-band (93).
             { spl: 93, color: Z_ORANGE, lines: [ { t: 'CONCERT', size: 12.5, color: Z_ORANGE, ls: 0.3 }, { t: '90dB–96dB', size: 10, color: inkDim } ] },
             // 100+ exposure zone — leader stays EXACTLY on the 100 red-zone boundary
@@ -2277,7 +2281,10 @@ export function SplDialView(p: {
             // TOP CENTRE — REFERENCE, just above the dial, a touch right of centre.
             { spl: 81, color: Z_GREEN, forceCol: 'C', nearer: 16, lines: [ { t: 'REFERENCE', size: 12.5, color: Z_GREEN, ls: 0.3 }, { t: '79–84 dBA', size: 10, color: inkDim } ] },
             // RIGHT column (left-aligned), top→bottom EVENLY spaced: SHOW, HIGH, LIMIT, 100+.
-            { spl: 89, color: Z_ORANGE, lines: [ { t: 'SHOW', size: 12.5, color: Z_ORANGE, ls: 0.3 }, { t: '85–93 dBA', size: 10, color: inkDim } ] },
+            // Colour COHERENCE (owner final polish): SHOW's anchor (89) lands in the
+            // YELLOW band, so it is AMBER (was orange → zone mismatch). HIGH (95) sits
+            // at the yellow→orange boundary and stays orange; LIMIT/100+ stay red.
+            { spl: 89, color: Z_AMBER, lines: [ { t: 'SHOW', size: 12.5, color: Z_AMBER_TXT, ls: 0.3 }, { t: '85–93 dBA', size: 10, color: inkDim } ] },
             { spl: 95, color: Z_ORANGE, lines: [ { t: 'HIGH', size: 12.5, color: Z_ORANGE, ls: 0.3 }, { t: '94–96 dBA', size: 10, color: inkDim } ] },
             { spl: 98, color: Z_RED, lines: [ { t: 'LIMIT', size: 12.5, color: Z_RED, ls: 0.3 }, { t: '97–99 dBA', size: 10, color: inkDim } ] },
             // 100+ exposure zone — anchored at 110, seated at the BOTTOM of the right
@@ -2293,7 +2300,9 @@ export function SplDialView(p: {
             // (bigger than the other callouts) with the animated shiny-gold shimmer
             // glow + leader (owner 2026-07-30).
             { spl: 79, color: GOLD_INK, gold: true, lines: [ { t: 'CRITICAL BALANCING', size: 15.5, color: GOLD_INK, ls: 0.3 }, { t: '76dB–84dB', size: 10, color: inkDim } ] },
-            { spl: 90, color: Z_ORANGE, lines: [ { t: 'IMPACT CHECK', size: 12.5, color: Z_ORANGE, ls: 0.3 }, { t: '85–95 dB SPL · brief', size: 9.5, color: inkDim } ] },
+            // Colour COHERENCE (owner final polish): the 85–95 IMPACT CHECK band is the
+            // YELLOW zone (anchor 90 sits on it), so the callout is AMBER, not orange.
+            { spl: 90, color: Z_AMBER, lines: [ { t: 'IMPACT CHECK', size: 12.5, color: Z_AMBER_TXT, ls: 0.3 }, { t: '85–95 dB SPL · brief', size: 9.5, color: inkDim } ] },
           ];
 
     // THREE horizontally-DISJOINT columns (owner 2026-07-30 v3): a LEFT margin
@@ -2379,18 +2388,21 @@ export function SplDialView(p: {
       }
     }
 
-    // Per-column vertical stack. SPL/OPTIMAL (`wide`) LEFT/RIGHT columns get EVEN
-    // vertical spacing (owner 2026-07-30 v3): the group (sorted top→bottom by its
-    // anchor height) is laid out with a constant inter-box gap and centred in the
-    // dial's vertical band, so items are evenly distributed — no bunching. STUDIO
-    // (and any wide CENTER item) keeps the original anchor-ray seat + downward
-    // de-collision so its already-approved layout is untouched. Either way the
-    // leader still lands on the TRUE dB anchor (ax,ay), independent of the box y.
+    // Per-column vertical stack. ANY LEFT/RIGHT column holding 2+ callouts gets EVEN
+    // vertical spacing (owner final polish — unifies all three modes): the group
+    // (sorted top→bottom by its anchor height) is laid out with a constant inter-box
+    // gap and centred in the dial's vertical band, so neighbours are evenly
+    // distributed with matching breathing room and never bunch/converge — this also
+    // de-crowds STUDIO's left stack (GENERAL EDITING + BACKGROUND·DETAIL), which used
+    // to sit tight near their close anchors. A LONE side callout (e.g. STUDIO's IMPACT
+    // CHECK) and every CENTER item keep the anchor-ray seat + downward de-collision so
+    // the key marker rides over its true dB. Either way the leader still lands on the
+    // TRUE dB anchor (ax,ay), independent of the box y.
     for (const c of ['L', 'C', 'R'] as const) {
       const grp = items.filter((i) => i.col === c).sort((a, b) => a.ly - b.ly);
       if (grp.length === 0) continue;
-      if (wide && (c === 'L' || c === 'R')) {
-        const evenGap = 14; // comfortable, constant inter-box gap
+      if ((c === 'L' || c === 'R') && grp.length >= 2) {
+        const evenGap = 15; // comfortable, constant inter-box gap
         const totalH = grp.reduce((s, i) => s + i.th, 0) + evenGap * (grp.length - 1);
         let top = (topLimit + botLimit) / 2 - totalH / 2; // centre the stack in the band
         if (top < topLimit) top = topLimit;
@@ -2435,38 +2447,24 @@ export function SplDialView(p: {
       leaderPath.moveTo(fromX, fromY);
       leaderPath.lineTo(i.ax, i.ay);
       const dotPath = Skia.Path.Make();
-      dotPath.addCircle(i.ax, i.ay, 2.8);
-      // SWEET-SPOT gold GLOW box: a soft rounded-rect sized to hug the ENLARGED
-      // CRITICAL BALANCE title, positioned per its column alignment. The shimmer
-      // layers blur THIS box + the leader together as one shiny-gold glow.
-      let glowBox: SkPathT | null = null;
-      if (i.def.gold) {
-        const title = i.def.lines[0];
-        const approxW = Math.min(
-          i.bw + 16,
-          title.t.length * title.size * 0.6 + (title.ls ?? 0) * title.t.length + 16,
-        );
-        const gx =
-          i.align === 'left'
-            ? i.bx - 6
-            : i.align === 'right'
-            ? i.bx + i.bw - approxW + 6
-            : i.bx + (i.bw - approxW) / 2;
-        glowBox = Skia.Path.Make();
-        glowBox.addRRect(Skia.RRectXY(Skia.XYWHRect(gx, i.ty - 6, approxW, i.th + 10), 9, 9));
-      }
+      dotPath.addCircle(i.ax, i.ay, 2.6);
+      // NOTE (owner final polish): the old faint gold rounded-RECTANGLE glow BOX
+      // behind CRITICAL BALANCING is GONE — it read as an ugly boxy plate. The gold
+      // title now stands on its own crisp gold text + strong drop shadow (below), with
+      // at most a whisper of glow carried by its leader only (see the Canvas group).
       return {
         spl: i.def.spl, color: i.def.color, lines: i.def.lines, gold: !!i.def.gold,
-        align: i.align, bx: i.bx, bw: i.bw, ty: i.ty, lineH: i.lh, leaderPath, dotPath, glowBox,
+        align: i.align, bx: i.bx, bw: i.bw, ty: i.ty, lineH: i.lh, leaderPath, dotPath,
       };
     });
     return { items: laid };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [w, h, mode]);
 
-  // The CRITICAL BALANCE callout (studio mode only) — its glow box + leader get
-  // the animated shiny-gold shimmer drawn under the (legible) gold title text.
-  const goldCO = CO.items.find((it) => it.gold && it.glowBox) ?? null;
+  // The CRITICAL BALANCE callout (studio mode only) — its LEADER carries a whisper of
+  // static gold glow (no box, no shimmer); legibility comes from the gold title's
+  // drop shadow drawn in RN over the Canvas.
+  const goldCO = CO.items.find((it) => it.gold) ?? null;
 
   return (
     <View style={{ width: w, height: h }}>
@@ -2495,7 +2493,7 @@ export function SplDialView(p: {
             <Path path={G.arcStudioGreen} color={Z_GREEN} style="stroke" strokeWidth={wArc} strokeCap="butt" />
             {/* GOLDEN SWEET-SPOT band 79→85 (item 5): a soft gold under-glow beneath a
                 crisp gold arc, drawn OVER the green so 79–85 reads as its own gold zone. */}
-            <Path path={G.arcStudioGold} color={withAlpha(GOLD_BAND, 0.5)} style="stroke" strokeWidth={wArc + 6} strokeCap="butt">
+            <Path path={G.arcStudioGold} color={withAlpha(GOLD_BAND, 0.62)} style="stroke" strokeWidth={wArc + 8} strokeCap="butt">
               <BlurMask blur={4} style="normal" />
             </Path>
             <Path path={G.arcStudioGold} color={GOLD_BAND} style="stroke" strokeWidth={wArc} strokeCap="butt" />
@@ -2532,28 +2530,26 @@ export function SplDialView(p: {
         {mode === 'studio' ? (
           <Path path={G.sizeTicks} color={Z_GREEN} style="stroke" strokeWidth={1.8} />
         ) : null}
-        {/* SWEET-SPOT GOLD GLOW — CRITICAL BALANCING callout (studio mode). STATIC
-            (owner 2026-07-30 v3): the animated shimmer/pulse is GONE and the glow is
-            dialled WAY back (~13% of the old full glow) to a single faint, constant
-            gold under-glow on the box + leader. Legibility comes from the strong
-            STATIC drop shadow on the gold title text (drawn in RN over the Canvas). */}
-        {goldCO && goldCO.glowBox ? (
-          <Group>
-            <Path path={goldCO.glowBox} color={GOLD_INK} opacity={GOLD_GLOW_OPACITY}>
-              <BlurMask blur={GOLD_GLOW_BLUR} style="normal" />
-            </Path>
-            <Path path={goldCO.leaderPath} color={GOLD_INK} style="stroke" strokeWidth={3} opacity={GOLD_GLOW_OPACITY}>
-              <BlurMask blur={3} style="normal" />
-            </Path>
-          </Group>
+        {/* SWEET-SPOT GOLD GLOW — CRITICAL BALANCING callout (studio mode). The ugly
+            gold rounded-RECTANGLE box is REMOVED (owner final polish); all that remains
+            is a single faint, static gold under-glow on the LEADER, so the marker still
+            reads as special without any boxy plate. Legibility of the title comes from
+            its strong STATIC drop shadow (drawn in RN over the Canvas). */}
+        {goldCO ? (
+          <Path path={goldCO.leaderPath} color={GOLD_INK} style="stroke" strokeWidth={3} opacity={GOLD_GLOW_OPACITY}>
+            <BlurMask blur={GOLD_GLOW_BLUR} style="normal" />
+          </Path>
         ) : null}
-        {/* LEADER LINES: each callout's hairline + anchor dot, tinted its ZONE
-            colour (owner 2026-07-30). Drawn UNDER the node so the live node point
-            is never obscured. */}
+        {/* LEADER LINES: each callout's uniform thin hairline + a small clean anchor
+            dot ON the arc, tinted its ZONE colour (owner final polish). A light cream
+            rim rings every dot so it stays a crisp point even when its zone colour
+            matches the arc band beneath it (e.g. a green dot on the green band). Drawn
+            UNDER the node so the live node point is never obscured. */}
         {CO.items.map((it, idx) => (
           <Group key={`ld${idx}`}>
-            <Path path={it.leaderPath} color={it.color} style="stroke" strokeWidth={1.1} opacity={0.9} />
+            <Path path={it.leaderPath} color={it.color} style="stroke" strokeWidth={1.1} opacity={0.92} />
             <Path path={it.dotPath} color={it.color} />
+            <Path path={it.dotPath} color="#f4efdf" style="stroke" strokeWidth={1} opacity={0.9} />
           </Group>
         ))}
         {/* NODE POINT riding the arc: soft amber halo + dark core with a light rim
