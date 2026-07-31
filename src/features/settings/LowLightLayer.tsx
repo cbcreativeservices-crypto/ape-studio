@@ -41,7 +41,13 @@ export function LowLightDim() {
   return (
     <>
       <View pointerEvents="none" style={[styles.dim, { opacity: LOW_LIGHT_DIM }]} />
-      {/* Sits ABOVE the dim (higher zIndex) so it stays a crisp, bright red
+      {/* Very-light RED wash over the ENTIRE screen while low-light is engaged
+          (owner 2026-08-01) — full-bleed from y=0 so it also tints the status-bar
+          region (clock, cell, Wi-Fi, battery background) as far as the app can
+          reach. The OS's own status-bar glyphs are composited above the app and
+          can't be recoloured from JS, but everything the app draws is tinted. */}
+      <View pointerEvents="none" style={styles.redWash} />
+      {/* Sits ABOVE the wash (higher zIndex) so it stays a crisp, bright red
           indicator that the mode is active. */}
       <View pointerEvents="none" style={[styles.activeLine, { top: insets.top }]} />
     </>
@@ -81,6 +87,17 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: '#000000',
     zIndex: 50,
+  },
+  // Very-light red wash — a translucent red laid over the whole (already dimmed)
+  // screen so low-light mode reads as a gentle night-vision red (owner 2026-08-01).
+  redWash: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(255,45,30,0.20)',
+    zIndex: 55,
   },
   activeLine: {
     position: 'absolute',
