@@ -95,7 +95,7 @@ const SPECIALIZATION: AwardPage = {
       level: 'Level 1',
       title: 'Academy Specialization Certificate',
       corequisite: ['Pro Audio Safety', 'Grounding & Electrical', 'Workplace Skills'],
-      requirements: ['Complete the 3 specialization topics'],
+      requirements: ['Complete the 3 specialization topics', 'Sound Fundamentals Lab'],
       // Catalog of the 68 predefined Specialized Certificates (choose one).
       builder: 'specializations',
     },
@@ -118,7 +118,7 @@ const PROGRAM: AwardPage = {
       level: 'Level 2',
       title: 'Professional Certificate Program',
       corequisite: ['Pro Audio Safety', 'Grounding & Electrical', 'Workplace Skills'],
-      requirements: ['Complete an established program path'],
+      requirements: ["Complete a program's topic path", 'Sound Fundamentals Lab'],
       // Interactive: pick from the established program paths.
       builder: 'programs',
       note:
