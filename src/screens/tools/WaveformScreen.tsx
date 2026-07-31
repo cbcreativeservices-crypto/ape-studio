@@ -38,7 +38,7 @@ import * as Crypto from 'expo-crypto';
 import { ApeDsp, type WaveBucket } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
-import { WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
+import { MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO } from '../../features/tools/measure/types';
@@ -392,7 +392,7 @@ export function WaveformScreen({ navigation }: Props) {
                     ))}
                     {/* Zero line — centered, always visible (§11). The −∞ label sits
                         ON the line (0 amplitude = −∞ dBFS). */}
-                    <Line x1={0} x2={panelW} y1={half} y2={half} stroke="#3e5852" strokeWidth={1} />
+                    <Line x1={0} x2={panelW} y1={half} y2={half} stroke={MIDLINE_BLUE} strokeWidth={1} />
                     <SvgText x={4} y={half + 4} fill={colors.textSub} fontSize={11} fontFamily={fonts.mono}>
                       -∞
                     </SvgText>

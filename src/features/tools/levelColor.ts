@@ -1,24 +1,30 @@
 /**
- * Level / loudness colour standard (owner 2026-07-31).
+ * Amplitude colour standard (owner 2026-07-31).
  *
- * The SINGLE source of truth for how amplitude/level maps to colour anywhere a
- * student sees it — waveforms, level bars, per-sample bars, MIDI velocity, etc.
- * It is the exact ramp used by the SPL tool's VU LED level meter
- * (PeakAvgMeterView in src/screens/lab/meter/vizMeters.tsx): loud → quiet is
- *   red → orange → yellow → green → deep green.
+ * The SINGLE source of truth for how amplitude maps to colour anywhere a student
+ * sees amplitude DRAWN (not a text readout) — waveforms (smooth curves OR
+ * per-sample bar excursions), level meters, standing displays, etc.
  *
- * Keeping ONE ramp means "louder is redder" reads identically across every tool
- * and every lab, so the colour itself teaches level.
+ * The ramp is the MIDI NOTE-VELOCITY scheme: silence is velocity 0 = BLUE at the
+ * zero/mid line, and as amplitude grows away from the mid line the colour climbs
+ * blue → green → yellow → orange → red (louder = redder). Keeping ONE ramp means
+ * amplitude reads identically across every tool and every lab, so the colour
+ * itself teaches level. The mid line (0 amplitude) is ALWAYS drawn MIDI-0 blue
+ * (`MIDLINE_BLUE`).
  */
 
-/** Loud → quiet stops, matching the LED meter's vertical gradient exactly.
- *  `pos` 0 = loudest (top of a bar), 1 = quietest (bottom). */
+/** MIDI-0 (silence) blue — the colour of every amplitude mid/zero line and the
+ *  centre of every waveform. */
+export const MIDLINE_BLUE = '#2f74ff';
+
+/** Loud → quiet stops. `pos` 0 = loudest (full scale), 1 = silence (the mid
+ *  line). Velocity ramp: red → orange → yellow → green → blue. */
 export const LOUDNESS_STOPS: ReadonlyArray<{ pos: number; color: string }> = [
   { pos: 0, color: '#ff5f4e' }, // full scale — red
-  { pos: 0.1, color: '#e6902f' }, // orange
-  { pos: 0.3, color: '#e8c341' }, // yellow
-  { pos: 0.55, color: '#4ea84e' }, // green
-  { pos: 1, color: '#3f8f3f' }, // silence — deep green
+  { pos: 0.26, color: '#e6902f' }, // orange
+  { pos: 0.48, color: '#e8c341' }, // yellow
+  { pos: 0.72, color: '#3fae52' }, // green
+  { pos: 1, color: MIDLINE_BLUE }, // silence / mid line — MIDI-0 blue
 ];
 
 function hexToRgb(h: string): [number, number, number] {
@@ -30,11 +36,12 @@ function rgbToHex(r: number, g: number, b: number): string {
   return `#${c(r)}${c(g)}${c(b)}`;
 }
 
-/** Colour for a loudness fraction `l` (0 = silence/quiet, 1 = full scale/loud),
- *  interpolated along the canonical ramp. */
+/** Colour for a loudness fraction `l` (0 = silence/mid line, 1 = full scale/loud),
+ *  interpolated along the canonical velocity ramp. `levelColor(0)` is
+ *  `MIDLINE_BLUE`. */
 export function levelColor(l: number): string {
   const loud = Math.max(0, Math.min(1, l));
-  const pos = 1 - loud; // ramp is indexed by pos (0 loud … 1 quiet)
+  const pos = 1 - loud; // ramp is indexed by pos (0 loud … 1 silence)
   const s = LOUDNESS_STOPS;
   for (let i = 1; i < s.length; i++) {
     if (pos <= s[i].pos) {
@@ -51,14 +58,14 @@ export function levelColor(l: number): string {
 
 /**
  * SVG gradient stops for a zero-centred waveform: symmetric about the middle so
- * amplitude MAGNITUDE drives the colour (loud excursions red at top AND bottom,
- * quiet centre deep green). `offset` runs 0 (top edge, +full scale) → 0.5
- * (centre, zero) → 1 (bottom edge, −full scale). Map the gradient axis to the
- * pixels of ±full scale (userSpaceOnUse) so the colour tracks true level
- * regardless of vertical zoom.
+ * amplitude MAGNITUDE drives the colour — MIDI-0 blue at the centre (zero line),
+ * climbing through green/yellow/orange to red at ±full scale (top AND bottom).
+ * `offset` runs 0 (top edge, +full scale) → 0.5 (centre, zero) → 1 (bottom edge,
+ * −full scale). Map the gradient axis to the pixels of ±full scale
+ * (userSpaceOnUse) so the colour tracks true level regardless of vertical zoom.
  */
 export const WAVE_LEVEL_STOPS: ReadonlyArray<{ offset: number; color: string }> = (() => {
   // Sample the magnitude ramp at symmetric offsets. m = |1 − 2·offset|.
-  const offsets = [0, 0.05, 0.15, 0.275, 0.5, 0.725, 0.85, 0.95, 1];
+  const offsets = [0, 0.06, 0.16, 0.28, 0.4, 0.5, 0.6, 0.72, 0.84, 0.94, 1];
   return offsets.map((offset) => ({ offset, color: levelColor(Math.abs(1 - 2 * offset)) }));
 })();

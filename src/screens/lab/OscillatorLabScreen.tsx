@@ -59,7 +59,7 @@ import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { LabShell, LabChip, SpeakerOutputToggle, CollapsibleSection, HeaderPlayButton } from './LabShell';
 import { additivePayload, buildPreset, effectiveAmp, synthWaveform, type PresetKey } from './harmonicModel';
-import { WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
+import { MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 
 const GEN_LEVEL_DB = -20; // Q4 default; cap stays locked
 const ACTIVITY_MS = 500; // 2 Hz keepalive (SignalGen idiom)
@@ -377,7 +377,7 @@ function TravelingWaveStrip({ points }: { points: number[] }) {
                 ))}
               </LinearGradient>
             </Defs>
-            <Line x1={0} y1={STRIP_H / 2} x2={w * 1.5} y2={STRIP_H / 2} stroke="#22222a" strokeWidth={1} />
+            <Line x1={0} y1={STRIP_H / 2} x2={w * 1.5} y2={STRIP_H / 2} stroke={MIDLINE_BLUE} strokeWidth={1} />
             {/* Level-coloured waveform (SPL-VU standard): soft glow pass under the
                 crisp core stroke (standards §2). */}
             <Path d={d} stroke="url(#oscWaveLevel)" strokeWidth={4.5} fill="none" opacity={0.14} strokeLinecap="round" />

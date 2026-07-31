@@ -41,6 +41,13 @@ import {
 } from '@shopify/react-native-skia';
 import { useDerivedValue, type SharedValue } from 'react-native-reanimated';
 export { usePhaseClock, useVizClock } from '../foundations/viz';
+import { MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../../features/tools/levelColor';
+
+// App-wide amplitude→colour standard (owner 2026-07-31): the MIDI-velocity ramp,
+// MIDI-0 blue at the mid line climbing to red at ±full scale. Split into Skia
+// LinearGradient colours/positions once.
+const WAVE_LEVEL_COLORS = WAVE_LEVEL_STOPS.map((s) => s.color);
+const WAVE_LEVEL_POS = WAVE_LEVEL_STOPS.map((s) => s.offset);
 
 const GLASS = '#4a4a54';
 const METAL = '#8a8c94';
@@ -765,7 +772,8 @@ export function AmplifyView({
   return (
     <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
       <Vignette w={w} h={h} />
-      <SkLine p1={{ x: 0, y: mid }} p2={{ x: w, y: mid }} color={GHOST} strokeWidth={1} />
+      {/* The mid line is 0 amplitude → always MIDI-0 blue (owner 2026-07-31). */}
+      <SkLine p1={{ x: 0, y: mid }} p2={{ x: w, y: mid }} color={MIDLINE_BLUE} strokeWidth={1} />
 
       {/* ── The mini triode stage ── */}
       <Path path={tube.leads} color={METAL} style="stroke" strokeWidth={2.2} />
@@ -797,18 +805,20 @@ export function AmplifyView({
         <LinearGradient start={vec(0, tBase)} end={vec(0, tBase + 7)} colors={[BAKELITE_LIGHT, BAKELITE_DARK]} />
       </RoundedRect>
 
-      {/* ── The waves: soft underfill + glow stroke + core stroke ── */}
-      <Path path={waveFill} opacity={0.8}>
-        <LinearGradient
-          start={vec(0, mid - 56)}
-          end={vec(0, mid + 56)}
-          colors={['#ffc64d00', '#ffc64d2e', '#ffc64d00']}
-        />
+      {/* ── The waves: soft underfill + glow stroke + core stroke. Coloured by
+          AMPLITUDE with the MIDI-velocity ramp (blue at the mid line → red at the
+          big output peaks), keyed to the ±52 px output swing so the tiny input
+          reads cool and the amplified output reads hot (owner 2026-07-31). ── */}
+      <Path path={waveFill} opacity={0.28}>
+        <LinearGradient start={vec(0, mid - 52)} end={vec(0, mid + 52)} colors={WAVE_LEVEL_COLORS} positions={WAVE_LEVEL_POS} />
       </Path>
-      <Path path={waves} color={WAVE} style="stroke" strokeWidth={5} opacity={0.3}>
+      <Path path={waves} style="stroke" strokeWidth={5} opacity={0.3}>
+        <LinearGradient start={vec(0, mid - 52)} end={vec(0, mid + 52)} colors={WAVE_LEVEL_COLORS} positions={WAVE_LEVEL_POS} />
         <BlurMask blur={5} style="normal" />
       </Path>
-      <Path path={waves} color={WAVE} style="stroke" strokeWidth={2.2} strokeJoin="round" />
+      <Path path={waves} style="stroke" strokeWidth={2.2} strokeJoin="round">
+        <LinearGradient start={vec(0, mid - 52)} end={vec(0, mid + 52)} colors={WAVE_LEVEL_COLORS} positions={WAVE_LEVEL_POS} />
+      </Path>
     </Canvas>
   );
 }
@@ -1080,58 +1090,39 @@ export function SaturationView({
     return { stroke, fill, unity };
   }, [cx0, cy0, cs]);
 
-  const waves = useDerivedValue(() => {
+  // Full-scale amplitude of each wave (drawn); used to key the velocity ramp so
+  // both waves colour blue at their mid line → red at their peaks.
+  const ampMax = cs * 0.2;
+  const waveIn = useDerivedValue(() => {
     const ph = phase.value;
     const p = Skia.Path.Make();
-    const K = Math.tanh(2.6);
     const N = 70;
-    // Input wave (its drawn amplitude follows the drive).
     for (let i = 0; i <= N; i++) {
       const t = i / N;
       const s = drive * Math.sin(t * 2 * Math.PI * 2.2 - ph);
       const x = wx0 + t * ww;
-      const yi = midIn - s * (cs * 0.2);
+      const yi = midIn - s * ampMax;
       if (i === 0) p.moveTo(x, yi);
       else p.lineTo(x, yi);
     }
-    // Output as its own subpath.
+    return p;
+  }, [phase, wx0, ww, midIn, ampMax, drive]);
+  const waveOut = useDerivedValue(() => {
+    const ph = phase.value;
+    const p = Skia.Path.Make();
+    const K = Math.tanh(2.6);
+    const N = 70;
     for (let i = 0; i <= N; i++) {
       const t = i / N;
       const s = drive * Math.sin(t * 2 * Math.PI * 2.2 - ph);
       const out = Math.tanh(2.6 * s) / K;
       const x = wx0 + t * ww;
-      const yo = midOut - out * (cs * 0.2);
+      const yo = midOut - out * ampMax;
       if (i === 0) p.moveTo(x, yo);
       else p.lineTo(x, yo);
     }
     return p;
-  }, [phase, wx0, ww, midIn, midOut, cs, drive]);
-
-  // Underfill for both waves, closed back to their midlines.
-  const waveFill = useDerivedValue(() => {
-    const ph = phase.value;
-    const p = Skia.Path.Make();
-    const K = Math.tanh(2.6);
-    const N = 70;
-    p.moveTo(wx0, midIn);
-    for (let i = 0; i <= N; i++) {
-      const t = i / N;
-      const s = drive * Math.sin(t * 2 * Math.PI * 2.2 - ph);
-      p.lineTo(wx0 + t * ww, midIn - s * (cs * 0.2));
-    }
-    p.lineTo(wx0 + ww, midIn);
-    p.close();
-    p.moveTo(wx0, midOut);
-    for (let i = 0; i <= N; i++) {
-      const t = i / N;
-      const s = drive * Math.sin(t * 2 * Math.PI * 2.2 - ph);
-      const out = Math.tanh(2.6 * s) / K;
-      p.lineTo(wx0 + t * ww, midOut - out * (cs * 0.2));
-    }
-    p.lineTo(wx0 + ww, midOut);
-    p.close();
-    return p;
-  }, [phase, wx0, ww, midIn, midOut, cs, drive]);
+  }, [phase, wx0, ww, midOut, ampMax, drive]);
 
   return (
     <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
@@ -1143,8 +1134,9 @@ export function SaturationView({
       <RoundedRect x={cx0} y={cy0 + cs * 0.86} width={cs} height={cs * 0.14} r={0}>
         <LinearGradient start={vec(0, cy0 + cs * 0.86)} end={vec(0, cy0 + cs)} colors={['#ff6b5e00', '#ff6b5e14']} />
       </RoundedRect>
-      <SkLine p1={{ x: wx0, y: midIn }} p2={{ x: w - 8, y: midIn }} color={GHOST} strokeWidth={1} />
-      <SkLine p1={{ x: wx0, y: midOut }} p2={{ x: w - 8, y: midOut }} color={GHOST} strokeWidth={1} />
+      {/* Amplitude mid lines → always MIDI-0 blue (owner 2026-07-31). */}
+      <SkLine p1={{ x: wx0, y: midIn }} p2={{ x: w - 8, y: midIn }} color={MIDLINE_BLUE} strokeWidth={1} />
+      <SkLine p1={{ x: wx0, y: midOut }} p2={{ x: w - 8, y: midOut }} color={MIDLINE_BLUE} strokeWidth={1} />
       {/* Unity reference — dashed ghost of the straight line. */}
       <Path path={curves.unity} color="#4a4a54" style="stroke" strokeWidth={1.4} opacity={0.7}>
         <DashPathEffect intervals={[6, 5]} />
@@ -1157,12 +1149,23 @@ export function SaturationView({
         <BlurMask blur={4.5} style="normal" />
       </Path>
       <Path path={curves.stroke} color="#a8adb8" style="stroke" strokeWidth={2} strokeJoin="round" />
-      {/* Waves: soft underfill + glow + core. */}
-      <Path path={waveFill} color={WAVE} opacity={0.09} />
-      <Path path={waves} color={WAVE} style="stroke" strokeWidth={5} opacity={0.25}>
+      {/* Waves: glow + core, each coloured by AMPLITUDE with the MIDI-velocity
+          ramp (blue at its mid line → red at its peaks). Input and output ride
+          separate mid lines, so each gets its own gradient axis. */}
+      <Path path={waveIn} style="stroke" strokeWidth={5} opacity={0.25}>
+        <LinearGradient start={vec(0, midIn - ampMax)} end={vec(0, midIn + ampMax)} colors={WAVE_LEVEL_COLORS} positions={WAVE_LEVEL_POS} />
         <BlurMask blur={5} style="normal" />
       </Path>
-      <Path path={waves} color={WAVE} style="stroke" strokeWidth={2.2} strokeJoin="round" />
+      <Path path={waveIn} style="stroke" strokeWidth={2.2} strokeJoin="round">
+        <LinearGradient start={vec(0, midIn - ampMax)} end={vec(0, midIn + ampMax)} colors={WAVE_LEVEL_COLORS} positions={WAVE_LEVEL_POS} />
+      </Path>
+      <Path path={waveOut} style="stroke" strokeWidth={5} opacity={0.25}>
+        <LinearGradient start={vec(0, midOut - ampMax)} end={vec(0, midOut + ampMax)} colors={WAVE_LEVEL_COLORS} positions={WAVE_LEVEL_POS} />
+        <BlurMask blur={5} style="normal" />
+      </Path>
+      <Path path={waveOut} style="stroke" strokeWidth={2.2} strokeJoin="round">
+        <LinearGradient start={vec(0, midOut - ampMax)} end={vec(0, midOut + ampMax)} colors={WAVE_LEVEL_COLORS} positions={WAVE_LEVEL_POS} />
+      </Path>
     </Canvas>
   );
 }

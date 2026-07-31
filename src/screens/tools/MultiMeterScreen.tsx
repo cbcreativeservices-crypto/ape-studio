@@ -69,6 +69,7 @@ import Svg, { Defs, G, Line, LinearGradient, Path, Rect, Stop } from 'react-nati
 import { ApeDsp, type EngineConfig } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
+import { MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO, type MultimeterSnapshotPayload } from '../../features/tools/measure/types';
@@ -208,7 +209,6 @@ const SG_COLORS: readonly string[] = Array.from({ length: SG_BUCKETS }, (_, i) =
 // ---------------------------------------------------------------------------
 const SCOPE_H = 128;
 const SCOPE_BUCKETS = 60; // 60 × 50 ms = 3 s window
-const SCOPE_TRACE = '#5fd9c4';
 
 // ---------------------------------------------------------------------------
 // Pitch honesty gating — IDENTICAL constants to FrequencyCounterScreen
@@ -868,6 +868,8 @@ export function MultiMeterScreen({ navigation }: Props) {
       rmsRev = `L${x},${y(-b.rms).toFixed(1)}` + rmsRev;
       if (b.clipped) clip += `M${x},3L${x},9`;
     }
+    // Velocity-ramp axis: blue at the mid line (0), red at |amp| = full scale.
+    const fullPix = usable / scaleMax;
     return {
       area: top + bottomRev + 'Z',
       outline: top + bottomFwd,
@@ -876,6 +878,8 @@ export function MultiMeterScreen({ navigation }: Props) {
       clipW: Math.max(1.5, colW * 0.8),
       scaleMax,
       observed,
+      gradY0: half - fullPix,
+      gradY1: half + fullPix,
     };
   }, [running, frames.waveform, scopeW, half]);
 
@@ -1179,22 +1183,34 @@ export function MultiMeterScreen({ navigation }: Props) {
                 <View style={styles.scopeSurface} onLayout={(e) => setScopeW(Math.round(e.nativeEvent.layout.width))}>
                   {scopeW > 0 && (
                     <Svg width={scopeW} height={SCOPE_H}>
-                      <Defs>
-                        <LinearGradient id="mmWfFill" x1="0" y1="0" x2="0" y2="1">
-                          <Stop offset="0" stopColor={SCOPE_TRACE} stopOpacity={0.38} />
-                          <Stop offset="0.5" stopColor={SCOPE_TRACE} stopOpacity={0.08} />
-                          <Stop offset="1" stopColor={SCOPE_TRACE} stopOpacity={0.38} />
-                        </LinearGradient>
-                      </Defs>
-                      {/* Fixed center line = the zero-pressure reference: any
-                          DC offset shows as an asymmetric envelope around it. */}
-                      <Line x1={0} x2={scopeW} y1={half} y2={half} stroke="#3e5852" strokeWidth={1} />
+                      {scope && (
+                        <Defs>
+                          {/* Amplitude → MIDI-velocity colour (blue at the mid line
+                              → red at ±full scale), keyed to true level. */}
+                          <LinearGradient
+                            id="mmWfLevel"
+                            x1={0}
+                            y1={scope.gradY0}
+                            x2={0}
+                            y2={scope.gradY1}
+                            gradientUnits="userSpaceOnUse"
+                          >
+                            {WAVE_LEVEL_STOPS.map((s) => (
+                              <Stop key={s.offset} offset={s.offset} stopColor={s.color} />
+                            ))}
+                          </LinearGradient>
+                        </Defs>
+                      )}
+                      {/* Fixed center line = the zero-pressure reference (0 amplitude
+                          → MIDI-0 blue): any DC offset shows as an asymmetric
+                          envelope around it. */}
+                      <Line x1={0} x2={scopeW} y1={half} y2={half} stroke={MIDLINE_BLUE} strokeWidth={1} />
                       {scope && (
                         <>
-                          <Path d={scope.area} fill="url(#mmWfFill)" />
-                          <Path d={scope.rmsArea} fill={SCOPE_TRACE} opacity={0.3} />
-                          <Path d={scope.outline} stroke={SCOPE_TRACE} opacity={0.2} strokeWidth={4} fill="none" strokeLinejoin="round" />
-                          <Path d={scope.outline} stroke={SCOPE_TRACE} opacity={0.95} strokeWidth={1.2} fill="none" strokeLinejoin="round" />
+                          <Path d={scope.area} fill="url(#mmWfLevel)" opacity={0.5} />
+                          <Path d={scope.rmsArea} fill="url(#mmWfLevel)" opacity={0.55} />
+                          <Path d={scope.outline} stroke="url(#mmWfLevel)" opacity={0.35} strokeWidth={4} fill="none" strokeLinejoin="round" />
+                          <Path d={scope.outline} stroke="url(#mmWfLevel)" opacity={1} strokeWidth={1.3} fill="none" strokeLinejoin="round" />
                           {scope.clip !== '' && <Path d={scope.clip} stroke={colors.red} strokeWidth={scope.clipW} />}
                         </>
                       )}

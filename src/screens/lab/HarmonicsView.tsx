@@ -98,7 +98,7 @@ import { isFeedbackAllowed, noteAudioActivity, useFeedbackAllowed } from '../../
 import { FeedbackAllowRow } from '../../features/audio/FeedbackAllowRow';
 import { guardToneLevelForEngine, LOW_FREQ_ADVISORY } from '../../features/audio/speakerSafety';
 import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
-import { WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
+import { MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 import { WARNING_INFO } from '../../features/tools/measure/types';
 import { EngineGate } from '../tools/EngineGate';
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../features/lab/guidedLessons';
@@ -185,11 +185,17 @@ const SOLO_MAX_HZ = 20000;
 // harmonics is a line through ≤2 points — show "—" instead.
 const MIN_SLOPE_HARMONICS = 3;
 
+// Model-wave velocity-ramp axis: ±1 normalized maps to mid ∓ amp (see
+// buildWavePath), so full scale sits at these y's — blue mid line → red peaks.
+const WAVE_MODEL_AMP = WAVE_H / 2 - 4;
+const WAVE_MODEL_Y0 = WAVE_H / 2 - WAVE_MODEL_AMP;
+const WAVE_MODEL_Y1 = WAVE_H / 2 + WAVE_MODEL_AMP;
+
 /** Waveform strip path from a ±1-normalized wave (shared by the live model
  *  wave and the A/B ghost — identical scaling so the shapes compare). */
 function buildWavePath(wave: readonly number[], w: number): string {
   const mid = WAVE_H / 2;
-  const amp = WAVE_H / 2 - 4;
+  const amp = WAVE_MODEL_AMP;
   let d = '';
   for (let i = 0; i < wave.length; i++) {
     d += `${i === 0 ? 'M' : 'L'}${((i / (wave.length - 1)) * w).toFixed(1)},${(mid - wave[i] * amp).toFixed(1)}`;
@@ -1374,8 +1380,14 @@ export function HarmonicsView({
         >
           {waveW > 0 ? (
             <Svg width={waveW} height={WAVE_H}>
-              {liveWave ? (
-                <Defs>
+              <Defs>
+                {/* Model-wave gradient (static amplitude axis). */}
+                <LinearGradient id="harmModelLevel" x1={0} y1={WAVE_MODEL_Y0} x2={0} y2={WAVE_MODEL_Y1} gradientUnits="userSpaceOnUse">
+                  {WAVE_LEVEL_STOPS.map((s) => (
+                    <Stop key={s.offset} offset={s.offset} stopColor={s.color} />
+                  ))}
+                </LinearGradient>
+                {liveWave ? (
                   <LinearGradient
                     id="harmWaveLevel"
                     x1={0}
@@ -1388,9 +1400,9 @@ export function HarmonicsView({
                       <Stop key={s.offset} offset={s.offset} stopColor={s.color} />
                     ))}
                   </LinearGradient>
-                </Defs>
-              ) : null}
-              <Line x1={0} x2={waveW} y1={WAVE_H / 2} y2={WAVE_H / 2} stroke="#3a3a40" strokeWidth={1} />
+                ) : null}
+              </Defs>
+              <Line x1={0} x2={waveW} y1={WAVE_H / 2} y2={WAVE_H / 2} stroke={MIDLINE_BLUE} strokeWidth={1} />
               {view === 'model' ? (
                 <>
                   {/* A/B ghost first so the live edit draws on top. */}
@@ -1404,7 +1416,7 @@ export function HarmonicsView({
                     />
                   ) : null}
                   {modelWavePath !== '' ? (
-                    <Path d={modelWavePath} stroke={colors.green} strokeWidth={1.5} fill="none" />
+                    <Path d={modelWavePath} stroke="url(#harmModelLevel)" strokeWidth={1.8} fill="none" />
                   ) : null}
                 </>
               ) : liveWave ? (
