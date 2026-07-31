@@ -2,14 +2,18 @@
  * JogWheel — an SSL-style dished jog wheel (owner 2026-08-01).
  *
  * On the Dashboard the small wheel is a TRIGGER (`JogWheelTrigger`) — the SAME
- * graphic, just shrunk. Touching it opens `JogPopup`: a large copy placed so its
- * finger DIMPLE lands where the small icon was (under the thumb). Turning the
- * wheel visibly SPINS it: a fixed matte-black base with the dimple + a specular
- * highlight and a cast shadow that ORBIT as it turns (real jog-wheel feel, not a
- * joystick). It steps in click DETENTS (~1/7 turn) with a Rigid haptic, no
- * sound. Letting go of the wheel — or tapping outside it — closes the popup.
+ * graphic, just shrunk. Touching it opens `JogPopup`: a large copy CENTERED
+ * left-right on the screen, with its finger DIMPLE pointed at the small icon (so
+ * the thumb that pressed it is more or less over the dimple). Turning the wheel
+ * visibly SPINS it (fixed matte base; the dimple + highlight + shadow rotate on
+ * top — real jog feel, not a joystick). It steps in click DETENTS (~1/7 turn)
+ * with a Rigid haptic, no sound.
+ *
+ * Smoothness: the popup steps a LOCAL index while turning (only the popup
+ * re-renders); the heavy Dashboard is updated ONCE, on close — so scrolling is
+ * not delayed or jittery. Letting go of the wheel (or tapping outside) closes.
  */
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Modal, PanResponder, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import Svg, { Circle, Defs, Ellipse, RadialGradient, Stop } from 'react-native-svg';
 import * as Haptics from 'expo-haptics';
@@ -17,13 +21,12 @@ import { hapticsEnabled } from '../features/settings/store';
 import { colors, fonts } from '../theme/tokens';
 
 const DETENT_DEG = 360 / 7; // ~51.4° per click → one hard full spin ≈ 7 steps
-/** Finger-dimple centre as a fraction of the wheel size from the TOP — shared so
- *  the popup can align the big dimple to the small icon (the thumb press). */
+/** Default finger-dimple centre as a fraction of size from the TOP. */
 const DIMPLE_CY = 0.26;
 
-/** FIXED base of the wheel — rim + matte-black concave disc. No directional
- *  light lives here; the light features rotate on top (JogFeatures) so the spin
- *  is visible. */
+type Pt = { x: number; y: number };
+
+/** FIXED base of the wheel — rim + matte-black concave disc. */
 function JogBase({ size }: { size: number }) {
   const c = size / 2;
   return (
@@ -43,14 +46,12 @@ function JogBase({ size }: { size: number }) {
   );
 }
 
-/** Light features that ROTATE with the wheel: a soft specular highlight (top), a
- *  cast shadow (bottom, opposite), and the finger dimple. At rest this reads as
- *  a top-lit domed disc; while turning, the highlight/shadow ORBIT — that is the
- *  visible spin. */
-function JogFeatures({ size }: { size: number }) {
+/** Light features that ROTATE with the wheel: a specular highlight (top), a cast
+ *  shadow (bottom, opposite), and the finger dimple. `dimple` positions the
+ *  dimple (default top-centre; the popup points it at the thumb). */
+function JogFeatures({ size, dimple }: { size: number; dimple: Pt }) {
   const c = size / 2;
-  const dR = size * 0.11; // dimple radius
-  const dCy = size * DIMPLE_CY;
+  const dR = size * 0.11;
   return (
     <Svg width={size} height={size}>
       <Defs>
@@ -68,19 +69,18 @@ function JogFeatures({ size }: { size: number }) {
           <Stop offset="1" stopColor="#000000" />
         </RadialGradient>
       </Defs>
-      {/* Cast shadow (lower) + specular highlight (upper) — orbit while turning. */}
+      {/* Cast shadow + specular highlight — orbit while turning. */}
       <Ellipse cx={c} cy={size * 0.72} rx={size * 0.4} ry={size * 0.28} fill="url(#jogSh)" />
       <Ellipse cx={c} cy={size * 0.3} rx={size * 0.36} ry={size * 0.24} fill="url(#jogHi)" />
       {/* Finger dimple with a small bright highlight on its upper-left. */}
-      <Circle cx={c} cy={dCy} r={dR} fill="url(#jogDimple)" />
-      <Circle cx={c} cy={dCy} r={dR} stroke="#5a5a64" strokeWidth={size * 0.008} fill="none" opacity={0.7} />
-      <Circle cx={c - dR * 0.35} cy={dCy - dR * 0.4} r={dR * 0.3} fill="#ffffff" opacity={0.22} />
+      <Circle cx={dimple.x} cy={dimple.y} r={dR} fill="url(#jogDimple)" />
+      <Circle cx={dimple.x} cy={dimple.y} r={dR} stroke="#5a5a64" strokeWidth={size * 0.008} fill="none" opacity={0.7} />
+      <Circle cx={dimple.x - dR * 0.35} cy={dimple.y - dR * 0.4} r={dR * 0.3} fill="#ffffff" opacity={0.22} />
     </Svg>
   );
 }
 
-/** Two stacked layers: fixed base + light features (rotated by `rotate`). */
-function JogStack({ size, rotate }: { size: number; rotate?: Animated.AnimatedInterpolation<string> }) {
+function JogStack({ size, dimple, rotate }: { size: number; dimple: Pt; rotate?: Animated.AnimatedInterpolation<string> }) {
   return (
     <View style={{ width: size, height: size }}>
       <View style={StyleSheet.absoluteFill}>
@@ -88,11 +88,11 @@ function JogStack({ size, rotate }: { size: number; rotate?: Animated.AnimatedIn
       </View>
       {rotate ? (
         <Animated.View style={[StyleSheet.absoluteFill, { transform: [{ rotate }] }]}>
-          <JogFeatures size={size} />
+          <JogFeatures size={size} dimple={dimple} />
         </Animated.View>
       ) : (
         <View style={StyleSheet.absoluteFill}>
-          <JogFeatures size={size} />
+          <JogFeatures size={size} dimple={dimple} />
         </View>
       )}
     </View>
@@ -100,7 +100,7 @@ function JogStack({ size, rotate }: { size: number; rotate?: Animated.AnimatedIn
 }
 
 /** Small static jog on the Dashboard — a button that measures its own position
- *  and opens the big-wheel popup anchored to it (under the thumb). */
+ *  and opens the big-wheel popup pointed at it. */
 export function JogWheelTrigger({
   size = 74,
   disabled = false,
@@ -108,7 +108,7 @@ export function JogWheelTrigger({
 }: {
   size?: number;
   disabled?: boolean;
-  onOpen: (anchor: { x: number; y: number }) => void;
+  onOpen: (anchor: Pt) => void;
 }) {
   const ref = useRef<View>(null);
   const handle = () => {
@@ -127,7 +127,7 @@ export function JogWheelTrigger({
       accessibilityLabel="Open the topic jog wheel"
       style={[styles.wrap, { width: size, height: size }, disabled && styles.disabled]}
     >
-      <JogStack size={size} />
+      <JogStack size={size} dimple={{ x: size / 2, y: size * DIMPLE_CY }} />
     </Pressable>
   );
 }
@@ -139,11 +139,13 @@ export function JogWheel({
   onStep,
   onRelease,
   disabled = false,
+  dimple,
 }: {
   size?: number;
   onStep: (dir: -1 | 1) => void;
   onRelease?: () => void;
   disabled?: boolean;
+  dimple?: Pt;
 }) {
   const c = size / 2;
   const lastAngle = useRef(0);
@@ -155,7 +157,6 @@ export function JogWheel({
   const disabledRef = useRef(disabled);
   disabledRef.current = disabled;
 
-  // Rotation of the light-features layer — follows the finger's angle 1:1.
   const spin = useRef(new Animated.Value(0)).current;
   const spinDeg = useRef(0);
 
@@ -180,11 +181,9 @@ export function JogWheel({
           if (disabledRef.current) return;
           const a = angleAt(e.nativeEvent.locationX, e.nativeEvent.locationY);
           let d = a - lastAngle.current;
-          // Shortest signed delta across the ±180° seam.
           while (d > 180) d -= 360;
           while (d < -180) d += 360;
           lastAngle.current = a;
-          // Spin the features by the same angular delta — circular, 1:1.
           spinDeg.current += d;
           spin.setValue(spinDeg.current);
           accum.current += d;
@@ -217,47 +216,64 @@ export function JogWheel({
       accessibilityRole="adjustable"
       accessibilityLabel="Jog wheel — turn to change the current topic"
     >
-      <JogStack size={size} rotate={rotate} />
+      <JogStack size={size} dimple={dimple ?? { x: size / 2, y: size * DIMPLE_CY }} rotate={rotate} />
     </View>
   );
 }
 
-/** Big-wheel popup: a large SSL jog wheel placed so its dimple sits where the
- *  small icon was — under the thumb — and kept fully on-screen. Releasing the
- *  wheel (or tapping outside it) closes. */
+/** Big-wheel popup: CENTERED left-right; the dimple points at the small icon so
+ *  the thumb is over it. Steps a LOCAL index while turning (smooth); commits to
+ *  the Dashboard once, on close. Releasing the wheel / tapping outside closes. */
 export function JogPopup({
   visible,
   anchor,
   onClose,
-  onStep,
-  label,
-  sublabel,
-  disabled = false,
+  topics,
+  startIndex,
+  onCommit,
 }: {
   visible: boolean;
-  anchor: { x: number; y: number } | null;
+  anchor: Pt | null;
   onClose: () => void;
-  onStep: (dir: -1 | 1) => void;
-  label: string;
-  sublabel?: string;
-  disabled?: boolean;
+  topics: { id: string; name: string }[];
+  startIndex: number;
+  onCommit: (index: number) => void;
 }) {
   const { width, height } = useWindowDimensions();
   const size = Math.round(Math.min(width * 0.62, height * 0.4));
-  const a = anchor ?? { x: width / 2, y: height * 0.4 };
-  // Place the DIMPLE at the anchor (thumb), then clamp so it stays on-screen.
-  const left = Math.max(8, Math.min(Math.round(a.x - size / 2), width - size - 8));
-  const top = Math.max(56, Math.min(Math.round(a.y - size * DIMPLE_CY), height - size - 56));
+  const left = Math.round(width / 2 - size / 2); // CENTERED left-right
+  const a = anchor ?? { x: width / 2, y: height * 0.42 };
+  const top = Math.max(56, Math.min(Math.round(a.y - size * DIMPLE_CY), height - size - 72));
+  // Point the dimple at the thumb: its x within the centred wheel = anchor.x−left.
+  const dimple: Pt = {
+    x: Math.max(size * 0.18, Math.min(a.x - left, size * 0.82)),
+    y: size * DIMPLE_CY,
+  };
+
+  const [idx, setIdx] = useState(startIndex);
+  const idxRef = useRef(idx);
+  idxRef.current = idx;
+  useEffect(() => {
+    if (visible) setIdx(startIndex);
+  }, [visible, startIndex]);
+
+  const disabled = topics.length <= 1;
+  const step = (d: -1 | 1) => setIdx((i) => Math.max(0, Math.min(topics.length - 1, i + d)));
+  const close = () => {
+    onCommit(idxRef.current);
+    onClose();
+  };
+
+  const cur = topics[idx];
   return (
-    <Modal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
-      <Pressable style={styles.backdrop} onPress={onClose} accessibilityRole="button" accessibilityLabel="Close jog wheel">
+    <Modal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={close}>
+      <Pressable style={styles.backdrop} onPress={close} accessibilityRole="button" accessibilityLabel="Close jog wheel">
         <View style={[styles.jogHolder, { left, top, width: size, height: size }]}>
-          <JogWheel size={size} disabled={disabled} onStep={onStep} onRelease={onClose} />
+          <JogWheel size={size} disabled={disabled} dimple={dimple} onStep={step} onRelease={close} />
         </View>
-        {label ? (
+        {cur ? (
           <Text style={[styles.jogLabel, { top: top + size + 12 }]} numberOfLines={1}>
-            {label}
-            {sublabel ? `  ·  ${sublabel}` : ''}
+            {cur.name}  ·  TOPIC {idx + 1} OF {topics.length}
           </Text>
         ) : null}
       </Pressable>

@@ -1293,10 +1293,9 @@ export function DashboardScreen() {
         visible={jogOpen}
         anchor={jogAnchor}
         onClose={() => setJogOpen(false)}
-        onStep={(d) => goTo(topicIdx + d)}
-        label={topic?.name ?? ''}
-        sublabel={topic ? `TOPIC ${topicIdx + 1} OF ${topics.length}` : undefined}
-        disabled={topics.length <= 1}
+        topics={topics.map((t) => ({ id: t.id, name: t.name }))}
+        startIndex={topicIdx}
+        onCommit={(i) => goTo(i)}
       />
 
       {/* Method-cards intro placeholder (Booth 2026-07-18). */}
