@@ -237,7 +237,7 @@ export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
 
       {/* Footer note pinned at the very bottom, WHITE, shown in both states
           (user request 2026-07-22). */}
-      <Text style={styles.registrySubtitle}>Ongoing subscription not required to stay in the registry</Text>
+      <Text style={styles.registrySubtitle}>Ongoing subscription not required to stay active in the registry</Text>
     </ScrollView>
 
     {/* Account-less users can't set up a profile — but membership isn't required,

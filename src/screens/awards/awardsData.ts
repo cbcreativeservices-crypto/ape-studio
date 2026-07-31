@@ -118,7 +118,7 @@ const PROGRAM: AwardPage = {
       level: 'Level 2',
       title: 'Professional Certificate Program',
       corequisite: ['Pro Audio Safety', 'Grounding & Electrical', 'Workplace Skills'],
-      requirements: ['Complete an established program path (its set of courses)'],
+      requirements: ['Complete an established program path'],
       // Interactive: pick from the established program paths.
       builder: 'programs',
       note:
