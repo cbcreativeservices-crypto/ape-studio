@@ -10,7 +10,7 @@
  * so no window measuring is needed even inside a scroll view.
  */
 import { useMemo, useRef } from 'react';
-import { PanResponder, StyleSheet, View } from 'react-native';
+import { Animated, PanResponder, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../features/settings/store';
@@ -34,6 +34,12 @@ export function JogWheel({
   const disabledRef = useRef(disabled);
   disabledRef.current = disabled;
 
+  // The wheel visibly SPINS as you drag (owner 2026-08-01): a running rotation
+  // that follows the finger 1:1, so the click detents look like the wheel is
+  // turning. It's an endless encoder — the rotation persists where it lands.
+  const spin = useRef(new Animated.Value(0)).current;
+  const spinDeg = useRef(0);
+
   const angleAt = (lx: number, ly: number) => (Math.atan2(ly - c, lx - c) * 180) / Math.PI;
 
   const pan = useMemo(
@@ -54,6 +60,9 @@ export function JogWheel({
           while (d > 180) d -= 360;
           while (d < -180) d += 360;
           lastAngle.current = a;
+          // Spin the wheel graphic by the same delta so it turns under the finger.
+          spinDeg.current += d;
+          spin.setValue(spinDeg.current);
           accum.current += d;
           while (accum.current >= DETENT_DEG) {
             accum.current -= DETENT_DEG;
@@ -82,6 +91,21 @@ export function JogWheel({
       accessibilityRole="adjustable"
       accessibilityLabel="Jog wheel — spin to change the current topic"
     >
+      <Animated.View
+        style={{
+          width: size,
+          height: size,
+          transform: [
+            {
+              rotate: spin.interpolate({
+                inputRange: [-360, 360],
+                outputRange: ['-360deg', '360deg'],
+                extrapolate: 'extend',
+              }),
+            },
+          ],
+        }}
+      >
       <Svg width={size} height={size}>
         <Defs>
           {/* Dished black face: a soft edge sheen (lighter ring) fading to a dark
@@ -110,6 +134,7 @@ export function JogWheel({
         <Circle cx={c} cy={c - size * 0.18} r={size * 0.11} fill="url(#jogDimple)" />
         <Circle cx={c} cy={c - size * 0.18} r={size * 0.11} stroke="#4a4a50" strokeWidth={0.8} fill="none" opacity={0.6} />
       </Svg>
+      </Animated.View>
     </View>
   );
 }

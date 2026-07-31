@@ -35,7 +35,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { StudyStackParamList } from '../../navigation/types';
-import Svg, { Circle, Rect, Defs, LinearGradient as SvgLinearGradient, Stop, Line, Pattern } from 'react-native-svg';
+import Svg, { Circle, Rect, Defs, LinearGradient as SvgLinearGradient, Stop, Line } from 'react-native-svg';
 import { AppHeader } from '../../components/AppHeader';
 import { DeckIcon } from '../../components/DeckIcon';
 import { ElevatedFrame } from '../../components/ElevatedFrame';
@@ -96,36 +96,77 @@ const METHOD_ORDER: { key: MethodKey; label: string }[] = [
 /** BLACK FACE — the LA-2A near-black matte control panel with a subtle vertical
  *  brushed grain (for the study-method panels; existing light-on-black content
  *  stays legible). */
+// Bead-blast GRIT — randomly-scattered particulate specks (owner 2026-08-01).
+// The old version tiled a fixed 5×5 speck motif and stretched it with the panel,
+// which turned the dots into regular horizontal streaks (the "wavy" look). This
+// is a one-time RANDOM point cloud (deterministic xorshift, so it's stable),
+// stored as fractions of the panel and multiplied into PIXEL space at render so
+// every speck stays a round particulate at any panel size — no tiling, no grain
+// direction.
+const GRIT_SPECKS = (() => {
+  let s = 0x2545f491 >>> 0;
+  const rnd = () => {
+    s ^= s << 13;
+    s ^= s >>> 17;
+    s ^= s << 5;
+    return ((s >>> 0) % 1_000_000) / 1_000_000;
+  };
+  const out: { fx: number; fy: number; r: number; light: boolean; a: number }[] = [];
+  for (let i = 0; i < 130; i++) {
+    out.push({
+      fx: rnd(),
+      fy: rnd(),
+      r: 0.45 + rnd() * 0.7, // px radius — tiny round particulate
+      light: rnd() > 0.5,
+      a: 0.05 + rnd() * 0.09,
+    });
+  }
+  return out;
+})();
+
 // GRAY textured rack-blank face (owner 2026-08-01) — modeled on the SPL 500-rack
 // blank panels: a medium-gray vertical gradient (lighter upper-mid, darker top &
-// bottom edges) with a fine bead-blasted GRIT (a tiled speck pattern), not the
-// old near-black brushed face. The debossed titles were already tuned for a gray
-// floor, so they read correctly here.
+// bottom edges) with random bead-blasted particulate grit. The debossed titles
+// were already tuned for a gray floor, so they read correctly here. Drawn in
+// measured PIXEL space so the specks are round dots, not stretched streaks.
 function BlackFaceBg() {
+  const [size, setSize] = useState({ w: 0, h: 0 });
   return (
-    <View pointerEvents="none" style={styles.textureFill}>
-      <Svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
-        <Defs>
-          <SvgLinearGradient id="apeGrayFace" x1="0" y1="0" x2="0" y2="1">
-            <Stop offset="0" stopColor="#3a3a3e" />
-            <Stop offset="0.42" stopColor="#46464b" />
-            <Stop offset="1" stopColor="#2c2c30" />
-          </SvgLinearGradient>
-          {/* Fine bead-blasted grit — a 5×5 tile of tiny light/dark specks, tiled
-              across the face for a sandblasted texture. */}
-          <Pattern id="apeGrit" width={5} height={5} patternUnits="userSpaceOnUse">
-            <Circle cx={1} cy={1.2} r={0.4} fill="rgba(255,255,255,0.07)" />
-            <Circle cx={3.4} cy={2} r={0.35} fill="rgba(0,0,0,0.13)" />
-            <Circle cx={2.2} cy={3.8} r={0.32} fill="rgba(255,255,255,0.05)" />
-            <Circle cx={4.3} cy={4.4} r={0.3} fill="rgba(0,0,0,0.10)" />
-          </Pattern>
-        </Defs>
-        <Rect x="0" y="0" width="100" height="100" fill="url(#apeGrayFace)" />
-        <Rect x="0" y="0" width="100" height="100" fill="url(#apeGrit)" />
-        {/* Top lit lip + bottom shadow so each blank reads as its own mounted panel. */}
-        <Line x1="0" y1="0.6" x2="100" y2="0.6" stroke="rgba(255,255,255,0.16)" strokeWidth={0.7} />
-        <Line x1="0" y1="99.4" x2="100" y2="99.4" stroke="rgba(0,0,0,0.4)" strokeWidth={0.9} />
-      </Svg>
+    <View
+      pointerEvents="none"
+      style={styles.textureFill}
+      onLayout={(e) => {
+        const { width, height } = e.nativeEvent.layout;
+        setSize({ w: Math.round(width), h: Math.round(height) });
+      }}
+    >
+      {size.w > 0 && size.h > 0 ? (
+        <Svg width={size.w} height={size.h}>
+          <Defs>
+            {/* objectBoundingBox gradient (default units) — size-independent, so
+                the shared id is safe across every panel instance. */}
+            <SvgLinearGradient id="apeGrayFace" x1="0" y1="0" x2="0" y2="1">
+              <Stop offset="0" stopColor="#3a3a3e" />
+              <Stop offset="0.42" stopColor="#46464b" />
+              <Stop offset="1" stopColor="#2c2c30" />
+            </SvgLinearGradient>
+          </Defs>
+          <Rect x={0} y={0} width={size.w} height={size.h} fill="url(#apeGrayFace)" />
+          {/* Random particulate specks — round dots at pixel radius. */}
+          {GRIT_SPECKS.map((g, i) => (
+            <Circle
+              key={i}
+              cx={g.fx * size.w}
+              cy={g.fy * size.h}
+              r={g.r}
+              fill={g.light ? `rgba(255,255,255,${g.a})` : `rgba(0,0,0,${g.a + 0.03})`}
+            />
+          ))}
+          {/* Top lit lip + bottom shadow so each blank reads as its own mounted panel. */}
+          <Line x1={0} y1={0.6} x2={size.w} y2={0.6} stroke="rgba(255,255,255,0.16)" strokeWidth={0.7} />
+          <Line x1={0} y1={size.h - 0.6} x2={size.w} y2={size.h - 0.6} stroke="rgba(0,0,0,0.4)" strokeWidth={0.9} />
+        </Svg>
+      ) : null}
     </View>
   );
 }
@@ -768,53 +809,60 @@ export function DashboardScreen() {
               when unearned (the gray→lit earn state lives on the Achievements
               screen; the Dashboard shows the topic art at full illumination).
               Booth 2026-07-09d. Subtle placeholder when the topic has no art. */}
-          {/* Tap the trophy → full-size popup (Booth 2026-07-11). */}
-          <Pressable
-            style={styles.topicTrophy}
-            onPress={() => setTrophyOpen(true)}
-            accessibilityRole="button"
-            accessibilityLabel={`View ${topic.name} trophy`}
-          >
-            <TrophyImage
-              iconUrl={topic.icon_url}
-              size={104}
-              radius={12}
-              fallback={<View style={styles.topicTrophyEmpty} />}
-            />
-          </Pressable>
-          {/* Jog wheel (owner 2026-08-01) — under the topic image; spin to click
-              through the active deck's topics (same as the swipe), one topic per
-              detent with a haptic click, ~7 per full spin. */}
-          <View style={styles.topicJog}>
-            <JogWheel size={72} disabled={topics.length <= 1} onStep={(d) => goTo(topicIdx + d)} />
-          </View>
-          {/* Tap the title area → full term list for this topic (Booth
-              2026-07-18). Swipe still owned by the card's PanResponder. */}
-          <Pressable
-            onPress={isCustom ? openFlaggedTerms : openTerms}
-            accessibilityRole="button"
-            accessibilityLabel={isCustom ? `List terms in ${topic.name}` : `List all terms in ${topic.name}`}
-          >
-            <Text style={styles.topicEyebrow}>{topicInactive ? 'CURRENT TOPIC · INACTIVE' : 'CURRENT TOPIC'}</Text>
-            <Text style={[styles.topicName, styles.topicNameInset, topicInactive && styles.topicNameDim]}>
-              {topic.name}
-            </Text>
-            <Text style={[styles.topicMeta, styles.topicNameInset]}>
-              {isCustom
-                ? `${starred.size} TERM${starred.size === 1 ? '' : 'S'}`
-                : `TOPIC ${topicIdx + 1} OF ${topics.length} · ${data.currentCourse.name.toUpperCase()}`}
-              {swipeHint ? `  ·  ${swipeHint}` : ''}
-            </Text>
-          </Pressable>
-          <View style={styles.pctRow}>
-            <Text style={styles.pctBig}>{overallPct}%</Text>
-            <Text style={styles.pctLabel}>OVERALL TOPIC PROGRESS</Text>
-          </View>
-          {/* Same study-method segment styling, but SHORTER + left-justified in
-              the topic display (Booth 2026-07-11) — compact mode self-sizes and
-              aligns left. */}
-          <View style={{ marginTop: 8 }}>
-            <LedMeter filled={segmentsForPct(overallPct)} segWidth={8} />
+          {/* Header row (owner 2026-08-01): labels + % on the LEFT, the trophy
+              over the enlarged jog wheel in the CENTER, and the overall-progress
+              meter as a vertical VU column (filling up) on the FAR RIGHT. */}
+          <View style={styles.topicHeadRow}>
+            <View style={styles.topicTextCol}>
+              {/* Tap the title area → full term list for this topic (Booth
+                  2026-07-18). Swipe still owned by the card's PanResponder. */}
+              <Pressable
+                onPress={isCustom ? openFlaggedTerms : openTerms}
+                accessibilityRole="button"
+                accessibilityLabel={isCustom ? `List terms in ${topic.name}` : `List all terms in ${topic.name}`}
+              >
+                <Text style={styles.topicEyebrow}>{topicInactive ? 'CURRENT TOPIC · INACTIVE' : 'CURRENT TOPIC'}</Text>
+                <Text style={[styles.topicName, topicInactive && styles.topicNameDim]}>{topic.name}</Text>
+                <Text style={styles.topicMeta}>
+                  {isCustom
+                    ? `${starred.size} TERM${starred.size === 1 ? '' : 'S'}`
+                    : `TOPIC ${topicIdx + 1} OF ${topics.length} · ${data.currentCourse.name.toUpperCase()}`}
+                  {swipeHint ? `  ·  ${swipeHint}` : ''}
+                </Text>
+              </Pressable>
+              {/* % overall progress sits directly under the topic/# line. */}
+              <View style={styles.pctRow}>
+                <Text style={styles.pctBig}>{overallPct}%</Text>
+                <Text style={styles.pctLabel}>OVERALL TOPIC PROGRESS</Text>
+              </View>
+            </View>
+
+            <View style={styles.topicCenterCol}>
+              {/* Tap the trophy → full-size popup (Booth 2026-07-11). */}
+              <Pressable
+                style={styles.topicTrophy}
+                onPress={() => setTrophyOpen(true)}
+                accessibilityRole="button"
+                accessibilityLabel={`View ${topic.name} trophy`}
+              >
+                <TrophyImage
+                  iconUrl={topic.icon_url}
+                  size={100}
+                  radius={12}
+                  fallback={<View style={styles.topicTrophyEmpty} />}
+                />
+              </Pressable>
+              {/* Jog wheel — spin to click through the deck's topics (same as the
+                  swipe); it visibly turns and clicks, ~7 per full spin. */}
+              <View style={styles.topicJog}>
+                <JogWheel size={96} disabled={topics.length <= 1} onStep={(d) => goTo(topicIdx + d)} />
+              </View>
+            </View>
+
+            {/* Overall progress — vertical VU column, filling upward. */}
+            <View style={styles.topicMeterCol}>
+              <LedMeter filled={segmentsForPct(overallPct)} vertical />
+            </View>
           </View>
           {/* Topic/course intro buttons removed (user request 2026-07-18) — the
               intros still auto-show once before beginning (when content exists). */}
@@ -1317,9 +1365,9 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 0,
     paddingVertical: 14,
     paddingHorizontal: 16,
-    // Tall enough to stack the trophy image + the jog wheel on the right edge
-    // (owner 2026-08-01) — the card clips its overflow, so it must reserve room.
-    minHeight: 216,
+    // Tall enough for the center trophy+jog cluster and the far-right vertical
+    // meter (owner 2026-08-01) — the card clips its overflow, so reserve room.
+    minHeight: 232,
   },
   topicCardProvisional: {
     // [TBD-DESIGN] proposal #1: warm tint + orange border for clamped topics.
@@ -1379,19 +1427,23 @@ const styles = StyleSheet.create({
     textShadowRadius: 6,
     textShadowOffset: { width: 0, height: 0 },
   },
-  topicTrophy: { position: 'absolute', top: 12, right: 12, width: 104, height: 104 },
-  // Jog wheel centered under the trophy image (owner 2026-08-01).
-  topicJog: { position: 'absolute', top: 124, right: 28, width: 72, height: 72, alignItems: 'center', justifyContent: 'center' },
+  // Header row + its three columns (owner 2026-08-01).
+  topicHeadRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
+  topicTextCol: { flex: 1, minWidth: 0 },
+  topicCenterCol: { alignItems: 'center', justifyContent: 'flex-start', gap: 8 },
+  topicMeterCol: { alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch' },
+  topicTrophy: { width: 100, height: 100 },
+  // Jog wheel under the trophy image, centered + enlarged (owner 2026-08-01).
+  topicJog: { width: 96, height: 96, alignItems: 'center', justifyContent: 'center' },
   topicTrophyEmpty: {
-    width: 104,
-    height: 104,
+    width: 100,
+    height: 100,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.05)',
     backgroundColor: 'rgba(255,255,255,0.02)',
   },
   // Keep title/meta clear of the trophy in the top-right.
-  topicNameInset: { maxWidth: '68%' },
   topicName: { fontFamily: fonts.oswaldMedium, fontSize: 18, letterSpacing: 0.4, color: colors.textPrimary, marginTop: 4 },
   topicMeta: {
     fontFamily: fonts.barlowCondensedMedium,
@@ -1400,7 +1452,7 @@ const styles = StyleSheet.create({
     color: colors.textSub,
     marginTop: 2,
   },
-  pctRow: { flexDirection: 'row', alignItems: 'baseline', gap: 8, marginTop: 10 },
+  pctRow: { flexDirection: 'row', alignItems: 'baseline', gap: 8, marginTop: 4 },
   pctBig: {
     fontFamily: fonts.oswaldBold,
     fontSize: 32,
@@ -1499,11 +1551,12 @@ const styles = StyleSheet.create({
   // the (lightened) panel so it reads as pressed IN, not raised.
   engDark: { color: 'rgba(0,0,0,0.95)', transform: [{ translateX: -0.9 }, { translateY: -1.3 }] },
   engLight: { color: 'rgba(255,255,255,0.6)', transform: [{ translateX: 1.0 }, { translateY: 1.5 }] },
-  // Thin near-white inner trace (user request 2026-07-24; thinned 2026-08-01) —
-  // a faint light-gray copy nudged a hair up-left so it reads as a FINE white
-  // line inside the debossed letters, not a re-fill. Lower opacity + smaller
-  // offset = a thinner line.
-  engTrace: { color: 'rgba(235,235,235,0.55)', transform: [{ translateX: -0.18 }, { translateY: -0.2 }] },
+  // Thin near-white inner trace (user request 2026-07-24; centered 2026-08-01) —
+  // it MUST sit DEAD CENTER of the debossed letter, in the groove valley, with
+  // NO offset: any nudge made it drift off the fill and read as a second shadow
+  // crossing the outer edge. Zero-offset = aligned with the letter floor, so the
+  // white line lives inside the incised channel and never crosses the deboss.
+  engTrace: { color: 'rgba(235,235,235,0.55)' },
   // Base floor style shared by all fills (color set per variant).
   // The letter FLOOR only — NO white text-shadow (owner 2026-08-01): the lit lip
   // is drawn once by engLight; a shadow here duplicated it and read as an extra

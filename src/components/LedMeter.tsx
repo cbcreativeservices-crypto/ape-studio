@@ -23,6 +23,7 @@ export function LedMeter({
   filled,
   segWidth,
   fullWidth = false,
+  vertical = false,
 }: {
   filled: number;
   /** Fixed per-segment width → the meter self-sizes (compact panel mode). */
@@ -30,14 +31,18 @@ export function LedMeter({
   /** Fill 100% of the parent (panel mode, Booth 2026-07-10 #7 — the meter's
    *  edges align with the title readout's edges). Taller raised blocks. */
   fullWidth?: boolean;
+  /** Vertical VU column that fills UPWARD — the lowest (green) segment lights
+   *  first, climbing to red at the top (owner 2026-08-01). Self-sizes. */
+  vertical?: boolean;
 }) {
   const f = Math.max(0, Math.min(SEG_COUNT, Math.round(filled)));
   return (
     <View
       style={[
         styles.housing,
-        segWidth != null && styles.housingCompact,
-        fullWidth && styles.housingFull,
+        vertical && styles.housingVert,
+        !vertical && segWidth != null && styles.housingCompact,
+        !vertical && fullWidth && styles.housingFull,
       ]}
     >
       {Array.from({ length: SEG_COUNT }, (_, i) => {
@@ -47,11 +52,13 @@ export function LedMeter({
           <View
             key={i}
             style={[
-              segWidth != null
-                ? { width: segWidth, height: 10, borderRadius: 1 }
-                : fullWidth
-                  ? styles.segFull
-                  : styles.seg,
+              vertical
+                ? styles.segVert
+                : segWidth != null
+                  ? { width: segWidth, height: 10, borderRadius: 1 }
+                  : fullWidth
+                    ? styles.segFull
+                    : styles.seg,
               // Raised physical LED block (Booth 2026-07-10): beveled edges —
               // lit top-left, shadowed bottom-right — like a bar you could
               // feel standing proud of the housing (reference: VU/PPM meter).
@@ -116,6 +123,10 @@ const styles = StyleSheet.create({
   },
   housingCompact: { width: 'auto', alignSelf: 'flex-start' },
   housingFull: { width: '100%', alignSelf: 'stretch' },
+  // Vertical VU column — stack bottom→top so segment 0 (green) sits at the
+  // bottom and the fill climbs upward. Self-sizes to its 21 blocks.
+  housingVert: { width: 'auto', height: 'auto', alignSelf: 'center', flexDirection: 'column-reverse' },
+  segVert: { width: 16, height: 7, borderRadius: 1 },
   segFull: { flex: 1, height: 10, borderRadius: 1 },
   seg: { flex: 1, height: 10, borderRadius: 1 },
   // Bevel that makes each segment a raised block: light catches the top-left
