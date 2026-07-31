@@ -60,7 +60,6 @@ const FFT_PRESET = 'hann-4096'; // engine analysis window preset (payload/settin
 const SPECTRO_POLL_MS = 125; // 8 Hz column cadence — deliberately NOT the meter poll
 const ROWS = 128; // log-spaced frequency rows per column (hi-res raster)
 const HISTORY_COLS = 160; // rolling columns → 160 × 0.125 s = 20 s
-const TIME_SPAN_SEC = (HISTORY_COLS * SPECTRO_POLL_MS) / 1000;
 const F_MIN = 50;
 const F_MAX = 16000;
 /** Row floor: a row whose bins all sit at/below this renders as background
@@ -175,7 +174,20 @@ function downsampleColumn(spec: Float32Array, rowBins: Int32Array): { cells: num
   return { cells, max };
 }
 
-function StatCell({ label, value, unit, help }: { label: string; value: string; unit?: string; help?: (key: string) => void }) {
+function StatCell({
+  label,
+  value,
+  unit,
+  help,
+  peak,
+}: {
+  label: string;
+  value: string;
+  unit?: string;
+  help?: (key: string) => void;
+  /** Peak text readout (owner 2026-07-31): the top peak number always prints RED. */
+  peak?: boolean;
+}) {
   return (
     <Pressable
       style={styles.statCell}
@@ -185,7 +197,7 @@ function StatCell({ label, value, unit, help }: { label: string; value: string; 
       accessibilityLabel={help ? `${label} — what it shows` : label}
     >
       <Text style={styles.statLabel}>{label}</Text>
-      <Text style={styles.statValue}>
+      <Text style={[styles.statValue, peak && styles.statValuePeak]}>
         {value}
         {unit ? <Text style={styles.statUnit}> {unit}</Text> : null}
       </Text>
@@ -269,17 +281,19 @@ const SpectrogramGrid = memo(function SpectrogramGrid({
   anchor,
   dynRange,
   width,
+  pollMs,
 }: {
   history: SpectroColumnData[];
   anchor: number | null;
   dynRange: number;
   width: number;
+  pollMs: number;
 }) {
   if (width <= 0 || history.length === 0 || anchor == null) return null;
   const colW = width / HISTORY_COLS;
   const newestId = history[history.length - 1].id;
   const tx = width - (newestId + 1) * colW;
-  const colsPer5s = 5000 / SPECTRO_POLL_MS;
+  const colsPer5s = 5000 / pollMs;
   return (
     <Svg width={width} height={GRID_H}>
       {/* Subtle static grid — frequency decades + 5 s time marks (from "now"). */}
@@ -337,6 +351,9 @@ export function SpectrogramScreen({ navigation }: Props) {
 
   const [history, setHistory] = useState<SpectroColumnData[]>([]);
   const [dynRange, setDynRange] = useState<number>(60);
+  // Scroll speed (owner 2026-07-31): 1× / 2× / 3× the base column cadence.
+  const [speed, setSpeed] = useState<1 | 2 | 3>(1);
+  const effPollMs = SPECTRO_POLL_MS / speed;
   const [frozen, setFrozen] = useState(false);
   const frozenRef = useRef(false);
   const [chartW, setChartW] = useState(0);
@@ -363,9 +380,9 @@ export function SpectrogramScreen({ navigation }: Props) {
       setHistory((h) =>
         h.length >= HISTORY_COLS ? [...h.slice(h.length - HISTORY_COLS + 1), col] : [...h, col],
       );
-    }, SPECTRO_POLL_MS);
+    }, effPollMs);
     return () => clearInterval(id);
-  }, [state]);
+  }, [state, effPollMs]);
 
   /** True observed maximum across the visible history (per-column maxes are
    *  precomputed at downsample time — 160 comparisons per column push). */
@@ -453,7 +470,7 @@ export function SpectrogramScreen({ navigation }: Props) {
         kind: 'spectrogram_snapshot',
         grid: history.map((c) => [...c.cells]),
         bandsHz: [...CELL_CENTERS_HZ],
-        timeStepSec: SPECTRO_POLL_MS / 1000,
+        timeStepSec: effPollMs / 1000,
         dynamicRangeDb: dynRange,
         fftPreset: FFT_PRESET,
       },
@@ -461,7 +478,7 @@ export function SpectrogramScreen({ navigation }: Props) {
     setJustSaved(true);
     if (savedTimer.current) clearTimeout(savedTimer.current);
     savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
-  }, [state, history, frames, dynRange]);
+  }, [state, history, frames, dynRange, effPollMs]);
 
   const liveFlags = state === 'running' ? meterWarningFlags(frames.meter) : [];
   const meter = frames.meter;
@@ -505,11 +522,19 @@ export function SpectrogramScreen({ navigation }: Props) {
 
         {(state === 'running' || micPaused) && (
           <>
+            {/* Numeric truth row — real values, unclamped. ABOVE the display (owner
+                2026-07-31). Peak readouts print RED. Long-press a cell. */}
+            <View style={styles.statGrid}>
+              <StatCell help={help} label="OBS MAX" value={fmtDb(observedMax)} unit="dBFS" peak />
+              <StatCell help={help} label="PEAK" value={fmtDb(meter?.peakDb)} unit="dBFS" peak />
+              <StatCell help={help} label="HISTORY" value={`${history.length}/${HISTORY_COLS}`} />
+            </View>
+
             <View style={styles.panel}>
               <View style={styles.panelHead}>
                 <Text style={styles.panelEyebrow}>LIVE SPECTROGRAM</Text>
                 <Text style={styles.panelSettings}>
-                  FFT {FFT_SIZE} · {SPECTRO_POLL_MS} ms/col
+                  FFT {FFT_SIZE} · {effPollMs.toFixed(0)} ms/col
                 </Text>
               </View>
 
@@ -523,25 +548,30 @@ export function SpectrogramScreen({ navigation }: Props) {
                   ))}
                 </View>
 
-                <View
+                {/* Tapping the display toggles START/STOP (owner 2026-07-31). */}
+                <Pressable
                   style={styles.chartArea}
                   onLayout={(e) => setChartW(Math.round(e.nativeEvent.layout.width))}
+                  onPress={state === 'running' ? onStop : onStart}
+                  accessibilityRole="button"
+                  accessibilityLabel={state === 'running' ? 'Tap to stop capture' : 'Tap to start capture'}
                 >
                   <SpectrogramGrid
                     history={history}
                     anchor={anchor}
                     dynRange={dynRange}
                     width={chartW}
+                    pollMs={effPollMs}
                   />
                   {history.length === 0 && (
                     <Text style={styles.waitingText}>waiting for first spectrum frames…</Text>
                   )}
-                </View>
+                </Pressable>
               </View>
 
               {/* Time axis note (spec §12: time is horizontal, newest right). */}
               <Text style={styles.timeLine}>
-                time → · ~{TIME_SPAN_SEC.toFixed(0)} s history · {Math.round(1000 / SPECTRO_POLL_MS)} col/s · {ROWS} freq rows
+                time → · ~{((HISTORY_COLS * effPollMs) / 1000).toFixed(0)} s history · {Math.round(1000 / effPollMs)} col/s · {ROWS} freq rows
               </Text>
 
               {/* Color-scale legend strip — dark → blue → … → red, with the dB
@@ -564,13 +594,21 @@ export function SpectrogramScreen({ navigation }: Props) {
               <Text style={styles.scaleNote}>Color intensity is relative to the selected scale.</Text>
             </View>
 
-            <DisplayGuideButton onPress={helpAll} />
-
-            {/* Numeric truth row — real values, unclamped. Long-press a cell. */}
-            <View style={styles.statGrid}>
-              <StatCell help={help} label="OBS MAX" value={fmtDb(observedMax)} unit="dBFS" />
-              <StatCell help={help} label="PEAK" value={fmtDb(meter?.peakDb)} unit="dBFS" />
-              <StatCell help={help} label="HISTORY" value={`${history.length}/${HISTORY_COLS}`} />
+            {/* Display guide + scroll-speed (owner 2026-07-31): 1× / 2× / 3×. */}
+            <View style={styles.guideRow}>
+              <View style={{ flex: 1 }}>
+                <DisplayGuideButton onPress={helpAll} />
+              </View>
+              <Text style={styles.speedLabel}>SPEED</Text>
+              {([1, 2, 3] as const).map((s) => (
+                <Chip
+                  key={s}
+                  label={`${s}×`}
+                  a11yLabel={`Scroll speed ${s} times`}
+                  active={speed === s}
+                  onPress={() => setSpeed(s)}
+                />
+              ))}
             </View>
 
             {/* Live quality warnings (spec §6) — same flags stored on save. */}
@@ -732,7 +770,12 @@ const styles = StyleSheet.create({
   },
   statLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textSub },
   statValue: { fontFamily: fonts.mono, fontSize: 19, color: colors.textPrimary },
+  statValuePeak: { color: '#ff5a48' }, // peak text readouts are always red (owner 2026-07-31)
   statUnit: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: colors.amberLabel },
+
+  // Display-guide + scroll-speed row.
+  guideRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  speedLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.2, color: colors.textSub },
 
   // Live warning line (spec §6) — amber, plain language.
   liveWarn: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18.5, color: colors.amber },
