@@ -1177,7 +1177,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
         >
           <MethodIcon method="glossary" size={34} />
         </Pressable>
-        <Text style={styles.title}>GLOSSARY</Text>
+        <Text style={styles.title} numberOfLines={1}>GLOSSARY</Text>
         {/* Cards/List toggle lives here now — always visible, both modes, so it
             stays reachable even while a term/popup is expanded (Booth 2026-07-09b). */}
         <Pressable
@@ -1964,8 +1964,10 @@ export function GlossaryScreen({ route, navigation }: Props) {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg, paddingHorizontal: 16, gap: 12 },
-  header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingTop: 16 },
-  title: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1.4, color: colors.textPrimary },
+  header: { flexDirection: 'row', alignItems: 'center', gap: 7, paddingTop: 16 },
+  // flexShrink so the GLOSSARY title yields FIRST when the row is tight — the
+  // right-side "N Terms" count stays fully anchored on the right (owner 2026-08-01).
+  title: { flexShrink: 1, fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1.4, color: colors.textPrimary },
   headerToggle: {
     paddingHorizontal: 10,
     paddingVertical: 4,
@@ -1994,9 +1996,10 @@ const styles = StyleSheet.create({
   },
   sigmaText: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, lineHeight: 20, color: colors.purple },
   // Nudged in from the right edge so the "ms" of "Terms" clears the phone's
-  // beveled top-right corner (owner 2026-08-01) — small, so it keeps good spacing
-  // from the Σ button on the left.
-  count: { textAlign: 'right', fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: colors.textPrimary, marginRight: 8 },
+  // Right-justified, NEVER shrinks (flexShrink 0) so it can't be pushed off the
+  // right/beveled edge — it stays anchored right and grows inward/leftward as the
+  // number gets larger (owner 2026-08-01).
+  count: { flexShrink: 0, textAlign: 'right', fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: colors.textPrimary, marginRight: 8 },
   searchBox: {
     height: 44,
     borderRadius: 6,
