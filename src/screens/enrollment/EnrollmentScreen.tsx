@@ -235,7 +235,11 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
         if (liftedIdRef.current === id) return true; // lifted → drag to reorder
         return Math.abs(g.dx) > 16 && Math.abs(g.dx) > Math.abs(g.dy) * 1.6; // horizontal flick
       },
-      onMoveShouldSetPanResponderCapture: () => liftedIdRef.current === id,
+      // CAPTURE horizontal flicks (and the lifted drag) so the container's own
+      // swipe ALWAYS wins over the parent screen-pager — the pager can never steal
+      // a container swipe on this page (owner 2026-08-01).
+      onMoveShouldSetPanResponderCapture: (_e, g) =>
+        liftedIdRef.current === id || (Math.abs(g.dx) > 16 && Math.abs(g.dx) > Math.abs(g.dy) * 1.6),
       onPanResponderTerminationRequest: () => liftedIdRef.current !== id,
       onPanResponderGrant: () => {
         dragAccum.current = 0;
