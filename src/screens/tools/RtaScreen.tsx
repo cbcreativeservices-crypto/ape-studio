@@ -586,10 +586,24 @@ export function RtaScreen({ navigation }: Props) {
     resetPeakHold();
   }, [resetPeakHold]);
 
+  // STOP must not collapse the tool back to the intro card (that shrinks the
+  // ScrollView and jumps the scroll). Hold the view mounted via micPaused; the
+  // button toggles START/STOP in place. Cleared once we're truly running again.
+  const [micPaused, setMicPaused] = useState(false);
+  useEffect(() => {
+    if (state === 'running') setMicPaused(false);
+  }, [state]);
+
   const onStart = useCallback(() => {
+    setMicPaused(false);
     clearDerived(); // a fresh run must not inherit a previous run's holds
     void start();
   }, [clearDerived, start]);
+
+  const onStop = useCallback(() => {
+    setMicPaused(true);
+    stop();
+  }, [stop]);
 
   /** SAVE TRACE (spec §10 View 2 → §7 library). Real polled data only — always
    *  the NATIVE frame: display-time regrouping (7/15/61) never alters the
@@ -656,7 +670,7 @@ export function RtaScreen({ navigation }: Props) {
             when the engine is usable. */}
         <EngineGate state={state} lastError={lastError} />
 
-        {(state === 'idle' || state === 'starting') && (
+        {!micPaused && (state === 'idle' || state === 'starting') && (
           <>
             <Text style={styles.intro}>
               Watch signal energy across frequency in real time — 7 to 61 bands with peak hold.
@@ -674,7 +688,7 @@ export function RtaScreen({ navigation }: Props) {
           </>
         )}
 
-        {state === 'running' && (
+        {(state === 'running' || micPaused) && (
           <>
             <BandsPanel bands={displayBands} mode={mode} alpha={alpha} />
             <DisplayGuideButton onPress={helpAll} />
@@ -749,7 +763,13 @@ export function RtaScreen({ navigation }: Props) {
               </Pressable>
             </View>
 
-            <GlassButton label="STOP" tint="blue" height={52} fontSize={15} onPress={stop} />
+            <GlassButton
+              label={state === 'running' ? 'STOP' : 'START'}
+              tint="blue"
+              height={52}
+              fontSize={15}
+              onPress={state === 'running' ? onStop : onStart}
+            />
 
             <Pressable
               onPress={() => navigation.navigate('ToolLibrary', { toolKey: 'rta' })}

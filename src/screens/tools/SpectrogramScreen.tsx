@@ -391,7 +391,16 @@ export function SpectrogramScreen({ navigation }: Props) {
     );
   }, [observedMax]);
 
+  // STOP must not collapse the tool back to the intro card (that shrinks the
+  // ScrollView and jumps the scroll). Hold the view mounted via micPaused; the
+  // button toggles START/STOP in place. Cleared once we're truly running again.
+  const [micPaused, setMicPaused] = useState(false);
+  useEffect(() => {
+    if (state === 'running') setMicPaused(false);
+  }, [state]);
+
   const onStart = useCallback(() => {
+    setMicPaused(false);
     // Fresh run = fresh timeline: stale columns from a previous run would lie
     // about time continuity across the stop gap.
     setHistory([]);
@@ -401,6 +410,11 @@ export function SpectrogramScreen({ navigation }: Props) {
     setFrozen(false);
     void start();
   }, [start]);
+
+  const onStop = useCallback(() => {
+    setMicPaused(true);
+    stop();
+  }, [stop]);
 
   const toggleFreeze = useCallback(() => {
     frozenRef.current = !frozenRef.current;
@@ -470,7 +484,7 @@ export function SpectrogramScreen({ navigation }: Props) {
             when the engine is usable. */}
         <EngineGate state={state} lastError={lastError} />
 
-        {(state === 'idle' || state === 'starting') && (
+        {!micPaused && (state === 'idle' || state === 'starting') && (
           <>
             <Text style={styles.intro}>
               Watch frequency content scroll across time — time runs horizontally, frequency
@@ -489,7 +503,7 @@ export function SpectrogramScreen({ navigation }: Props) {
           </>
         )}
 
-        {state === 'running' && (
+        {(state === 'running' || micPaused) && (
           <>
             <View style={styles.panel}>
               <View style={styles.panelHead}>
@@ -615,7 +629,13 @@ export function SpectrogramScreen({ navigation }: Props) {
               </Text>
             )}
 
-            <GlassButton label="STOP" tint="purple" height={52} fontSize={15} onPress={stop} />
+            <GlassButton
+              label={state === 'running' ? 'STOP' : 'START'}
+              tint="purple"
+              height={52}
+              fontSize={15}
+              onPress={state === 'running' ? onStop : onStart}
+            />
 
             <Pressable
               onPress={() => navigation.navigate('ToolLibrary', { toolKey: 'spectrogram' })}

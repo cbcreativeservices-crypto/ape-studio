@@ -267,6 +267,22 @@ export function Rt60Screen({ navigation }: Props) {
     ApeDsp.rt60Arm();
   }, [state, start]);
 
+  // STOP must not collapse the guided panel back to the intro card (that jumps
+  // the scroll). Hold the panel mounted via micPaused; the button toggles
+  // START/STOP in place. Cleared once we're truly running again.
+  const [micPaused, setMicPaused] = useState(false);
+  useEffect(() => {
+    if (state === 'running') setMicPaused(false);
+  }, [state]);
+  const onStart = useCallback(() => {
+    setMicPaused(false);
+    void start();
+  }, [start]);
+  const onStop = useCallback(() => {
+    setMicPaused(true);
+    stop();
+  }, [stop]);
+
   /** Final flag set: the capture window's conditions + the engine's verdict. */
   const flags = useMemo<WarningFlag[]>(() => {
     const f = [...windowFlags];
@@ -462,7 +478,7 @@ export function Rt60Screen({ navigation }: Props) {
               ))}
             </View>
           </>
-        ) : state !== 'running' ? (
+        ) : state !== 'running' && !micPaused ? (
           <>
             <Text style={styles.intro}>
               Measure how long sound takes to decay in this room, per octave band. You will make a
@@ -473,7 +489,7 @@ export function Rt60Screen({ navigation }: Props) {
               label={state === 'starting' ? 'STARTING…' : 'START'}
               tint="green"
               height={52}
-              onPress={() => void start()}
+              onPress={onStart}
             />
           </>
         ) : (
@@ -528,7 +544,13 @@ export function Rt60Screen({ navigation }: Props) {
                 </View>
               )}
               <View style={{ flex: 1 }}>
-                <GlassButton label="STOP" tint="steel" height={46} fontSize={14} onPress={stop} />
+                <GlassButton
+                  label={state === 'running' ? 'STOP' : 'START'}
+                  tint="steel"
+                  height={46}
+                  fontSize={14}
+                  onPress={state === 'running' ? onStop : onStart}
+                />
               </View>
             </View>
 

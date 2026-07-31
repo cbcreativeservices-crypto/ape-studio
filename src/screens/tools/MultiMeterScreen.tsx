@@ -568,6 +568,18 @@ export function MultiMeterScreen({ navigation }: Props) {
 
   // ---- Pitch honesty (FrequencyCounterScreen gating, A440 fixed) -----------
   const running = state === 'running';
+
+  // STOP must not collapse the tool back to the intro card (that shrinks the
+  // ScrollView and jumps the scroll). Hold the view mounted via micPaused; the
+  // button toggles START/STOP in place. Cleared once we're truly running again.
+  const [micPaused, setMicPaused] = useState(false);
+  useEffect(() => {
+    if (running) setMicPaused(false);
+  }, [running]);
+  const onStop = useCallback(() => {
+    setMicPaused(true);
+    stop();
+  }, [stop]);
   const meter = running ? frames.meter : null;
   const live = running ? frames.pitch : null;
   const lowSignal = live != null && live.levelDb < PITCH_LOW_SIGNAL_DB;
@@ -629,6 +641,7 @@ export function MultiMeterScreen({ navigation }: Props) {
   }, []);
 
   const onStart = useCallback(() => {
+    setMicPaused(false);
     // Fresh run = fresh derived state (stale holds/history/chips would lie).
     clearEnv();
     sgBinsRef.current = null;
@@ -970,7 +983,7 @@ export function MultiMeterScreen({ navigation }: Props) {
         {/* Honest not-ready card (absent/spike/denied/error). */}
         <EngineGate state={state} lastError={lastError} />
 
-        {(state === 'idle' || state === 'starting') && (
+        {!micPaused && (state === 'idle' || state === 'starting') && (
           <>
             <Text style={styles.intro}>
               Every meter at once: weighted level, peak and RMS, a 31-band spectrum with an FFT
@@ -990,7 +1003,7 @@ export function MultiMeterScreen({ navigation }: Props) {
           </>
         )}
 
-        {running && (
+        {(running || micPaused) && (
           <>
             {/* 2 ── LIVE SPECTRUM ANALYZER (the hero) */}
             <View style={styles.panel}>
@@ -1324,7 +1337,13 @@ export function MultiMeterScreen({ navigation }: Props) {
               </Text>
             </Pressable>
 
-            <GlassButton label="STOP" tint="steel" height={52} fontSize={15} onPress={stop} />
+            <GlassButton
+              label={running ? 'STOP' : 'START'}
+              tint="steel"
+              height={52}
+              fontSize={15}
+              onPress={running ? onStop : onStart}
+            />
 
             <Pressable
               onPress={() => navigation.navigate('ToolLibrary', { toolKey: 'multimeter' })}

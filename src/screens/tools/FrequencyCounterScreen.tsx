@@ -362,6 +362,23 @@ function LivePitchMode({
   const lastSeqRef = useRef(-1);
 
   const running = state === 'running';
+
+  // STOP must not collapse the tool back to the intro card (that jumps the
+  // scroll). Hold the readout view mounted via micPaused; the button toggles
+  // START/STOP in place. Cleared once we're truly running again.
+  const [micPaused, setMicPaused] = useState(false);
+  useEffect(() => {
+    if (running) setMicPaused(false);
+  }, [running]);
+  const onStart = useCallback(() => {
+    setMicPaused(false);
+    void start();
+  }, [start]);
+  const onStop = useCallback(() => {
+    setMicPaused(true);
+    stop();
+  }, [stop]);
+
   // Readouts come ONLY from a live frame — stale frames after STOP are never
   // shown (the SPL screen's integrity idiom).
   const live = running ? frames.pitch : null;
@@ -476,7 +493,7 @@ function LivePitchMode({
   if (state === 'absent' || state === 'spike' || state === 'denied' || state === 'error') {
     return <EngineGate state={state} lastError={lastError} />;
   }
-  if (state !== 'running') {
+  if (state !== 'running' && !micPaused) {
     return (
       <>
         <Text style={styles.intro}>
@@ -493,7 +510,7 @@ function LivePitchMode({
           tint="teal"
           height={52}
           disabled={state === 'starting'}
-          onPress={() => void start()}
+          onPress={onStart}
         />
         <Text style={styles.disclaimer}>{DISCLAIMER}</Text>
       </>
@@ -656,7 +673,12 @@ function LivePitchMode({
         </>
       )}
 
-      <GlassButton label="STOP" tint="steel" height={46} onPress={stop} />
+      <GlassButton
+        label={running ? 'STOP' : 'START'}
+        tint="steel"
+        height={46}
+        onPress={running ? onStop : onStart}
+      />
       <Text style={styles.disclaimer}>{DISCLAIMER}</Text>
     </>
   );
