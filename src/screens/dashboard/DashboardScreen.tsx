@@ -45,6 +45,7 @@ import { MethodIcon, METHOD_COLORS, type MethodKey } from '../../components/Meth
 import { StudioButton } from '../../components/StudioButton';
 import { SwitchButton } from '../../components/SwitchButton';
 import { TrophyImage } from '../../components/TrophyImage';
+import { JogWheel } from '../../components/JogWheel';
 import { TrophyModal } from '../../components/TrophyModal';
 import { colors, fonts, spacing } from '../../theme/tokens';
 import {
@@ -801,6 +802,12 @@ export function DashboardScreen() {
               fallback={<View style={styles.topicTrophyEmpty} />}
             />
           </Pressable>
+          {/* Jog wheel (owner 2026-08-01) — under the topic image; spin to click
+              through the active deck's topics (same as the swipe), one topic per
+              detent with a haptic click, ~7 per full spin. */}
+          <View style={styles.topicJog}>
+            <JogWheel size={72} disabled={topics.length <= 1} onStep={(d) => goTo(topicIdx + d)} />
+          </View>
           {/* Tap the title area → full term list for this topic (Booth
               2026-07-18). Swipe still owned by the card's PanResponder. */}
           <Pressable
@@ -1330,6 +1337,9 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 0,
     paddingVertical: 14,
     paddingHorizontal: 16,
+    // Tall enough to stack the trophy image + the jog wheel on the right edge
+    // (owner 2026-08-01) — the card clips its overflow, so it must reserve room.
+    minHeight: 216,
   },
   topicCardProvisional: {
     // [TBD-DESIGN] proposal #1: warm tint + orange border for clamped topics.
@@ -1390,6 +1400,8 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 0 },
   },
   topicTrophy: { position: 'absolute', top: 12, right: 12, width: 104, height: 104 },
+  // Jog wheel centered under the trophy image (owner 2026-08-01).
+  topicJog: { position: 'absolute', top: 124, right: 28, width: 72, height: 72, alignItems: 'center', justifyContent: 'center' },
   topicTrophyEmpty: {
     width: 104,
     height: 104,
