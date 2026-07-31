@@ -18,7 +18,6 @@ import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../features/settings/store';
 
 const DETENT_DEG = 360 / 7; // ~51.4° per click
-const DIMPLE_CY = 0.26; // dimple centre as a fraction of size from the top
 /** Min time between topic switches (owner 2026-08-01) — slow enough to WATCH the
  *  topic change behind the wheel, and no rapid-fire haptic "vibration". Faster
  *  spins just drop the excess steps; the wheel keeps turning smoothly. */
@@ -51,7 +50,10 @@ function JogBase({ size }: { size: number }) {
 function JogFeatures({ size }: { size: number }) {
   const c = size / 2;
   const dR = size * 0.11;
-  const dCy = size * DIMPLE_CY;
+  // Finger dimple at 2 o'clock at rest (owner 2026-08-01). Orbit radius ~0.24·s;
+  // 60° clockwise from top → (c + r·sin60, c − r·cos60).
+  const dCx = c + size * 0.24 * 0.866;
+  const dCy = c - size * 0.24 * 0.5;
   return (
     <Svg width={size} height={size}>
       <Defs>
@@ -71,9 +73,9 @@ function JogFeatures({ size }: { size: number }) {
       </Defs>
       <Ellipse cx={c} cy={size * 0.72} rx={size * 0.4} ry={size * 0.28} fill="url(#jogSh)" />
       <Ellipse cx={c} cy={size * 0.3} rx={size * 0.36} ry={size * 0.24} fill="url(#jogHi)" />
-      <Circle cx={c} cy={dCy} r={dR} fill="url(#jogDimple)" />
-      <Circle cx={c} cy={dCy} r={dR} stroke="#5a5a64" strokeWidth={size * 0.008} fill="none" opacity={0.7} />
-      <Circle cx={c - dR * 0.35} cy={dCy - dR * 0.4} r={dR * 0.3} fill="#ffffff" opacity={0.22} />
+      <Circle cx={dCx} cy={dCy} r={dR} fill="url(#jogDimple)" />
+      <Circle cx={dCx} cy={dCy} r={dR} stroke="#5a5a64" strokeWidth={size * 0.008} fill="none" opacity={0.7} />
+      <Circle cx={dCx - dR * 0.35} cy={dCy - dR * 0.4} r={dR * 0.3} fill="#ffffff" opacity={0.22} />
     </Svg>
   );
 }
@@ -117,8 +119,16 @@ export function JogDial({
   onStep: (dir: -1 | 1) => void;
   onRelease: () => void;
 }) {
-  const c = size / 2;
-  const dead = size * 0.16; // ignore touches near the centre (atan2 is unstable there)
+  // Angle is measured around the BIG wheel's centre (screen centre — the overlay
+  // centres it) using PAGE coordinates, so the finger can trace the circle
+  // anywhere, inside OR outside the wheel. That also means a straight up/down
+  // drag on either side turns it (down-right = right, up-right = left, and the
+  // mirror on the left) — no curved motion needed.
+  const { width, height } = useWindowDimensions();
+  const centerRef = useRef({ x: width / 2, y: height / 2 });
+  centerRef.current = { x: width / 2, y: height / 2 };
+  const DEAD_PX = 44; // ignore right at the centre (atan2 is unstable there)
+
   const lastAngle = useRef(0);
   const accum = useRef(0);
   const spinDeg = useRef(0);
@@ -132,7 +142,10 @@ export function JogDial({
   const onReleaseRef = useRef(onRelease);
   onReleaseRef.current = onRelease;
 
-  const angleAt = (lx: number, ly: number) => (Math.atan2(ly - c, lx - c) * 180) / Math.PI;
+  const angleAt = (px: number, py: number) => {
+    const { x, y } = centerRef.current;
+    return (Math.atan2(py - y, px - x) * 180) / Math.PI;
+  };
   const step = (dir: -1 | 1) => {
     const now = Date.now();
     if (now - lastStepAt.current < MIN_STEP_MS) return; // throttle — slow enough to watch
@@ -150,18 +163,19 @@ export function JogDial({
         onStartShouldSetPanResponderCapture: () => !disabledRef.current,
         onMoveShouldSetPanResponder: () => !disabledRef.current,
         onPanResponderTerminationRequest: () => false,
-        onPanResponderGrant: (e) => {
+        onPanResponderGrant: (_e, g) => {
           onGrantRef.current();
-          lastAngle.current = angleAt(e.nativeEvent.locationX, e.nativeEvent.locationY);
+          lastAngle.current = angleAt(g.x0, g.y0);
           accum.current = 0;
           lastStepAt.current = 0; // first detent applies immediately
+          spinDeg.current = 0; // start with the dimple at 2 o'clock every time
+          spin.setValue(0);
         },
-        onPanResponderMove: (e) => {
+        onPanResponderMove: (_e, g) => {
           if (disabledRef.current) return;
-          const lx = e.nativeEvent.locationX;
-          const ly = e.nativeEvent.locationY;
-          if (Math.hypot(lx - c, ly - c) < dead) return; // centre dead-zone → no freak-out
-          const a = angleAt(lx, ly);
+          const { x, y } = centerRef.current;
+          if (Math.hypot(g.moveX - x, g.moveY - y) < DEAD_PX) return;
+          const a = angleAt(g.moveX, g.moveY);
           let d = a - lastAngle.current;
           while (d > 180) d -= 360;
           while (d < -180) d += 360;
@@ -182,7 +196,7 @@ export function JogDial({
         onPanResponderTerminate: () => onReleaseRef.current(),
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [c],
+    [],
   );
 
   return (
