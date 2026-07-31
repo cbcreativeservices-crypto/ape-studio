@@ -28,13 +28,15 @@ export function AudioOutputRow() {
         onPress={disableAudioOutput}
         accessibilityRole="switch"
         accessibilityState={{ checked: true }}
-        accessibilityLabel="Audio output is on. Tap to mute."
+        accessibilityLabel="Audio output is on. Shake the phone to mute immediately, or tap here to mute."
         style={[styles.row, styles.rowOn]}
       >
         <View style={[styles.dot, styles.dotOn]} />
         <View style={{ flex: 1 }}>
           <Text style={[styles.label, styles.labelOn]}>AUDIO OUTPUT · ON</Text>
-          <Text style={styles.hint}>Tap to mute · auto-mutes after 10 min idle or on reopen</Text>
+          {/* Shake-to-mute is the immediate panic gesture (owner 2026-08-01) —
+              users already know to return here to switch it off. */}
+          <Text style={styles.hint}>Shake to mute · auto-mutes after 10 min idle or on reopen</Text>
         </View>
         <View style={[styles.track, styles.trackOn]}>
           <View style={[styles.thumb, styles.thumbOn]} />
