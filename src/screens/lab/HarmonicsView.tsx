@@ -90,7 +90,7 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import { Animated, Easing, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
-import Svg, { Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { Defs, Line, LinearGradient, Path, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { ApeDsp, GEN_MODES, type EngineConfig, type GenParams } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
@@ -98,6 +98,7 @@ import { isFeedbackAllowed, noteAudioActivity, useFeedbackAllowed } from '../../
 import { FeedbackAllowRow } from '../../features/audio/FeedbackAllowRow';
 import { guardToneLevelForEngine, LOW_FREQ_ADVISORY } from '../../features/audio/speakerSafety';
 import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
+import { WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 import { WARNING_INFO } from '../../features/tools/measure/types';
 import { EngineGate } from '../tools/EngineGate';
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../features/lab/guidedLessons';
@@ -622,7 +623,9 @@ export function HarmonicsView({
       }
       d += `M${x},${y1.toFixed(1)}L${x},${y2.toFixed(1)}`;
     }
-    return { d, strokeW: Math.max(1, colW * 0.8) };
+    // Level-colour axis (loudness ramp keyed to amplitude — red at ±full, deep
+    // green at the zero line), the SPL-VU standard shared across the app.
+    return { d, strokeW: Math.max(1, colW * 0.8), gradY0: mid - usable, gradY1: mid + usable };
   }, [view, waveW, frames.waveform]);
 
   // ---- Analytic playhead sweep — Animated loop on the NATIVE driver (visual
@@ -1227,8 +1230,23 @@ export function HarmonicsView({
         </View>
       )}
 
-      {/* THE THREE LINKED PANELS. */}
-      <View style={styles.vizCard}>
+      {/* THE THREE LINKED PANELS. In LIVE mode, tapping the display toggles the
+          mic capture START/STOP (owner 2026-07-31); model mode is inert. */}
+      <Pressable
+        style={styles.vizCard}
+        onPress={
+          view === 'live'
+            ? () => {
+                if (soundOn) stopAll();
+                else void onLiveStart();
+              }
+            : undefined
+        }
+        accessibilityRole={view === 'live' ? 'button' : undefined}
+        accessibilityLabel={
+          view === 'live' ? (soundOn ? 'Tap to stop capture' : 'Tap to start capture') : undefined
+        }
+      >
         <View style={styles.topRow}>
           {/* Harmonic markers on the shared frequency axis (n: hz). */}
           <View style={styles.gutter}>{markerLabels}</View>
@@ -1356,6 +1374,22 @@ export function HarmonicsView({
         >
           {waveW > 0 ? (
             <Svg width={waveW} height={WAVE_H}>
+              {liveWave ? (
+                <Defs>
+                  <LinearGradient
+                    id="harmWaveLevel"
+                    x1={0}
+                    y1={liveWave.gradY0}
+                    x2={0}
+                    y2={liveWave.gradY1}
+                    gradientUnits="userSpaceOnUse"
+                  >
+                    {WAVE_LEVEL_STOPS.map((s) => (
+                      <Stop key={s.offset} offset={s.offset} stopColor={s.color} />
+                    ))}
+                  </LinearGradient>
+                </Defs>
+              ) : null}
               <Line x1={0} x2={waveW} y1={WAVE_H / 2} y2={WAVE_H / 2} stroke="#3a3a40" strokeWidth={1} />
               {view === 'model' ? (
                 <>
@@ -1374,7 +1408,7 @@ export function HarmonicsView({
                   ) : null}
                 </>
               ) : liveWave ? (
-                <Path d={liveWave.d} stroke={colors.green} opacity={0.9} strokeWidth={liveWave.strokeW} />
+                <Path d={liveWave.d} stroke="url(#harmWaveLevel)" opacity={0.95} strokeWidth={liveWave.strokeW} />
               ) : null}
             </Svg>
           ) : null}
@@ -1425,7 +1459,7 @@ export function HarmonicsView({
             : 'Color intensity is relative to the selected scale. dBFS · uncalibrated.'}
         </Text>
         <DisplayGuideButton onPress={() => openLesson('display')} />
-      </View>
+      </Pressable>
 
       {/* STEM EDITOR + IDENTITY CARD — analytic mode only. Edits mutate the
           model state; the live capture path renders from history/frames and
