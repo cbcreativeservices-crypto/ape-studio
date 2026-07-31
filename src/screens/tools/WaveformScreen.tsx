@@ -33,7 +33,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import Svg, { Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import * as Crypto from 'expo-crypto';
 import { ApeDsp, type WaveBucket } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
@@ -61,6 +61,8 @@ const TRACE = '#5fd9c4';
 /** The waveform fill — AMBER, drawn solid like a DAW (owner 2026-07-31). */
 const AMBER = '#ffb52e';
 const AMBER_RMS = '#ffd27a';
+/** Peak (clip) events + the next 0.1 s turn the waveform RED. */
+const WAVE_RED = '#ff4b3a';
 
 /** Vertical zoom chips — owner 2026-07-29: ×6 added, DEFAULT ×4. */
 const ZOOMS = [1, 2, 4, 6] as const;
@@ -125,10 +127,19 @@ export function WaveformScreen({ navigation }: Props) {
     setFrozen((f) => (f ? null : liveBuckets));
   }, [liveBuckets]);
 
+  // micPaused (owner 2026-07-31): STOP only stops the mic and STAYS on the screen
+  // (the viewer stays up, frozen on the last capture) — it must NOT collapse to
+  // the START card (that read as "leaving the screen" + caused a scroll jump).
+  const [micPaused, setMicPaused] = useState(false);
   const onStop = useCallback(() => {
     setFrozen(null);
+    setMicPaused(true);
     stop();
   }, [stop]);
+  const onStart = useCallback(() => {
+    setMicPaused(false);
+    void start();
+  }, [start]);
 
   /** Save the on-screen envelope to the library (Phase 2, spec §7) —
    *  numbers only, never audio. */
@@ -201,11 +212,26 @@ export function WaveformScreen({ navigation }: Props) {
         rms: a.rms + (b.rms - a.rms) * t,
       };
     };
+    // Red-on-peak mask (owner 2026-07-31): a CLIPPED bucket (a real over-0-dBFS
+    // peak) paints ITS segment + the next 0.1 s of waveform RED as it scrolls by.
+    const redSpan = Math.max(1, Math.round(0.1 / BUCKET_SEC)); // buckets in 0.1 s
+    const red = new Array<boolean>(n).fill(false);
+    for (let i = 0; i < n; i++) {
+      if (displayBuckets[i].clipped) {
+        for (let k = 0; k <= redSpan; k++) if (i + k < n) red[i + k] = true;
+      }
+    }
+    const fAt = (px: number) => Math.min(n - 1, Math.max(0, n - 0.5 - (panelW - px) / colW));
+
     let top = ''; // max edge, left → right
     let bottomRev = ''; // min edge, right → left (closes the area)
     let rmsTop = '';
     let rmsRev = '';
     let clip = '';
+    let redArea = ''; // filled sub-areas over the red (peak) pixel runs
+    let runTop = '';
+    let runBotRev = '';
+    let inRun = false;
     const W = Math.round(panelW);
     for (let px = 0; px <= W; px++) {
       const s = sampleAt(px);
@@ -221,7 +247,18 @@ export function WaveformScreen({ navigation }: Props) {
       bottomRev = `L${px},${y2.toFixed(1)}` + bottomRev;
       rmsTop += `${cmd}${px},${y(s.rms).toFixed(1)}`;
       rmsRev = `L${px},${y(-s.rms).toFixed(1)}` + rmsRev;
+      if (red[Math.round(fAt(px))]) {
+        runTop += `${inRun ? 'L' : 'M'}${px},${y1.toFixed(1)}`;
+        runBotRev = `L${px},${y2.toFixed(1)}` + runBotRev;
+        inRun = true;
+      } else if (inRun) {
+        redArea += runTop + runBotRev + 'Z';
+        runTop = '';
+        runBotRev = '';
+        inRun = false;
+      }
     }
+    if (inRun) redArea += runTop + runBotRev + 'Z';
     // Clip ticks stay per REAL bucket (a bucket either clipped or it didn't).
     for (let i = 0; i < n; i++) {
       if (displayBuckets[i].clipped) {
@@ -229,23 +266,32 @@ export function WaveformScreen({ navigation }: Props) {
         clip += `M${x},4L${x},12`;
       }
     }
+    // dB scale on the LEFT edge — scales with zoom (y() includes zoom): each dB
+    // below full-scale sits at its amplitude, mirrored above/below the zero line.
+    const dbTicks = [0, -6, -12, -18, -24, -30]
+      .map((db) => ({ db, amp: Math.pow(10, db / 20) }))
+      .filter((t) => rawY(t.amp) >= 9 && rawY(t.amp) <= half - 2)
+      .map((t) => ({ db: t.db, yTop: y(t.amp), yBot: y(-t.amp) }));
     return {
       area: top + bottomRev + 'Z',
       rmsArea: rmsTop + rmsRev + 'Z',
+      redArea,
+      dbTicks,
       clip,
       observed,
       scaleMax,
       clipW: Math.max(1.5, colW * 0.8),
-      yPlus1: y(1),
-      yMinus1: y(-1),
-      oneVisible: rawY(1) >= 2 && rawY(-1) <= PANEL_H - 2,
-      yHalfP: y(0.5),
-      yHalfM: y(-0.5),
-      halfVisible: rawY(0.5) >= 2 && rawY(-0.5) <= PANEL_H - 2,
     };
   }, [displayBuckets, panelW, zoom, windowBuckets]);
 
   const running = state === 'running';
+  // Keep the viewer up while running OR while manually paused (mic off, still on
+  // the screen). Clear the paused flag only once truly running again, so a
+  // restart never flickers back to the START card.
+  const showView = running || micPaused;
+  useEffect(() => {
+    if (running) setMicPaused(false);
+  }, [running]);
   const half = PANEL_H / 2;
 
   return (
@@ -267,7 +313,7 @@ export function WaveformScreen({ navigation }: Props) {
           <GlassButton label="TRY AGAIN" tint="teal" height={52} fontSize={15} onPress={() => void start()} />
         ) : null}
 
-        {state === 'idle' || state === 'starting' ? (
+        {!micPaused && (state === 'idle' || state === 'starting') ? (
           <>
             <Text style={styles.intro}>
               A live oscilloscope of the microphone signal: min/max amplitude envelope over the last
@@ -280,7 +326,7 @@ export function WaveformScreen({ navigation }: Props) {
               height={56}
               fontSize={16}
               disabled={state === 'starting'}
-              onPress={() => void start()}
+              onPress={onStart}
             />
             <Text style={styles.footnote}>
               Capture starts only when you press START and stops when you leave this screen. Audio is
@@ -289,7 +335,7 @@ export function WaveformScreen({ navigation }: Props) {
           </>
         ) : null}
 
-        {running ? (
+        {showView ? (
           <>
             {/* Live readouts — ABOVE the viewer (owner 2026-07-31). Real meter
                 frame only; peak NEVER clamped (F1). */}
@@ -303,11 +349,11 @@ export function WaveformScreen({ navigation }: Props) {
               </Pressable>
               <Pressable style={styles.statCell} onLongPress={() => help('clip_runs')} delayLongPress={260}>
                 <Text style={styles.statLabel}>CLIP RUNS</Text>
-                <Text style={styles.statValue}>{meter ? meter.clipRuns : '—'}</Text>
+                <Text style={[styles.statValue, styles.statValueRed]}>{meter ? meter.clipRuns : '—'}</Text>
               </Pressable>
               <Pressable style={styles.statCell} onLongPress={() => help('window')} delayLongPress={260}>
                 <Text style={styles.statLabel}>WINDOW</Text>
-                <Text style={styles.statValue}>
+                <Text style={[styles.statValue, styles.statValueBlue]}>
                   {shownSec.toFixed(1)}
                   <Text style={styles.statUnit}> s</Text>
                 </Text>
@@ -322,33 +368,24 @@ export function WaveformScreen({ navigation }: Props) {
               >
                 {panelW > 0 ? (
                   <Svg width={panelW} height={PANEL_H}>
-                    {/* ±1 reference lines + marks (hidden if zoomed off-panel). */}
-                    {scope?.oneVisible ? (
-                      <>
-                        <Line x1={0} x2={panelW} y1={scope.yPlus1} y2={scope.yPlus1} stroke={colors.hairline} strokeDasharray="4 4" />
-                        <Line x1={0} x2={panelW} y1={scope.yMinus1} y2={scope.yMinus1} stroke={colors.hairline} strokeDasharray="4 4" />
-                        <SvgText x={4} y={scope.yPlus1 - 4} fill={colors.textSub} fontSize={12} fontFamily={fonts.mono}>
-                          +1
+                    {/* dB scale on the LEFT edge (owner 2026-07-31) — proportional,
+                        scales with zoom. Faint dashed guide across, label at left. */}
+                    {scope?.dbTicks.map((t) => (
+                      <G key={t.db}>
+                        <Line x1={30} x2={panelW} y1={t.yTop} y2={t.yTop} stroke={colors.hairlineDim} strokeDasharray="2 6" />
+                        <Line x1={30} x2={panelW} y1={t.yBot} y2={t.yBot} stroke={colors.hairlineDim} strokeDasharray="2 6" />
+                        <SvgText x={3} y={t.yTop + 3} fill={colors.textSub} fontSize={10} fontFamily={fonts.mono}>
+                          {t.db === 0 ? '0dB' : `${t.db}`}
                         </SvgText>
-                        <SvgText x={4} y={scope.yMinus1 + 13} fill={colors.textSub} fontSize={12} fontFamily={fonts.mono}>
-                          -1
+                        <SvgText x={3} y={t.yBot + 3} fill={colors.textMuted} fontSize={10} fontFamily={fonts.mono}>
+                          {t.db === 0 ? '0dB' : `${t.db}`}
                         </SvgText>
-                      </>
-                    ) : null}
-                    {/* −6 dB (±0.5) grid lines — subtler weight than ±1. */}
-                    {scope?.halfVisible ? (
-                      <>
-                        <Line x1={0} x2={panelW} y1={scope.yHalfP} y2={scope.yHalfP} stroke={colors.hairlineDim} strokeDasharray="2 6" />
-                        <Line x1={0} x2={panelW} y1={scope.yHalfM} y2={scope.yHalfM} stroke={colors.hairlineDim} strokeDasharray="2 6" />
-                        <SvgText x={panelW - 40} y={scope.yHalfP - 4} fill={colors.textMuted} fontSize={12} fontFamily={fonts.mono}>
-                          -6dB
-                        </SvgText>
-                      </>
-                    ) : null}
-                    {/* Zero line — centered, always visible (§11), teal-tinted. */}
+                      </G>
+                    ))}
+                    {/* Zero line — centered, always visible (§11). */}
                     <Line x1={0} x2={panelW} y1={half} y2={half} stroke="#3e5852" strokeWidth={1} />
-                    <SvgText x={4} y={half - 4} fill={colors.textSub} fontSize={12} fontFamily={fonts.mono}>
-                      0
+                    <SvgText x={4} y={half - 4} fill={colors.textSub} fontSize={11} fontFamily={fonts.mono}>
+                      -∞
                     </SvgText>
                     {scope ? (
                       <>
@@ -357,6 +394,10 @@ export function WaveformScreen({ navigation }: Props) {
                             top — no outline, no glow. */}
                         <Path d={scope.area} fill={AMBER} opacity={0.92} />
                         <Path d={scope.rmsArea} fill={AMBER_RMS} opacity={0.9} />
+                        {/* Peak (clip) events + next 0.1 s → RED over the amber. */}
+                        {scope.redArea !== '' ? (
+                          <Path d={scope.redArea} fill={WAVE_RED} opacity={0.96} />
+                        ) : null}
                         {/* Clipped buckets — red ticks in the top lane. */}
                         {scope.clip !== '' ? (
                           <Path d={scope.clip} stroke={colors.red} strokeWidth={scope.clipW} />
@@ -445,7 +486,11 @@ export function WaveformScreen({ navigation }: Props) {
 
             <View style={styles.controls}>
               <View style={{ flex: 1 }}>
-                <GlassButton label="STOP" tint="teal" height={52} fontSize={15} onPress={onStop} />
+                {running ? (
+                  <GlassButton label="STOP" tint="teal" height={52} fontSize={15} onPress={onStop} />
+                ) : (
+                  <GlassButton label="START" tint="teal" height={52} fontSize={15} onPress={onStart} />
+                )}
               </View>
               <Pressable
                 style={[
@@ -565,6 +610,8 @@ const styles = StyleSheet.create({
   },
   statLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.2, color: colors.textSub },
   statValue: { fontFamily: fonts.mono, fontSize: 20, color: colors.textPrimary },
+  statValueRed: { color: '#ff5a48' },
+  statValueBlue: { color: '#7fa8ff' },
   statUnit: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: colors.amberLabel },
   calNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub },
 
