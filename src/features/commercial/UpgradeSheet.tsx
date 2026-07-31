@@ -32,7 +32,7 @@ export function UpgradeSheet({
       <View style={styles.sheet}>
         <Text style={styles.eyebrow}>ACADEMY MODE</Text>
         <Text style={styles.title}>{COPY.upgradePhrase}</Text>
-        <Text style={styles.body}>{COPY.marketingLine}</Text>
+        <Text style={styles.body}>{COPY.upgradeSheetBody}</Text>
 
         {/* The $99 lifetime deal is NOT surfaced here as its own pre-popup
             (user request 2026-07-17). All plans — with the end-of-year

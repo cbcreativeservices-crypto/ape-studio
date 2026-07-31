@@ -487,9 +487,12 @@ function CourseCardView({
             ? coming.name
             : course!.code;
   const url = cardImageUrl(key);
-  // Free-tier nuance (§3): a course containing a free topic (gs0/gs36) is
-  // OPENABLE for free/lapsed users — the server clamps the rest inside (CM6).
-  const pubOpenable = !!pub && (caps.allTopics || (caps.freeTopics && pub.hasFreeTopic));
+  // Free-tier nuance (§3): a SINGLE-topic taster card containing a free topic is
+  // OPENABLE for free/lapsed users. A multi-topic PROFESSIONAL CERTIFICATE
+  // (topicCount > 1) is a paid credential — it must NOT read as open just because
+  // one of its topics is free (owner 2026-08-01); it opens only with full access.
+  const pubOpenable =
+    !!pub && (caps.allTopics || (caps.freeTopics && pub.hasFreeTopic && pub.topicCount <= 1));
   // Free-topic tasters are ALWAYS unlocked + full-color (Booth 2026-07-11).
   // Coming-soon topic stubs are locked (content pending).
   const locked = (!!course && !course.enrolled) || (!!pub && !pubOpenable) || !!coming;

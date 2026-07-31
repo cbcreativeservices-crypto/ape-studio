@@ -87,7 +87,6 @@ export function PaywallScreen({ navigation }: Props) {
           onPress={undefined}
         />
         <Text style={styles.storeNote}>Secure in-app purchase — available soon.</Text>
-        <Text style={styles.thanks}>Thank you for your support!</Text>
 
         <Text style={styles.legal}>
           Payment is charged to your app-store account. Subscriptions renew automatically unless canceled at least
@@ -152,7 +151,6 @@ const styles = StyleSheet.create({
   radioDot: { width: 11, height: 11, borderRadius: 6, backgroundColor: colors.amber },
 
   storeNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textMuted, textAlign: 'center' },
-  thanks: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 13, color: colors.amber, textAlign: 'center', marginTop: 2 },
   legal: {
     fontFamily: fonts.barlowRegular,
     fontSize: 11,
