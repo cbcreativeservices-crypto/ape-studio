@@ -516,8 +516,9 @@ export function SplMeterScreen({ navigation }: Props) {
   const dialCenterText = dialSpl != null ? `${dialSpl}` : '—';
   const dialCenterColor = dialSpl != null ? splZoneColor(dialSpl, dialMode) : undefined;
   // Control-room sweet spot (owner 2026-07-30): in STUDIO mode only, a live level
-  // in 78–82 dB lights a glowing gold frame around the gauge. Never in SPL/OPTIMAL.
-  const inSweetSpot = dialMode === 'studio' && dialSpl != null && dialSpl >= 78 && dialSpl <= 82;
+  // in the 79–85 dB monitoring band lights the glowing gold frame around the
+  // gauge (matches the dial's gold sweet-spot band). Never in SPL/OPTIMAL.
+  const inSweetSpot = dialMode === 'studio' && dialSpl != null && dialSpl >= 79 && dialSpl <= 85;
 
   /** SAVE LOG → Saved Measurement Library (spec §7; payload = SplLogPayload). */
   const onSaveLog = useCallback(() => {

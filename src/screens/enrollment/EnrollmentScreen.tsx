@@ -135,6 +135,19 @@ function HoldToRemove({
   );
 }
 
+// Module-level UI-state cache (owner 2026-07-30): the enrollment screen's
+// collapsed/expanded state persists across RETURNS to the screen — it survives
+// component remounts (navigate away + back) and resets only on app restart — so
+// the user comes back to exactly the collapse/expand layout they left.
+const enrollUi = {
+  collapsed: [] as string[],
+  recordOpen: false,
+  browseOpen: false,
+  browseTab: 'cert' as 'cert' | 'program' | 'subject' | 'topic',
+  openItem: null as string | null,
+  openSubject: null as number | null,
+};
+
 export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<any>();
@@ -143,7 +156,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
 
   const enrolled = useEnrollment();
   const topicIndex = useTopicIndex();
-  const [openSubject, setOpenSubject] = useState<number | null>(null);
+  const [openSubject, setOpenSubject] = useState<number | null>(enrollUi.openSubject);
   const [payPrompt, setPayPrompt] = useState(false);
   const [homeSetupOpen, setHomeSetupOpen] = useState(false);
   const [homeFull, setHomeFull] = useState(false);
@@ -163,13 +176,13 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   const [pinned, setPinned] = useState(false);
   // Per-container collapse (thin title + % only) — keyed by `t:<gs>` for topics
   // and by bundle key for awards (user request 2026-07-22).
-  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set(enrollUi.collapsed));
   // MY RECORD folder — the completion archive at the bottom (user request
   // 2026-07-23). Collapsed by default.
-  const [recordOpen, setRecordOpen] = useState(false);
+  const [recordOpen, setRecordOpen] = useState(enrollUi.recordOpen);
   // BROWSE & ADD list collapse (user request 2026-07-23) — the title + tabs stay,
   // the list below hides. Open by default.
-  const [browseOpen, setBrowseOpen] = useState(false); // collapsed on open (user request 2026-07-24)
+  const [browseOpen, setBrowseOpen] = useState(enrollUi.browseOpen); // collapsed on open (user request 2026-07-24)
   const toggleCollapse = (id: string) =>
     setCollapsed((prev) => {
       const n = new Set(prev);
@@ -177,6 +190,20 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
       else n.add(id);
       return n;
     });
+  // Mirror the collapse/expand UI state into the module cache so RETURNING to the
+  // screen restores it exactly as the user left it (owner 2026-07-30).
+  useEffect(() => {
+    enrollUi.collapsed = [...collapsed];
+  }, [collapsed]);
+  useEffect(() => {
+    enrollUi.recordOpen = recordOpen;
+  }, [recordOpen]);
+  useEffect(() => {
+    enrollUi.browseOpen = browseOpen;
+  }, [browseOpen]);
+  useEffect(() => {
+    enrollUi.openSubject = openSubject;
+  }, [openSubject]);
 
   const homeGs = useHomeGs();
   const homeSet = useMemo(() => new Set(homeGs), [homeGs]);
@@ -185,8 +212,14 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   const homeBundleKeys = useHomeBundles();
   const homeBundleSet = useMemo(() => new Set(homeBundleKeys), [homeBundleKeys]);
   // Default to Certificates (far-left tab) on first load (user request 2026-07-22).
-  const [browseTab, setBrowseTab] = useState<'cert' | 'program' | 'subject' | 'topic'>('cert');
-  const [openItem, setOpenItem] = useState<string | null>(null);
+  const [browseTab, setBrowseTab] = useState<'cert' | 'program' | 'subject' | 'topic'>(enrollUi.browseTab);
+  const [openItem, setOpenItem] = useState<string | null>(enrollUi.openItem);
+  useEffect(() => {
+    enrollUi.browseTab = browseTab;
+  }, [browseTab]);
+  useEffect(() => {
+    enrollUi.openItem = openItem;
+  }, [openItem]);
   // Per-card book toggle: place/remove the topic on the Home screen (paid only;
   // enforces the 20-card cap). user request 2026-07-22.
   const toggleOnHome = (gs: number) =>
