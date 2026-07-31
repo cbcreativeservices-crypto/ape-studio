@@ -56,7 +56,7 @@ import { MethodIcon, METHOD_COLORS, type MethodKey } from '../../components/Meth
 import { StudioButton } from '../../components/StudioButton';
 import { SwitchButton } from '../../components/SwitchButton';
 import { TrophyImage } from '../../components/TrophyImage';
-import { JogDial, JogOverlay, type JogController } from '../../components/JogWheel';
+import { JogDial, JogOverlay } from '../../components/JogWheel';
 import { TrophyModal } from '../../components/TrophyModal';
 import { colors, fonts, spacing } from '../../theme/tokens';
 import {
@@ -330,9 +330,6 @@ export function DashboardScreen() {
   const jogSpin = useRef(new Animated.Value(0)).current;
   const jogActiveRef = useRef(false);
   const [jogActive, setJogActive] = useState(false);
-  // The overlay owns the live index (via this handle) so detents re-render only
-  // the small overlay, not the heavy Dashboard.
-  const jogCtrl = useRef<JogController | null>(null);
   // CM6 (Booth 2026-07-11): commercialMode renders a PUBLIC course (seq order
   // from the seed) through this same screen; institutional path unchanged.
   const { commercialMode, caps } = useEntitlement();
@@ -934,12 +931,15 @@ export function DashboardScreen() {
                     jogActiveRef.current = true;
                     setJogActive(true);
                   }}
-                  onStep={(dir) => jogCtrl.current?.step(dir)}
+                  // Apply LIVE (throttled in the dial) so the current-topic
+                  // container behind changes as you turn; the index wraps.
+                  onStep={(dir) => {
+                    const n = topics.length;
+                    if (n > 0) goTo((((idxRef.current + dir) % n) + n) % n);
+                  }}
                   onRelease={() => {
                     jogActiveRef.current = false;
-                    const i = jogCtrl.current?.index() ?? idxRef.current;
                     setJogActive(false);
-                    goTo(i);
                   }}
                 />
               </View>
@@ -1342,13 +1342,7 @@ export function DashboardScreen() {
 
       {/* Big-wheel jog popup (owner 2026-08-01) — turn to scroll topics, release
           to close. */}
-      <JogOverlay
-        active={jogActive}
-        spin={jogSpin}
-        topics={topics.map((t) => ({ id: t.id, name: t.name }))}
-        startIndex={topicIdx}
-        controllerRef={jogCtrl}
-      />
+      <JogOverlay active={jogActive} spin={jogSpin} />
 
       {/* Topic-deck manager (blue Study icon) — reorder / remove / jump / mode. */}
       <TopicDeckSheet

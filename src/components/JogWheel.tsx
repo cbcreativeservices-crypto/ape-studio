@@ -11,15 +11,18 @@
  * The overlay is a pointer-transparent, same-tree overlay (mounted at the
  * Dashboard root) that MIRRORS the dial's rotation via a shared Animated.Value.
  */
-import { useEffect, useMemo, useRef, useState, type MutableRefObject } from 'react';
-import { Animated, PanResponder, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { useMemo, useRef } from 'react';
+import { Animated, PanResponder, StyleSheet, useWindowDimensions, View } from 'react-native';
 import Svg, { Circle, Defs, Ellipse, RadialGradient, Stop } from 'react-native-svg';
 import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../features/settings/store';
-import { colors, fonts } from '../theme/tokens';
 
 const DETENT_DEG = 360 / 7; // ~51.4° per click
 const DIMPLE_CY = 0.26; // dimple centre as a fraction of size from the top
+/** Min time between topic switches (owner 2026-08-01) — slow enough to WATCH the
+ *  topic change behind the wheel, and no rapid-fire haptic "vibration". Faster
+ *  spins just drop the excess steps; the wheel keeps turning smoothly. */
+const MIN_STEP_MS = 300;
 
 type Rotate = Animated.AnimatedInterpolation<string>;
 
@@ -119,6 +122,7 @@ export function JogDial({
   const lastAngle = useRef(0);
   const accum = useRef(0);
   const spinDeg = useRef(0);
+  const lastStepAt = useRef(0);
   const disabledRef = useRef(disabled);
   disabledRef.current = disabled;
   const onGrantRef = useRef(onGrant);
@@ -130,6 +134,9 @@ export function JogDial({
 
   const angleAt = (lx: number, ly: number) => (Math.atan2(ly - c, lx - c) * 180) / Math.PI;
   const step = (dir: -1 | 1) => {
+    const now = Date.now();
+    if (now - lastStepAt.current < MIN_STEP_MS) return; // throttle — slow enough to watch
+    lastStepAt.current = now;
     onStepRef.current(dir);
     if (hapticsEnabled()) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid).catch(() => {});
   };
@@ -147,6 +154,7 @@ export function JogDial({
           onGrantRef.current();
           lastAngle.current = angleAt(e.nativeEvent.locationX, e.nativeEvent.locationY);
           accum.current = 0;
+          lastStepAt.current = 0; // first detent applies immediately
         },
         onPanResponderMove: (e) => {
           if (disabledRef.current) return;
@@ -189,69 +197,23 @@ export function JogDial({
   );
 }
 
-/** Imperative handle the dial uses to step the overlay's OWN index — so a detent
- *  re-renders only this small overlay, never the heavy Dashboard. */
-export type JogController = { step: (dir: -1 | 1) => void; index: () => number };
-
 /** The big centred wheel shown while the dial is held — mirrors the dial's
- *  rotation and owns the live topic index (registered via `controllerRef`).
- *  Pointer-transparent (the finger stays on the small dial). Mount it at the
- *  screen root so it isn't clipped. Always mounted; renders nothing when idle. */
-export function JogOverlay({
-  active,
-  spin,
-  topics,
-  startIndex,
-  controllerRef,
-}: {
-  active: boolean;
-  spin: Animated.Value;
-  topics: { id: string; name: string }[];
-  startIndex: number;
-  controllerRef: MutableRefObject<JogController | null>;
-}) {
+ *  rotation. NOT dimmed (owner 2026-08-01): the current-topic container behind
+ *  it stays fully visible and changes as you turn. Pointer-transparent (the
+ *  finger stays on the small dial). Mount it at the screen root so it isn't
+ *  clipped. */
+export function JogOverlay({ active, spin }: { active: boolean; spin: Animated.Value }) {
   const { width, height } = useWindowDimensions();
   const size = Math.round(Math.min(width * 0.62, height * 0.4));
-  const [idx, setIdx] = useState(startIndex);
-  const idxRef = useRef(idx);
-  idxRef.current = idx;
-
-  // Snap to the current topic each time the dial is grabbed.
-  useEffect(() => {
-    if (active) setIdx(startIndex);
-  }, [active, startIndex]);
-
-  // Register the stepper — detents call this, wrapping the index (no end-stops).
-  useEffect(() => {
-    controllerRef.current = {
-      step: (dir) =>
-        setIdx((i) => {
-          const n = topics.length;
-          return n > 0 ? (((i + dir) % n) + n) % n : 0;
-        }),
-      index: () => idxRef.current,
-    };
-    return () => {
-      controllerRef.current = null;
-    };
-  }, [topics.length, controllerRef]);
-
   const rotate = spin.interpolate({
     inputRange: [-360, 360],
     outputRange: ['-360deg', '360deg'],
     extrapolate: 'extend',
   });
   if (!active) return null;
-  const cur = topics[idx];
   return (
     <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.overlay]}>
       <JogStack size={size} rotate={rotate} />
-      {cur ? (
-        <Text style={styles.jogLabel} numberOfLines={1}>
-          {cur.name}
-          {topics.length > 0 ? `  ·  TOPIC ${idx + 1} OF ${topics.length}` : ''}
-        </Text>
-      ) : null}
     </View>
   );
 }
@@ -259,19 +221,7 @@ export function JogOverlay({
 const styles = StyleSheet.create({
   wrap: { alignItems: 'center', justifyContent: 'center' },
   disabled: { opacity: 0.45 },
-  overlay: {
-    backgroundColor: 'rgba(0,0,0,0.55)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 18,
-    zIndex: 60,
-  },
-  jogLabel: {
-    fontFamily: fonts.oswaldSemiBold,
-    fontSize: 15,
-    letterSpacing: 0.6,
-    color: colors.textPrimary,
-    textAlign: 'center',
-    paddingHorizontal: 20,
-  },
+  // No dim — the current-topic container behind stays visible and changes as you
+  // turn (owner 2026-08-01).
+  overlay: { alignItems: 'center', justifyContent: 'center', zIndex: 60 },
 });
