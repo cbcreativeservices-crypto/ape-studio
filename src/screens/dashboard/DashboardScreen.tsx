@@ -1519,44 +1519,25 @@ const styles = StyleSheet.create({
   // the (lightened) panel so it reads as pressed IN, not raised.
   engDark: { color: 'rgba(0,0,0,0.95)', transform: [{ translateX: -0.9 }, { translateY: -1.3 }] },
   engLight: { color: 'rgba(255,255,255,0.6)', transform: [{ translateX: 1.0 }, { translateY: 1.5 }] },
-  // Thin near-white inner trace (user request 2026-07-24) — a very light-gray
-  // copy nudged a hair up-left so it reads as a fine white line inside the
-  // debossed letters, not a full re-fill.
-  engTrace: { color: 'rgba(238,238,238,0.9)', transform: [{ translateX: -0.25 }, { translateY: -0.3 }] },
+  // Thin near-white inner trace (user request 2026-07-24; thinned 2026-08-01) —
+  // a faint light-gray copy nudged a hair up-left so it reads as a FINE white
+  // line inside the debossed letters, not a re-fill. Lower opacity + smaller
+  // offset = a thinner line.
+  engTrace: { color: 'rgba(235,235,235,0.55)', transform: [{ translateX: -0.18 }, { translateY: -0.2 }] },
   // Base floor style shared by all fills (color set per variant).
-  engFillBase: {
-    textShadowColor: 'rgba(255,255,255,0.5)',
-    textShadowOffset: { width: 0.7, height: 1.2 },
-    textShadowRadius: 1.6,
-  },
+  // The letter FLOOR only — NO white text-shadow (owner 2026-08-01): the lit lip
+  // is drawn once by engLight; a shadow here duplicated it and read as an extra
+  // layer. Two effects now: the deboss (engDark + engLight + this floor) and the
+  // fine engTrace line.
+  engFillBase: {},
   // Active method floor on the DEFAULT gray panel — a couple shades under it.
-  engFill: {
-    color: '#2f3133',
-    textShadowColor: 'rgba(255,255,255,0.5)',
-    textShadowOffset: { width: 0.7, height: 1.2 },
-    textShadowRadius: 1.6,
-  },
+  engFill: { color: '#2f3133' },
   // Inactive method — shallower, lower-contrast cut.
-  engFillOff: {
-    color: '#3f4143',
-    textShadowColor: 'rgba(255,255,255,0.3)',
-    textShadowOffset: { width: 0.7, height: 1.2 },
-    textShadowRadius: 1.4,
-  },
+  engFillOff: { color: '#3f4143' },
   // Flashcards-only DARK-panel floors — sit under the charcoal coat so the cut
   // still reads pressed in (user request 2026-07-18).
-  engFillDark: {
-    color: '#0b0c0e',
-    textShadowColor: 'rgba(255,255,255,0.5)',
-    textShadowOffset: { width: 0.7, height: 1.2 },
-    textShadowRadius: 1.6,
-  },
-  engFillOffDark: {
-    color: '#121315',
-    textShadowColor: 'rgba(255,255,255,0.3)',
-    textShadowOffset: { width: 0.7, height: 1.2 },
-    textShadowRadius: 1.4,
-  },
+  engFillDark: { color: '#0b0c0e' },
+  engFillOffDark: { color: '#121315' },
   // Small SQUARE recessed LED box holding just the % (or quiz status).
   pctBox: {
     minWidth: 40,
