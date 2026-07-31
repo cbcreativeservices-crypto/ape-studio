@@ -23,13 +23,21 @@ const BLUE = '#7fbfff';
 const GRAY = '#54565c';
 type Sort = 'custom' | 'az' | 'subject';
 
-export function HomeSetupSheet({ visible, onClose }: { visible: boolean; onClose: () => void }) {
+export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boolean; onClose: () => void; paid?: boolean }) {
   const insets = useSafeAreaInsets();
   const [draft, setDraft] = useState<number[]>([]);
   const [defaultDraft, setDefaultDraft] = useState<number | null>(null);
   const [sort, setSort] = useState<Sort>('custom');
   const [openSubject, setOpenSubject] = useState<number | null>(null);
   const [warn, setWarn] = useState(false);
+  // Non-paid users may OPEN and look around the Home setup, but every write —
+  // placing/removing (arranging) cards, sorting (moving), setting the default,
+  // reset, and Save — is gated behind the membership prompt (owner 2026-07-31).
+  const [payOpen, setPayOpen] = useState(false);
+  const guard = (fn: () => void) => {
+    if (paid) fn();
+    else setPayOpen(true);
+  };
 
   useEffect(() => {
     if (visible) {
@@ -49,6 +57,10 @@ export function HomeSetupSheet({ visible, onClose }: { visible: boolean; onClose
   const inDraft = (gs: number) => draft.includes(gs);
 
   const place = (gs: number) => {
+    if (!paid) {
+      setPayOpen(true);
+      return;
+    }
     // Dropping a card that is the default clears the default too.
     setDefaultDraft((d) => (d === gs ? null : d));
     setDraft((prev) => {
@@ -62,6 +74,10 @@ export function HomeSetupSheet({ visible, onClose }: { visible: boolean; onClose
   };
 
   const applySort = (mode: Sort) => {
+    if (!paid) {
+      setPayOpen(true);
+      return;
+    }
     setSort(mode);
     if (mode === 'az') setDraft((prev) => [...prev].sort((a, b) => nameFor(a).localeCompare(nameFor(b))));
     else if (mode === 'subject')
@@ -133,7 +149,7 @@ export function HomeSetupSheet({ visible, onClose }: { visible: boolean; onClose
                       at a time; tap again to clear. */}
                   <Pressable
                     style={[styles.defaultBtn, defaultDraft === gs && styles.defaultBtnOn]}
-                    onPress={() => setDefaultDraft((d) => (d === gs ? null : gs))}
+                    onPress={() => guard(() => setDefaultDraft((d) => (d === gs ? null : gs)))}
                     accessibilityRole="button"
                     accessibilityState={{ selected: defaultDraft === gs }}
                     accessibilityLabel={defaultDraft === gs ? `${nameFor(gs)} is the default opening card` : `Set ${nameFor(gs)} as the default opening card`}
@@ -179,7 +195,7 @@ export function HomeSetupSheet({ visible, onClose }: { visible: boolean; onClose
 
         {/* Footer actions. */}
         <View style={[styles.footer, { paddingBottom: insets.bottom + 10 }]}>
-          <Pressable style={styles.resetBtn} onPress={() => { setDraft([]); setDefaultDraft(null); }} accessibilityRole="button" accessibilityLabel="Reset Home">
+          <Pressable style={styles.resetBtn} onPress={() => guard(() => { setDraft([]); setDefaultDraft(null); })} accessibilityRole="button" accessibilityLabel="Reset Home">
             <Text style={styles.resetText}>RESET</Text>
           </Pressable>
           <Pressable style={styles.cancelBtn} onPress={onClose} accessibilityRole="button" accessibilityLabel="Cancel">
@@ -187,11 +203,13 @@ export function HomeSetupSheet({ visible, onClose }: { visible: boolean; onClose
           </Pressable>
           <Pressable
             style={styles.saveBtn}
-            onPress={() => {
-              setHomeGs(draft);
-              setDefaultHomeGs(defaultDraft);
-              onClose();
-            }}
+            onPress={() =>
+              guard(() => {
+                setHomeGs(draft);
+                setDefaultHomeGs(defaultDraft);
+                onClose();
+              })
+            }
             accessibilityRole="button"
             accessibilityLabel="Save and return"
           >
@@ -205,6 +223,17 @@ export function HomeSetupSheet({ visible, onClose }: { visible: boolean; onClose
         onClose={() => setWarn(false)}
         title="Home screen is full"
         lines={[`You can place up to ${HOME_MAX} topics on your Home screen.`, 'Remove one first to add another.']}
+      />
+
+      {/* Unpaid users can browse this setup but not change it (owner 2026-07-31). */}
+      <PrePaywallPrompt
+        visible={payOpen}
+        onClose={() => setPayOpen(false)}
+        title="Membership required"
+        lines={[
+          'Customizing your Home screen is an Academy membership feature.',
+          'Look around all you like — arranging, sorting, and saving unlock with membership.',
+        ]}
       />
     </Modal>
   );

@@ -57,6 +57,10 @@ const DIRECTORY_GREEN = '#37e05f';
  *  2026-07-22). */
 const PAGE_ORDER = ['curriculum', 'specialization', 'program', 'directory', 'enrollment'] as const;
 type PageKey = (typeof PAGE_ORDER)[number];
+// Enrollments is a terminal page (owner 2026-07-31): once the user lands there,
+// the horizontal swipe locks so they can't slide back to the Pro Registry
+// (directory) page — they exit only via the top Home button (or a tab tap).
+const ENROLLMENT_IDX = PAGE_ORDER.indexOf('enrollment');
 
 // Tab / nav-button labels (user request 2026-07-22) — also used by the Course
 // Select top buttons.
@@ -267,6 +271,10 @@ export function AwardsScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
   const startIdx = Math.max(0, PAGE_ORDER.indexOf(route.params.category as PageKey));
   const [idx, setIdx] = useState(startIdx);
+  // Lock the pager swipe once settled on Enrollments. Flipped only AFTER a swipe
+  // fully settles (onMomentumScrollEnd) or a deliberate tab/jump, so ENTERING the
+  // page never freezes it mid-snap.
+  const [swipeLocked, setSwipeLocked] = useState(startIdx === ENROLLMENT_IDX);
   const listRef = useRef<FlatList<PageKey>>(null);
 
   // Account signal — anonymous = no account (selections won't be saved).
@@ -355,8 +363,9 @@ export function AwardsScreen({ navigation, route }: Props) {
         addTopics(gsList);
       }
       setPicker(null); // close the cert/program picker modal
-      const ei = PAGE_ORDER.indexOf('enrollment');
+      const ei = ENROLLMENT_IDX;
       setIdx(ei);
+      setSwipeLocked(true); // landing on Enrollments locks the swipe (exit via Home)
       requestAnimationFrame(() => listRef.current?.scrollToIndex({ index: ei, animated: true }));
       if (entitlement === 'anonymous') setPayPrompt({ label });
     },
@@ -421,6 +430,7 @@ export function AwardsScreen({ navigation, route }: Props) {
               key={c}
               onPress={() => {
                 setIdx(i);
+                setSwipeLocked(i === ENROLLMENT_IDX);
                 listRef.current?.scrollToIndex({ index: i, animated: true });
               }}
               style={[styles.tabBtn, active && { borderColor: tint, backgroundColor: '#1a1a1a' }]}
@@ -450,12 +460,18 @@ export function AwardsScreen({ navigation, route }: Props) {
         style={{ flex: 1 }}
         horizontal
         pagingEnabled
+        scrollEnabled={!swipeLocked}
         showsHorizontalScrollIndicator={false}
         keyExtractor={(c) => c}
         initialScrollIndex={startIdx}
         getItemLayout={(_d, i) => ({ length: SCREEN_W, offset: SCREEN_W * i, index: i })}
         onViewableItemsChanged={onViewable}
         viewabilityConfig={{ itemVisiblePercentThreshold: 60 }}
+        onMomentumScrollEnd={(e) => {
+          const i = Math.round(e.nativeEvent.contentOffset.x / SCREEN_W);
+          setIdx(i);
+          setSwipeLocked(i === ENROLLMENT_IDX);
+        }}
         renderItem={({ item }) =>
           item === 'curriculum' ? (
             <View style={{ width: SCREEN_W }}>

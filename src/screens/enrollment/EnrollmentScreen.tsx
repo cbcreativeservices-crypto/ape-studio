@@ -196,6 +196,21 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
       else n.add(id);
       return n;
     });
+  // Horizontal swipe on a container toggles its collapse (owner 2026-07-31):
+  // swipe LEFT to collapse an expanded card, swipe RIGHT to expand a collapsed
+  // one. Only claims clearly-horizontal drags, so vertical scrolling and the
+  // press-hold-to-reorder gesture still work; the pager is locked on this page so
+  // nothing competes for the horizontal gesture.
+  const swipeCollapse = (id: string) =>
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dx) > 16 && Math.abs(g.dx) > Math.abs(g.dy) * 1.6,
+      onPanResponderRelease: (_e, g) => {
+        if (Math.abs(g.dx) < 44) return;
+        const isColl = collapsed.has(id);
+        if (isColl && g.dx > 0) toggleCollapse(id); // swipe right → expand
+        else if (!isColl && g.dx < 0) toggleCollapse(id); // swipe left → collapse
+      },
+    });
   // Mirror the collapse/expand UI state into the module cache so RETURNING to the
   // screen restores it exactly as the user left it (owner 2026-07-30).
   useEffect(() => {
@@ -611,7 +626,8 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
     const allLoaded = b.topics.length > 0 && b.topics.every((gs) => activeGs.has(gs));
     if (collapsed.has(b.key)) {
       return (
-        <Pressable key={b.key} style={[styles.bundleCard, kindCard, done && styles.bundleDone, styles.collapsedCard]} onPress={() => toggleCollapse(b.key)} accessibilityRole="button" accessibilityLabel={`Expand ${b.name}`}>
+        <View key={b.key} {...swipeCollapse(b.key).panHandlers}>
+        <Pressable style={[styles.bundleCard, kindCard, done && styles.bundleDone, styles.collapsedCard]} onPress={() => toggleCollapse(b.key)} accessibilityRole="button" accessibilityLabel={`Expand ${b.name}`}>
           <Text style={styles.collapseTri}>▸</Text>
           <Text style={[styles.bundleTag, { color: tint, borderColor: tint }]}>{kindLabel}</Text>
           <Text style={styles.collapsedTitle} numberOfLines={1}>
@@ -623,10 +639,11 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             <Text style={styles.topicRemoveText}>✕</Text>
           </Pressable>
         </Pressable>
+        </View>
       );
     }
     return (
-      <View key={b.key} style={[styles.bundleCard, kindCard, done && styles.bundleDone]}>
+      <View key={b.key} style={[styles.bundleCard, kindCard, done && styles.bundleDone]} {...swipeCollapse(b.key).panHandlers}>
         <View style={styles.cardTop}>
           <Pressable style={styles.collapseBtn} onPress={() => toggleCollapse(b.key)} hitSlop={6} accessibilityRole="button" accessibilityLabel={`Collapse ${b.name}`}>
             <Text style={styles.collapseTri}>▾</Text>
@@ -720,7 +737,8 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
     const allLoaded = d.topics.length > 0 && d.topics.every((gs) => activeGs.has(gs));
     if (collapsed.has(d.key)) {
       return (
-        <Pressable key={d.key} style={[styles.bundleCard, kindCard, done && styles.bundleDone, styles.collapsedCard]} onPress={() => toggleCollapse(d.key)} accessibilityRole="button" accessibilityLabel={`Expand ${d.name}`}>
+        <View key={d.key} {...swipeCollapse(d.key).panHandlers}>
+        <Pressable style={[styles.bundleCard, kindCard, done && styles.bundleDone, styles.collapsedCard]} onPress={() => toggleCollapse(d.key)} accessibilityRole="button" accessibilityLabel={`Expand ${d.name}`}>
           <Text style={styles.collapseTri}>▸</Text>
           <Text style={[styles.bundleTag, { color: tint, borderColor: tint }]}>{kindLabel}</Text>
           <Text style={styles.collapsedTitle} numberOfLines={1}>
@@ -728,10 +746,11 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
           </Text>
           <Text style={styles.cardPct}>{dpct}%</Text>
         </Pressable>
+        </View>
       );
     }
     return (
-      <View key={d.key} style={[styles.bundleCard, kindCard, done && styles.bundleDone]}>
+      <View key={d.key} style={[styles.bundleCard, kindCard, done && styles.bundleDone]} {...swipeCollapse(d.key).panHandlers}>
         <View style={styles.cardTop}>
           <Pressable style={styles.collapseBtn} onPress={() => toggleCollapse(d.key)} hitSlop={6} accessibilityRole="button" accessibilityLabel={`Collapse ${d.name}`}>
             <Text style={styles.collapseTri}>▾</Text>
@@ -932,7 +951,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
           </Pressable>
           <Pressable
             style={styles.homeSetupBtn}
-            onPress={() => (paid ? setHomeSetupOpen(true) : setPayPrompt(true))}
+            onPress={() => setHomeSetupOpen(true)}
             accessibilityRole="button"
             accessibilityLabel="Customize your Home screen"
           >
@@ -1047,7 +1066,8 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             const tid = `t:${e.gs}`;
             if (collapsed.has(tid)) {
               return (
-                <Pressable key={e.gs} style={[styles.card, !e.active && styles.cardInactive, isCore && styles.cardCore, styles.collapsedCard]} onPress={() => toggleCollapse(tid)} accessibilityRole="button" accessibilityLabel={`Expand ${nameFor(e.gs)}`}>
+                <View key={e.gs} {...swipeCollapse(tid).panHandlers}>
+                <Pressable style={[styles.card, !e.active && styles.cardInactive, isCore && styles.cardCore, styles.collapsedCard]} onPress={() => toggleCollapse(tid)} accessibilityRole="button" accessibilityLabel={`Expand ${nameFor(e.gs)}`}>
                   <Text style={styles.collapseTri}>▸</Text>
                   <Text style={styles.collapsedTitle} numberOfLines={1}>
                     {nameFor(e.gs)}
@@ -1067,11 +1087,12 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                     <DeckIcon color={showActive ? colors.blue : GRAY} fill={showActive ? BLUE : '#8a8a8a'} size={22} />
                   </Pressable>
                 </Pressable>
+                </View>
               );
             }
             return (
+              <View key={e.gs} {...swipeCollapse(tid).panHandlers}>
               <Animated.View
-                key={e.gs}
                 style={[
                   styles.card,
                   !e.active && styles.cardInactive,
@@ -1167,6 +1188,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                   ) : null}
                 </View>
               </Animated.View>
+              </View>
             );
           })
         )}
@@ -1400,7 +1422,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
       />
 
       {/* Home screen customizer (paid). */}
-      <HomeSetupSheet visible={homeSetupOpen} onClose={() => setHomeSetupOpen(false)} />
+      <HomeSetupSheet visible={homeSetupOpen} onClose={() => setHomeSetupOpen(false)} paid={paid} />
 
       {/* Custom-list terms popup — SEE & EDIT (user request 2026-07-24). Mirrors
           the flashcards held-filter list; TermSelectIcons edit membership inline. */}
@@ -1512,7 +1534,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
     borderWidth: 1,
-    borderColor: 'rgba(255,198,77,.55)',
+    // WHITE container border (owner 2026-07-31); the eyebrow stays amber, the
+    // name white, and the Study icon blue — only the border colour changes.
+    borderColor: 'rgba(255,255,255,.85)',
     backgroundColor: '#1c1708',
     borderRadius: 10,
     paddingVertical: 9,
