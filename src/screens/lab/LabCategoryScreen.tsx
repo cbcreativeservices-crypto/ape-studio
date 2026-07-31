@@ -13,7 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../theme/tokens';
 import type { RootStackParamList } from '../../navigation/types';
-import { categoryCountLabel, getCategory, type LabLeaf } from './labCatalog';
+import { categoryCountLabel, DEV_NOTE, getCategory, type LabLeaf } from './labCatalog';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'LabCategory'>;
 
@@ -24,14 +24,16 @@ export function LabCategoryScreen({ navigation, route }: Props) {
   if (!cat || cat.kind !== 'list') {
     return (
       <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-        <Header title="AUDIO LEARNING LAB" subtitle="" onBack={() => navigation.goBack()} />
+        <Header title="AUDIO FUNDAMENTALS & TRAINING LAB" subtitle="" onBack={() => navigation.goBack()} />
         <Text style={styles.empty}>This category is not available.</Text>
       </View>
     );
   }
 
   const go = navigation.navigate as unknown as (route: string, params?: object) => void;
-  const open = (leaf: LabLeaf) => go(leaf.route, leaf.params);
+  const open = (leaf: LabLeaf) => {
+    if (leaf.route) go(leaf.route, leaf.params);
+  };
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -79,18 +81,22 @@ function Header({ title, subtitle, onBack }: { title: string; subtitle: string; 
 }
 
 function LabRow({ leaf, onOpen }: { leaf: LabLeaf; onOpen: () => void }) {
+  const dev = leaf.status === 'development';
   return (
     <Pressable
-      onPress={onOpen}
+      onPress={dev ? undefined : onOpen}
+      disabled={dev}
       accessibilityRole="button"
-      accessibilityLabel={`Open ${leaf.name}`}
-      style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
+      accessibilityState={{ disabled: dev }}
+      accessibilityLabel={dev ? `${leaf.name}, in development` : `Open ${leaf.name}`}
+      style={({ pressed }) => [styles.row, dev && styles.rowDev, pressed && !dev && styles.rowPressed]}
     >
       <View style={{ flex: 1 }}>
-        <Text style={styles.rowName}>{leaf.name}</Text>
+        <Text style={[styles.rowName, dev && styles.rowNameDev]}>{leaf.name}</Text>
         <Text style={styles.rowBlurb}>{leaf.blurb}</Text>
+        {dev ? <Text style={styles.devNote}>{DEV_NOTE}</Text> : null}
       </View>
-      <Text style={styles.chevron}>›</Text>
+      {dev ? <Text style={styles.soon}>SOON</Text> : <Text style={styles.chevron}>›</Text>}
     </Pressable>
   );
 }
@@ -121,7 +127,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   rowPressed: { backgroundColor: '#1f1a0e' },
+  // Coming-soon (in-development) rows read dim + muted, no amber border.
+  rowDev: { borderColor: '#2a2a2e', backgroundColor: '#121214' },
   rowName: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 0.4, color: colors.textPrimary },
+  rowNameDev: { color: colors.textSub },
   rowBlurb: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub, marginTop: 1 },
+  devNote: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1, color: '#7a7c80', marginTop: 4 },
+  soon: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.2, color: '#7a7c80', paddingHorizontal: 4 },
   chevron: { fontFamily: fonts.oswaldSemiBold, fontSize: 22, color: colors.amber, paddingHorizontal: 4 },
 });

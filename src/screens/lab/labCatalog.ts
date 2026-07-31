@@ -22,13 +22,22 @@ import { DIGITAL_MODULES } from './digital/modules/registry';
 import { METER_MODULES } from './meter/modules/registry';
 import { WORKSPACES } from './calc/registry';
 
+/** Which top-level section a category lives under (owner 2026-08-01): the lab
+ *  is partitioned in the title — AUDIO FUNDAMENTALS is the free + required part,
+ *  TRAINING LAB is members-only. */
+export type LabSection = 'fundamentals' | 'training';
+
 /** One tappable lab (leaf). `route` is a real screen; `params` for hub-module
- *  deep-links (e.g. the Signal Detective module inside the Meter lab). */
+ *  deep-links (e.g. the Signal Detective module inside the Meter lab). A leaf
+ *  marked `status: 'development'` is a planned lab with NO route yet — it shows
+ *  as a non-tappable "in development — soon to be released" row (§1.7: no dead
+ *  links). */
 export type LabLeaf = {
   name: string;
   blurb: string;
-  route: keyof RootStackParamList;
+  route?: keyof RootStackParamList;
   params?: object;
+  status?: 'development';
 };
 
 /** An optional middle "Lab Family" grouping inside a category. */
@@ -43,7 +52,16 @@ type Common = {
   description: string;
   /** How the count reads (default "N Labs"). */
   countLabel?: (n: number) => string;
+  /** Top-level section (owner 2026-08-01). */
+  section: LabSection;
+  /** Standalone labs listed INLINE under the category (in addition to its
+   *  families/labs, or beneath a hub) — e.g. Harmonograph under Visual Audio
+   *  Analysis (owner 2026-08-01). */
+  extraLabs?: LabLeaf[];
 };
+
+/** Copy for a planned-but-unbuilt lab row. */
+export const DEV_NOTE = 'In development — soon to be released.';
 
 /** A category is either a HUB (opens an existing lab home that owns its own
  *  drill-down; count = that lab's module registry length) or a LIST (opens a
@@ -62,10 +80,12 @@ export const LAB_CATEGORIES: LabCategory[] = [
     glyph: '★',
     name: 'Foundations',
     description: 'Everything the rest of the Academy builds upon — the fundamentals of sound, waves, and hearing.',
+    section: 'fundamentals',
     kind: 'list',
     labs: [
       { name: 'Foundations of Sound', blurb: 'Air, waves, amplitude, wavelength, phase, harmonics — sound made visible, module by module.', route: 'FoundationsCourse' },
       { name: 'Sound Playground', blurb: 'A free sandbox for every Foundations control and display at once.', route: 'FoundationsPlayground' },
+      { name: 'Gain Staging', blurb: 'Set levels right at every stage — headroom, noise floor, unity gain through the chain.', status: 'development' },
     ],
   },
   {
@@ -73,6 +93,7 @@ export const LAB_CATEGORIES: LabCategory[] = [
     glyph: '⚙',
     name: 'Audio Processing',
     description: 'Learn how professional processors shape and control sound.',
+    section: 'training',
     kind: 'list',
     families: [
       {
@@ -117,6 +138,7 @@ export const LAB_CATEGORIES: LabCategory[] = [
     glyph: '∿',
     name: 'Signal Generation & Synthesis',
     description: 'Create and shape sound from scratch — oscillators, noise, synthesis, and imaging.',
+    section: 'training',
     kind: 'list',
     labs: [
       { name: 'Oscillators', blurb: 'Sine/square/saw, FM, AM, band-limiting.', route: 'OscillatorLab' },
@@ -125,7 +147,6 @@ export const LAB_CATEGORIES: LabCategory[] = [
       { name: 'FM Synthesis', blurb: 'Carrier + modulator: ratio, index, and sidebands.', route: 'FmLab' },
       { name: 'Modular Synth', blurb: 'VCO · VCF · VCA · LFO · envelope · sequencer — signal flow and patching.', route: 'ModularLab' },
       { name: 'Stereo Imaging', blurb: 'Pan, width, Mid/Side, mono-fold.', route: 'StereoLab' },
-      { name: 'Harmonograph', blurb: 'Frequency ratios ↔ musical intervals.', route: 'HarmonographLab' },
     ],
   },
   {
@@ -133,6 +154,7 @@ export const LAB_CATEGORIES: LabCategory[] = [
     glyph: '◎',
     name: 'Wave Physics Laboratory',
     description: 'Interactive acoustic simulations — reflection, interference, coverage, and room behavior.',
+    section: 'fundamentals',
     kind: 'hub',
     route: 'WaveLab',
     count: WAVE_MODULES.length,
@@ -143,6 +165,7 @@ export const LAB_CATEGORIES: LabCategory[] = [
     glyph: '🎙',
     name: 'Microphones & Loudspeakers',
     description: 'How microphones capture sound and loudspeakers deliver it.',
+    section: 'fundamentals',
     kind: 'list',
     families: [
       {
@@ -160,6 +183,7 @@ export const LAB_CATEGORIES: LabCategory[] = [
     glyph: '⛁',
     name: 'Digital Audio Systems',
     description: 'How analog sound becomes numbers — and numbers become sound again.',
+    section: 'fundamentals',
     kind: 'hub',
     route: 'DigitalLab',
     count: DIGITAL_MODULES.length,
@@ -170,6 +194,12 @@ export const LAB_CATEGORIES: LabCategory[] = [
     glyph: '📊',
     name: 'Visual Audio Analysis',
     description: 'Read every professional analysis display, from waveform to waterfall.',
+    section: 'fundamentals',
+    // Harmonograph now lives here (owner 2026-08-01) — a visual analysis of
+    // frequency ratios, shown as a lab under this category.
+    extraLabs: [
+      { name: 'Harmonograph', blurb: 'Frequency ratios ↔ musical intervals, drawn as living Lissajous curves.', route: 'HarmonographLab' },
+    ],
     kind: 'hub',
     route: 'MeterLab',
     count: METER_MODULES.length,
@@ -180,6 +210,7 @@ export const LAB_CATEGORIES: LabCategory[] = [
     glyph: '🖩',
     name: 'Audio Calculator Laboratory',
     description: 'Professional audio math — with the reasoning, not just the result.',
+    section: 'training',
     kind: 'hub',
     route: 'CalcLab',
     count: WORKSPACES.length,
@@ -191,6 +222,7 @@ export const LAB_CATEGORIES: LabCategory[] = [
     glyph: '⛓',
     name: 'Interactive Systems',
     description: 'Combine many concepts into larger, hands-on simulations.',
+    section: 'fundamentals',
     kind: 'list',
     labs: [
       { name: 'Signal Chain Builder', blurb: 'Generator → EQ → Comp → Gate → FX → Reverb → Limiter → Output.', route: 'SignalChainLab' },
@@ -202,6 +234,7 @@ export const LAB_CATEGORIES: LabCategory[] = [
     glyph: '🎸',
     name: 'Applied Audio Labs',
     description: 'Audio concepts through real instruments and studio tools.',
+    section: 'training',
     kind: 'list',
     labs: [
       { name: 'Bass Guitar Physics', blurb: 'String division, wavelength, harmonics, fret fractions ↔ intervals.', route: 'BassLab' },
@@ -214,18 +247,61 @@ export const LAB_CATEGORIES: LabCategory[] = [
     glyph: '⚡',
     name: 'Audio Electronics',
     description: 'Inside the analog gear — how circuits amplify and shape signals.',
+    section: 'training',
     kind: 'list',
     labs: [
       { name: 'Vacuum Tube Fundamentals', blurb: 'How a tube amplifies by controlling electron flow — with an Electron View that shows the invisible.', route: 'TubeLab' },
+    ],
+  },
+  {
+    // Planned Training-Lab labs (owner 2026-08-01) — listed now as coming-soon
+    // placeholders so the roadmap is visible; each becomes a real route when
+    // built. NO dead links: these rows are non-tappable until then (§1.7).
+    id: 'devlabs',
+    glyph: '⏳',
+    name: 'More Training Labs',
+    description: 'Planned labs, in development and releasing soon.',
+    section: 'training',
+    kind: 'list',
+    labs: [
+      { name: 'EQ Lab', blurb: 'Graphic, parametric, shelves, filters, dynamic EQ.', status: 'development' },
+      { name: 'Tunings Lab', blurb: 'Temperaments, reference pitches, just vs equal.', status: 'development' },
+      { name: 'Smart Processors Lab', blurb: 'Assistive/AI-style processors — how they decide.', status: 'development' },
+      { name: 'Sample Lab', blurb: 'Sampling, looping, slicing, time-stretch.', status: 'development' },
+      { name: 'Speech Lab', blurb: 'Voice, formants, intelligibility, de-essing.', status: 'development' },
+      { name: 'Instrument Recording Lab', blurb: 'Mic choice and placement per instrument.', status: 'development' },
+      { name: 'Sound Envelope Lab', blurb: 'Attack, decay, sustain, release — shaping dynamics.', status: 'development' },
+      { name: 'Mixing Principle Lab', blurb: 'Balance, panning, depth, bus structure.', status: 'development' },
+      { name: 'Cable Troubleshooting Lab', blurb: 'Balanced vs unbalanced, hum, opens, shorts.', status: 'development' },
+      { name: 'Room Mode Testing Lab', blurb: 'Find and tame axial/tangential/oblique modes.', status: 'development' },
     ],
   },
 ];
 
 /** Computed leaf-lab count for a category (never hard-coded). */
 export function categoryCount(cat: LabCategory): number {
-  if (cat.kind === 'hub') return cat.count;
+  const extra = cat.extraLabs?.length ?? 0;
+  if (cat.kind === 'hub') return cat.count + extra;
   const fromFamilies = (cat.families ?? []).reduce((n, f) => n + f.labs.length, 0);
-  return fromFamilies + (cat.labs?.length ?? 0);
+  return fromFamilies + (cat.labs?.length ?? 0) + extra;
+}
+
+/** Categories belonging to a top-level section, in catalog order. */
+export function sectionCategories(section: LabSection): LabCategory[] {
+  return LAB_CATEGORIES.filter((c) => c.section === section);
+}
+
+/** The individual labs listed INLINE under a category on the landing. A hub's
+ *  many modules stay inside the hub itself (opened via its card), so only its
+ *  attached extraLabs list here; a 'list' category lists all its real labs plus
+ *  any extraLabs. */
+export function categoryLabRows(cat: LabCategory): LabLeaf[] {
+  if (cat.kind === 'hub') return cat.extraLabs ?? [];
+  return [
+    ...(cat.families ?? []).flatMap((f) => f.labs),
+    ...(cat.labs ?? []),
+    ...(cat.extraLabs ?? []),
+  ];
 }
 
 /** The card's count label, e.g. "16 Labs" / "25 Calculators". */
@@ -234,10 +310,10 @@ export function categoryCountLabel(cat: LabCategory): string {
   return (cat.countLabel ?? labsPlural)(n);
 }
 
-/** All leaves in a 'list' category, flattened (families then loose labs). */
+/** All leaves in a 'list' category, flattened (families, loose labs, extras). */
 export function categoryLeaves(cat: LabCategory): LabLeaf[] {
-  if (cat.kind === 'hub') return [];
-  return [...(cat.families ?? []).flatMap((f) => f.labs), ...(cat.labs ?? [])];
+  if (cat.kind === 'hub') return cat.extraLabs ?? [];
+  return [...(cat.families ?? []).flatMap((f) => f.labs), ...(cat.labs ?? []), ...(cat.extraLabs ?? [])];
 }
 
 export function getCategory(id: string): LabCategory | undefined {
