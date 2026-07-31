@@ -14,8 +14,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const KEY = 'ape:lowLight';
 const KEY_AT = 'ape:lowLightAt';
 
-/** Fraction of black laid over the app when ON (100% − 25% brightness). */
-export const LOW_LIGHT_DIM = 0.75;
+/** Fraction of black laid over the app when ON (owner 2026-08-01: 0.50). */
+export const LOW_LIGHT_DIM = 0.5;
 
 /** Auto-revert to full brightness after this long UNTOUCHED (owner 2026-07-30):
  *  the clock refreshes each time the app is opened/foregrounded while low-light
