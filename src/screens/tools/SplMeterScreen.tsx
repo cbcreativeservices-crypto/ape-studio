@@ -16,7 +16,9 @@
  *    on unmount (§18: no DSP behind a closed screen).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Animated, Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import * as Haptics from 'expo-haptics';
+import { hapticsEnabled } from '../../features/settings/store';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSharedValue } from 'react-native-reanimated';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -30,7 +32,7 @@ import { useRafFrameLoop } from '../../features/tools/engine/useRafFrameLoop';
 import { setSplCalibration, useSplCalibration } from '../../features/tools/measure/calibrationStore';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
-import { WARNING_INFO, type SplLogPayload } from '../../features/tools/measure/types';
+import { WARNING_INFO, type SplLogPayload, type WarningFlag } from '../../features/tools/measure/types';
 import { colors, fonts } from '../../theme/tokens';
 import { EngineGate } from './EngineGate';
 import { MIC_LIMITS, toolByKey } from './toolsData';
@@ -160,6 +162,7 @@ function VuHero({
   calibrated,
   dialMode,
   onDialMode,
+  onModeHelp,
   centerText,
   centerColor,
   sweetSpot,
@@ -172,6 +175,7 @@ function VuHero({
   calibrated: boolean;
   dialMode: DialMode;
   onDialMode: (m: DialMode) => void;
+  onModeHelp: () => void;
   centerText: string;
   centerColor?: string;
   sweetSpot: boolean;
@@ -201,6 +205,8 @@ function VuHero({
             key={m}
             style={[styles.dialModeChip, dialMode === m && styles.chipSelected]}
             onPress={() => onDialMode(m)}
+            onLongPress={onModeHelp}
+            delayLongPress={260}
             accessibilityRole="button"
             accessibilityState={{ selected: dialMode === m }}
             accessibilityLabel={
@@ -298,6 +304,83 @@ function Chip({
         {label}
       </Text>
     </Pressable>
+  );
+}
+
+/** LiveWarnings (owner 2026-07-30): the amber quality warnings, moved to the
+ *  BOTTOM. A NEW warning fires one brief haptic pulse and FLASHES prominently for
+ *  5 s, then drops into the steady accumulated list below it. Every flag that has
+ *  ever appeared stays in the list (deduped) even if its condition later clears. */
+function LiveWarnings({ flags }: { flags: WarningFlag[] }) {
+  const [seen, setSeen] = useState<WarningFlag[]>([]);
+  const [flashing, setFlashing] = useState<Set<WarningFlag>>(new Set());
+  const seenRef = useRef<Set<WarningFlag>>(new Set());
+  const timers = useRef<Map<WarningFlag, ReturnType<typeof setTimeout>>>(new Map());
+  const flash = useRef(new Animated.Value(1)).current;
+
+  const flagsKey = flags.join(',');
+  useEffect(() => {
+    for (const f of flags) {
+      if (seenRef.current.has(f)) continue;
+      seenRef.current.add(f);
+      setSeen((prev) => [...prev, f]);
+      setFlashing((prev) => new Set(prev).add(f));
+      if (hapticsEnabled()) void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(() => {});
+      const t = setTimeout(() => {
+        setFlashing((prev) => {
+          const n = new Set(prev);
+          n.delete(f);
+          return n;
+        });
+        timers.current.delete(f);
+      }, 5000);
+      timers.current.set(f, t);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [flagsKey]);
+
+  useEffect(() => {
+    const map = timers.current;
+    return () => map.forEach((t) => clearTimeout(t));
+  }, []);
+
+  // Pulse the flash opacity while any warning is in its 5 s window.
+  const flashing0 = flashing.size > 0;
+  useEffect(() => {
+    if (!flashing0) {
+      flash.setValue(1);
+      return;
+    }
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(flash, { toValue: 0.3, duration: 420, useNativeDriver: true }),
+        Animated.timing(flash, { toValue: 1, duration: 420, useNativeDriver: true }),
+      ]),
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [flashing0, flash]);
+
+  if (seen.length === 0) return null;
+  const active = seen.filter((f) => flashing.has(f));
+  const steady = seen.filter((f) => !flashing.has(f));
+  return (
+    <View style={styles.warnArea}>
+      {active.map((f) => (
+        <Animated.Text key={f} style={[styles.warnFlash, { opacity: flash }]}>
+          ⚠ {WARNING_INFO[f].message} {WARNING_INFO[f].hint}
+        </Animated.Text>
+      ))}
+      {steady.length > 0 ? (
+        <View style={styles.warnList}>
+          {steady.map((f) => (
+            <Text key={f} style={styles.liveWarn}>
+              ⚠ {WARNING_INFO[f].message} {WARNING_INFO[f].hint}
+            </Text>
+          ))}
+        </View>
+      ) : null}
+    </View>
   );
 }
 
@@ -708,14 +791,6 @@ export function SplMeterScreen({ navigation }: Props) {
               </Pressable>
             </View>
 
-            {/* Live quality warnings, plain language (spec §6) — the SAME flags
-                that get stored with a saved log. */}
-            {flags.map((f) => (
-              <Text key={f} style={styles.liveWarn}>
-                ⚠ {WARNING_INFO[f].message} {WARNING_INFO[f].hint}
-              </Text>
-            ))}
-
             {/* Session log (spec §9 View 2): Leq + elapsed + reset/save. */}
             <View style={styles.logCard}>
               <HelpHead title="SESSION LOG" onHelp={() => help('session_log')} style={styles.sectionHead} />
@@ -756,6 +831,14 @@ export function SplMeterScreen({ navigation }: Props) {
                 </Pressable>
               </View>
             </View>
+
+            {/* STOP — ABOVE calibration (owner 2026-07-30). Only turns the mic OFF
+                and STAYS in the tool; flips to START to re-arm. */}
+            {running ? (
+              <GlassButton label="STOP · MIC OFF" tint="gold" onPress={stopMeter} />
+            ) : (
+              <GlassButton label="START · MIC ON" tint="gold" onPress={startMeter} />
+            )}
 
             {/* Field calibration (ruling R1, 2026-07-23): device-local offset,
                 matched against the user's reference meter. Moved BELOW the
@@ -844,13 +927,6 @@ export function SplMeterScreen({ navigation }: Props) {
               </Text>
             </View>
 
-            {/* STOP only turns the mic OFF and STAYS in the tool (owner
-                2026-07-30) — the same button flips to START to re-arm. */}
-            {running ? (
-              <GlassButton label="STOP · MIC OFF" tint="gold" onPress={stopMeter} />
-            ) : (
-              <GlassButton label="START · MIC ON" tint="gold" onPress={startMeter} />
-            )}
           </>
         )}
 
@@ -876,6 +952,9 @@ export function SplMeterScreen({ navigation }: Props) {
             {MIC_LIMITS[4]}
           </Text>
         </View>
+
+        {/* Amber warnings, at the very BOTTOM (owner 2026-07-30). */}
+        <LiveWarnings flags={flags} />
       </ScrollView>
 
       {/* ── Full-screen VU popup: live meters + mirrored readouts/controls ──
@@ -1012,7 +1091,7 @@ export function SplMeterScreen({ navigation }: Props) {
                     {/* WEIGHTING × RESPONSE — compact to fit the left column. */}
                     <View style={styles.chipsRow}>
                       <View style={styles.chipGroup}>
-                        <Text style={styles.chipGroupLabel}>WEIGHTING</Text>
+                        <HelpHead title="WEIGHTING" onHelp={() => help('weighting')} style={styles.chipGroupLabel} />
                         <View style={styles.chipSetWrap}>
                           {WEIGHTINGS.map((w) => (
                             <Chip key={w} label={w} compact selected={weighting === w} onPress={() => setWeighting(w)} />
@@ -1020,7 +1099,7 @@ export function SplMeterScreen({ navigation }: Props) {
                         </View>
                       </View>
                       <View style={styles.chipGroup}>
-                        <Text style={styles.chipGroupLabel}>RESPONSE</Text>
+                        <HelpHead title="RESPONSE" onHelp={() => help('response')} style={styles.chipGroupLabel} />
                         <View style={styles.chipSetWrap}>
                           {RESPONSES.map((r) => (
                             <Chip
@@ -1037,7 +1116,7 @@ export function SplMeterScreen({ navigation }: Props) {
                     </View>
                     {/* PEAK HOLD (compact) + RESET. */}
                     <View style={styles.chipGroup}>
-                      <Text style={styles.chipGroupLabel}>PEAK HOLD</Text>
+                      <HelpHead title="PEAK HOLD" onHelp={() => help('peak_hold')} style={styles.chipGroupLabel} />
                       <View style={styles.chipSetWrap}>
                         {HOLD_MODES.map((m) => (
                           <Chip
@@ -1076,6 +1155,15 @@ export function SplMeterScreen({ navigation }: Props) {
                   accessibilityLabel={gaugeOpen ? 'Collapse SPL gauge' : 'Expand SPL gauge'}
                 >
                   <Text style={styles.gaugeToggleText}>SPL REFERENCE GAUGE</Text>
+                  <View style={{ flex: 1 }} />
+                  <Pressable
+                    onPress={() => help('gauge')}
+                    hitSlop={10}
+                    accessibilityRole="button"
+                    accessibilityLabel="About the SPL reference gauge"
+                  >
+                    <Text style={styles.gaugeToggleInfo}>ⓘ</Text>
+                  </Pressable>
                   <Text style={styles.gaugeToggleChevron}>{gaugeOpen ? '▾' : '▸'}</Text>
                 </Pressable>
                 {gaugeOpen && viz ? (
@@ -1088,6 +1176,7 @@ export function SplMeterScreen({ navigation }: Props) {
                     calibrated={calibrated}
                     dialMode={dialMode}
                     onDialMode={setDialMode}
+                    onModeHelp={() => help('mode')}
                     centerText={dialCenterText}
                     centerColor={dialCenterColor}
                     sweetSpot={inSweetSpot}
@@ -1097,7 +1186,7 @@ export function SplMeterScreen({ navigation }: Props) {
                 {/* 7 — Mirrored session log + save (same handlers) — COMPACT in
                     the VU popup (owner 2026-07-30: smaller readout + buttons). */}
                 <View style={[styles.logCard, styles.logCardSm]}>
-                  <Text style={styles.sectionHeadSm}>SESSION LOG</Text>
+                  <HelpHead title="SESSION LOG" onHelp={() => help('session_log')} style={styles.sectionHeadSm} />
                   <View style={styles.logRow}>
                     <View style={styles.logCell}>
                       <Text style={styles.cellLabel}>Leq(A)</Text>
@@ -1149,7 +1238,7 @@ export function SplMeterScreen({ navigation }: Props) {
                     the gauge's SPL scale updates the instant it is set/cleared. */}
                 <View style={styles.calCard}>
                   <View style={styles.calHeadRow}>
-                    <Text style={styles.sectionHead}>CALIBRATION</Text>
+                    <HelpHead title="CALIBRATION" onHelp={() => help('calibration')} style={styles.sectionHead} />
                     <Text style={[styles.calStatus, offset != null && styles.calStatusOn]}>
                       {offset != null ? `FIELD-CALIBRATED · +${offset.toFixed(1)} dB` : 'UNCALIBRATED'}
                     </Text>
@@ -1233,7 +1322,7 @@ export function SplMeterScreen({ navigation }: Props) {
                 {/* 9 — Compact control-room legend for the gauge's sweet-spot band
                     (owner 2026-07-30: moved to the BOTTOM, just above STOP). */}
                 <View style={styles.roomLegend}>
-                  <Text style={styles.roomLegendHead}>CONTROL-ROOM MONITORING · dB SPL (C-WEIGHTED)</Text>
+                  <HelpHead title="CONTROL-ROOM MONITORING · dB SPL (C-WEIGHTED)" onHelp={() => help('control_room')} style={styles.roomLegendHead} />
                   <Text style={styles.roomLegendBody}>
                     Green band = the mixing sweet spot. 79 dB(C) suits small rooms (under ~1,500 ft³ /
                     42 m³) and most critical balance / music mixing; 82 medium; 85 large (Holman /
@@ -1248,12 +1337,8 @@ export function SplMeterScreen({ navigation }: Props) {
                   </Text>
                 </View>
 
-                {/* Amber live-quality warnings — below control-room monitoring. */}
-                {flags.map((f) => (
-                  <Text key={f} style={styles.liveWarn}>
-                    ⚠ {WARNING_INFO[f].message} {WARNING_INFO[f].hint}
-                  </Text>
-                ))}
+                {/* Amber warnings at the bottom — flash 5 s + haptic, then list. */}
+                <LiveWarnings flags={flags} />
               </>
             )}
           </ScrollView>
@@ -1389,6 +1474,23 @@ const styles = StyleSheet.create({
 
   // Live quality warning line (spec §6) — house amber warning style.
   liveWarn: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18.5, color: colors.amber },
+  // Warnings area at the BOTTOM (owner 2026-07-30): a new warning flashes here 5 s
+  // then settles into the steady accumulated list.
+  warnArea: { gap: 8 },
+  warnFlash: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 13.5,
+    lineHeight: 19,
+    letterSpacing: 0.3,
+    color: colors.amber,
+    borderWidth: 1,
+    borderColor: 'rgba(255,198,77,.7)',
+    backgroundColor: 'rgba(255,198,77,.12)',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+  },
+  warnList: { gap: 4 },
 
   // Field-calibration card (ruling R1, 2026-07-23).
   calCard: {
@@ -1515,7 +1617,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
   },
   gaugeToggleText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.textSecondary },
-  gaugeToggleChevron: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, color: colors.textSub },
+  gaugeToggleChevron: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, color: colors.textSub, marginLeft: 10 },
+  gaugeToggleInfo: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, color: colors.amberLabel },
 
   // STUDIO / SPL chooser — pinned to the TOP-LEFT corner of the circle meter.
   dialModeCorner: { position: 'absolute', top: 6, left: 6, flexDirection: 'row', gap: 6, zIndex: 2 },
