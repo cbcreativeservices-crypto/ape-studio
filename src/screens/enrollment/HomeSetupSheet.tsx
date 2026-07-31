@@ -339,7 +339,7 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
         title="Membership required"
         lines={[
           'Customizing your Home screen is an Academy membership feature.',
-          'Look around all you like — toggling, ordering, and saving unlock with membership.',
+          'Look around all you like — and consider becoming a member.',
         ]}
       />
     </Modal>
