@@ -220,7 +220,7 @@ function VuHero({
 /** RANGE — the environmental SPL that reads 0 VU. The VU shows the signal
  *  RELATIVE to this reference (current SPL − RANGE), so RANGE centres the meter
  *  on the room's noise level. Default 100 dB. AUTO (below) tracks ambient. */
-const RANGE_VALUES = [40, 60, 80, 100] as const;
+const RANGE_VALUES = [40, 60, 80, 90, 100] as const;
 
 // Circle-gauge zone palette (matches SplDialView's darkened arc colors) — used to
 // tint the live centre readout so the number turns the colour of the zone it sits
@@ -330,7 +330,11 @@ export function SplMeterScreen({ navigation }: Props) {
   const [micPaused, setMicPaused] = useState(false);
   const startMeter = useCallback(() => {
     wantRunning.current = true;
-    setMicPaused(false);
+    // Do NOT clear micPaused here (routing-flash fix 2026-07-30): if we cleared
+    // it now, then during the 'starting' transition micPaused=false AND
+    // running=false → the meter UI would collapse to the START/landing card for
+    // a frame (the "flash" the owner saw) before 'running'. Keep the meter up by
+    // leaving micPaused set; it's cleared only once we are actually running.
     void start();
   }, [start]);
   const stopMeter = useCallback(() => {
@@ -374,6 +378,12 @@ export function SplMeterScreen({ navigation }: Props) {
   // Show the tool's meter UI while running OR while manually paused (mic off but
   // still IN the tool) — never collapse to the START card on a manual STOP.
   const showMeter = running || micPaused;
+  // Clear the paused flag only when capture is truly running — so the meter UI
+  // never drops to the landing card during the 'starting' transition (routing
+  // flash fix 2026-07-30).
+  useEffect(() => {
+    if (running) setMicPaused(false);
+  }, [running]);
   // TEXT readouts come from a THROTTLED snapshot of the live frame (~10 Hz) —
   // plenty for reading numbers, and far cheaper than re-rendering the whole
   // screen every native tick. The needles/LED do NOT use this (they read the

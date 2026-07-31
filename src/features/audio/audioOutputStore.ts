@@ -16,8 +16,11 @@
  */
 import { useSyncExternalStore } from 'react';
 
-/** Idle auto-mute window — 10 minutes with no audio activity. */
-export const IDLE_MS = 600000;
+/** Idle auto-mute window (owner 2026-07-30): DON'T auto-mute unless the app has
+ *  been left UNTOUCHED for 20 minutes. The timer re-arms on any real user touch
+ *  (via touchAudioActivity from the root touch-capture) as well as on audio
+ *  activity, so it only fires after 20 min of no interaction at all. */
+export const IDLE_MS = 1200000;
 
 let enabled = false;
 let lastActivity = 0;
@@ -93,6 +96,16 @@ export function disableAudioOutput(): void {
  */
 export function noteAudioActivity(now: number = Date.now()): void {
   if (!enabled) return;
+  lastActivity = now;
+  armIdleTimer();
+}
+
+/** Refresh the "untouched" clock on real user TOUCHES (owner 2026-07-30) so the
+ *  20-min auto-mute only fires after 20 min of NO interaction. Called from the
+ *  app-root touch-capture; throttled + no-op while muted. */
+export function touchAudioActivity(now: number = Date.now()): void {
+  if (!enabled) return;
+  if (now - lastActivity < 20000) return; // throttle: re-arm at most every 20s
   lastActivity = now;
   armIdleTimer();
 }

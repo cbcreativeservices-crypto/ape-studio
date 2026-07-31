@@ -161,8 +161,9 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
           <View style={styles.card}>
             <Text style={styles.title}>Enable audio output</Text>
             <Text style={styles.body}>
-              Hold the button for 5 seconds to allow sound. It mutes again automatically after 10
-              minutes idle, or when you reopen the app.
+              Hold the button for 5 seconds to allow sound. It stays on while you're using the app
+              and only mutes automatically after the app is left untouched for 20 minutes, or when
+              you reopen the app.
             </Text>
             <HoldToActivate
               label="HOLD 5s TO ENABLE AUDIO OUTPUT"

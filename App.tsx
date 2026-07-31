@@ -11,6 +11,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { EntitlementProvider } from './src/features/commercial/EntitlementProvider';
 import { AudioOutputGate } from './src/features/audio/AudioOutputGate';
+import { touchAudioActivity } from './src/features/audio/audioOutputStore';
 import { AudioBorderFrame } from './src/features/audio/AudioBorderFrame';
 import { MicFeedbackGuard } from './src/features/audio/MicFeedbackGuard';
 import { ShakeToMute } from './src/features/audio/ShakeToMute';
@@ -65,6 +66,9 @@ export default function App() {
             style={{ flex: 1 }}
             onStartShouldSetResponderCapture={() => {
               touchLowLight();
+              // Keep audio output alive while the app is being used — the 20-min
+              // auto-mute only fires after real inactivity (owner 2026-07-30).
+              touchAudioActivity();
               return false;
             }}
           >

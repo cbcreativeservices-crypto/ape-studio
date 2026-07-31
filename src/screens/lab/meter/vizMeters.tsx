@@ -13,7 +13,7 @@
  * only index them (fixed node counts, no per-frame allocations beyond the
  * house Skia.Path idiom used by micspeaker/viz).
  */
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { PixelRatio, Text as RNText, TextInput, View } from 'react-native';
 import {
   BlurMask,
@@ -1020,6 +1020,19 @@ export function VuMeterView(p: {
     pth.lineTo(cx + s * r1, py - c * r1);
     return pth;
   }, [p.phase, needleRad, pkEnabled, pkHoldSecs, LOOP]);
+
+  // RESET the white peak-hold marker when the 0-VU reference moves (owner
+  // 2026-07-30): the parent recomputes `live0Db` (→ LIVE0) on every RANGE change
+  // or AUTO toggle, which re-maps where a given level parks the needle — so the
+  // previously accumulated peak angle is now STALE against the new scale. Watch
+  // LIVE0 and drop the tracked max back to the CURRENT needle level (and clear the
+  // hold age) so the tick re-accumulates from the new reference. No new prop: we
+  // simply react to the existing live0Db changing.
+  useEffect(() => {
+    pkAng.value = needleRad.value;
+    pkAge.value = 0;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [LIVE0]);
 
   const ledX = fx + fw - 22;
   const ledY = fy + 20;
@@ -2213,7 +2226,7 @@ export function SplDialView(p: {
   const GOLD_GLOW_OPACITY = 0.13; // CRITICAL BALANCING callout glow — ~13% of full
   const GOLD_GLOW_BLUR = 5;
   const FRAME_GLOW_OPACITY = 0.26; // sweet-spot plate frame — subtle static glow
-  const FRAME_GLOW_BLUR = 4.5;
+  const FRAME_GLOW_BLUR = 13.5; // 3× thicker gold frame (owner 2026-07-30): glow blur scaled to match (4.5→13.5)
 
   // ── CALLOUT LABELS (owner 2026-07-30 redesign v2 — distribute around the WHOLE
   // circle): every descriptive/reference label is placed RADIALLY OUTSIDE its
@@ -2567,12 +2580,15 @@ export function SplDialView(p: {
             true only in the studio 78–82 dB sweet spot, so no mode gating here. */}
         {p.sweetSpot ? (
           <>
-            {/* Subtle STATIC gold frame glow (owner 2026-07-30 v3 — no shimmer/pulse). */}
-            <Path path={G.plate} color="#ffcf40" style="stroke" strokeWidth={5} opacity={FRAME_GLOW_OPACITY}>
+            {/* Subtle STATIC gold frame glow (owner 2026-07-30 v3 — no shimmer/pulse).
+                3× THICKER (owner 2026-07-30): glow stroke scaled with the crisp border
+                (5→15) so the halo grows to match the fatter gold frame. */}
+            <Path path={G.plate} color="#ffcf40" style="stroke" strokeWidth={15} opacity={FRAME_GLOW_OPACITY}>
               <BlurMask blur={FRAME_GLOW_BLUR} style="normal" />
             </Path>
-            {/* Crisp gold frame on top — constant, no animation. */}
-            <Path path={G.plate} color="#ffcf40" style="stroke" strokeWidth={2.4} opacity={0.95} />
+            {/* Crisp gold frame on top — constant, no animation. 3× THICKER
+                (owner 2026-07-30): crisp gold border stroke 2.4→7.2. */}
+            <Path path={G.plate} color="#ffcf40" style="stroke" strokeWidth={7.2} opacity={0.95} />
           </>
         ) : null}
       </Canvas>
@@ -2834,14 +2850,21 @@ export function PeakAvgMeterView(p: {
     } else {
       lAvg.value = Math.max(-120, lAvg.value - 34 * dt);
     }
-    if (showCap) {
-      if (pk >= lHold.value) {
-        lHold.value = pk;
-        lHoldAge.value = 0;
-      } else {
-        lHoldAge.value += dt;
-        if (holdSecs < 1e8 && lHoldAge.value > holdSecs) lHold.value = Math.max(-120, lHold.value - 14 * dt);
-      }
+    // PEAK-HOLD latch — ALWAYS maintained so the white readout AND the bar cap read
+    // the SAME `lHold` and can never disagree (owner 2026-07-30). Honours holdMode:
+    //   'off'   ⇒ lHold simply follows the current peak (no hold),
+    //   '1s'/'3s' ⇒ hold at the max, then decay after holdSecs,
+    //   'inf'   ⇒ latch at the max until reset (holdSecs = 1e9).
+    if (!showCap) {
+      // 'off': track the live peak exactly — no linger.
+      lHold.value = lPk.value;
+      lHoldAge.value = 0;
+    } else if (pk >= lHold.value) {
+      lHold.value = pk;
+      lHoldAge.value = 0;
+    } else {
+      lHoldAge.value += dt;
+      if (holdSecs < 1e8 && lHoldAge.value > holdSecs) lHold.value = Math.max(-120, lHold.value - 14 * dt);
     }
     return lPk.value;
   }, [p.phase, livePeak, liveRms, holdSecs, showCap, LOOP, splOffset]);
@@ -2899,13 +2922,14 @@ export function PeakAvgMeterView(p: {
   }, [lAvg, engine, splOffset]);
 
   const cap = useDerivedValue(() => {
+    // Always drawn, reading the SAME unified `lHold` as the white readout above: in
+    // 'off' mode lHold follows the current peak (cap rides the top of the fill), and
+    // in '1s'/'3s'/'inf' it holds/decays/latches — so cap and readout never disagree.
     const pth = Skia.Path.Make();
-    if (showCap) {
-      const hs = Math.max(SPL_BOT + 1, Math.min(SPL_TOP + 0.4, lHold.value + splOffset));
-      pth.addRect(Skia.XYWHRect(barX, barBot - ((hs - SPL_BOT) / SPL_SPAN) * span - 1.2, barW, 2.4));
-    }
+    const hs = Math.max(SPL_BOT + 1, Math.min(SPL_TOP + 0.4, lHold.value + splOffset));
+    pth.addRect(Skia.XYWHRect(barX, barBot - ((hs - SPL_BOT) / SPL_SPAN) * span - 1.2, barW, 2.4));
     return pth;
-  }, [lHold, engine, showCap, splOffset]);
+  }, [lHold, engine, splOffset]);
 
   // ── LEFT-COLUMN LIVE READOUTS (owner 2026-07-30): two prominent stacked numbers
   // to the LEFT of the bar, driven off the shared values on the UI thread (no React
@@ -2922,12 +2946,15 @@ export function PeakAvgMeterView(p: {
     return { text: t, defaultValue: t } as any;
   }, [liveRms, splOffset]);
   const pkMaxReadoutProps = useAnimatedProps(() => {
-    const cur = engine.value; // current peak — also keeps this worklet ticking
-    const hv = showCap ? lHold.value : cur; // hold latch, or live peak when 'off'
+    // Reads the SAME `lHold` the bar cap draws — the engine maintains it every
+    // frame per holdMode ('off' ⇒ follows the current peak; '1s'/'3s' ⇒ hold then
+    // decay; 'inf' ⇒ latch), so the readout and the cap ALWAYS agree. lHold mutates
+    // each frame, which keeps this worklet ticking.
+    const hv = lHold.value;
     const s = hv === hv && hv > -119 ? Math.max(SPL_BOT, Math.round(hv + splOffset)) : SPL_BOT;
     const t = `${s}`;
     return { text: t, defaultValue: t } as any;
-  }, [engine, lHold, showCap, splOffset]);
+  }, [lHold, splOffset]);
 
   // ── OVER-100 RED FRAME flash colours (owner 2026-07-30): the whole well/frame
   // goes red while the peak is CURRENTLY over 100 dB SPL OR within 0.34 s of the
@@ -2999,32 +3026,8 @@ export function PeakAvgMeterView(p: {
           (equals the VU/dial centre = round(rmsDb + splOffset)); bottom = white
           PEAK-HOLD MAX dB SPL. Labels are static; the numerals ride the shared
           values via animatedProps. */}
-      <Lbl x={roX} y={roMid - 54} w={roW} align="center" size={8.5} font={fonts.oswaldSemiBold} ls={1} color={AVG_PURPLE}>
-        AVG
-      </Lbl>
-      <AnimatedTextInput
-        editable={false}
-        pointerEvents="none"
-        underlineColorAndroid="transparent"
-        animatedProps={avgReadoutProps}
-        style={{
-          position: 'absolute',
-          left: roX,
-          top: roMid - 42,
-          width: roW,
-          padding: 0,
-          textAlign: 'center',
-          fontFamily: fonts.oswaldSemiBold,
-          fontSize: 18,
-          letterSpacing: 0.3,
-          color: '#d69bff',
-          includeFontPadding: false,
-          textShadowColor: 'rgba(0,0,0,0.9)',
-          textShadowRadius: 3,
-          textShadowOffset: { width: 0, height: 1 },
-        }}
-      />
-      <Lbl x={roX} y={roMid + 2} w={roW} align="center" size={8.5} font={fonts.oswaldSemiBold} ls={1} color="#e8eaee">
+      {/* Order (owner 2026-07-30): WHITE PK/MAX on TOP, PURPLE AVG below it. */}
+      <Lbl x={roX} y={roMid - 54} w={roW} align="center" size={8.5} font={fonts.oswaldSemiBold} ls={1} color="#e8eaee">
         PK
       </Lbl>
       <AnimatedTextInput
@@ -3035,7 +3038,7 @@ export function PeakAvgMeterView(p: {
         style={{
           position: 'absolute',
           left: roX,
-          top: roMid + 14,
+          top: roMid - 42,
           width: roW,
           padding: 0,
           textAlign: 'center',
@@ -3049,9 +3052,34 @@ export function PeakAvgMeterView(p: {
           textShadowOffset: { width: 0, height: 1 },
         }}
       />
-      {/* Bottom legend — combined "PK / AVG" on one line, colour-coded: amber PK,
-          purple AVG. */}
-      <Lbl x={wellX} y={barBot + 5} w={wellW * 0.42} align="right" size={9.5} font={fonts.oswaldSemiBold} color="#e0a43a" ls={0.6}>
+      <Lbl x={roX} y={roMid + 2} w={roW} align="center" size={8.5} font={fonts.oswaldSemiBold} ls={1} color={AVG_PURPLE}>
+        AVG
+      </Lbl>
+      <AnimatedTextInput
+        editable={false}
+        pointerEvents="none"
+        underlineColorAndroid="transparent"
+        animatedProps={avgReadoutProps}
+        style={{
+          position: 'absolute',
+          left: roX,
+          top: roMid + 14,
+          width: roW,
+          padding: 0,
+          textAlign: 'center',
+          fontFamily: fonts.oswaldSemiBold,
+          fontSize: 18,
+          letterSpacing: 0.3,
+          color: '#d69bff',
+          includeFontPadding: false,
+          textShadowColor: 'rgba(0,0,0,0.9)',
+          textShadowRadius: 3,
+          textShadowOffset: { width: 0, height: 1 },
+        }}
+      />
+      {/* Bottom legend — combined "PK / AVG" on one line, colour-coded: WHITE PK
+          (matches the white peak readout, owner 2026-07-30), purple AVG, neutral "/". */}
+      <Lbl x={wellX} y={barBot + 5} w={wellW * 0.42} align="right" size={9.5} font={fonts.oswaldSemiBold} color="#ffffff" ls={0.6}>
         PK
       </Lbl>
       <Lbl x={wellX + wellW * 0.42} y={barBot + 5} w={wellW * 0.16} align="center" size={9.5} color="#b6bac4">
