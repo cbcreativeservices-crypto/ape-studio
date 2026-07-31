@@ -245,18 +245,50 @@ function linkIdsFor(term: string, index: TermIndex, selfId: string): string[] {
 }
 
 /** Definition/plain-English text with tappable in-line term links. */
+/**
+ * Search-hit highlighter (owner 2026-08-01): wrap every case-insensitive
+ * occurrence of `q` inside `text` in a GREEN span so the searched word/letters
+ * pop in each result — the reader spots it instantly instead of hunting for it.
+ * Returns the plain string when there's no query or no match (no array overhead).
+ */
+function highlightNodes(text: string, q: string): React.ReactNode {
+  if (!q || !text) return text;
+  const ql = q.toLowerCase();
+  const lower = text.toLowerCase();
+  const out: React.ReactNode[] = [];
+  let i = 0;
+  let idx = lower.indexOf(ql);
+  let key = 0;
+  if (idx === -1) return text;
+  while (idx !== -1) {
+    if (idx > i) out.push(text.slice(i, idx));
+    out.push(
+      <Text key={`h${key++}`} style={styles.hlMatch}>
+        {text.slice(idx, idx + ql.length)}
+      </Text>,
+    );
+    i = idx + ql.length;
+    idx = lower.indexOf(ql, i);
+  }
+  if (i < text.length) out.push(text.slice(i));
+  return out;
+}
+
 function LinkedText({
   text,
   style,
   selfId,
   index,
   onLink,
+  highlight = '',
 }: {
   text: string;
   style: StyleProp<TextStyle>;
   selfId: string;
   index: TermIndex | null;
   onLink: (ids: string[]) => void;
+  /** Active search query — occurrences are highlighted green in plain segments. */
+  highlight?: string;
 }) {
   const segs = useMemo(
     () => (index ? linkSegments(text, index, selfId) : [{ text } as LinkSeg]),
@@ -270,7 +302,7 @@ function LinkedText({
             {s.text}
           </Text>
         ) : (
-          <Text key={i}>{s.text}</Text>
+          <Text key={i}>{highlightNodes(s.text, highlight)}</Text>
         ),
       )}
     </Text>
@@ -1230,7 +1262,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
       <View style={styles.chipRow}>
         <Chip
           label="All"
-          accent="#ffffff"
+          accent="#37e05f"
           active={filter === 'all'}
           onPress={() => {
             setFilter('all');
@@ -1297,7 +1329,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
         />
         <Chip
           label="Recent"
-          accent="#37e05f"
+          accent="#ffffff"
           active={filter === 'recent'}
           onLongPress={() => setTermListModal({ title: 'Recent', kind: 'recent' })}
           onPress={() => {
@@ -1362,13 +1394,16 @@ export function GlossaryScreen({ route, navigation }: Props) {
           ListEmptyComponent={
             loading ? null : <Text style={styles.empty}>No results for {search.trim() || filterLabel}</Text>
           }
-          extraData={[expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById]}
+          extraData={[expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search]}
           renderItem={({ item }) => {
             // List view expands INLINE; card view stays compact and opens the
             // popup overlay instead (below).
             const expanded = !cardView && expandedIds.has(item.id);
             const d = details[item.id];
             const mediaUrl = mediaById[item.id];
+            // Active search query → highlight its occurrences GREEN in the term
+            // and definition so the reader spots it (owner 2026-08-01).
+            const hq = search.trim();
             return (
               <Pressable
                 style={cardView ? styles.cardItem : [styles.entry, expanded && styles.entryExpanded]}
@@ -1397,7 +1432,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
                         expanded && styles.termExpanded,
                       ]}
                     >
-                      {item.term}
+                      {highlightNodes(item.term, hq)}
                     </Text>
                     {/* Danger flag sits right next to the term (Booth 2026-07-15). */}
                     {isHazardTerm(item.term) ? <CautionBadge iconOnly /> : null}
@@ -1476,13 +1511,14 @@ export function GlossaryScreen({ route, navigation }: Props) {
                     selfId={item.id}
                     index={termIndex}
                     onLink={onLinkPress}
+                    highlight={hq}
                   />
                 ) : (
                   <Text
                     style={[styles.definition, ttsBeg && styles.definitionBeg]}
                     numberOfLines={cardView ? 2 : undefined}
                   >
-                    {ttsBeg ? item.plain_english || item.definition : item.definition}
+                    {highlightNodes(ttsBeg ? item.plain_english || item.definition : item.definition, hq)}
                   </Text>
                 )}
 
@@ -2155,6 +2191,10 @@ const styles = StyleSheet.create({
   // In-definition cross-links (Feature 1) — distinct but not heavy. Color is
   // the halfway point between link blue #7fbfff and body text #e6e6e6 so
   // dense text still reads smoothly (Booth 2026-07-10).
+  // Search-hit highlight (owner 2026-08-01): the matched letters print GREEN
+  // (colour only, so they keep the surrounding font) so they stand out in the
+  // term + definition and the reader spots the searched word instantly.
+  hlMatch: { color: '#37e05f' },
   termLink: {
     // One shade darker blue (user request 2026-07-18).
     color: '#9fbede',
