@@ -33,7 +33,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import Svg, { Defs, Line, LinearGradient, Path, Rect, Stop, Text as SvgText } from 'react-native-svg';
+import Svg, { Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import * as Crypto from 'expo-crypto';
 import { ApeDsp, type WaveBucket } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
@@ -56,17 +56,19 @@ const ENGINE_HISTORY_SEC = ENGINE_HISTORY_BUCKETS * BUCKET_SEC;
 const PANEL_H = 240;
 /** Vertical inset of the drawable area (leaves the clip-tick lane at top). */
 const PAD_V = 16;
-/** Scope trace + accents (waveform tool tint — teal, toolsData). */
+/** Accent for clip ticks / axis (teal, toolsData). */
 const TRACE = '#5fd9c4';
+/** The waveform fill — AMBER, drawn solid like a DAW (owner 2026-07-31). */
+const AMBER = '#ffb52e';
+const AMBER_RMS = '#ffd27a';
 
 /** Vertical zoom chips — owner 2026-07-29: ×6 added, DEFAULT ×4. */
 const ZOOMS = [1, 2, 4, 6] as const;
 type Zoom = (typeof ZOOMS)[number];
 const DEFAULT_ZOOM: Zoom = 4;
 
-/** Time-window chips (seconds of history shown) — owner asked 2–7 s, engine
- *  history caps at 6 s (see ENGINE_HISTORY_BUCKETS), DEFAULT 5 s. */
-const WINDOWS = [2, 3, 4, 5, 6] as const;
+/** Time-window chips (seconds of history shown) — owner 2026-07-31: 1–5 s. */
+const WINDOWS = [1, 2, 3, 4, 5] as const;
 type WindowSec = (typeof WINDOWS)[number];
 const DEFAULT_WINDOW: WindowSec = 5;
 
@@ -180,33 +182,55 @@ export function WaveformScreen({ navigation }: Props) {
     const y = (v: number) => Math.min(PANEL_H - 2, Math.max(2, rawY(v)));
     const colW = panelW / windowBuckets;
 
-    let top = ''; // max edge, oldest → newest
-    let bottomFwd = ''; // min edge, oldest → newest (outline)
-    let bottomRev = ''; // min edge, newest → oldest (closes the area)
+    // PER-PIXEL min/max envelope (owner 2026-07-31): sample the bucket envelope at
+    // EVERY screen pixel (linearly interpolated between bucket centres) so the
+    // waveform is drawn as finely as the screen allows — one filled amber body,
+    // like a DAW, not a coarse outlined trace.
+    const sampleAt = (px: number) => {
+      let f = n - 0.5 - (panelW - px) / colW; // fractional bucket index at this x
+      if (f < 0) f = 0;
+      if (f > n - 1) f = n - 1;
+      const i0 = Math.floor(f);
+      const i1 = Math.min(n - 1, i0 + 1);
+      const t = f - i0;
+      const a = displayBuckets[i0];
+      const b = displayBuckets[i1];
+      return {
+        max: a.max + (b.max - a.max) * t,
+        min: a.min + (b.min - a.min) * t,
+        rms: a.rms + (b.rms - a.rms) * t,
+      };
+    };
+    let top = ''; // max edge, left → right
+    let bottomRev = ''; // min edge, right → left (closes the area)
     let rmsTop = '';
     let rmsRev = '';
     let clip = '';
-    for (let i = 0; i < n; i++) {
-      const b = displayBuckets[i];
-      const x = (panelW - (n - i - 0.5) * colW).toFixed(1);
-      let y1 = y(b.max);
-      let y2 = y(b.min);
+    const W = Math.round(panelW);
+    for (let px = 0; px <= W; px++) {
+      const s = sampleAt(px);
+      let y1 = y(s.max);
+      let y2 = y(s.min);
       if (y2 - y1 < 1) {
         // Hairline floor so near-silence still draws a visible 1px band.
         y1 -= 0.5;
         y2 += 0.5;
       }
-      const cmd = i === 0 ? 'M' : 'L';
-      top += `${cmd}${x},${y1.toFixed(1)}`;
-      bottomFwd += `${cmd}${x},${y2.toFixed(1)}`;
-      bottomRev = `L${x},${y2.toFixed(1)}` + bottomRev;
-      rmsTop += `${cmd}${x},${y(b.rms).toFixed(1)}`;
-      rmsRev = `L${x},${y(-b.rms).toFixed(1)}` + rmsRev;
-      if (b.clipped) clip += `M${x},4L${x},12`;
+      const cmd = px === 0 ? 'M' : 'L';
+      top += `${cmd}${px},${y1.toFixed(1)}`;
+      bottomRev = `L${px},${y2.toFixed(1)}` + bottomRev;
+      rmsTop += `${cmd}${px},${y(s.rms).toFixed(1)}`;
+      rmsRev = `L${px},${y(-s.rms).toFixed(1)}` + rmsRev;
+    }
+    // Clip ticks stay per REAL bucket (a bucket either clipped or it didn't).
+    for (let i = 0; i < n; i++) {
+      if (displayBuckets[i].clipped) {
+        const x = (panelW - (n - i - 0.5) * colW).toFixed(1);
+        clip += `M${x},4L${x},12`;
+      }
     }
     return {
       area: top + bottomRev + 'Z',
-      outline: top + bottomFwd,
       rmsArea: rmsTop + rmsRev + 'Z',
       clip,
       observed,
@@ -267,6 +291,29 @@ export function WaveformScreen({ navigation }: Props) {
 
         {running ? (
           <>
+            {/* Live readouts — ABOVE the viewer (owner 2026-07-31). Real meter
+                frame only; peak NEVER clamped (F1). */}
+            <View style={styles.statGrid}>
+              <Pressable style={styles.statCell} onLongPress={() => help('peak')} delayLongPress={260}>
+                <Text style={styles.statLabel}>PEAK</Text>
+                <Text style={styles.statValue}>
+                  {fmtDb(meter?.peakDb)}
+                  <Text style={styles.statUnit}> dBFS</Text>
+                </Text>
+              </Pressable>
+              <Pressable style={styles.statCell} onLongPress={() => help('clip_runs')} delayLongPress={260}>
+                <Text style={styles.statLabel}>CLIP RUNS</Text>
+                <Text style={styles.statValue}>{meter ? meter.clipRuns : '—'}</Text>
+              </Pressable>
+              <Pressable style={styles.statCell} onLongPress={() => help('window')} delayLongPress={260}>
+                <Text style={styles.statLabel}>WINDOW</Text>
+                <Text style={styles.statValue}>
+                  {shownSec.toFixed(1)}
+                  <Text style={styles.statUnit}> s</Text>
+                </Text>
+              </Pressable>
+            </View>
+
             {/* Oscilloscope panel — REAL buckets only (§11 View 1). */}
             <View style={styles.scopeCard}>
               <View
@@ -275,14 +322,6 @@ export function WaveformScreen({ navigation }: Props) {
               >
                 {panelW > 0 ? (
                   <Svg width={panelW} height={PANEL_H}>
-                    <Defs>
-                      {/* Envelope fill — bright toward the peaks, airy center. */}
-                      <LinearGradient id="wfFill" x1="0" y1="0" x2="0" y2="1">
-                        <Stop offset="0" stopColor={TRACE} stopOpacity={0.38} />
-                        <Stop offset="0.5" stopColor={TRACE} stopOpacity={0.08} />
-                        <Stop offset="1" stopColor={TRACE} stopOpacity={0.38} />
-                      </LinearGradient>
-                    </Defs>
                     {/* ±1 reference lines + marks (hidden if zoomed off-panel). */}
                     {scope?.oneVisible ? (
                       <>
@@ -313,14 +352,11 @@ export function WaveformScreen({ navigation }: Props) {
                     </SvgText>
                     {scope ? (
                       <>
-                        {/* Min/max envelope — gradient-filled area… */}
-                        <Path d={scope.area} fill="url(#wfFill)" />
-                        {/* …RMS energy core… */}
-                        <Path d={scope.rmsArea} fill={TRACE} opacity={0.3} />
-                        {/* …and the envelope edge: wide translucent glow pass,
-                            then the crisp trace on top. */}
-                        <Path d={scope.outline} stroke={TRACE} opacity={0.2} strokeWidth={4.5} fill="none" strokeLinejoin="round" />
-                        <Path d={scope.outline} stroke={TRACE} opacity={0.95} strokeWidth={1.5} fill="none" strokeLinejoin="round" />
+                        {/* DAW-style solid AMBER waveform (owner 2026-07-31): the
+                            peak (min/max) body filled solid, a brighter RMS core on
+                            top — no outline, no glow. */}
+                        <Path d={scope.area} fill={AMBER} opacity={0.92} />
+                        <Path d={scope.rmsArea} fill={AMBER_RMS} opacity={0.9} />
                         {/* Clipped buckets — red ticks in the top lane. */}
                         {scope.clip !== '' ? (
                           <Path d={scope.clip} stroke={colors.red} strokeWidth={scope.clipW} />
@@ -349,13 +385,13 @@ export function WaveformScreen({ navigation }: Props) {
               {ZOOMS.map((z) => (
                 <Pressable
                   key={z}
-                  style={[styles.chip, zoom === z && styles.chipActive]}
+                  style={[styles.chip, zoom === z && styles.chipGreen]}
                   onPress={() => setZoom(z)}
                   accessibilityRole="button"
                   accessibilityState={{ selected: zoom === z }}
                   accessibilityLabel={`Vertical zoom ${z} times`}
                 >
-                  <Text style={[styles.chipText, zoom === z && styles.chipTextActive]}>×{z}</Text>
+                  <Text style={[styles.chipText, zoom === z && styles.chipTextGreen]}>×{z}</Text>
                 </Pressable>
               ))}
               <Pressable
@@ -378,13 +414,13 @@ export function WaveformScreen({ navigation }: Props) {
               {WINDOWS.map((w) => (
                 <Pressable
                   key={w}
-                  style={[styles.chip, windowSec === w && styles.chipActive]}
+                  style={[styles.chip, windowSec === w && styles.chipBlue]}
                   onPress={() => setWindowSec(w)}
                   accessibilityRole="button"
                   accessibilityState={{ selected: windowSec === w }}
                   accessibilityLabel={`Time window ${w} seconds`}
                 >
-                  <Text style={[styles.chipText, windowSec === w && styles.chipTextActive]}>{w}s</Text>
+                  <Text style={[styles.chipText, windowSec === w && styles.chipTextBlue]}>{w}s</Text>
                 </Pressable>
               ))}
             </View>
@@ -393,32 +429,9 @@ export function WaveformScreen({ navigation }: Props) {
               <Text style={styles.liveWarn}>Vertical zoom changes display size, not audio level.</Text>
             ) : null}
             <Text style={styles.settingsNote}>
-              Zoom and window change the display only — capture keeps running unchanged. The engine
-              keeps {ENGINE_HISTORY_SEC.toFixed(0)} s of real waveform history, so the window tops
-              out at {ENGINE_HISTORY_SEC.toFixed(0)} s.
+              Zoom and window change the display only — capture keeps running unchanged.
             </Text>
 
-            {/* Live readouts — real meter frame only; peak NEVER clamped (F1). */}
-            <View style={styles.statGrid}>
-              <Pressable style={styles.statCell} onLongPress={() => help('peak')} delayLongPress={260}>
-                <Text style={styles.statLabel}>PEAK</Text>
-                <Text style={styles.statValue}>
-                  {fmtDb(meter?.peakDb)}
-                  <Text style={styles.statUnit}> dBFS</Text>
-                </Text>
-              </Pressable>
-              <Pressable style={styles.statCell} onLongPress={() => help('clip_runs')} delayLongPress={260}>
-                <Text style={styles.statLabel}>CLIP RUNS</Text>
-                <Text style={styles.statValue}>{meter ? meter.clipRuns : '—'}</Text>
-              </Pressable>
-              <Pressable style={styles.statCell} onLongPress={() => help('window')} delayLongPress={260}>
-                <Text style={styles.statLabel}>WINDOW</Text>
-                <Text style={styles.statValue}>
-                  {shownSec.toFixed(1)}
-                  <Text style={styles.statUnit}> s</Text>
-                </Text>
-              </Pressable>
-            </View>
             <Text style={styles.calNote}>Levels are dBFS · uncalibrated approximate — not dB SPL.</Text>
 
             {/* Live quality warnings (spec §6) — same flags stored on save. */}
@@ -527,6 +540,11 @@ const styles = StyleSheet.create({
   },
   chipWide: { flex: 1.6 },
   chipActive: { borderColor: 'rgba(95,217,196,.6)', backgroundColor: '#10171a' },
+  // ZOOM = green, WINDOW = blue (owner 2026-07-31).
+  chipGreen: { borderColor: 'rgba(55,224,95,.65)', backgroundColor: '#0c2012' },
+  chipTextGreen: { color: '#37e05f' },
+  chipBlue: { borderColor: 'rgba(93,151,255,.65)', backgroundColor: '#101f36' },
+  chipTextBlue: { color: '#7fa8ff' },
   chipFrozen: { borderColor: 'rgba(127,212,255,.6)', backgroundColor: '#0d151a' },
   chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.2, color: colors.textSecondary },
   chipTextActive: { color: TRACE },
