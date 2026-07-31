@@ -21,9 +21,10 @@
  *    (never SPL: calibration does not exist), with a CAP badge while locked;
  *  - leaving the screen stops the generator AND re-locks the cap.
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Svg, { Defs, Line, LinearGradient, Path, Stop } from 'react-native-svg';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ApeDsp, GEN_MODES, type GenModeName, type GenStatus } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
@@ -31,6 +32,7 @@ import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { EngineGate } from './EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
+import { MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 import { colors, fonts } from '../../theme/tokens';
 import { toolByKey } from './toolsData';
 import { useToolHelp, HelpHead } from '../../features/lab/guidedLessons';
@@ -96,6 +98,185 @@ function Chip({ label, selected, onPress }: { label: string; selected: boolean; 
     >
       <Text style={[styles.chipText, selected && styles.chipTextSelected]}>{label}</Text>
     </Pressable>
+  );
+}
+
+// ---- WAVEFORM DISPLAY (owner 2026-07-31) --------------------------------
+// A synthetic PREVIEW of the signal the controls are building — this screen is
+// a pure source with no microphone, so this is an honest illustration (shape
+// from SIGNAL, cycle count from FREQUENCY/SWEEP, click count from TEMPO, height
+// from LEVEL), NOT a captured measurement. Amplitude is drawn with the house
+// MIDI-velocity level ramp (blue at the zero line → red at full scale).
+const SCOPE_H = 96;
+const SCOPE_N = 260;
+const SCOPE_FS = (SCOPE_H / 2) * 0.92; // pixels representing ±full scale (0 dBFS)
+
+/** Deterministic pseudo-random value in [−1, 1] (stable per index — the noise
+ *  preview shouldn't reshuffle on every re-render). */
+const hashNoise = (i: number) => {
+  const x = Math.sin(i * 12.9898) * 43758.5453;
+  return 2 * (x - Math.floor(x)) - 1;
+};
+
+/** Map a frequency to a representative on-screen cycle count (log scale). */
+const cyclesFor = (hz: number) =>
+  Math.max(1, Math.min(12, 1 + Math.log10(Math.max(20, hz) / 20) * 2.2));
+
+/** Unit-amplitude (−1..1) sample array illustrating the SHAPE of `mode`. */
+function unitShape(
+  mode: GenModeName,
+  freq: number,
+  bpm: number,
+  sweepStart: number,
+  sweepEnd: number,
+): number[] {
+  const N = SCOPE_N;
+  const out = new Array<number>(N).fill(0);
+  const isNoise =
+    mode === 'white' || mode === 'pink' || mode === 'brown' || mode === 'blue' || mode === 'violet';
+
+  if (isNoise) {
+    const raw = new Array<number>(N);
+    for (let i = 0; i < N; i++) raw[i] = hashNoise(i + 1);
+    if (mode === 'white') {
+      for (let i = 0; i < N; i++) out[i] = raw[i];
+    } else if (mode === 'pink') {
+      let p = 0; // mild low tilt
+      for (let i = 0; i < N; i++) ((p = 0.55 * p + 0.45 * raw[i]), (out[i] = p));
+    } else if (mode === 'brown') {
+      let b = 0; // strong low tilt — smooth wander
+      for (let i = 0; i < N; i++) ((b = 0.86 * b + 0.14 * raw[i]), (out[i] = b));
+    } else if (mode === 'blue') {
+      for (let i = 0; i < N; i++) out[i] = raw[i] - (raw[i - 1] ?? 0); // high tilt
+    } else {
+      for (let i = 0; i < N; i++) out[i] = (raw[i] - 2 * (raw[i - 1] ?? 0) + (raw[i - 2] ?? 0)) * 0.6;
+    }
+    let m = 0;
+    for (let i = 0; i < N; i++) m = Math.max(m, Math.abs(out[i]));
+    if (m > 0) for (let i = 0; i < N; i++) out[i] /= m; // normalize peak to 1
+    return out;
+  }
+
+  if (mode === 'click') {
+    const clicks = Math.max(2, Math.min(8, Math.round(bpm / 30)));
+    for (let c = 0; c < clicks; c++) {
+      const center = Math.round(((c + 0.5) / clicks) * (N - 1));
+      out[center] = 1;
+      if (center - 1 >= 0) out[center - 1] = 0.4;
+      if (center + 1 < N) out[center + 1] = -0.3;
+    }
+    return out;
+  }
+
+  if (mode === 'sweepLin' || mode === 'sweepLog') {
+    const c0 = cyclesFor(sweepStart);
+    const c1 = Math.max(c0 + 0.5, cyclesFor(sweepEnd));
+    for (let i = 0; i < N; i++) {
+      const x = i / (N - 1);
+      const phase =
+        mode === 'sweepLin'
+          ? 2 * Math.PI * (c0 * x + (c1 - c0) * x * x * 0.5)
+          : 2 * Math.PI * ((c0 * (Math.pow(c1 / c0, x) - 1)) / Math.log(c1 / c0));
+      out[i] = Math.sin(phase);
+    }
+    return out;
+  }
+
+  // sine / burst
+  const cycles = Math.round(cyclesFor(freq) * 1.2);
+  for (let i = 0; i < N; i++) {
+    const x = i / (N - 1);
+    let v = Math.sin(2 * Math.PI * cycles * x);
+    if (mode === 'burst') {
+      const w = x < 0.15 || x > 0.85 ? 0 : 0.5 - 0.5 * Math.cos((2 * Math.PI * (x - 0.15)) / 0.7);
+      v *= w; // Hann-windowed tone burst over the middle ~70%
+    }
+    out[i] = v;
+  }
+  return out;
+}
+
+function GenScope({
+  mode,
+  freq,
+  levelDb,
+  bpm,
+  sweepStart,
+  sweepEnd,
+}: {
+  mode: GenModeName;
+  freq: number;
+  levelDb: number;
+  bpm: number;
+  sweepStart: number;
+  sweepEnd: number;
+}) {
+  const [w, setW] = useState(0);
+  // Height tracks LEVEL along the dBFS window (−60…0 → 0…1) so louder = taller
+  // = redder, consistent with the meters.
+  const amp = Math.max(0, Math.min(1, (levelDb - LEVEL_MIN_DB) / (LEVEL_MAX_DB - LEVEL_MIN_DB)));
+  const mid = SCOPE_H / 2;
+  const linePath = useMemo(() => {
+    if (w <= 0) return '';
+    const pts = unitShape(mode, freq, bpm, sweepStart, sweepEnd);
+    let d = '';
+    for (let i = 0; i < pts.length; i++) {
+      const x = (i / (pts.length - 1)) * w;
+      const y = mid - pts[i] * amp * SCOPE_FS;
+      d += `${d ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`;
+    }
+    return d;
+  }, [w, mode, freq, amp, bpm, sweepStart, sweepEnd, mid]);
+
+  return (
+    <View style={styles.scopePanel}>
+      <View style={{ width: '100%' }} onLayout={(e) => setW(Math.round(e.nativeEvent.layout.width))}>
+        {w > 0 ? (
+          <Svg width={w} height={SCOPE_H}>
+            <Defs>
+              <LinearGradient
+                id="genWaveLevel"
+                x1={0}
+                y1={mid - SCOPE_FS}
+                x2={0}
+                y2={mid + SCOPE_FS}
+                gradientUnits="userSpaceOnUse"
+              >
+                {WAVE_LEVEL_STOPS.map((s) => (
+                  <Stop key={s.offset} offset={s.offset} stopColor={s.color} />
+                ))}
+              </LinearGradient>
+            </Defs>
+            {/* Zero line — always MIDI-0 blue (amplitude colour standard). */}
+            <Line x1={0} y1={mid} x2={w} y2={mid} stroke={MIDLINE_BLUE} strokeWidth={1} />
+            {/* Level-coloured trace: soft glow pass under the crisp core. */}
+            <Path
+              d={linePath}
+              stroke="url(#genWaveLevel)"
+              strokeWidth={5}
+              fill="none"
+              opacity={0.16}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <Path
+              d={linePath}
+              stroke="url(#genWaveLevel)"
+              strokeWidth={1.8}
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </Svg>
+        ) : (
+          <View style={{ height: SCOPE_H }} />
+        )}
+      </View>
+      <Text style={styles.caption}>
+        Illustrative view of the generated signal — shape from SIGNAL, cycles from FREQUENCY/SWEEP,
+        height from LEVEL. Not a microphone capture.
+      </Text>
+    </View>
   );
 }
 
@@ -285,6 +466,17 @@ export function SignalGenScreen({ navigation }: Props) {
               ))}
             </View>
 
+            {/* WAVEFORM — live preview of the signal the controls are building. */}
+            <HelpHead title="WAVEFORM" onHelp={() => help('signal')} style={styles.sectionHead} />
+            <GenScope
+              mode={mode}
+              freq={freq}
+              levelDb={levelDb}
+              bpm={bpm}
+              sweepStart={sweepStart}
+              sweepEnd={sweepEnd}
+            />
+
             {/* FREQUENCY — applies to sine/burst. */}
             {showFreq ? (
               <>
@@ -467,6 +659,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#131316',
     padding: 12,
     gap: 10,
+  },
+
+  // Waveform preview panel (owner 2026-07-31) — dark plot well + caption.
+  scopePanel: {
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#0c0c0f',
+    padding: 10,
+    gap: 6,
   },
 
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
