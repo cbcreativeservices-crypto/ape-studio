@@ -88,6 +88,18 @@ export function removeBundle(key: string): void {
   commit(list.filter((b) => b.key !== key));
 }
 
+/** Reorder: shift a stored bundle one step up (dir −1) or down (dir +1) in the
+ *  list — the drag-to-sort primitive, mirroring enrollmentStore.moveTopic. */
+export function moveBundle(key: string, dir: -1 | 1): void {
+  const i = list.findIndex((b) => b.key === key);
+  if (i < 0) return;
+  const j = i + dir;
+  if (j < 0 || j >= list.length) return;
+  const next = [...list];
+  [next[i], next[j]] = [next[j], next[i]];
+  commit(next);
+}
+
 /** LOAD (true) / UNLOAD (false) — toggles the bundle's topics on the Dashboard. */
 export function setBundleLoaded(key: string, loaded: boolean): void {
   commit(list.map((b) => (b.key === key ? { ...b, loaded } : b)));

@@ -15,7 +15,7 @@
  * drag uses an estimated row height (no gesture lib).
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Animated, Modal, PanResponder, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Animated, Modal, PanResponder, Pressable, ScrollView, StyleSheet, Text, View, type GestureResponderEvent } from 'react-native';
 import { HoldToActivate } from '../../components/HoldToActivate';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -50,6 +50,7 @@ import {
 import {
   addBundle,
   bundleKey,
+  moveBundle,
   removeBundle,
   setBundleLoaded,
   useBundles,
@@ -75,7 +76,7 @@ const GREEN = '#37e05f';
 const BLUE = '#7fbfff';
 const GRAY = '#6b6b6b';
 const PURPLE = '#c4a2ff';
-const DRAG_ROW_H = 150; // estimated card height for the ☰ step-drag
+const DRAG_ROW_H = 84; // drag distance per reorder step (tuned for collapsed + expanded cards)
 
 type FilterKey = 'az' | 'home' | 'done' | 'new';
 
@@ -172,15 +173,18 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   // it POPS out (springs up + shadow) to become a draggable object; then drag
   // up/down to reorder and release to drop it. A 2 s timer (started on touch,
   // cancelled if the finger moves = a scroll, or lifts early) fires the pop even
-  // before any movement; liftedGsRef marks the lifted row for the drag responder.
+  // before any movement; liftedIdRef marks the lifted row for the drag responder.
   const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const liftedGsRef = useRef<number | null>(null);
+  // The lifted container is keyed by the SAME id used for collapse (`t:<gs>` for
+  // topics, the bundle key for awards) so ONE mechanism reorders both, whether the
+  // card is collapsed or expanded.
+  const liftedIdRef = useRef<string | null>(null);
   const touchStartRef = useRef({ x: 0, y: 0 });
   const liftAnim = useRef(new Animated.Value(0)).current;
-  const [liftedGs, setLiftedGs] = useState<number | null>(null);
-  const beginLift = (gs: number) => {
-    liftedGsRef.current = gs;
-    setLiftedGs(gs);
+  const [liftedId, setLiftedId] = useState<string | null>(null);
+  const beginLift = (id: string) => {
+    liftedIdRef.current = id;
+    setLiftedId(id);
     Animated.spring(liftAnim, { toValue: 1, useNativeDriver: true, friction: 5, tension: 90 }).start();
   };
   const endLift = () => {
@@ -188,9 +192,9 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
       clearTimeout(holdTimer.current);
       holdTimer.current = null;
     }
-    if (liftedGsRef.current == null) return;
-    liftedGsRef.current = null;
-    Animated.timing(liftAnim, { toValue: 0, duration: 160, useNativeDriver: true }).start(() => setLiftedGs(null));
+    if (liftedIdRef.current == null) return;
+    liftedIdRef.current = null;
+    Animated.timing(liftAnim, { toValue: 0, duration: 160, useNativeDriver: true }).start(() => setLiftedId(null));
   };
   // Clear a pending hold timer on unmount.
   useEffect(() => () => {
@@ -218,21 +222,92 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
       else n.add(id);
       return n;
     });
-  // Horizontal swipe on a container toggles its collapse (owner 2026-07-31):
-  // swipe LEFT to collapse an expanded card, swipe RIGHT to expand a collapsed
-  // one. Only claims clearly-horizontal drags, so vertical scrolling and the
-  // press-hold-to-reorder gesture still work; the pager is locked on this page so
-  // nothing competes for the horizontal gesture.
-  const swipeCollapse = (id: string) =>
+  // Unified per-container gesture (owner 2026-07-31). ONE PanResponder handles
+  // both: a QUICK horizontal flick toggles collapse (left = collapse an expanded
+  // card, right = expand a collapsed one); a 2 s STILL-HOLD lifts the container
+  // (pop) and a vertical drag then reorders the list — works collapsed OR
+  // expanded, for topics AND awards. `move` reorders by ±1 (moveTopic/moveBundle);
+  // pass null for the read-only "you qualify" derived cards (swipe only, no sort).
+  // The pager is locked on this page, so nothing competes for the horizontal drag.
+  const containerPan = (id: string, move: ((dir: -1 | 1) => void) | null) =>
     PanResponder.create({
-      onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dx) > 16 && Math.abs(g.dx) > Math.abs(g.dy) * 1.6,
+      onMoveShouldSetPanResponder: (_e, g) => {
+        if (liftedIdRef.current === id) return true; // lifted → drag to reorder
+        return Math.abs(g.dx) > 16 && Math.abs(g.dx) > Math.abs(g.dy) * 1.6; // horizontal flick
+      },
+      onMoveShouldSetPanResponderCapture: () => liftedIdRef.current === id,
+      onPanResponderTerminationRequest: () => liftedIdRef.current !== id,
+      onPanResponderGrant: () => {
+        dragAccum.current = 0;
+      },
+      onPanResponderMove: (_e, g) => {
+        if (liftedIdRef.current !== id || !move) return; // only while lifted
+        const step = Math.trunc((g.dy - dragAccum.current) / DRAG_ROW_H);
+        if (step !== 0) {
+          const dir: -1 | 1 = step > 0 ? 1 : -1;
+          for (let k = 0; k < Math.abs(step); k++) move(dir);
+          dragAccum.current += step * DRAG_ROW_H;
+        }
+      },
       onPanResponderRelease: (_e, g) => {
+        if (liftedIdRef.current === id) {
+          endLift();
+          return;
+        }
         if (Math.abs(g.dx) < 44) return;
         const isColl = collapsed.has(id);
         if (isColl && g.dx > 0) toggleCollapse(id); // swipe right → expand
         else if (!isColl && g.dx < 0) toggleCollapse(id); // swipe left → collapse
       },
+      onPanResponderTerminate: () => {
+        if (liftedIdRef.current === id) endLift();
+      },
     });
+  // The 2 s hold-to-lift timer, attached as touch props to reorderable containers
+  // only when the list is in its raw custom order (no filters).
+  const reorderTouchProps = (id: string) => ({
+    onTouchStart: (ev: GestureResponderEvent) => {
+      touchStartRef.current = { x: ev.nativeEvent.pageX, y: ev.nativeEvent.pageY };
+      if (holdTimer.current) clearTimeout(holdTimer.current);
+      holdTimer.current = setTimeout(() => beginLift(id), 2000);
+    },
+    onTouchMove: (ev: GestureResponderEvent) => {
+      if (liftedIdRef.current === id) return; // already dragging
+      const dx = ev.nativeEvent.pageX - touchStartRef.current.x;
+      const dy = ev.nativeEvent.pageY - touchStartRef.current.y;
+      if (Math.hypot(dx, dy) > 12 && holdTimer.current) {
+        clearTimeout(holdTimer.current); // moved before the hold fired → a scroll
+        holdTimer.current = null;
+      }
+    },
+    onTouchEnd: () => {
+      if (holdTimer.current) {
+        clearTimeout(holdTimer.current);
+        holdTimer.current = null;
+      }
+      if (liftedIdRef.current === id) endLift();
+    },
+    onTouchCancel: () => {
+      if (holdTimer.current) {
+        clearTimeout(holdTimer.current);
+        holdTimer.current = null;
+      }
+      if (liftedIdRef.current === id) endLift();
+    },
+  });
+  // The lift pop transform, shared by every liftable container.
+  const liftStyle = (id: string) =>
+    liftedId === id
+      ? [
+          styles.cardLifted,
+          {
+            transform: [
+              { scale: liftAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 1.06] }) },
+              { translateY: liftAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -4] }) },
+            ],
+          },
+        ]
+      : null;
   // Mirror the collapse/expand UI state into the module cache so RETURNING to the
   // screen restores it exactly as the user left it (owner 2026-07-30).
   useEffect(() => {
@@ -648,7 +723,12 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
     const allLoaded = b.topics.length > 0 && b.topics.every((gs) => activeGs.has(gs));
     if (collapsed.has(b.key)) {
       return (
-        <View key={b.key} {...swipeCollapse(b.key).panHandlers}>
+        <Animated.View
+          key={b.key}
+          {...containerPan(b.key, (dir) => moveBundle(b.key, dir)).panHandlers}
+          {...(customOrder ? reorderTouchProps(b.key) : {})}
+          style={liftStyle(b.key)}
+        >
         <Pressable style={[styles.bundleCard, kindCard, done && styles.bundleDone, styles.collapsedCard]} onPress={() => toggleCollapse(b.key)} accessibilityRole="button" accessibilityLabel={`Expand ${b.name}`}>
           <Text style={styles.collapseTri}>▸</Text>
           <Text style={[styles.bundleTag, { color: tint, borderColor: tint }]}>{kindLabel}</Text>
@@ -661,11 +741,16 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             <Text style={styles.topicRemoveText}>✕</Text>
           </Pressable>
         </Pressable>
-        </View>
+        </Animated.View>
       );
     }
     return (
-      <View key={b.key} style={[styles.bundleCard, kindCard, done && styles.bundleDone]} {...swipeCollapse(b.key).panHandlers}>
+      <Animated.View
+        key={b.key}
+        style={[styles.bundleCard, kindCard, done && styles.bundleDone, liftStyle(b.key)]}
+        {...containerPan(b.key, (dir) => moveBundle(b.key, dir)).panHandlers}
+        {...(customOrder ? reorderTouchProps(b.key) : {})}
+      >
         <View style={styles.cardTop}>
           <Pressable style={styles.collapseBtn} onPress={() => toggleCollapse(b.key)} hitSlop={6} accessibilityRole="button" accessibilityLabel={`Collapse ${b.name}`}>
             <Text style={styles.collapseTri}>▾</Text>
@@ -743,7 +828,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             <Text style={styles.removeTopicsText}>REMOVE AWARD</Text>
           </Pressable>
         </View>
-      </View>
+      </Animated.View>
     );
   };
 
@@ -759,7 +844,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
     const allLoaded = d.topics.length > 0 && d.topics.every((gs) => activeGs.has(gs));
     if (collapsed.has(d.key)) {
       return (
-        <View key={d.key} {...swipeCollapse(d.key).panHandlers}>
+        <View key={d.key} {...containerPan(d.key, null).panHandlers}>
         <Pressable style={[styles.bundleCard, kindCard, done && styles.bundleDone, styles.collapsedCard]} onPress={() => toggleCollapse(d.key)} accessibilityRole="button" accessibilityLabel={`Expand ${d.name}`}>
           <Text style={styles.collapseTri}>▸</Text>
           <Text style={[styles.bundleTag, { color: tint, borderColor: tint }]}>{kindLabel}</Text>
@@ -772,7 +857,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
       );
     }
     return (
-      <View key={d.key} style={[styles.bundleCard, kindCard, done && styles.bundleDone]} {...swipeCollapse(d.key).panHandlers}>
+      <View key={d.key} style={[styles.bundleCard, kindCard, done && styles.bundleDone]} {...containerPan(d.key, null).panHandlers}>
         <View style={styles.cardTop}>
           <Pressable style={styles.collapseBtn} onPress={() => toggleCollapse(d.key)} hitSlop={6} accessibilityRole="button" accessibilityLabel={`Collapse ${d.name}`}>
             <Text style={styles.collapseTri}>▾</Text>
@@ -1049,38 +1134,18 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             const coreLocked = isCore && pct < 100;
             const showActive = coreLocked || e.active;
             const activeGreen = acc && showActive;
-            // Press-hold-to-lift reorder (custom order only, user request
-            // 2026-07-23): DON'T claim on touch (list scrolls freely); only claim
-            // a vertical drag AFTER the finger has been held ~1s — then the row
-            // lifts and drags reposition it live (survives the re-render per move).
-            // Once the 2 s hold has LIFTED this row, the drag responder claims the
-            // move and repositions it live (survives the re-render per move). Until
-            // then it stays unclaimed so the list scrolls freely.
-            const reorderPan = customOrder
-              ? PanResponder.create({
-                  onMoveShouldSetPanResponder: () => liftedGsRef.current === e.gs,
-                  onMoveShouldSetPanResponderCapture: () => liftedGsRef.current === e.gs,
-                  onPanResponderTerminationRequest: () => liftedGsRef.current !== e.gs,
-                  onPanResponderGrant: () => {
-                    dragAccum.current = 0;
-                  },
-                  onPanResponderMove: (_evt, g) => {
-                    const step = Math.trunc((g.dy - dragAccum.current) / DRAG_ROW_H);
-                    if (step !== 0) {
-                      const dir = step > 0 ? 1 : -1;
-                      for (let k = 0; k < Math.abs(step); k++) moveTopic(e.gs, dir);
-                      dragAccum.current += step * DRAG_ROW_H;
-                    }
-                  },
-                  onPanResponderRelease: endLift,
-                  onPanResponderTerminate: endLift,
-                })
-              : null;
-            const isLifted = liftedGs === e.gs;
+            // Reorder (custom order only): hold 2 s to lift, drag to sort. The
+            // gesture lives on the container wrapper via containerPan/reorderTouch.
             const tid = `t:${e.gs}`;
+            const moveThis = (dir: -1 | 1) => moveTopic(e.gs, dir);
             if (collapsed.has(tid)) {
               return (
-                <View key={e.gs} {...swipeCollapse(tid).panHandlers}>
+                <Animated.View
+                  key={e.gs}
+                  {...containerPan(tid, moveThis).panHandlers}
+                  {...(customOrder ? reorderTouchProps(tid) : {})}
+                  style={liftStyle(tid)}
+                >
                 <Pressable style={[styles.card, !e.active && styles.cardInactive, isCore && styles.cardCore, styles.collapsedCard]} onPress={() => toggleCollapse(tid)} accessibilityRole="button" accessibilityLabel={`Expand ${nameFor(e.gs)}`}>
                   <Text style={styles.collapseTri}>▸</Text>
                   <Text style={styles.collapsedTitle} numberOfLines={1}>
@@ -1101,69 +1166,22 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                     <DeckIcon color={showActive ? colors.blue : GRAY} fill={showActive ? BLUE : '#8a8a8a'} size={22} />
                   </Pressable>
                 </Pressable>
-                </View>
+                </Animated.View>
               );
             }
             return (
-              <View key={e.gs} {...swipeCollapse(tid).panHandlers}>
               <Animated.View
+                key={e.gs}
+                {...containerPan(tid, moveThis).panHandlers}
+                {...(customOrder ? reorderTouchProps(tid) : {})}
+                style={liftStyle(tid)}
+              >
+              <View
                 style={[
                   styles.card,
                   !e.active && styles.cardInactive,
                   isCore && styles.cardCore,
-                  isLifted && styles.cardLifted,
-                  isLifted && {
-                    transform: [
-                      { scale: liftAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 1.06] }) },
-                      { translateY: liftAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -4] }) },
-                    ],
-                  },
                 ]}
-                {...(reorderPan ? reorderPan.panHandlers : {})}
-                onTouchStart={
-                  customOrder
-                    ? (ev) => {
-                        touchStartRef.current = { x: ev.nativeEvent.pageX, y: ev.nativeEvent.pageY };
-                        if (holdTimer.current) clearTimeout(holdTimer.current);
-                        holdTimer.current = setTimeout(() => beginLift(e.gs), 2000);
-                      }
-                    : undefined
-                }
-                onTouchMove={
-                  customOrder
-                    ? (ev) => {
-                        if (liftedGsRef.current === e.gs) return; // already lifted → dragging
-                        const dx = ev.nativeEvent.pageX - touchStartRef.current.x;
-                        const dy = ev.nativeEvent.pageY - touchStartRef.current.y;
-                        if (Math.hypot(dx, dy) > 12 && holdTimer.current) {
-                          clearTimeout(holdTimer.current); // moved before the hold fired → a scroll
-                          holdTimer.current = null;
-                        }
-                      }
-                    : undefined
-                }
-                onTouchEnd={
-                  customOrder
-                    ? () => {
-                        if (holdTimer.current) {
-                          clearTimeout(holdTimer.current);
-                          holdTimer.current = null;
-                        }
-                        if (liftedGsRef.current === e.gs) endLift();
-                      }
-                    : undefined
-                }
-                onTouchCancel={
-                  customOrder
-                    ? () => {
-                        if (holdTimer.current) {
-                          clearTimeout(holdTimer.current);
-                          holdTimer.current = null;
-                        }
-                        if (liftedGsRef.current === e.gs) endLift();
-                      }
-                    : undefined
-                }
               >
                 {/* Row 1 — collapse triangle · white title. Press-HOLD the card
                     ~1s to lift it, then drag up/down to reorder (user request
@@ -1250,8 +1268,8 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                     <HoldToRemove onComplete={() => removeTopic(e.gs)} accessibilityLabel="Remove from enrollment" />
                   ) : null}
                 </View>
-              </Animated.View>
               </View>
+              </Animated.View>
             );
           })
         )}
