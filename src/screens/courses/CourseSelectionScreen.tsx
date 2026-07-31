@@ -216,7 +216,7 @@ function rawCardTitle(item: Card): string | null {
     case 'glossary':
       return 'Professional Audio Glossary';
     case 'lab':
-      return 'Ear Training & Audio Lab';
+      return 'Sound Fundamentals and Audio Lab';
     case 'freeTopic':
     case 'public':
     case 'comingTopic':
@@ -458,7 +458,7 @@ function CourseCardView({
             style={StyleSheet.absoluteFill}
           />
           <View>
-            <Text style={styles.cardTitle}>Ear Training & Audio Lab</Text>
+            <Text style={styles.cardTitle}>Sound Fundamentals and Audio Lab</Text>
           </View>
           <View style={{ alignItems: 'center' }}>
             <View style={{ width: CARD_BTN_W }}>

@@ -15,7 +15,6 @@
  */
 import { useEffect } from 'react';
 import { AppState, Pressable, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fonts } from '../../theme/tokens';
 import { checkLowLightExpiry, LOW_LIGHT_DIM, toggleLowLight, useLowLight } from './lowLight';
 
@@ -23,10 +22,9 @@ import { checkLowLightExpiry, LOW_LIGHT_DIM, toggleLowLight, useLowLight } from 
 // indicator hue, deliberately distinct from the audio-output frame's red.
 const EMBER = '#c2540f';
 
-/** Dim wash + red "active" line — both shown only when low-light is ON. */
+/** Dim wash + red tint — shown only when low-light is ON. */
 export function LowLightDim() {
   const on = useLowLight();
-  const insets = useSafeAreaInsets();
   // Auto-revert after 12h UNTOUCHED (owner 2026-07-30): foreground only CHECKS
   // expiry (reverts if the app was away past the window) — the clock is
   // refreshed by real user touches via the root touch-capture (App.tsx),
@@ -45,11 +43,9 @@ export function LowLightDim() {
           (owner 2026-08-01) — full-bleed from y=0 so it also tints the status-bar
           region (clock, cell, Wi-Fi, battery background) as far as the app can
           reach. The OS's own status-bar glyphs are composited above the app and
-          can't be recoloured from JS, but everything the app draws is tinted. */}
+          can't be recoloured from JS, but everything the app draws is tinted.
+          The old red "active" top line is removed (owner 2026-08-01). */}
       <View pointerEvents="none" style={styles.redWash} />
-      {/* Sits ABOVE the wash (higher zIndex) so it stays a crisp, bright red
-          indicator that the mode is active. */}
-      <View pointerEvents="none" style={[styles.activeLine, { top: insets.top }]} />
     </>
   );
 }
@@ -98,20 +94,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: 'rgba(255,45,30,0.05)',
     zIndex: 55,
-  },
-  activeLine: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    // Doubled 2 → 4 px (owner request 2026-07-26) to match the audio frame's
-    // new weight.
-    height: 4,
-    backgroundColor: EMBER,
-    // Still dimmed to 15% brightness so the indicator doesn't throw light in a
-    // dark theater (user request 2026-07-18) — the warm ember reads gentler
-    // than red at this low level.
-    opacity: 0.15,
-    zIndex: 60,
   },
   row: {
     flexDirection: 'row',
