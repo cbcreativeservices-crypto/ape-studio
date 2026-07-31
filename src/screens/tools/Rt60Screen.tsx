@@ -485,6 +485,10 @@ export function Rt60Screen({ navigation }: Props) {
               loud, short sound — the engine triggers automatically, records 3.5 seconds, and fits
               the decay. Get the phone away from soft surfaces and hold still during the capture.
             </Text>
+            {/* Show the decay viewer up front (owner 2026-07-31) — the plot frame,
+                fit-region markers and axes render before any capture, so the
+                screen isn't blank while waiting for a measurement. */}
+            <DecayCurve curveDb={rt60?.curveDb ?? []} stepSec={rt60?.curveStepSec ?? 0.05} />
             <GlassButton
               label={state === 'starting' ? 'STARTING…' : 'START'}
               tint="green"
@@ -494,6 +498,10 @@ export function Rt60Screen({ navigation }: Props) {
           </>
         ) : (
           <>
+            {/* Decay viewer stays mounted through READY/ARMED/RECORDING (owner
+                2026-07-31) — the plot is already on screen; the trace fills in
+                when the capture completes rather than appearing only at DONE. */}
+            <DecayCurve curveDb={rt60?.curveDb ?? []} stepSec={rt60?.curveStepSec ?? 0.05} />
             {/* Armed / recording guidance — status lamp + live level bar. */}
             <View style={[styles.stagePanel, rtState === 2 && styles.stagePanelHot]}>
               <View style={styles.stageTitleRow}>
