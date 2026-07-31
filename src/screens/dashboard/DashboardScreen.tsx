@@ -35,7 +35,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { StudyStackParamList } from '../../navigation/types';
-import Svg, { Circle, Rect, Defs, LinearGradient as SvgLinearGradient, Stop, Line } from 'react-native-svg';
+import Svg, { Circle, Rect, Defs, LinearGradient as SvgLinearGradient, Stop, Line, Pattern } from 'react-native-svg';
 import { AppHeader } from '../../components/AppHeader';
 import { DeckIcon } from '../../components/DeckIcon';
 import { ElevatedFrame } from '../../components/ElevatedFrame';
@@ -92,27 +92,39 @@ const METHOD_ORDER: { key: MethodKey; label: string }[] = [
 // container absolutely BEHIND the content; the parent ElevatedFrame already
 // clips to its rounded corners (own overflow:hidden wrapper as a second clip).
 // viewBox 0..100 with preserveAspectRatio="none" stretches to any panel size.
-const BLACK_STRIA = [8, 20, 33, 47, 61, 74, 88];
-const METAL_STRIA = [5, 12, 20, 28, 36, 44, 52, 60, 68, 76, 84, 92];
 
 /** BLACK FACE — the LA-2A near-black matte control panel with a subtle vertical
  *  brushed grain (for the study-method panels; existing light-on-black content
  *  stays legible). */
+// GRAY textured rack-blank face (owner 2026-08-01) — modeled on the SPL 500-rack
+// blank panels: a medium-gray vertical gradient (lighter upper-mid, darker top &
+// bottom edges) with a fine bead-blasted GRIT (a tiled speck pattern), not the
+// old near-black brushed face. The debossed titles were already tuned for a gray
+// floor, so they read correctly here.
 function BlackFaceBg() {
   return (
     <View pointerEvents="none" style={styles.textureFill}>
       <Svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
         <Defs>
-          <SvgLinearGradient id="apeBlackFace" x1="0" y1="0" x2="0" y2="1">
-            <Stop offset="0" stopColor="#0b0b0c" />
-            <Stop offset="0.5" stopColor="#17171a" />
-            <Stop offset="1" stopColor="#0b0b0c" />
+          <SvgLinearGradient id="apeGrayFace" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0" stopColor="#3a3a3e" />
+            <Stop offset="0.42" stopColor="#46464b" />
+            <Stop offset="1" stopColor="#2c2c30" />
           </SvgLinearGradient>
+          {/* Fine bead-blasted grit — a 5×5 tile of tiny light/dark specks, tiled
+              across the face for a sandblasted texture. */}
+          <Pattern id="apeGrit" width={5} height={5} patternUnits="userSpaceOnUse">
+            <Circle cx={1} cy={1.2} r={0.4} fill="rgba(255,255,255,0.07)" />
+            <Circle cx={3.4} cy={2} r={0.35} fill="rgba(0,0,0,0.13)" />
+            <Circle cx={2.2} cy={3.8} r={0.32} fill="rgba(255,255,255,0.05)" />
+            <Circle cx={4.3} cy={4.4} r={0.3} fill="rgba(0,0,0,0.10)" />
+          </Pattern>
         </Defs>
-        <Rect x="0" y="0" width="100" height="100" fill="url(#apeBlackFace)" />
-        {BLACK_STRIA.map((x, i) => (
-          <Line key={i} x1={x} y1="0" x2={x} y2="100" stroke="rgba(255,255,255,0.03)" strokeWidth={0.5} />
-        ))}
+        <Rect x="0" y="0" width="100" height="100" fill="url(#apeGrayFace)" />
+        <Rect x="0" y="0" width="100" height="100" fill="url(#apeGrit)" />
+        {/* Top lit lip + bottom shadow so each blank reads as its own mounted panel. */}
+        <Line x1="0" y1="0.6" x2="100" y2="0.6" stroke="rgba(255,255,255,0.16)" strokeWidth={0.7} />
+        <Line x1="0" y1="99.4" x2="100" y2="99.4" stroke="rgba(0,0,0,0.4)" strokeWidth={0.9} />
       </Svg>
     </View>
   );
@@ -122,38 +134,6 @@ function BlackFaceBg() {
  *  MID-tone metallic vertical gradient with a lighter top edge, a darker bottom,
  *  and fine vertical striations alternating light/dark. Mid-tone keeps the quiz's
  *  dark engraved title + dark LED boxes legible. */
-function BrushedMetalBg() {
-  return (
-    <View pointerEvents="none" style={styles.textureFill}>
-      <Svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
-        <Defs>
-          <SvgLinearGradient id="apeBrushedMetal" x1="0" y1="0" x2="0" y2="1">
-            <Stop offset="0" stopColor="#a9adb3" />
-            <Stop offset="0.5" stopColor="#d4d7db" />
-            <Stop offset="1" stopColor="#b2b6bb" />
-          </SvgLinearGradient>
-        </Defs>
-        <Rect x="0" y="0" width="100" height="100" fill="url(#apeBrushedMetal)" />
-        {/* light-silver top-edge highlight + slightly darker bottom — the LA-2A /
-            1176 brushed-aluminum look; quiz text is dark so it reads well on it. */}
-        <Rect x="0" y="0" width="100" height="2.5" fill="rgba(255,255,255,0.4)" />
-        <Rect x="0" y="97" width="100" height="3" fill="rgba(0,0,0,0.14)" />
-        {METAL_STRIA.map((x, i) => (
-          <Line
-            key={i}
-            x1={x}
-            y1="0"
-            x2={x}
-            y2="100"
-            stroke={i % 2 === 0 ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.11)'}
-            strokeWidth={0.5}
-          />
-        ))}
-      </Svg>
-    </View>
-  );
-}
-
 /** Panel mounting screw (Booth 2026-07-10) — BLACK phillips head. `angle`
  *  rotates the slots: mostly cardinal, a few a hair off-true like a real rack
  *  (#4). */
@@ -1010,11 +990,9 @@ export function DashboardScreen() {
             No static amber accent — the animated quizPulseBorder is the only
             amber cue, so the scenarios→quiz seam matches every method frame. */}
         <ElevatedFrame depressed={false} chrome contentStyle={styles.methodInner}>
-          {/* LA-2A BRUSHED-METAL chassis texture behind the quiz content (owner
-              request 2026-07-25): mid-tone brushed aluminum. The quiz title is
-              already near-black (#0d0d0d) and every status readout sits in its
-              own dark LED box, so it stays legible on the metal — no scrim. */}
-          <BrushedMetalBg />
+          {/* Gray textured rack-blank face, same as the method panels (owner
+              2026-08-01) — the quiz now matches the rest of the rack. */}
+          <BlackFaceBg />
           {quizState === 'locked' && (
             <Animated.View pointerEvents="none" style={[styles.quizPulseBorder, { opacity: pulseOpacity }]} />
           )}
@@ -1053,7 +1031,9 @@ export function DashboardScreen() {
                       <MethodIcon
                         method="quiz"
                         size={46}
-                        glowColor={quizState !== 'passed' ? METHOD_COLORS.quiz : undefined}
+                        // Frame lights ONCE PASSED (done cue) — matches the method
+                        // icons; was inverted (lit until passed), owner 2026-08-01.
+                        glowColor={quizState === 'passed' ? METHOD_COLORS.quiz : undefined}
                       />
                     </View>
                   </View>
@@ -1061,7 +1041,7 @@ export function DashboardScreen() {
                     {/* Engraved title + square status LED box, same as the
                         method panels (Booth 2026-07-11). */}
                     <View style={styles.methodTopRow}>
-                      <EngravedTitle text="TOPIC QUIZ" fillColor="#0d0d0d" />
+                      <EngravedTitle text="TOPIC QUIZ" />
                       <View style={[styles.cutoutMount, styles.pctBox]}>
                         <Text style={[styles.pctDigits, { color: qColor }]} numberOfLines={1}>
                           {qShort}
