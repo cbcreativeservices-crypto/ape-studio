@@ -519,19 +519,30 @@ function LivePitchMode({
   return (
     <>
       {kind === 'sound' ? (
-        <View style={styles.readout}>
+        // Tapping the readout toggles START/STOP (owner 2026-07-31).
+        <Pressable
+          style={styles.readout}
+          onPress={running ? onStop : onStart}
+          accessibilityRole="button"
+          accessibilityLabel={running ? 'Tap to stop capture' : 'Tap to start capture'}
+        >
           <Text style={[styles.readoutValue, isHeld && styles.readoutDim]}>
             {shownFreq != null ? fmtHz(shownFreq) : '—'}
           </Text>
           <Text style={styles.readoutUnit}>Hz</Text>
-        </View>
+        </Pressable>
       ) : (
         <>
-          <View style={styles.readout}>
+          <Pressable
+            style={styles.readout}
+            onPress={running ? onStop : onStart}
+            accessibilityRole="button"
+            accessibilityLabel={running ? 'Tap to stop capture' : 'Tap to start capture'}
+          >
             <Text style={[styles.readoutValue, isHeld && styles.readoutDim]}>
               {note ? `${note.name}${note.octave}` : '—'}
             </Text>
-          </View>
+          </Pressable>
           {/* Cents needle: real deviation on a ±50¢ scale; the green band is
               the ±5¢ in-tune zone. */}
           <View style={styles.centsScale}>

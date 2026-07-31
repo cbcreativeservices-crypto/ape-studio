@@ -949,7 +949,7 @@ export function MultiMeterScreen({ navigation }: Props) {
         </Pressable>
         <Pressable style={styles.statusCell} onLongPress={() => help('peak')} delayLongPress={350}>
           <Text style={styles.statusLabel}>PEAK</Text>
-          <Text style={[styles.statusValue, meter != null && meter.peakDb >= 0 && styles.statusHot]}>
+          <Text style={[styles.statusValue, styles.statusValuePeak, meter != null && meter.peakDb >= 0 && styles.statusHot]}>
             {meter ? fmtDb(meter.peakDb) : '—'}
           </Text>
         </Pressable>
@@ -972,7 +972,7 @@ export function MultiMeterScreen({ navigation }: Props) {
               <Text style={styles.statusReset}>⟲</Text>
             </Pressable>
           </View>
-          <Text style={[styles.statusValue, meter != null && meter.peakHoldDb >= 0 && styles.statusHot]}>
+          <Text style={[styles.statusValue, styles.statusValuePeak, meter != null && meter.peakHoldDb >= 0 && styles.statusHot]}>
             {meter ? fmtDb(meter.peakHoldDb) : '—'}
           </Text>
         </Pressable>
@@ -1505,6 +1505,7 @@ const styles = StyleSheet.create({
   statusHoldRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   statusLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.2, color: colors.textSub },
   statusValue: { fontFamily: fonts.mono, fontSize: 17, color: colors.textPrimary },
+  statusValuePeak: { color: '#ff5a48' }, // peak text readouts are always red (owner 2026-07-31)
   statusHot: { color: colors.red },
   statusReset: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: '#c9d6e4', marginTop: -2 },
   statusUnit: {

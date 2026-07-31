@@ -262,7 +262,20 @@ function bandLabels(centers: number[]): { i: number; text: string }[] {
 const fmtDb = (v: number | undefined) =>
   v != null && Number.isFinite(v) ? `${v > 0 ? '+' : ''}${v.toFixed(1)}` : '—';
 
-function StatCell({ label, value, unit, help }: { label: string; value: string; unit?: string; help?: (key: string) => void }) {
+function StatCell({
+  label,
+  value,
+  unit,
+  help,
+  peak,
+}: {
+  label: string;
+  value: string;
+  unit?: string;
+  help?: (key: string) => void;
+  /** Peak text readout (owner 2026-07-31): the top peak number always prints RED. */
+  peak?: boolean;
+}) {
   return (
     <Pressable
       style={styles.statCell}
@@ -272,7 +285,7 @@ function StatCell({ label, value, unit, help }: { label: string; value: string; 
       accessibilityLabel={help ? `${label} — what it shows` : label}
     >
       <Text style={styles.statLabel}>{label}</Text>
-      <Text style={styles.statValue}>
+      <Text style={[styles.statValue, peak && styles.statValuePeak]}>
         {value}
         {unit ? <Text style={styles.statUnit}> {unit}</Text> : null}
       </Text>
@@ -690,14 +703,21 @@ export function RtaScreen({ navigation }: Props) {
 
         {(state === 'running' || micPaused) && (
           <>
-            <BandsPanel bands={displayBands} mode={mode} alpha={alpha} />
+            {/* Tapping the display toggles START/STOP (owner 2026-07-31). */}
+            <Pressable
+              onPress={state === 'running' ? onStop : onStart}
+              accessibilityRole="button"
+              accessibilityLabel={state === 'running' ? 'Tap to stop capture' : 'Tap to start capture'}
+            >
+              <BandsPanel bands={displayBands} mode={mode} alpha={alpha} />
+            </Pressable>
             <DisplayGuideButton onPress={helpAll} />
 
             {/* Numeric truth row — peak may exceed 0 dBFS (F1): print it.
                 Long-press any cell for what it shows. */}
             <View style={styles.statGrid}>
-              <StatCell help={help} label="PEAK" value={fmtDb(meter?.peakDb)} unit="dBFS" />
-              <StatCell help={help} label="PEAK HOLD" value={fmtDb(meter?.peakHoldDb)} unit="dBFS" />
+              <StatCell help={help} label="PEAK" value={fmtDb(meter?.peakDb)} unit="dBFS" peak />
+              <StatCell help={help} label="PEAK HOLD" value={fmtDb(meter?.peakHoldDb)} unit="dBFS" peak />
               <StatCell help={help} label="BANDS" value={displayBands ? String(displayBands.centers.length) : '—'} />
             </View>
 
@@ -853,6 +873,7 @@ const styles = StyleSheet.create({
   },
   statLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textSub },
   statValue: { fontFamily: fonts.mono, fontSize: 19, color: colors.textPrimary },
+  statValuePeak: { color: '#ff5a48' }, // peak text readouts are always red (owner 2026-07-31)
   statUnit: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: colors.amberLabel },
 
   // Live warning line (spec §6) — amber, plain language.
