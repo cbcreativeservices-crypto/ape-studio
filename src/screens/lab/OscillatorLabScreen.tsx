@@ -31,9 +31,9 @@
  * keepalive → stop on toggle/blur/unmount.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
-import Svg, { Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { Defs, Line, LinearGradient, Path, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import Animated, {
   Easing,
   cancelAnimation,
@@ -59,6 +59,7 @@ import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { LabShell, LabChip, SpeakerOutputToggle, CollapsibleSection, HeaderPlayButton } from './LabShell';
 import { additivePayload, buildPreset, effectiveAmp, synthWaveform, type PresetKey } from './harmonicModel';
+import { WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 
 const GEN_LEVEL_DB = -20; // Q4 default; cap stays locked
 const ACTIVITY_MS = 500; // 2 Hz keepalive (SignalGen idiom)
@@ -225,7 +226,14 @@ export function OscillatorLabScreen() {
           <Text style={styles.badge}>
             {speakerView ? `PHONE SPEAKER OUTPUT — ${SPEAKER_HPF_HZ} Hz HPF APPLIED` : 'ANALYTIC MODEL — NOT A MEASUREMENT'}
           </Text>
-          <TravelingWaveStrip points={waveformPts} />
+          {/* Tapping the display toggles play/stop (owner 2026-07-31). */}
+          <Pressable
+            onPress={engineReady ? () => (running ? stopTone() : void startTone()) : undefined}
+            accessibilityRole="button"
+            accessibilityLabel={running ? 'Tap to stop' : 'Tap to play'}
+          >
+            <TravelingWaveStrip points={waveformPts} />
+          </Pressable>
           <Text style={styles.caption}>
             {speakerView
               ? 'The waveform after the speaker high-pass, traveling as a wave does — low partials removed, so the shape flattens toward its upper harmonics.'
@@ -317,6 +325,10 @@ const AnimatedRect = Animated.createAnimatedComponent(Rect);
 
 const STRIP_H = 96;
 const CYCLE_MS = 1600; // one waveform period per lap — a calm, readable drift
+// Level-colour axis for the waveform (loudness ramp keyed to amplitude — red at
+// ±full scale, deep green at the zero line). v=±1 maps to ±STRIP_H/2.2 (see y()).
+const OSC_GRAD_Y0 = STRIP_H / 2 - STRIP_H / 2.2;
+const OSC_GRAD_Y1 = STRIP_H / 2 + STRIP_H / 2.2;
 
 /** The TRAVELING waveform strip (visual standards 2026-07-29): 3 exact model
  *  cycles are drawn once as a single path 1.5× the viewport wide, then slid
@@ -358,10 +370,18 @@ function TravelingWaveStrip({ points }: { points: number[] }) {
       {w > 0 ? (
         <Animated.View style={[{ width: w * 1.5 }, slide]}>
           <Svg width={w * 1.5} height={STRIP_H}>
+            <Defs>
+              <LinearGradient id="oscWaveLevel" x1={0} y1={OSC_GRAD_Y0} x2={0} y2={OSC_GRAD_Y1} gradientUnits="userSpaceOnUse">
+                {WAVE_LEVEL_STOPS.map((s) => (
+                  <Stop key={s.offset} offset={s.offset} stopColor={s.color} />
+                ))}
+              </LinearGradient>
+            </Defs>
             <Line x1={0} y1={STRIP_H / 2} x2={w * 1.5} y2={STRIP_H / 2} stroke="#22222a" strokeWidth={1} />
-            {/* Soft glow pass under the crisp core stroke (standards §2). */}
-            <Path d={d} stroke={colors.amber} strokeWidth={4.5} fill="none" opacity={0.14} strokeLinecap="round" />
-            <Path d={d} stroke={colors.amber} strokeWidth={1.6} fill="none" />
+            {/* Level-coloured waveform (SPL-VU standard): soft glow pass under the
+                crisp core stroke (standards §2). */}
+            <Path d={d} stroke="url(#oscWaveLevel)" strokeWidth={4.5} fill="none" opacity={0.14} strokeLinecap="round" />
+            <Path d={d} stroke="url(#oscWaveLevel)" strokeWidth={1.6} fill="none" />
           </Svg>
         </Animated.View>
       ) : (
