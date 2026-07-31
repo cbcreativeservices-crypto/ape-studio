@@ -362,6 +362,8 @@ export function DashboardScreen() {
   // Whether the user's Custom List shows as a synthetic current-topic here
   // (toggled from the Enrollment screen). Device-local; default off.
   const customOnDashboard = useCustomOnDashboard();
+  const customOnDashboardRef = useRef(customOnDashboard);
+  customOnDashboardRef.current = customOnDashboard;
 
   // Learning intros (user request 2026-07-18): a COURSE intro before beginning
   // a course and a TOPIC intro before beginning each topic. Auto-shown once
@@ -456,13 +458,20 @@ export function DashboardScreen() {
       // after that the stored index wins. Movement itself is free — the old
       // per-topic gate is gone (user request 2026-07-17), so the stored index
       // is clamped only to the real array bounds, not the frontier.
-      let frontier = 0;
-      d.topics.forEach((t, i) => {
+      // The carousel order is CUSTOM-first then alphabetical (owner 2026-08-01),
+      // so map the frontier topic's ID to its index in THAT reordered list.
+      let frontierId: string | null = null;
+      d.topics.forEach((t) => {
         const st = d.progressByTopic.get(t.id)?.status ?? 'locked';
-        if (st !== 'locked') frontier = i;
+        if (st !== 'locked') frontierId = t.id;
       });
+      const orderedIds = [
+        ...(customOnDashboardRef.current ? [FLAGGED_TOPIC_ID] : []),
+        ...[...d.topics].sort((a, b) => a.name.localeCompare(b.name)).map((t) => t.id),
+      ];
+      const frontier = frontierId ? Math.max(0, orderedIds.indexOf(frontierId)) : 0;
       const stored = await getLastTopicIndex(d.currentCourse.id);
-      setTopicIdx(stored != null ? Math.min(stored, d.topics.length - 1) : frontier);
+      setTopicIdx(stored != null ? Math.min(stored, orderedIds.length - 1) : frontier);
       setData(d);
     } catch (e: any) {
       setErrorCode(e?.message ?? 'unknown');
@@ -540,11 +549,12 @@ export function DashboardScreen() {
     icon_url: null,
     global_sequence: null,
   };
-  const topics = data
-    ? customOnDashboard
-      ? [...data.topics, customTopic]
-      : data.topics
-    : [];
+  // Scroll order (owner 2026-08-01): the ★ CUSTOM LIST is ALWAYS first (far
+  // left), then the enrolled topics alphabetically left→right. data.topics keeps
+  // its course order for the progress/frontier logic; only this carousel is
+  // reordered.
+  const sortedTopics = data ? [...data.topics].sort((a, b) => a.name.localeCompare(b.name)) : [];
+  const topics = data ? (customOnDashboard ? [customTopic, ...sortedTopics] : sortedTopics) : [];
   const topic = topics[topicIdx];
   const isCustom = topic?.id === FLAGGED_TOPIC_ID;
 
@@ -603,7 +613,7 @@ export function DashboardScreen() {
 
   // Topic card tap → all terms in the topic (Booth 2026-07-18). Lazy-fetched
   // per open; list is display-only with a jump-off into the Glossary.
-  const topicIdForTerms = data?.topics[topicIdx]?.id;
+  const topicIdForTerms = topic?.id;
   const openTerms = useCallback(async () => {
     if (!topicIdForTerms) return;
     setTermsSource('topic');
