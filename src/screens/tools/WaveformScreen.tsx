@@ -33,11 +33,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import Svg, { G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { Defs, G, Line, LinearGradient, Path, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import * as Crypto from 'expo-crypto';
 import { ApeDsp, type WaveBucket } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
+import { WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO } from '../../features/tools/measure/types';
@@ -58,21 +59,16 @@ const PANEL_H = 240;
 const PAD_V = 16;
 /** Accent for clip ticks / axis (teal, toolsData). */
 const TRACE = '#5fd9c4';
-/** The waveform fill — AMBER, drawn solid like a DAW (owner 2026-07-31). */
-const AMBER = '#ffb52e';
-const AMBER_RMS = '#ffd27a';
-/** Peak (clip) events + the next 0.1 s turn the waveform RED. */
-const WAVE_RED = '#ff4b3a';
 
 /** Vertical zoom chips — owner 2026-07-29: ×6 added, DEFAULT ×4. */
 const ZOOMS = [1, 2, 4, 6] as const;
 type Zoom = (typeof ZOOMS)[number];
 const DEFAULT_ZOOM: Zoom = 4;
 
-/** Time-window chips (seconds of history shown) — owner 2026-07-31: 1–5 s. */
-const WINDOWS = [1, 2, 3, 4, 5] as const;
+/** Time-window chips (seconds of history shown) — owner 2026-07-31: 0.5–4 s. */
+const WINDOWS = [0.5, 1, 2, 3, 4] as const;
 type WindowSec = (typeof WINDOWS)[number];
-const DEFAULT_WINDOW: WindowSec = 5;
+const DEFAULT_WINDOW: WindowSec = 4;
 
 /** Honest dBFS formatting — NEVER clamps; peak can exceed 0 dBFS (F1). */
 const fmtDb = (v: number | undefined | null) =>
@@ -212,26 +208,11 @@ export function WaveformScreen({ navigation }: Props) {
         rms: a.rms + (b.rms - a.rms) * t,
       };
     };
-    // Red-on-peak mask (owner 2026-07-31): a CLIPPED bucket (a real over-0-dBFS
-    // peak) paints ITS segment + the next 0.1 s of waveform RED as it scrolls by.
-    const redSpan = Math.max(1, Math.round(0.1 / BUCKET_SEC)); // buckets in 0.1 s
-    const red = new Array<boolean>(n).fill(false);
-    for (let i = 0; i < n; i++) {
-      if (displayBuckets[i].clipped) {
-        for (let k = 0; k <= redSpan; k++) if (i + k < n) red[i + k] = true;
-      }
-    }
-    const fAt = (px: number) => Math.min(n - 1, Math.max(0, n - 0.5 - (panelW - px) / colW));
-
     let top = ''; // max edge, left → right
     let bottomRev = ''; // min edge, right → left (closes the area)
     let rmsTop = '';
     let rmsRev = '';
     let clip = '';
-    let redArea = ''; // filled sub-areas over the red (peak) pixel runs
-    let runTop = '';
-    let runBotRev = '';
-    let inRun = false;
     const W = Math.round(panelW);
     for (let px = 0; px <= W; px++) {
       const s = sampleAt(px);
@@ -247,18 +228,7 @@ export function WaveformScreen({ navigation }: Props) {
       bottomRev = `L${px},${y2.toFixed(1)}` + bottomRev;
       rmsTop += `${cmd}${px},${y(s.rms).toFixed(1)}`;
       rmsRev = `L${px},${y(-s.rms).toFixed(1)}` + rmsRev;
-      if (red[Math.round(fAt(px))]) {
-        runTop += `${inRun ? 'L' : 'M'}${px},${y1.toFixed(1)}`;
-        runBotRev = `L${px},${y2.toFixed(1)}` + runBotRev;
-        inRun = true;
-      } else if (inRun) {
-        redArea += runTop + runBotRev + 'Z';
-        runTop = '';
-        runBotRev = '';
-        inRun = false;
-      }
     }
-    if (inRun) redArea += runTop + runBotRev + 'Z';
     // Clip ticks stay per REAL bucket (a bucket either clipped or it didn't).
     for (let i = 0; i < n; i++) {
       if (displayBuckets[i].clipped) {
@@ -266,20 +236,38 @@ export function WaveformScreen({ navigation }: Props) {
         clip += `M${x},4L${x},12`;
       }
     }
+    // Level-colour gradient axis (owner 2026-07-31): the loudness ramp is keyed to
+    // TRUE amplitude — red at ±full scale, deep green at the zero line — mapped in
+    // panel pixels so the colour tracks level regardless of vertical zoom.
+    // fullPix = pixels from the centre line to |amp| = 1.0 (0 dBFS).
+    const fullPix = (zoom * usable) / scaleMax;
+    const gradY0 = half - fullPix; // +full scale (top) → red
+    const gradY1 = half + fullPix; // −full scale (bottom) → red
     // dB scale on the LEFT edge — scales with zoom (y() includes zoom): each dB
     // below full-scale sits at its amplitude, mirrored above/below the zero line.
+    // Thin out marks that would collide (esp. the low-level ones crowding the zero
+    // line at low zoom): keep a mark only if it clears the last kept one by ≥12 px.
+    const MIN_TICK_GAP = 12;
+    let lastKept = -Infinity;
     const dbTicks = [0, -6, -12, -18, -24, -30]
-      .map((db) => ({ db, amp: Math.pow(10, db / 20) }))
-      .filter((t) => rawY(t.amp) >= 9 && rawY(t.amp) <= half - 2)
+      .map((db) => ({ db, amp: Math.pow(10, db / 20), ry: rawY(Math.pow(10, db / 20)) }))
+      .filter((t) => t.ry >= 9 && t.ry <= half - 2)
+      .filter((t) => {
+        if (half - t.ry < MIN_TICK_GAP) return false; // too close to the −∞ zero line
+        if (t.ry - lastKept < MIN_TICK_GAP) return false; // collides with the last kept mark
+        lastKept = t.ry;
+        return true;
+      })
       .map((t) => ({ db: t.db, yTop: y(t.amp), yBot: y(-t.amp) }));
     return {
       area: top + bottomRev + 'Z',
       rmsArea: rmsTop + rmsRev + 'Z',
-      redArea,
       dbTicks,
       clip,
       observed,
       scaleMax,
+      gradY0,
+      gradY1,
       clipW: Math.max(1.5, colW * 0.8),
     };
   }, [displayBuckets, panelW, zoom, windowBuckets]);
@@ -342,7 +330,7 @@ export function WaveformScreen({ navigation }: Props) {
             <View style={styles.statGrid}>
               <Pressable style={styles.statCell} onLongPress={() => help('peak')} delayLongPress={260}>
                 <Text style={styles.statLabel}>PEAK</Text>
-                <Text style={styles.statValue}>
+                <Text style={[styles.statValue, styles.statValueRed]}>
                   {fmtDb(meter?.peakDb)}
                   <Text style={styles.statUnit}> dBFS</Text>
                 </Text>
@@ -353,21 +341,41 @@ export function WaveformScreen({ navigation }: Props) {
               </Pressable>
               <Pressable style={styles.statCell} onLongPress={() => help('window')} delayLongPress={260}>
                 <Text style={styles.statLabel}>WINDOW</Text>
-                <Text style={[styles.statValue, styles.statValueBlue]}>
+                <Text style={styles.statValue}>
                   {shownSec.toFixed(1)}
-                  <Text style={styles.statUnit}> s</Text>
+                  <Text style={[styles.statUnit, styles.statUnitBlue]}> s</Text>
                 </Text>
               </Pressable>
             </View>
 
             {/* Oscilloscope panel — REAL buckets only (§11 View 1). */}
             <View style={styles.scopeCard}>
-              <View
+              {/* Tapping the display toggles START/STOP (owner 2026-07-31). */}
+              <Pressable
                 style={styles.scopeSurface}
                 onLayout={(e) => setPanelW(Math.round(e.nativeEvent.layout.width))}
+                onPress={running ? onStop : onStart}
+                accessibilityRole="button"
+                accessibilityLabel={running ? 'Tap to stop capture' : 'Tap to start capture'}
               >
                 {panelW > 0 ? (
                   <Svg width={panelW} height={PANEL_H}>
+                    {/* Level-colour gradient — red at ±full scale, deep green at the
+                        zero line, keyed to true amplitude (the SPL VU LED standard). */}
+                    <Defs>
+                      <LinearGradient
+                        id="waveLevel"
+                        x1={0}
+                        y1={scope?.gradY0 ?? 0}
+                        x2={0}
+                        y2={scope?.gradY1 ?? PANEL_H}
+                        gradientUnits="userSpaceOnUse"
+                      >
+                        {WAVE_LEVEL_STOPS.map((s) => (
+                          <Stop key={s.offset} offset={s.offset} stopColor={s.color} />
+                        ))}
+                      </LinearGradient>
+                    </Defs>
                     {/* dB scale on the LEFT edge (owner 2026-07-31) — proportional,
                         scales with zoom. Faint dashed guide across, label at left. */}
                     {scope?.dbTicks.map((t) => (
@@ -382,22 +390,19 @@ export function WaveformScreen({ navigation }: Props) {
                         </SvgText>
                       </G>
                     ))}
-                    {/* Zero line — centered, always visible (§11). */}
+                    {/* Zero line — centered, always visible (§11). The −∞ label sits
+                        ON the line (0 amplitude = −∞ dBFS). */}
                     <Line x1={0} x2={panelW} y1={half} y2={half} stroke="#3e5852" strokeWidth={1} />
-                    <SvgText x={4} y={half - 4} fill={colors.textSub} fontSize={11} fontFamily={fonts.mono}>
+                    <SvgText x={4} y={half + 4} fill={colors.textSub} fontSize={11} fontFamily={fonts.mono}>
                       -∞
                     </SvgText>
                     {scope ? (
                       <>
-                        {/* DAW-style solid AMBER waveform (owner 2026-07-31): the
-                            peak (min/max) body filled solid, a brighter RMS core on
-                            top — no outline, no glow. */}
-                        <Path d={scope.area} fill={AMBER} opacity={0.92} />
-                        <Path d={scope.rmsArea} fill={AMBER_RMS} opacity={0.9} />
-                        {/* Peak (clip) events + next 0.1 s → RED over the amber. */}
-                        {scope.redArea !== '' ? (
-                          <Path d={scope.redArea} fill={WAVE_RED} opacity={0.96} />
-                        ) : null}
+                        {/* DAW-style solid waveform, level-coloured (owner 2026-07-31):
+                            the peak (min/max) body filled with the loudness gradient,
+                            a denser RMS core on top — no outline, no glow. */}
+                        <Path d={scope.area} fill="url(#waveLevel)" opacity={0.9} />
+                        <Path d={scope.rmsArea} fill="url(#waveLevel)" opacity={0.6} />
                         {/* Clipped buckets — red ticks in the top lane. */}
                         {scope.clip !== '' ? (
                           <Path d={scope.clip} stroke={colors.red} strokeWidth={scope.clipW} />
@@ -409,7 +414,7 @@ export function WaveformScreen({ navigation }: Props) {
                   </Svg>
                 ) : null}
                 {frozen ? <Text style={styles.frozenBadge}>FROZEN</Text> : null}
-              </View>
+              </Pressable>
               {/* Time axis + honest scale disclosure. */}
               <View style={styles.axisRow}>
                 <Text style={styles.axisText}>−{shownSec.toFixed(1)} s</Text>
@@ -613,6 +618,7 @@ const styles = StyleSheet.create({
   statValueRed: { color: '#ff5a48' },
   statValueBlue: { color: '#7fa8ff' },
   statUnit: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: colors.amberLabel },
+  statUnitBlue: { color: '#7fa8ff' },
   calNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub },
 
   // Live quality warning line (spec §6) — house amber warning style.
