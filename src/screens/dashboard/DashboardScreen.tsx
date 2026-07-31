@@ -56,7 +56,7 @@ import { MethodIcon, METHOD_COLORS, type MethodKey } from '../../components/Meth
 import { StudioButton } from '../../components/StudioButton';
 import { SwitchButton } from '../../components/SwitchButton';
 import { TrophyImage } from '../../components/TrophyImage';
-import { JogWheelTrigger, JogPopup } from '../../components/JogWheel';
+import { JogDial, JogOverlay, type JogController } from '../../components/JogWheel';
 import { TrophyModal } from '../../components/TrophyModal';
 import { colors, fonts, spacing } from '../../theme/tokens';
 import {
@@ -323,11 +323,16 @@ export function DashboardScreen() {
   const [errorCode, setErrorCode] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [topicIdx, setTopicIdx] = useState(0);
-  // Jog-wheel popup (owner 2026-08-01): touching the small wheel opens a large
-  // SSL wheel anchored to the small icon (dimple under the thumb); releasing it
-  // closes the popup.
-  const [jogOpen, setJogOpen] = useState(false);
-  const [jogAnchor, setJogAnchor] = useState<{ x: number; y: number } | null>(null);
+  // Jog dial (owner 2026-08-01): the small dial IS the live control — holding it
+  // opens a big mirror wheel and the SAME gesture turns it instantly (no Modal,
+  // no tap-then-grab). The wheel spins endlessly (the topic index WRAPS — no
+  // end-stops). jogActiveRef tells the card's swipe to stand down while held.
+  const jogSpin = useRef(new Animated.Value(0)).current;
+  const jogActiveRef = useRef(false);
+  const [jogActive, setJogActive] = useState(false);
+  // The overlay owns the live index (via this handle) so detents re-render only
+  // the small overlay, not the heavy Dashboard.
+  const jogCtrl = useRef<JogController | null>(null);
   // CM6 (Booth 2026-07-11): commercialMode renders a PUBLIC course (seq order
   // from the seed) through this same screen; institutional path unchanged.
   const { commercialMode, caps } = useEntitlement();
@@ -636,8 +641,11 @@ export function DashboardScreen() {
       // began on the title/trophy were being eaten by the child Pressables and
       // never moved the topic). Vertical drags fall through to the ScrollView.
       onStartShouldSetPanResponder: () => false,
+      // Stand down while the jog dial is held (owner 2026-08-01) — otherwise the
+      // card's horizontal-swipe capture steals the dial's gesture and it freaks
+      // out. jogActiveRef is set on the dial's touch-down (before this fires).
       onMoveShouldSetPanResponderCapture: (_e, g) =>
-        Math.abs(g.dx) > 12 && Math.abs(g.dx) > Math.abs(g.dy) * 1.2,
+        !jogActiveRef.current && Math.abs(g.dx) > 12 && Math.abs(g.dx) > Math.abs(g.dy) * 1.2,
       // Once we own the swipe, don't let the ScrollView steal it back.
       onPanResponderTerminationRequest: () => false,
       onPanResponderRelease: (_e, g) => {
@@ -914,15 +922,24 @@ export function DashboardScreen() {
                   fallback={<View style={styles.topicTrophyEmpty} />}
                 />
               </Pressable>
-              {/* Jog wheel — touching it opens the big-wheel popup anchored to
-                  this icon (owner 2026-08-01); turning it scrolls the topics. */}
+              {/* Jog dial — hold it and turn; the big mirror wheel opens
+                  instantly and the same gesture scrolls the topics (owner
+                  2026-08-01). Endless spin: the index wraps. */}
               <View style={styles.topicJog}>
-                <JogWheelTrigger
+                <JogDial
                   size={96}
                   disabled={topics.length <= 1}
-                  onOpen={(a) => {
-                    setJogAnchor(a);
-                    setJogOpen(true);
+                  spin={jogSpin}
+                  onGrant={() => {
+                    jogActiveRef.current = true;
+                    setJogActive(true);
+                  }}
+                  onStep={(dir) => jogCtrl.current?.step(dir)}
+                  onRelease={() => {
+                    jogActiveRef.current = false;
+                    const i = jogCtrl.current?.index() ?? idxRef.current;
+                    setJogActive(false);
+                    goTo(i);
                   }}
                 />
               </View>
@@ -1325,13 +1342,12 @@ export function DashboardScreen() {
 
       {/* Big-wheel jog popup (owner 2026-08-01) — turn to scroll topics, release
           to close. */}
-      <JogPopup
-        visible={jogOpen}
-        anchor={jogAnchor}
-        onClose={() => setJogOpen(false)}
+      <JogOverlay
+        active={jogActive}
+        spin={jogSpin}
         topics={topics.map((t) => ({ id: t.id, name: t.name }))}
         startIndex={topicIdx}
-        onCommit={(i) => goTo(i)}
+        controllerRef={jogCtrl}
       />
 
       {/* Topic-deck manager (blue Study icon) — reorder / remove / jump / mode. */}
