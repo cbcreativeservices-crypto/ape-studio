@@ -323,6 +323,11 @@ export function DashboardScreen() {
   const [errorCode, setErrorCode] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [topicIdx, setTopicIdx] = useState(0);
+  // During a jog scroll, the TOP container previews this index while the lower
+  // rack stays on topicIdx until release (owner 2026-08-01) — keeps it fast.
+  const [scrollIdx, setScrollIdx] = useState(0);
+  const scrollIdxRef = useRef(0);
+  scrollIdxRef.current = scrollIdx;
   // Jog dial (owner 2026-08-01): the small dial IS the live control — holding it
   // opens a big mirror wheel and the SAME gesture turns it instantly (no Modal,
   // no tap-then-grab). The wheel spins endlessly (the topic index WRAPS — no
@@ -802,6 +807,36 @@ export function DashboardScreen() {
         )
       : 0;
 
+  // ---- Jog preview: the TOP container shows dispTopic while scrolling; the
+  // lower rack stays on the committed `topic` until release (owner 2026-08-01).
+  const overallPctFor = (t: Topic): number => {
+    const keys = data.methodConfigs.filter((c) => (t.applicable_methods ?? []).includes(c.key));
+    if (keys.length === 0) return 0;
+    const rows = data.methodRows.filter((r) => r.achievement_id === t.id);
+    const itemCount = data.itemCountByTopic.get(t.id) ?? 0;
+    return Math.floor(
+      keys.reduce(
+        (s, c) =>
+          s +
+          studyDisplayPct(
+            (rows.find((r) => r.method_key === c.key)?.item_states ?? {}) as Parameters<typeof studyDisplayPct>[0],
+            itemCount,
+            c.key,
+            c.required_passes,
+          ),
+        0,
+      ) / keys.length,
+    );
+  };
+  const dispIdx = jogActive ? scrollIdx : topicIdx;
+  const dispTopic = topics[dispIdx] ?? topic;
+  const dispIsCustom = dispTopic.id === FLAGGED_TOPIC_ID;
+  const dispTopicInactive =
+    viewMode === 'enrollment' &&
+    dispTopic.global_sequence != null &&
+    inactiveGs.current.has(dispTopic.global_sequence);
+  const dispOverallPct = jogActive ? overallPctFor(dispTopic) : overallPct;
+
   const topicProg = data.progressByTopic.get(topic.id);
   const rawQuizState =
     status === 'complete'
@@ -866,7 +901,7 @@ export function DashboardScreen() {
         {/* Topic title block (swipeable — free roam across all topics) */}
         <View
           {...pan.panHandlers}
-          style={[styles.topicCard, provisional && styles.topicCardProvisional, topicInactive && styles.topicCardInactive]}
+          style={[styles.topicCard, provisional && styles.topicCardProvisional, dispTopicInactive && styles.topicCardInactive]}
         >
           {/* Texture removed + darkened 2 more shades (Booth 2026-07-11) — the
               Current Topic display is now a plain dark panel. */}
@@ -887,12 +922,12 @@ export function DashboardScreen() {
                 accessibilityRole="button"
                 accessibilityLabel={isCustom ? `List terms in ${topic.name}` : `List all terms in ${topic.name}`}
               >
-                <Text style={styles.topicEyebrow}>{topicInactive ? 'CURRENT TOPIC · INACTIVE' : 'CURRENT TOPIC'}</Text>
-                <Text style={[styles.topicName, topicInactive && styles.topicNameDim]}>{topic.name}</Text>
+                <Text style={styles.topicEyebrow}>{dispTopicInactive ? 'CURRENT TOPIC · INACTIVE' : 'CURRENT TOPIC'}</Text>
+                <Text style={[styles.topicName, dispTopicInactive && styles.topicNameDim]}>{dispTopic.name}</Text>
                 <Text style={styles.topicMeta}>
-                  {isCustom
+                  {dispIsCustom
                     ? `${starred.size} TERM${starred.size === 1 ? '' : 'S'}`
-                    : `TOPIC ${topicIdx + 1} OF ${topics.length} · ${data.currentCourse.name.toUpperCase()}`}
+                    : `TOPIC ${dispIdx + 1} OF ${topics.length} · ${data.currentCourse.name.toUpperCase()}`}
                   {swipeHint ? `  ·  ${swipeHint}` : ''}
                 </Text>
               </Pressable>
@@ -900,7 +935,7 @@ export function DashboardScreen() {
                   (owner 2026-08-01); both keep their existing text sizes. */}
               <View style={styles.pctBlock}>
                 <Text style={styles.pctLabel}>OVERALL TOPIC PROGRESS</Text>
-                <Text style={styles.pctBig}>{overallPct}%</Text>
+                <Text style={styles.pctBig}>{dispOverallPct}%</Text>
               </View>
             </View>
 
@@ -913,7 +948,7 @@ export function DashboardScreen() {
                 accessibilityLabel={`View ${topic.name} trophy`}
               >
                 <TrophyImage
-                  iconUrl={topic.icon_url}
+                  iconUrl={dispTopic.icon_url}
                   size={100}
                   radius={12}
                   fallback={<View style={styles.topicTrophyEmpty} />}
@@ -930,17 +965,23 @@ export function DashboardScreen() {
                   spin={jogSpin}
                   onGrant={() => {
                     jogActiveRef.current = true;
+                    scrollIdxRef.current = idxRef.current;
+                    setScrollIdx(idxRef.current);
                     setJogActive(true);
                   }}
-                  // Apply LIVE (throttled in the dial) so the current-topic
-                  // container behind changes as you turn; the index wraps.
+                  // Preview only the TOP container while scrolling (the lower
+                  // rack stays put); the index wraps. Committed on release.
                   onStep={(dir) => {
                     const n = topics.length;
-                    if (n > 0) goTo((((idxRef.current + dir) % n) + n) % n);
+                    if (n <= 0) return;
+                    const next = (((scrollIdxRef.current + dir) % n) + n) % n;
+                    scrollIdxRef.current = next;
+                    setScrollIdx(next);
                   }}
                   onRelease={() => {
                     jogActiveRef.current = false;
                     setJogActive(false);
+                    goTo(scrollIdxRef.current); // commit → lower rack updates now
                   }}
                 />
               </View>
@@ -948,7 +989,7 @@ export function DashboardScreen() {
 
             {/* Overall progress — vertical VU column, filling upward. */}
             <View style={styles.topicMeterCol}>
-              <LedMeter filled={segmentsForPct(overallPct)} vertical />
+              <LedMeter filled={segmentsForPct(dispOverallPct)} vertical />
             </View>
           </View>
           {/* Topic/course intro buttons removed (user request 2026-07-18) — the
@@ -1044,7 +1085,10 @@ export function DashboardScreen() {
                       <MethodIcon
                         method={m.key}
                         size={43}
-                        mono={!isApplicable}
+                        // Glyph ALWAYS lit (owner) — same as the quiz icon; only
+                        // the frame lights on completion. (Was graying out the
+                        // non-applicable methods — flashcards / fill-in-blank /
+                        // scenarios — so they read wrong.)
                         glowColor={isApplicable && complete ? METHOD_COLORS[m.key] : undefined}
                       />
                     </View>
@@ -1652,6 +1696,11 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     top: 0,
+    // CENTER the text (owner 2026-08-01) so the inner white trace scales about
+    // its OWN centre — otherwise, on a full-width left-aligned frame, the scaled
+    // trace drifted rightward off the deboss (looked doubled toward the right).
+    // Now it shrinks symmetrically INSIDE the debossed letters, left to right.
+    textAlign: 'center',
     // Chakra Petch — squared retro-technical control-panel face (user request
     // 2026-07-18); tracked out for a labeled-gear look.
     fontFamily: fonts.panelSemiBold,
