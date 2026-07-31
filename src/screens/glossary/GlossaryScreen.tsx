@@ -153,11 +153,12 @@ const normPhrase = (s: string) => s.toLowerCase().replace(/[’‘]/g, "'").repl
 
 /**
  * Search relevance rank for a term against a lowercased query (lower = better;
- * 99 = no match, excluded). Fixes the old substring-only + A–Z ordering that
- * buried the real match (typing "linear" listed "Converter Linearity",
- * "differential nonlinearity"… above "Linear"). Tiers:
- *   0 exact · 1 term starts with query · 2 a WORD in the term starts with query
- *   · 3 substring anywhere. Callers break ties alphabetically within a tier.
+ * 99 = no match, excluded). Matches only at WORD BOUNDARIES:
+ *   0 exact · 1 term starts with query · 2 a WORD in the term starts with query.
+ * The old "substring anywhere" tier is GONE (owner 2026-08-01): it surfaced
+ * unrelated terms — e.g. "SSL" matched "lo·ssl·ess" ("Apple Lossless", "ATRAC
+ * Advanced Lossless"). Real SSL terms still match via the word-prefix tier.
+ * Callers break ties alphabetically within a tier.
  */
 function searchRank(termLower: string, q: string): number {
   if (termLower === q) return 0;
@@ -165,7 +166,6 @@ function searchRank(termLower: string, q: string): number {
   // Word-boundary prefix: any token (split on non-alphanumerics) starting with q.
   const words = termLower.split(/[^a-z0-9]+/);
   for (const w of words) if (w.startsWith(q)) return 2;
-  if (termLower.includes(q)) return 3;
   return 99;
 }
 
@@ -1927,7 +1927,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   sigmaText: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, lineHeight: 20, color: colors.purple },
-  count: { textAlign: 'right', fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: colors.textPrimary },
+  // Nudged in from the right edge so the "ms" of "Terms" clears the phone's
+  // beveled top-right corner (owner 2026-08-01) — small, so it keeps good spacing
+  // from the Σ button on the left.
+  count: { textAlign: 'right', fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: colors.textPrimary, marginRight: 8 },
   searchBox: {
     height: 44,
     borderRadius: 6,
