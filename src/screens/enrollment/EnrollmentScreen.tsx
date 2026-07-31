@@ -168,12 +168,34 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   const [homeFull, setHomeFull] = useState(false);
   const [filters, setFilters] = useState<Set<FilterKey>>(new Set());
   const dragAccum = useRef(0);
-  // Press-hold-to-lift reorder (user request 2026-07-23): hold a topic ~1s, it
-  // pops out (scales up), then drag up/down to reorder. holdStart stamps the
-  // touch so we only claim a drag AFTER the hold; liftedGs marks the lifted row.
-  const holdStart = useRef(0);
+  // Press-hold-to-lift reorder (owner 2026-07-31): hold a topic still for 2 s and
+  // it POPS out (springs up + shadow) to become a draggable object; then drag
+  // up/down to reorder and release to drop it. A 2 s timer (started on touch,
+  // cancelled if the finger moves = a scroll, or lifts early) fires the pop even
+  // before any movement; liftedGsRef marks the lifted row for the drag responder.
+  const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const liftedGsRef = useRef<number | null>(null);
+  const touchStartRef = useRef({ x: 0, y: 0 });
   const liftAnim = useRef(new Animated.Value(0)).current;
   const [liftedGs, setLiftedGs] = useState<number | null>(null);
+  const beginLift = (gs: number) => {
+    liftedGsRef.current = gs;
+    setLiftedGs(gs);
+    Animated.spring(liftAnim, { toValue: 1, useNativeDriver: true, friction: 5, tension: 90 }).start();
+  };
+  const endLift = () => {
+    if (holdTimer.current) {
+      clearTimeout(holdTimer.current);
+      holdTimer.current = null;
+    }
+    if (liftedGsRef.current == null) return;
+    liftedGsRef.current = null;
+    Animated.timing(liftAnim, { toValue: 0, duration: 160, useNativeDriver: true }).start(() => setLiftedGs(null));
+  };
+  // Clear a pending hold timer on unmount.
+  useEffect(() => () => {
+    if (holdTimer.current) clearTimeout(holdTimer.current);
+  }, []);
   const scrollRef = useRef<ScrollView>(null);
   const browseY = useRef(0);
   // Pinned BROWSE & ADD tab bar — shown as an absolute overlay (outside the
@@ -1031,20 +1053,16 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             // 2026-07-23): DON'T claim on touch (list scrolls freely); only claim
             // a vertical drag AFTER the finger has been held ~1s — then the row
             // lifts and drags reposition it live (survives the re-render per move).
+            // Once the 2 s hold has LIFTED this row, the drag responder claims the
+            // move and repositions it live (survives the re-render per move). Until
+            // then it stays unclaimed so the list scrolls freely.
             const reorderPan = customOrder
               ? PanResponder.create({
-                  onStartShouldSetPanResponder: () => {
-                    holdStart.current = Date.now();
-                    return false;
-                  },
-                  onMoveShouldSetPanResponder: (_evt, g) =>
-                    Date.now() - holdStart.current > 1000 &&
-                    Math.abs(g.dy) > Math.abs(g.dx) &&
-                    Math.abs(g.dy) > 6,
+                  onMoveShouldSetPanResponder: () => liftedGsRef.current === e.gs,
+                  onMoveShouldSetPanResponderCapture: () => liftedGsRef.current === e.gs,
+                  onPanResponderTerminationRequest: () => liftedGsRef.current !== e.gs,
                   onPanResponderGrant: () => {
                     dragAccum.current = 0;
-                    setLiftedGs(e.gs);
-                    Animated.spring(liftAnim, { toValue: 1, useNativeDriver: true, friction: 6 }).start();
                   },
                   onPanResponderMove: (_evt, g) => {
                     const step = Math.trunc((g.dy - dragAccum.current) / DRAG_ROW_H);
@@ -1054,12 +1072,8 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                       dragAccum.current += step * DRAG_ROW_H;
                     }
                   },
-                  onPanResponderRelease: () => {
-                    Animated.timing(liftAnim, { toValue: 0, duration: 150, useNativeDriver: true }).start(() => setLiftedGs(null));
-                  },
-                  onPanResponderTerminate: () => {
-                    Animated.timing(liftAnim, { toValue: 0, duration: 150, useNativeDriver: true }).start(() => setLiftedGs(null));
-                  },
+                  onPanResponderRelease: endLift,
+                  onPanResponderTerminate: endLift,
                 })
               : null;
             const isLifted = liftedGs === e.gs;
@@ -1098,9 +1112,58 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                   !e.active && styles.cardInactive,
                   isCore && styles.cardCore,
                   isLifted && styles.cardLifted,
-                  isLifted && { transform: [{ scale: liftAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 1.04] }) }] },
+                  isLifted && {
+                    transform: [
+                      { scale: liftAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 1.06] }) },
+                      { translateY: liftAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -4] }) },
+                    ],
+                  },
                 ]}
                 {...(reorderPan ? reorderPan.panHandlers : {})}
+                onTouchStart={
+                  customOrder
+                    ? (ev) => {
+                        touchStartRef.current = { x: ev.nativeEvent.pageX, y: ev.nativeEvent.pageY };
+                        if (holdTimer.current) clearTimeout(holdTimer.current);
+                        holdTimer.current = setTimeout(() => beginLift(e.gs), 2000);
+                      }
+                    : undefined
+                }
+                onTouchMove={
+                  customOrder
+                    ? (ev) => {
+                        if (liftedGsRef.current === e.gs) return; // already lifted → dragging
+                        const dx = ev.nativeEvent.pageX - touchStartRef.current.x;
+                        const dy = ev.nativeEvent.pageY - touchStartRef.current.y;
+                        if (Math.hypot(dx, dy) > 12 && holdTimer.current) {
+                          clearTimeout(holdTimer.current); // moved before the hold fired → a scroll
+                          holdTimer.current = null;
+                        }
+                      }
+                    : undefined
+                }
+                onTouchEnd={
+                  customOrder
+                    ? () => {
+                        if (holdTimer.current) {
+                          clearTimeout(holdTimer.current);
+                          holdTimer.current = null;
+                        }
+                        if (liftedGsRef.current === e.gs) endLift();
+                      }
+                    : undefined
+                }
+                onTouchCancel={
+                  customOrder
+                    ? () => {
+                        if (holdTimer.current) {
+                          clearTimeout(holdTimer.current);
+                          holdTimer.current = null;
+                        }
+                        if (liftedGsRef.current === e.gs) endLift();
+                      }
+                    : undefined
+                }
               >
                 {/* Row 1 — collapse triangle · white title. Press-HOLD the card
                     ~1s to lift it, then drag up/down to reorder (user request
@@ -1609,13 +1672,14 @@ const styles = StyleSheet.create({
   foundationsOpen: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.8, color: GREEN },
   // Lifted (held) card during reorder — pops out with a shadow (user request 2026-07-23).
   cardLifted: {
-    borderColor: 'rgba(255,255,255,.9)',
+    borderColor: 'rgba(255,255,255,.95)',
+    backgroundColor: '#20201c',
     zIndex: 30,
-    elevation: 12,
+    elevation: 16,
     shadowColor: '#000',
-    shadowOpacity: 0.55,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.6,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 8 },
   },
   // "Required" label inside a core card — green.
   requiredTag: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.6, color: GREEN },
