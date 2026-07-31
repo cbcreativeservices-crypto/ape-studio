@@ -2021,9 +2021,19 @@ export function SplDialView(p: {
     // STUDIO: gray 30–60, green 60–85.
     const arcStudioGray = arcStroke(SPL_MIN, 60, Rs + 2);
     const arcStudioGreen = arcStroke(60, 85, Rs + 2);
+    // STUDIO golden SWEET-SPOT band (owner 2026-07-30, item 5): a GOLD arc segment
+    // 79→85 dB drawn over the green zone — the monitoring sweet spot the parent also
+    // lights the gold FRAME for. Distinct gold region, not green.
+    const arcStudioGold = arcStroke(79, 85, Rs + 2);
     // SPL / OPTIMAL: gray 30–40, green 40–85.
     const arcSplGray = arcStroke(SPL_MIN, 40, Rs + 2);
     const arcSplGreen = arcStroke(40, 85, Rs + 2);
+    // SPL-specific bands (owner 2026-07-30, item 7): yellow 85–90, ORANGE concert
+    // emphasis 90–96, RED from 96 (red begins right after the concert band). The 100
+    // boundary tick + "100" numeral + 100+ callout still sit at 100 (drawn elsewhere).
+    const arcSplYellow = arcStroke(85, 90, Rs + 2);
+    const arcSplOrange = arcStroke(90, 96, Rs + 2);
+    const arcSplRed = arcStroke(96, SPL_MAX, Rs + 2);
     // Major/minor ticks (20..130 dB) drawn in dark ink over the colored arc.
     const majors = Skia.Path.Make();
     const minors = Skia.Path.Make();
@@ -2069,7 +2079,8 @@ export function SplDialView(p: {
 
     return {
       plate, face, sheen, arcYellow, arcOrange, arcRed,
-      arcStudioGray, arcStudioGreen, arcSplGray, arcSplGreen, majors, minors, sizeTicks,
+      arcStudioGray, arcStudioGreen, arcStudioGold, arcSplGray, arcSplGreen,
+      arcSplYellow, arcSplOrange, arcSplRed, majors, minors, sizeTicks,
       boundaryTick, numLabels,
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -2141,6 +2152,9 @@ export function SplDialView(p: {
   // Sweet-spot GOLD (owner 2026-07-30): a readable gold on the gray plate, used for
   // the studio CRITICAL BALANCE callout + leader to mark the sweet spot on the chart.
   const GOLD_INK = '#d4a017';
+  // Brighter gold for the studio SWEET-SPOT arc band (79–85) so it reads as its own
+  // zone over the green (owner 2026-07-30, item 5).
+  const GOLD_BAND = '#e8b62a';
   // Zone palette — darkened to read on the LIGHT-GRAY face (owner 2026-07-30).
   // Used for BOTH the arc strokes and the zone-matched callout labels + leaders.
   const Z_GREEN = '#1f7a34';
@@ -2242,23 +2256,33 @@ export function SplDialView(p: {
             { spl: 37, color: Z_GREEN, lines: [ { t: 'QUIET ROOM', size: 12.5, color: Z_GREEN, ls: 0.3 }, { t: '35–40 dBA', size: 10, color: inkDim } ] },
             { spl: 60, color: Z_GREEN, lines: [ { t: 'CONVERSATION', size: 12.5, color: Z_GREEN, ls: 0.3 }, { t: '~60 dBA', size: 10, color: inkDim } ] },
             { spl: 79, color: Z_AMBER, lines: [ { t: 'STUDIO LISTENING', size: 11, color: Z_AMBER_TXT, ls: 0.2 }, { t: '~79 dBC', size: 10, color: inkDim } ] },
-            { spl: 95, color: Z_ORANGE, lines: [ { t: 'CONCERT', size: 12.5, color: Z_ORANGE, ls: 0.3 }, { t: '~95 dBC', size: 10, color: inkDim } ] },
-            // 100+ exposure zone — leader lands EXACTLY on the 100 red-zone boundary.
+            // CONCERT = the 90–96 dB ORANGE emphasis band; leader lands mid-band (93).
+            { spl: 93, color: Z_ORANGE, lines: [ { t: 'CONCERT', size: 12.5, color: Z_ORANGE, ls: 0.3 }, { t: '90dB–96dB', size: 10, color: inkDim } ] },
+            // 100+ exposure zone — leader stays EXACTLY on the 100 red-zone boundary
+            // (item 7: the 100 tick/label + this 100+ callout remain anchored at 100
+            //  even though the SPL red arc now begins at 96).
             { spl: 100, color: Z_RED, lines: [ { t: '100+ dB', size: 12.5, color: Z_RED, ls: 0.3 }, { t: 'UNSAFE >15 MIN/DAY', size: 9, color: Z_RED } ] },
           ]
         : mode === 'optimal'
         ? [
             // Optimal reference-listening zones — leader anchored at each RANGE
             // MIDPOINT, coloured by zone (item 9).
+            // Redistributed around the circle (owner 2026-07-30, item 8): AMBIENT
+            // stays lower-left; PROGRAM moves to the RIGHT and a little closer;
+            // REFERENCE moves ABOVE the dial, just right of centre; SHOW/HIGH/LIMIT
+            // and 100+ ring the RIGHT side top→bottom, lifted up and evenly spread.
             { spl: 50, color: Z_GREEN, lines: [ { t: 'AMBIENT', size: 12.5, color: Z_GREEN, ls: 0.3 }, { t: '40–59 dBA', size: 10, color: inkDim } ] },
-            // PROGRAM · 60–78 dBA = GREEN, not amber (owner 2026-07-30).
-            { spl: 69, color: Z_GREEN, lines: [ { t: 'PROGRAM', size: 12.5, color: Z_GREEN, ls: 0.3 }, { t: '60–78 dBA', size: 10, color: inkDim } ] },
-            { spl: 81, color: Z_GREEN, lines: [ { t: 'REFERENCE', size: 12.5, color: Z_GREEN, ls: 0.3 }, { t: '79–84 dBA', size: 10, color: inkDim } ] },
-            { spl: 89, color: Z_ORANGE, lines: [ { t: 'SHOW', size: 12.5, color: Z_ORANGE, ls: 0.3 }, { t: '85–93 dBA', size: 10, color: inkDim } ] },
-            { spl: 95, color: Z_ORANGE, lines: [ { t: 'HIGH', size: 12.5, color: Z_ORANGE, ls: 0.3 }, { t: '94–96 dBA', size: 10, color: inkDim } ] },
-            { spl: 98, color: Z_RED, lines: [ { t: 'LIMIT', size: 12.5, color: Z_RED, ls: 0.3 }, { t: '97–99 dBA', size: 10, color: inkDim } ] },
-            // 100+ exposure zone — leader lands EXACTLY on the 100 red-zone boundary.
-            { spl: 100, color: Z_RED, lines: [ { t: '100+ dB LAeq', size: 12, color: Z_RED, ls: 0.2 }, { t: 'WHO 15-MIN LIMIT', size: 9, color: Z_RED } ] },
+            // PROGRAM · 60–78 dBA = GREEN, not amber (owner 2026-07-30). Pinned to the
+            // RIGHT column, dropped to mid-right (rScale) and pulled a little closer.
+            { spl: 69, color: Z_GREEN, forceCol: 'R', rScale: 0.74, nearer: 10, lines: [ { t: 'PROGRAM', size: 12.5, color: Z_GREEN, ls: 0.3 }, { t: '60–78 dBA', size: 10, color: inkDim } ] },
+            // REFERENCE — lifted ABOVE the dial, centre column nudged just right of centre.
+            { spl: 81, color: Z_GREEN, forceCol: 'C', nearer: 20, lines: [ { t: 'REFERENCE', size: 12.5, color: Z_GREEN, ls: 0.3 }, { t: '79–84 dBA', size: 10, color: inkDim } ] },
+            { spl: 89, color: Z_ORANGE, rScale: 1.08, lines: [ { t: 'SHOW', size: 12.5, color: Z_ORANGE, ls: 0.3 }, { t: '85–93 dBA', size: 10, color: inkDim } ] },
+            { spl: 95, color: Z_ORANGE, rScale: 1.06, lines: [ { t: 'HIGH', size: 12.5, color: Z_ORANGE, ls: 0.3 }, { t: '94–96 dBA', size: 10, color: inkDim } ] },
+            { spl: 98, color: Z_RED, rScale: 1.04, lines: [ { t: 'LIMIT', size: 12.5, color: Z_RED, ls: 0.3 }, { t: '97–99 dBA', size: 10, color: inkDim } ] },
+            // 100+ exposure zone — moved to the lower-right (anchored at 110) so it
+            // spreads out from LIMIT; leader lands on its exact dB in the red zone.
+            { spl: 110, color: Z_RED, lines: [ { t: '100+ dB LAeq', size: 12, color: Z_RED, ls: 0.2 }, { t: 'WHO 15-MIN LIMIT', size: 9, color: Z_RED } ] },
           ]
         : [
             // Studio: four long-term mixing bands. First three green, the brief
@@ -2268,7 +2292,7 @@ export function SplDialView(p: {
             // CRITICAL BALANCE = the sweet spot — the KEY marker: ENLARGED gold title
             // (bigger than the other callouts) with the animated shiny-gold shimmer
             // glow + leader (owner 2026-07-30).
-            { spl: 79, color: GOLD_INK, gold: true, lines: [ { t: 'CRITICAL BALANCE', size: 15.5, color: GOLD_INK, ls: 0.3 }, { t: '79 dB SPL C', size: 10, color: inkDim } ] },
+            { spl: 79, color: GOLD_INK, gold: true, lines: [ { t: 'CRITICAL BALANCE', size: 15.5, color: GOLD_INK, ls: 0.3 }, { t: '76dB–84dB', size: 10, color: inkDim } ] },
             { spl: 90, color: Z_ORANGE, lines: [ { t: 'IMPACT CHECK', size: 12.5, color: Z_ORANGE, ls: 0.3 }, { t: '85–95 dB SPL · brief', size: 9.5, color: inkDim } ] },
           ];
 
@@ -2303,7 +2327,6 @@ export function SplDialView(p: {
     const botLimit = h - 6;
     const minGap = 7;
 
-    type Col = 'L' | 'C' | 'R';
     type Item = {
       def: CoDef; sn: number; cs: number; col: Col; th: number; lh: number; ly: number;
       ty: number; bx: number; bw: number; align: 'left' | 'center' | 'right';
@@ -2314,10 +2337,10 @@ export function SplDialView(p: {
       const sn = Math.sin(a);
       const cs = Math.cos(a);
       const an = anchor(d.spl);
-      const col: Col = Math.abs(sn) < CENTER_SIN ? 'C' : sn < 0 ? 'L' : 'R';
+      const col: Col = d.forceCol ?? (Math.abs(sn) < CENTER_SIN ? 'C' : sn < 0 ? 'L' : 'R');
       const lh = d.gold ? goldLineH : lineH;
       return {
-        def: d, sn, cs, col, th: d.lines.length * lh, lh, ly: cy - cs * labelR,
+        def: d, sn, cs, col, th: d.lines.length * lh, lh, ly: cy - cs * labelR * (d.rScale ?? 1),
         ty: 0, bx: 0, bw: 0, align: 'center', innerX: 0, ax: an.x, ay: an.y,
       };
     });
@@ -2325,16 +2348,49 @@ export function SplDialView(p: {
     // A crowded top-centre (≥ 2 near-vertical anchors, e.g. STUDIO's 72 & 79) can
     // neither stack cleanly (too little room above the arc) nor sit side-by-side
     // (labels too wide) — so fan the pair back out to the side columns by sign.
+    // EXCEPTION (owner 2026-07-30): the sweet-spot `gold` CRITICAL BALANCE callout
+    // and any explicitly `forceCol`-pinned callout keep their centre seat so the key
+    // marker rides HIGH and CLOSE over the top of the dial.
     const centred = items.filter((i) => i.col === 'C');
-    if (centred.length >= 2) for (const i of centred) i.col = i.sn < 0 ? 'L' : 'R';
+    if (centred.length >= 2)
+      for (const i of centred) {
+        if (i.def.gold || i.def.forceCol) continue;
+        i.col = i.sn < 0 ? 'L' : 'R';
+      }
 
-    // Horizontal box per column: LEFT right-aligned to leftInner, RIGHT left-aligned
-    // from rightInner, CENTER centred over the arc top. The leader always starts at
-    // the box edge nearest the dial (innerX) so no leader crosses another box.
+    // Minimum callout box width so radially-placed side boxes never get too narrow
+    // to read (used only in the wide SPL/OPTIMAL even-spacing path below).
+    const MIN_BOX_W = wide ? 96 : 80;
+
+    // Horizontal box per column. STUDIO keeps the disjoint fixed columns (LEFT
+    // right-aligned to leftInner, RIGHT left-aligned from rightInner, CENTER centred
+    // over the arc top). SPL/OPTIMAL (`wide`) instead seat each NON-forced side box's
+    // inner edge a constant gap out ALONG ITS OWN ANCHOR RAY, so every callout sits
+    // ~equally far from the circle (item 6). Forced-column callouts fall back to the
+    // fixed column edge (± `nearer`) so a pinned box lands on the intended side even
+    // when its anchor sits on the other half of the dial. The leader always starts at
+    // the box edge nearest the dial (innerX).
     for (const i of items) {
-      if (i.col === 'L') { i.align = 'right'; i.bx = edgePad; i.bw = leftInner - edgePad; i.innerX = leftInner; }
-      else if (i.col === 'R') { i.align = 'left'; i.bx = rightInner; i.bw = w - edgePad - rightInner; i.innerX = rightInner; }
-      else { i.align = 'center'; i.bw = centerHalf * 2; i.bx = cx - centerHalf; i.innerX = cx; }
+      const near = i.def.nearer ?? 0;
+      const forced = i.def.forceCol != null;
+      if (i.col === 'C') {
+        // Centre block, optionally nudged right of centre by `nearer`.
+        i.align = 'center'; i.bw = centerHalf * 2; i.bx = cx - centerHalf + near; i.innerX = cx + near;
+      } else if (i.col === 'L') {
+        let innerX = leftInner + near;
+        if (wide && !forced) {
+          const rayX = cx + i.sn * (arcOuter + Math.max(6, colPad - near));
+          innerX = Math.max(rayX, edgePad + MIN_BOX_W);
+        }
+        i.align = 'right'; i.bx = edgePad; i.bw = innerX - edgePad; i.innerX = innerX;
+      } else {
+        let innerX = rightInner - near;
+        if (wide && !forced) {
+          const rayX = cx + i.sn * (arcOuter + Math.max(6, colPad - near));
+          innerX = Math.min(rayX, w - edgePad - MIN_BOX_W);
+        }
+        i.align = 'left'; i.bx = innerX; i.bw = w - edgePad - innerX; i.innerX = innerX;
+      }
     }
 
     // Per-column vertical stack: seat each box at its ray height, then push any
@@ -2427,9 +2483,24 @@ export function SplDialView(p: {
           <>
             <Path path={G.arcStudioGray} color={Z_GREY} style="stroke" strokeWidth={wArc} strokeCap="butt" opacity={0.9} />
             <Path path={G.arcStudioGreen} color={Z_GREEN} style="stroke" strokeWidth={wArc} strokeCap="butt" />
+            {/* GOLDEN SWEET-SPOT band 79→85 (item 5): a soft gold under-glow beneath a
+                crisp gold arc, drawn OVER the green so 79–85 reads as its own gold zone. */}
+            <Path path={G.arcStudioGold} color={withAlpha(GOLD_BAND, 0.5)} style="stroke" strokeWidth={wArc + 6} strokeCap="butt">
+              <BlurMask blur={4} style="normal" />
+            </Path>
+            <Path path={G.arcStudioGold} color={GOLD_BAND} style="stroke" strokeWidth={wArc} strokeCap="butt" />
             <Path path={G.arcYellow} color={Z_AMBER} style="stroke" strokeWidth={wArc} strokeCap="butt" />
             <Path path={G.arcOrange} color={Z_ORANGE} style="stroke" strokeWidth={wArc} strokeCap="butt" />
             <Path path={G.arcRed} color={Z_RED} style="stroke" strokeWidth={wArc} strokeCap="butt" />
+          </>
+        ) : mode === 'spl' ? (
+          <>
+            <Path path={G.arcSplGray} color={Z_GREY} style="stroke" strokeWidth={wArc} strokeCap="butt" opacity={0.9} />
+            <Path path={G.arcSplGreen} color={Z_GREEN} style="stroke" strokeWidth={wArc} strokeCap="butt" />
+            {/* SPL bands (item 7): yellow 85–90, ORANGE concert 90–96, RED from 96. */}
+            <Path path={G.arcSplYellow} color={Z_AMBER} style="stroke" strokeWidth={wArc} strokeCap="butt" />
+            <Path path={G.arcSplOrange} color={Z_ORANGE} style="stroke" strokeWidth={wArc} strokeCap="butt" />
+            <Path path={G.arcSplRed} color={Z_RED} style="stroke" strokeWidth={wArc} strokeCap="butt" />
           </>
         ) : (
           <>
@@ -2539,8 +2610,9 @@ export function SplDialView(p: {
               font={fonts.oswaldSemiBold}
               ls={ln.ls}
               color={ln.color}
-              shadowColor={it.gold && i === 0 ? withAlpha('#ffe28a', 0.95) : undefined}
-              shadowRadius={it.gold && i === 0 ? 7 : undefined}
+              shadowColor={it.gold && i === 0 ? 'rgba(28,18,0,0.92)' : undefined}
+              shadowRadius={it.gold && i === 0 ? 4 : undefined}
+              shadowOffset={it.gold && i === 0 ? { width: 0, height: 2 } : undefined}
             >
               {ln.t}
             </Lbl>
@@ -2572,15 +2644,11 @@ export function SplDialView(p: {
           (y≈34) so nothing sits at the bottom anymore. */}
       {mode === 'studio' ? (
         <>
-          {/* Item 6: two-line centered title ONLY (owner 2026-07-30: the
-              "CHECK 85–95 · WORK 70–75 · DETAIL 60–65" and "C-WEIGHTED · SLOW"
-              guidance lines were removed). Pushed DOWN further (start y≈56, +10px)
-              for more gap below the STUDIO/SPL button strip. */}
-          <Lbl x={0} y={56} w={w} size={15} font={fonts.oswaldSemiBold} ls={2} color={ink}>
-            STUDIO MONITORING
-          </Lbl>
-          <Lbl x={0} y={79} w={w} size={12} font={fonts.oswaldSemiBold} ls={0.6} color={inkDim}>
-            dB SPL(C) · MIXING LEVELS
+          {/* Item 1 (owner 2026-07-30): a SINGLE centred title, sized to fit the
+              width (RNText wraps to a 2nd line if it must). Replaces the old
+              "STUDIO MONITORING" / "dB SPL(C) · MIXING LEVELS" two-liner. */}
+          <Lbl x={6} y={58} w={w - 12} size={14} font={fonts.oswaldSemiBold} ls={1} color={ink}>
+            STUDIO REFERENCE MONITORING LEVELS
           </Lbl>
           {/* ESTIMATED badge (uncalibrated) — never a certified reading (§1.7). */}
           {!p.calibrated ? (

@@ -489,6 +489,12 @@ export function SplMeterScreen({ navigation }: Props) {
   // below it. So RANGE 80 shows 80 dB at 0 and 60 dB at −20. The dBFS that reads
   // 0 VU is RANGE − splOffset. In AUTO the reference is the slow-tracked ambient.
   const rangeRef = rangeAuto ? autoRangeDb : rangeDb; // SPL that reads 0 VU
+  // While AUTO is active, faintly light the numeric button nearest the value AUTO
+  // has currently chosen (owner 2026-07-30) — shows what AUTO picked at a glance.
+  const autoNearest = RANGE_VALUES.reduce(
+    (a, b) => (Math.abs(b - autoRangeDb) < Math.abs(a - autoRangeDb) ? b : a),
+    RANGE_VALUES[0] as number,
+  );
   const vuLive0 = rangeRef - splOffset;
   // Printed TOP-LEFT on the VU face (owner 2026-07-30): the weighting + response
   // in use (the RANGE now lives in the blue in-arc brackets and the chip row).
@@ -954,19 +960,22 @@ export function SplMeterScreen({ navigation }: Props) {
                   >
                     {RANGE_VALUES.map((v) => {
                       const sel = !rangeAuto && rangeDb === v;
+                      const autoHint = rangeAuto && v === autoNearest;
                       return (
                         <Pressable
                           key={v}
-                          style={[styles.rangeChip, sel && styles.rangeChipSelected]}
+                          style={[styles.rangeChip, autoHint && styles.rangeChipAutoHint, sel && styles.rangeChipSelected]}
                           onPress={() => {
                             setRangeAuto(false);
                             setRangeDb(v);
                           }}
                           accessibilityRole="button"
                           accessibilityState={{ selected: sel }}
-                          accessibilityLabel={`Range ${v} dB`}
+                          accessibilityLabel={autoHint ? `Range ${v} dB (chosen by AUTO)` : `Range ${v} dB`}
                         >
-                          <Text style={[styles.rangeChipText, sel && styles.rangeChipTextSelected]}>{v}</Text>
+                          <Text style={[styles.rangeChipText, autoHint && styles.rangeChipTextAutoHint, sel && styles.rangeChipTextSelected]}>
+                            {v}
+                          </Text>
                         </Pressable>
                       );
                     })}
@@ -1467,6 +1476,9 @@ const styles = StyleSheet.create({
   },
   rangeChipText: { fontFamily: fonts.mono, fontSize: 12, color: '#7fa8ff' },
   rangeChipSelected: { borderColor: '#5d97ff', backgroundColor: '#20407e' },
+  // ~17% hint that AUTO currently landed on this value (owner 2026-07-30).
+  rangeChipAutoHint: { borderColor: 'rgba(93,151,255,.4)', backgroundColor: 'rgba(32,64,126,.17)' },
+  rangeChipTextAutoHint: { color: '#9dbcff' },
   rangeChipTextSelected: { color: '#e4edff' },
   rangeChipAuto: { width: 46 },
   rangeNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted },
