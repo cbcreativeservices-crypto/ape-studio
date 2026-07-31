@@ -25,6 +25,12 @@ export const IDLE_MS = 1200000;
 let enabled = false;
 let lastActivity = 0;
 let idleTimer: ReturnType<typeof setTimeout> | null = null;
+// Idle-bypass (owner 2026-08-01): when the user ticks the bypass checkbox in the
+// enable-audio popup, the idle auto-mute is DEFEATED for this session — audio
+// stays on until they mute it (shake / manual / relaunch / login). Session-only,
+// default false, and RESET on every mute so it never persists across launches or
+// re-enables (the checkbox starts unticked each time the popup opens).
+let idleBypass = false;
 
 // ── Mic-feedback interlock (owner request 2026-07-26) ──────────────────────
 // To avoid user-caused feedback (built-in mic hearing the built-in speaker),
@@ -48,12 +54,23 @@ function clearIdleTimer(): void {
   }
 }
 
-/** (Re)arm the 10-minute idle auto-mute. */
+/** (Re)arm the idle auto-mute — a NO-OP while the user has bypassed it. */
 function armIdleTimer(): void {
   clearIdleTimer();
+  if (idleBypass) return; // bypass ticked → never auto-mute on idle
   idleTimer = setTimeout(() => {
     disableAudioOutput();
   }, IDLE_MS);
+}
+
+/** Set/clear the session idle-bypass (from the enable-audio popup checkbox).
+ *  Turning it ON immediately defeats any armed idle timer. */
+export function setIdleBypass(on: boolean): void {
+  idleBypass = on;
+  if (on) clearIdleTimer();
+}
+export function isIdleBypass(): boolean {
+  return idleBypass;
 }
 
 /** Non-hook read for imperative guards (the gate, output triggers). */
@@ -80,9 +97,11 @@ export function enableAudioOutput(now: number = Date.now()): void {
   }
 }
 
-/** Mute audio output and disarm the idle timer. */
+/** Mute audio output and disarm the idle timer. Also clears the idle-bypass so a
+ *  later re-enable starts fresh (the checkbox must be re-ticked each time). */
 export function disableAudioOutput(): void {
   clearIdleTimer();
+  idleBypass = false;
   if (enabled) {
     enabled = false;
     emit();

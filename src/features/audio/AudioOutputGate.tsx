@@ -32,7 +32,9 @@ import {
   getLastAudioActivity,
   IDLE_MS,
   isAudioOutputEnabled,
+  isIdleBypass,
   noteAudioActivity,
+  setIdleBypass,
 } from './audioOutputStore';
 
 type GateApi = { requestAudioOutput: () => Promise<boolean> };
@@ -50,6 +52,9 @@ type Phase = 'closed' | 'explain' | 'hold';
 
 export function AudioOutputGate({ children }: { children: React.ReactNode }) {
   const [phase, setPhase] = useState<Phase>('closed');
+  // Idle-bypass checkbox (owner 2026-08-01) — session-only, ALWAYS starts unticked
+  // when the popup opens (so it never silently persists across launches).
+  const [bypassTimer, setBypassTimer] = useState(false);
   // The resolver for the promise handed to the current requester.
   const resolver = useRef<((ok: boolean) => void) | null>(null);
 
@@ -77,6 +82,7 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
             return;
           }
           resolver.current = resolve;
+          setBypassTimer(false); // checkbox resets every time the popup opens
           setPhase('explain');
         }),
     }),
@@ -89,7 +95,12 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
       if (event === 'SIGNED_IN') disableAudioOutput();
     });
     const appSub = AppState.addEventListener('change', (state) => {
-      if (state === 'active' && isAudioOutputEnabled() && Date.now() - getLastAudioActivity() > IDLE_MS) {
+      if (
+        state === 'active' &&
+        isAudioOutputEnabled() &&
+        !isIdleBypass() &&
+        Date.now() - getLastAudioActivity() > IDLE_MS
+      ) {
         disableAudioOutput();
       }
     });
@@ -158,7 +169,15 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
             accessibilityRole="button"
             accessibilityLabel="Cancel"
           />
-          <View style={styles.card}>
+          {/* Shake-to-mute notice (owner 2026-08-01: moved ABOVE the enable card)
+              — its own RED container so users know the emergency mute exists. */}
+          <View style={styles.shakeCard}>
+            <Text style={styles.shakeText}>
+              ⚠ SHAKE THE PHONE AT ANY TIME TO INSTANTLY MUTE AUDIO OUTPUT.
+            </Text>
+          </View>
+          {/* Enable-audio card. */}
+          <View style={[styles.card, { marginTop: 10 }]}>
             <Text style={styles.title}>Enable audio output</Text>
             <Text style={styles.body}>
               Hold the button for 5 seconds to allow sound. It stays on while you're using the app
@@ -168,6 +187,7 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
             <HoldToActivate
               label="HOLD 5s TO ENABLE AUDIO OUTPUT"
               onComplete={() => {
+                setIdleBypass(bypassTimer); // defeat auto-off if the box is ticked
                 enableAudioOutput();
                 noteAudioActivity();
                 settle(true);
@@ -182,13 +202,24 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
               <Text style={styles.btnSecondaryText}>CANCEL</Text>
             </Pressable>
           </View>
-          {/* Shake-to-mute notice (owner 2026-07-30) — its own RED container
-              below the enable card, so users know the emergency mute exists. */}
-          <View style={styles.shakeCard}>
-            <Text style={styles.shakeText}>
-              ⚠ SHAKE THE PHONE AT ANY TIME TO INSTANTLY MUTE AUDIO OUTPUT.
+          {/* Idle-bypass checkbox (owner 2026-08-01) — BELOW the enable card. Tick
+              to keep audio on past the auto-off timer for this session. Resets each
+              time the popup opens. */}
+          <Pressable
+            style={styles.bypassCard}
+            onPress={() => setBypassTimer((v) => !v)}
+            accessibilityRole="checkbox"
+            accessibilityState={{ checked: bypassTimer }}
+            accessibilityLabel="Keep audio on and defeat the auto-off timer for this session"
+          >
+            <View style={[styles.checkbox, bypassTimer && styles.checkboxOn]}>
+              {bypassTimer ? <Text style={styles.checkboxMark}>✓</Text> : null}
+            </View>
+            <Text style={styles.bypassText}>
+              Keep audio on for this session — defeat the {Math.round(IDLE_MS / 60000)}-minute
+              auto-off timer (audio stays on until you mute it).
             </Text>
-          </View>
+          </Pressable>
         </View>
       </Modal>
     </AudioOutputGateContext.Provider>
@@ -209,7 +240,6 @@ const styles = StyleSheet.create({
   shakeCard: {
     width: '100%',
     maxWidth: 340,
-    marginTop: 10,
     borderRadius: 12,
     borderWidth: 1.5,
     borderColor: 'rgba(255,42,42,.7)',
@@ -218,4 +248,32 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
   },
   shakeText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 0.6, lineHeight: 18, color: '#ff6b5e', textAlign: 'center' },
+  // Idle-bypass checkbox container (owner 2026-08-01) — below the enable card.
+  bypassCard: {
+    width: '100%',
+    maxWidth: 340,
+    marginTop: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 11,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#3a3a3a',
+    backgroundColor: '#141414',
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+  },
+  checkbox: {
+    width: 22,
+    height: 22,
+    borderRadius: 5,
+    borderWidth: 1.5,
+    borderColor: '#5a5a5a',
+    backgroundColor: '#0f0f0f',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkboxOn: { borderColor: 'rgba(55,224,95,.85)', backgroundColor: 'rgba(55,224,95,.16)' },
+  checkboxMark: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, lineHeight: 16, color: GREEN },
+  bypassText: { flex: 1, fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: colors.textSecondary },
 });
