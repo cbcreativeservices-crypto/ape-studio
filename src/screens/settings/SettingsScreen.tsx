@@ -276,6 +276,16 @@ export function SettingsScreen({ navigation }: Props) {
               {Constants.expoConfig?.version ?? '0.0.0'}
             </Text>
           </View>
+          {/* About / credits — moved here from the Dashboard logo (owner 2026-08-01). */}
+          <Pressable
+            style={[styles.row, styles.rowBorder]}
+            onPress={() => (navigation as any).navigate('About')}
+            accessibilityRole="button"
+            accessibilityLabel="About this app"
+          >
+            <Text style={styles.rowLabel}>About &amp; credits</Text>
+            <Text style={[styles.mono, { color: colors.amber }]}>›</Text>
+          </Pressable>
           {/* Log out → sign out then bounce to Splash, which re-checks the
               session and routes to Landing/Auth for the next user (Booth 2026-07-11). */}
           <Pressable style={styles.row} onPress={confirmLogout} accessibilityRole="button" accessibilityLabel="Log out">

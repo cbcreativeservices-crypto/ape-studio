@@ -38,6 +38,16 @@ import type { StudyStackParamList } from '../../navigation/types';
 import Svg, { Circle, Rect, Defs, LinearGradient as SvgLinearGradient, Stop, Line } from 'react-native-svg';
 import { AppHeader } from '../../components/AppHeader';
 import { NavIcon } from '../../components/nav/NavIcon';
+import { TopicDeckSheet } from './TopicDeckSheet';
+import {
+  orderDeckIds,
+  removeFromDeck,
+  restoreToDeck,
+  setDeckMode,
+  setDeckOrder,
+  useDeckPrefs,
+  type DeckPrefs,
+} from '../../features/dashboard/deckOrderStore';
 import { DeckIcon } from '../../components/DeckIcon';
 import { ElevatedFrame } from '../../components/ElevatedFrame';
 import { GlassButton } from '../../components/GlassButton';
@@ -364,6 +374,13 @@ export function DashboardScreen() {
   const customOnDashboard = useCustomOnDashboard();
   const customOnDashboardRef = useRef(customOnDashboard);
   customOnDashboardRef.current = customOnDashboard;
+  // Topic-deck ordering (owner 2026-08-01): default alphabetical; the Topic-Deck
+  // sheet (blue Study icon) lets the user engage a custom order, remove topics,
+  // and jump to one.
+  const deckPrefs = useDeckPrefs();
+  const deckPrefsRef = useRef<DeckPrefs>(deckPrefs);
+  deckPrefsRef.current = deckPrefs;
+  const [deckOpen, setDeckOpen] = useState(false);
 
   // Learning intros (user request 2026-07-18): a COURSE intro before beginning
   // a course and a TOPIC intro before beginning each topic. Auto-shown once
@@ -465,10 +482,15 @@ export function DashboardScreen() {
         const st = d.progressByTopic.get(t.id)?.status ?? 'locked';
         if (st !== 'locked') frontierId = t.id;
       });
-      const orderedIds = [
-        ...(customOnDashboardRef.current ? [FLAGGED_TOPIC_ID] : []),
-        ...[...d.topics].sort((a, b) => a.name.localeCompare(b.name)).map((t) => t.id),
+      const members = [
+        ...(customOnDashboardRef.current ? [{ id: FLAGGED_TOPIC_ID, name: FLAGGED_TOPIC_NAME }] : []),
+        ...d.topics.map((t) => ({ id: t.id, name: t.name })),
       ];
+      const orderedIds = orderDeckIds(
+        members,
+        deckPrefsRef.current,
+        customOnDashboardRef.current ? FLAGGED_TOPIC_ID : undefined,
+      );
       const frontier = frontierId ? Math.max(0, orderedIds.indexOf(frontierId)) : 0;
       const stored = await getLastTopicIndex(d.currentCourse.id);
       setTopicIdx(stored != null ? Math.min(stored, orderedIds.length - 1) : frontier);
@@ -549,12 +571,21 @@ export function DashboardScreen() {
     icon_url: null,
     global_sequence: null,
   };
-  // Scroll order (owner 2026-08-01): the ★ CUSTOM LIST is ALWAYS first (far
-  // left), then the enrolled topics alphabetically left→right. data.topics keeps
-  // its course order for the progress/frontier logic; only this carousel is
-  // reordered.
-  const sortedTopics = data ? [...data.topics].sort((a, b) => a.name.localeCompare(b.name)) : [];
-  const topics = data ? (customOnDashboard ? [customTopic, ...sortedTopics] : sortedTopics) : [];
+  // Scroll order (owner 2026-08-01): resolved from the deck prefs — ALPHABETICAL
+  // by default (★ Custom List pinned first), or the user's CUSTOM order; removed
+  // topics are excluded. data.topics keeps its course order for the progress/
+  // frontier logic; only this carousel is reordered.
+  const deckMembers: Topic[] = data ? (customOnDashboard ? [customTopic, ...data.topics] : [...data.topics]) : [];
+  const deckById = new Map(deckMembers.map((t) => [t.id, t] as const));
+  const orderedIds = orderDeckIds(
+    deckMembers.map((t) => ({ id: t.id, name: t.name })),
+    deckPrefs,
+    customOnDashboard ? FLAGGED_TOPIC_ID : undefined,
+  );
+  const topics = orderedIds.map((id) => deckById.get(id)).filter((t): t is Topic => t != null);
+  const removedMembers = deckMembers
+    .filter((t) => deckPrefs.removed.includes(t.id))
+    .map((t) => ({ id: t.id, name: t.name }));
   const topic = topics[topicIdx];
   const isCustom = topic?.id === FLAGGED_TOPIC_ID;
 
@@ -585,6 +616,11 @@ export function DashboardScreen() {
     },
     [data, topics.length],
   );
+
+  // Deck can shrink (topic removed) or reorder — keep topicIdx in bounds.
+  useEffect(() => {
+    setTopicIdx((i) => Math.min(i, Math.max(0, topics.length - 1)));
+  }, [topics.length]);
 
   const goToRef = useRef(goTo);
   goToRef.current = goTo;
@@ -791,9 +827,9 @@ export function DashboardScreen() {
         {/* Header (shared, 30%-enlarged tile — Booth 2026-07-08).
             Logo tap → About/Credits (Dashboard only). */}
         <AppHeader
-          onLogoPress={() => (navigation as any).navigate('About')}
-          // Dashboard uses the blue Study icon in place of the company logo
-          // (owner 2026-08-01).
+          // The blue Study icon opens the Topic-Deck manager (owner 2026-08-01);
+          // About moved to Settings.
+          onLogoPress={() => setDeckOpen(true)}
           logo={
             <View style={styles.studyLogo}>
               <View style={{ transform: [{ scale: 2.1 }] }}>
@@ -1296,6 +1332,24 @@ export function DashboardScreen() {
         topics={topics.map((t) => ({ id: t.id, name: t.name }))}
         startIndex={topicIdx}
         onCommit={(i) => goTo(i)}
+      />
+
+      {/* Topic-deck manager (blue Study icon) — reorder / remove / jump / mode. */}
+      <TopicDeckSheet
+        visible={deckOpen}
+        onClose={() => setDeckOpen(false)}
+        mode={deckPrefs.mode}
+        active={topics.map((t) => ({ id: t.id, name: t.name }))}
+        removed={removedMembers}
+        onSetMode={setDeckMode}
+        onReorder={setDeckOrder}
+        onRemove={removeFromDeck}
+        onRestore={restoreToDeck}
+        onSelect={(id) => {
+          const i = topics.findIndex((t) => t.id === id);
+          if (i >= 0) goTo(i);
+          setDeckOpen(false);
+        }}
       />
 
       {/* Method-cards intro placeholder (Booth 2026-07-18). */}
