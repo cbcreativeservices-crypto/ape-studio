@@ -1482,9 +1482,10 @@ const styles = StyleSheet.create({
   },
   rangeChipText: { fontFamily: fonts.mono, fontSize: 12, color: '#7fa8ff' },
   rangeChipSelected: { borderColor: '#5d97ff', backgroundColor: '#20407e' },
-  // ~17% hint that AUTO currently landed on this value (owner 2026-07-30).
-  rangeChipAutoHint: { borderColor: 'rgba(93,151,255,.4)', backgroundColor: 'rgba(32,64,126,.17)' },
-  rangeChipTextAutoHint: { color: '#9dbcff' },
+  // AUTO landed on this value (owner 2026-07-30): a LIGHT "lit up" hint — a faint
+  // light-blue fill + BRIGHTER text (not a darker container).
+  rangeChipAutoHint: { borderColor: 'rgba(157,188,255,.5)', backgroundColor: 'rgba(157,188,255,.14)' },
+  rangeChipTextAutoHint: { color: '#dfe9ff' },
   rangeChipTextSelected: { color: '#e4edff' },
   rangeChipAuto: { width: 46 },
   rangeNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted },

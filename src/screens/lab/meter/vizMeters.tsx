@@ -14,7 +14,7 @@
  * house Skia.Path idiom used by micspeaker/viz).
  */
 import { useMemo } from 'react';
-import { PixelRatio, Text as RNText, View } from 'react-native';
+import { PixelRatio, Text as RNText, TextInput, View } from 'react-native';
 import {
   BlurMask,
   Canvas,
@@ -29,7 +29,13 @@ import {
   SweepGradient,
   vec,
 } from '@shopify/react-native-skia';
-import { useDerivedValue, useSharedValue, type SharedValue } from 'react-native-reanimated';
+import Animated, {
+  useAnimatedProps,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  type SharedValue,
+} from 'react-native-reanimated';
 import {
   correlationOf,
   crestDb,
@@ -62,6 +68,11 @@ const DPR = Math.max(1, Math.min(3.5, PixelRatio.get()));
 const RES = 240;
 
 type SkPathT = ReturnType<typeof Skia.Path.Make>;
+
+/** A TextInput whose `text` can be driven by a reanimated worklet — used for the
+ *  live SPL numeral riding the LED meter's AVERAGE line (updates on the UI thread
+ *  without a React re-render, the standard reanimated live-number idiom). */
+const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
 /** OPTIONAL live drive for the meter faces (SPL popup, 2026-07-29): when
  *  present the meter follows these SharedValues instead of a teaching buffer —
@@ -2192,29 +2203,17 @@ export function SplDialView(p: {
     return tintRed;
   }, [liveRms, p.splOffset, greenStart]);
 
-  // ── SWEET-SPOT GOLD SHIMMER (owner 2026-07-30): one shiny-gold oscillation,
-  // derived from the existing `phase` clock, that BOTH the CRITICAL BALANCE
-  // callout glow (studio mode) and the `sweetSpot` plate frame breathe off — so
-  // they pulse together as a single "you're in the sweet spot" gold glow. A
-  // bright highlight (#ffe28a) shimmers over the base gold (#d4a017 / #ffcf40):
-  // its opacity + BlurMask blur ride the same sine, while the crisp gold stroke +
-  // gold TEXT stay fully opaque so everything reads legibly at every phase.
-  const SHIMMER_K = 3; // shimmer cycles per phase loop (~0.75 Hz at a 4 s loop)
-  const shimmer01 = useDerivedValue(
-    () => 0.5 + 0.5 * Math.sin(p.phase.value * SHIMMER_K),
-    [p.phase],
-  );
-  // Bright #ffe28a highlight — shared by the callout box/leader AND the border.
-  // GLOW/SHIMMER DIALLED BACK ~53% (owner 2026-07-30): both the shimmer amplitude
-  // AND the base glow opacity/blur are ~halved (×0.47) so the sweet-spot gold reads
-  // as a subtler, classier breathe rather than a strong pulse — paired with a
-  // stronger STATIC drop shadow on the CRITICAL BALANCE text (below).
-  const shimmerOpacity = useDerivedValue(() => 0.056 + 0.235 * shimmer01.value, [shimmer01]);
-  const shimmerBlur = useDerivedValue(() => 2.8 + 3.8 * shimmer01.value, [shimmer01]);
-  // Base gold glow layers that also gently breathe (kept softer than the highlight).
-  const goldBaseOpacity = useDerivedValue(() => 0.16 + 0.085 * shimmer01.value, [shimmer01]);
-  const borderBaseOpacity = useDerivedValue(() => 0.2 + 0.103 * shimmer01.value, [shimmer01]);
-  const borderBlur = useDerivedValue(() => 3.3 + 2.8 * shimmer01.value, [shimmer01]);
+  // ── SWEET-SPOT GOLD GLOW (owner 2026-07-30 v3 — STATIC, no animation): the
+  // shimmer/pulse is GONE. Both the CRITICAL BALANCING callout glow (studio mode)
+  // and the `sweetSpot` plate frame now use fixed, static gold glow values — no
+  // `phase`-driven breathe. The CRITICAL BALANCING callout glow is dialled WAY
+  // back (~13% of the old full glow) and leans instead on a strong STATIC drop
+  // shadow on the gold title text (below); the plate frame keeps a subtle static
+  // gold glow. All values are plain constants so nothing rides the clock.
+  const GOLD_GLOW_OPACITY = 0.13; // CRITICAL BALANCING callout glow — ~13% of full
+  const GOLD_GLOW_BLUR = 5;
+  const FRAME_GLOW_OPACITY = 0.26; // sweet-spot plate frame — subtle static glow
+  const FRAME_GLOW_BLUR = 4.5;
 
   // ── CALLOUT LABELS (owner 2026-07-30 redesign v2 — distribute around the WHOLE
   // circle): every descriptive/reference label is placed RADIALLY OUTSIDE its
@@ -2271,17 +2270,19 @@ export function SplDialView(p: {
             // stays lower-left; PROGRAM moves to the RIGHT and a little closer;
             // REFERENCE moves ABOVE the dial, just right of centre; SHOW/HIGH/LIMIT
             // and 100+ ring the RIGHT side top→bottom, lifted up and evenly spread.
+            // LEFT column (right-aligned), top→bottom: PROGRAM (69), AMBIENT (50).
             { spl: 50, color: Z_GREEN, lines: [ { t: 'AMBIENT', size: 12.5, color: Z_GREEN, ls: 0.3 }, { t: '40–59 dBA', size: 10, color: inkDim } ] },
-            // PROGRAM · 60–78 dBA = GREEN, not amber (owner 2026-07-30). Pinned to the
-            // RIGHT column, dropped to mid-right (rScale) and pulled a little closer.
-            { spl: 69, color: Z_GREEN, forceCol: 'R', rScale: 0.74, nearer: 10, lines: [ { t: 'PROGRAM', size: 12.5, color: Z_GREEN, ls: 0.3 }, { t: '60–78 dBA', size: 10, color: inkDim } ] },
-            // REFERENCE — lifted ABOVE the dial, centre column nudged just right of centre.
-            { spl: 81, color: Z_GREEN, forceCol: 'C', nearer: 20, lines: [ { t: 'REFERENCE', size: 12.5, color: Z_GREEN, ls: 0.3 }, { t: '79–84 dBA', size: 10, color: inkDim } ] },
-            { spl: 89, color: Z_ORANGE, rScale: 1.08, lines: [ { t: 'SHOW', size: 12.5, color: Z_ORANGE, ls: 0.3 }, { t: '85–93 dBA', size: 10, color: inkDim } ] },
-            { spl: 95, color: Z_ORANGE, rScale: 1.06, lines: [ { t: 'HIGH', size: 12.5, color: Z_ORANGE, ls: 0.3 }, { t: '94–96 dBA', size: 10, color: inkDim } ] },
-            { spl: 98, color: Z_RED, rScale: 1.04, lines: [ { t: 'LIMIT', size: 12.5, color: Z_RED, ls: 0.3 }, { t: '97–99 dBA', size: 10, color: inkDim } ] },
-            // 100+ exposure zone — moved to the lower-right (anchored at 110) so it
-            // spreads out from LIMIT; leader lands on its exact dB in the red zone.
+            // PROGRAM · 60–78 dBA = GREEN, not amber (owner 2026-07-30). Falls naturally
+            // into the LEFT column now (owner 2026-07-30 v3 — no forced/radial layout).
+            { spl: 69, color: Z_GREEN, lines: [ { t: 'PROGRAM', size: 12.5, color: Z_GREEN, ls: 0.3 }, { t: '60–78 dBA', size: 10, color: inkDim } ] },
+            // TOP CENTRE — REFERENCE, just above the dial, a touch right of centre.
+            { spl: 81, color: Z_GREEN, forceCol: 'C', nearer: 16, lines: [ { t: 'REFERENCE', size: 12.5, color: Z_GREEN, ls: 0.3 }, { t: '79–84 dBA', size: 10, color: inkDim } ] },
+            // RIGHT column (left-aligned), top→bottom EVENLY spaced: SHOW, HIGH, LIMIT, 100+.
+            { spl: 89, color: Z_ORANGE, lines: [ { t: 'SHOW', size: 12.5, color: Z_ORANGE, ls: 0.3 }, { t: '85–93 dBA', size: 10, color: inkDim } ] },
+            { spl: 95, color: Z_ORANGE, lines: [ { t: 'HIGH', size: 12.5, color: Z_ORANGE, ls: 0.3 }, { t: '94–96 dBA', size: 10, color: inkDim } ] },
+            { spl: 98, color: Z_RED, lines: [ { t: 'LIMIT', size: 12.5, color: Z_RED, ls: 0.3 }, { t: '97–99 dBA', size: 10, color: inkDim } ] },
+            // 100+ exposure zone — anchored at 110, seated at the BOTTOM of the right
+            // column by the even-spacing stack; leader lands on its exact dB in the red zone.
             { spl: 110, color: Z_RED, lines: [ { t: '100+ dB LAeq', size: 12, color: Z_RED, ls: 0.2 }, { t: 'WHO 15-MIN LIMIT', size: 9, color: Z_RED } ] },
           ]
         : [
@@ -2292,7 +2293,7 @@ export function SplDialView(p: {
             // CRITICAL BALANCE = the sweet spot — the KEY marker: ENLARGED gold title
             // (bigger than the other callouts) with the animated shiny-gold shimmer
             // glow + leader (owner 2026-07-30).
-            { spl: 79, color: GOLD_INK, gold: true, lines: [ { t: 'CRITICAL BALANCE', size: 15.5, color: GOLD_INK, ls: 0.3 }, { t: '76dB–84dB', size: 10, color: inkDim } ] },
+            { spl: 79, color: GOLD_INK, gold: true, lines: [ { t: 'CRITICAL BALANCING', size: 15.5, color: GOLD_INK, ls: 0.3 }, { t: '76dB–84dB', size: 10, color: inkDim } ] },
             { spl: 90, color: Z_ORANGE, lines: [ { t: 'IMPACT CHECK', size: 12.5, color: Z_ORANGE, ls: 0.3 }, { t: '85–95 dB SPL · brief', size: 9.5, color: inkDim } ] },
           ];
 
@@ -2358,64 +2359,74 @@ export function SplDialView(p: {
         i.col = i.sn < 0 ? 'L' : 'R';
       }
 
-    // Minimum callout box width so radially-placed side boxes never get too narrow
-    // to read (used only in the wide SPL/OPTIMAL even-spacing path below).
-    const MIN_BOX_W = wide ? 96 : 80;
-
-    // Horizontal box per column. STUDIO keeps the disjoint fixed columns (LEFT
-    // right-aligned to leftInner, RIGHT left-aligned from rightInner, CENTER centred
-    // over the arc top). SPL/OPTIMAL (`wide`) instead seat each NON-forced side box's
-    // inner edge a constant gap out ALONG ITS OWN ANCHOR RAY, so every callout sits
-    // ~equally far from the circle (item 6). Forced-column callouts fall back to the
-    // fixed column edge (± `nearer`) so a pinned box lands on the intended side even
-    // when its anchor sits on the other half of the dial. The leader always starts at
-    // the box edge nearest the dial (innerX).
+    // Horizontal box per column — FIXED DISJOINT COLUMNS in every mode (owner
+    // 2026-07-30 v3): the old radial/ray-based innerX (which parked SPL/OPTIMAL
+    // side boxes at UNEVEN distances from the arc) is GONE. Every LEFT box is
+    // right-aligned to the same `leftInner`, every RIGHT box is left-aligned from
+    // the same `rightInner`, and the CENTER box is centred over the arc top —
+    // so left and right columns sit an EQUAL, consistent distance from the arc.
+    // The leader always starts at the box edge nearest the dial (innerX).
     for (const i of items) {
       const near = i.def.nearer ?? 0;
-      const forced = i.def.forceCol != null;
       if (i.col === 'C') {
         // Centre block, optionally nudged right of centre by `nearer`.
         i.align = 'center'; i.bw = centerHalf * 2; i.bx = cx - centerHalf + near; i.innerX = cx + near;
       } else if (i.col === 'L') {
-        let innerX = leftInner + near;
-        if (wide && !forced) {
-          const rayX = cx + i.sn * (arcOuter + Math.max(6, colPad - near));
-          innerX = Math.max(rayX, edgePad + MIN_BOX_W);
-        }
+        const innerX = leftInner + near;
         i.align = 'right'; i.bx = edgePad; i.bw = innerX - edgePad; i.innerX = innerX;
       } else {
-        let innerX = rightInner - near;
-        if (wide && !forced) {
-          const rayX = cx + i.sn * (arcOuter + Math.max(6, colPad - near));
-          innerX = Math.min(rayX, w - edgePad - MIN_BOX_W);
-        }
+        const innerX = rightInner - near;
         i.align = 'left'; i.bx = innerX; i.bw = w - edgePad - innerX; i.innerX = innerX;
       }
     }
 
-    // Per-column vertical stack: seat each box at its ray height, then push any
-    // overlap downward (≥ minGap); if the stack runs past the bottom, shift it up
-    // as a whole (never above topLimit). Columns are disjoint in x, so this is the
-    // ONLY de-collision needed.
+    // Per-column vertical stack. SPL/OPTIMAL (`wide`) LEFT/RIGHT columns get EVEN
+    // vertical spacing (owner 2026-07-30 v3): the group (sorted top→bottom by its
+    // anchor height) is laid out with a constant inter-box gap and centred in the
+    // dial's vertical band, so items are evenly distributed — no bunching. STUDIO
+    // (and any wide CENTER item) keeps the original anchor-ray seat + downward
+    // de-collision so its already-approved layout is untouched. Either way the
+    // leader still lands on the TRUE dB anchor (ax,ay), independent of the box y.
     for (const c of ['L', 'C', 'R'] as const) {
       const grp = items.filter((i) => i.col === c).sort((a, b) => a.ly - b.ly);
-      let prevBot = topLimit;
-      for (const i of grp) {
-        let ty = i.ly - i.th / 2;
-        if (ty < prevBot) ty = prevBot;
-        i.ty = ty;
-        prevBot = ty + i.th + minGap;
-      }
-      const last = grp[grp.length - 1];
-      if (last) {
-        const over = last.ty + last.th - botLimit;
-        if (over > 0) {
-          let shift = over;
-          if (grp[0].ty - shift < topLimit) shift = grp[0].ty - topLimit;
-          if (shift > 0) for (const i of grp) i.ty -= shift;
+      if (grp.length === 0) continue;
+      if (wide && (c === 'L' || c === 'R')) {
+        const evenGap = 14; // comfortable, constant inter-box gap
+        const totalH = grp.reduce((s, i) => s + i.th, 0) + evenGap * (grp.length - 1);
+        let top = (topLimit + botLimit) / 2 - totalH / 2; // centre the stack in the band
+        if (top < topLimit) top = topLimit;
+        if (top + totalH > botLimit) top = Math.max(topLimit, botLimit - totalH);
+        let cur = top;
+        for (const i of grp) {
+          i.ty = cur;
+          cur += i.th + evenGap;
+        }
+      } else {
+        let prevBot = topLimit;
+        for (const i of grp) {
+          let ty = i.ly - i.th / 2;
+          if (ty < prevBot) ty = prevBot;
+          i.ty = ty;
+          prevBot = ty + i.th + minGap;
+        }
+        const last = grp[grp.length - 1];
+        if (last) {
+          const over = last.ty + last.th - botLimit;
+          if (over > 0) {
+            let shift = over;
+            if (grp[0].ty - shift < topLimit) shift = grp[0].ty - topLimit;
+            if (shift > 0) for (const i of grp) i.ty -= shift;
+          }
         }
       }
     }
+
+    // Lift the studio sweet-spot (gold) CRITICAL BALANCING callout a little HIGHER
+    // (owner 2026-07-30) so there is more padding between it and the top of the
+    // arc. It is alone in the centre column, so raising it collides with nothing;
+    // floored so it never rides up into the title/ESTIMATED band.
+    const goldItem = items.find((i) => i.def.gold);
+    if (goldItem) goldItem.ty = Math.max(topLimit - 16, goldItem.ty - 12);
 
     const laid = items.map((i) => {
       const midY = i.ty + i.th / 2;
@@ -2522,26 +2533,18 @@ export function SplDialView(p: {
         {mode === 'studio' ? (
           <Path path={G.sizeTicks} color={Z_GREEN} style="stroke" strokeWidth={1.8} />
         ) : null}
-        {/* SWEET-SPOT SHIMMER — CRITICAL BALANCE callout glow (studio mode). A soft
-            gold glow under the enlarged title + its leader, animated off the shared
-            `phase`-derived shimmer so it pulses in lock-step with the plate frame.
-            Base gold (#d4a017) breathes gently; a bright #ffe28a highlight shimmers
-            over it (opacity + blur ride the sine). Drawn UNDER the crisp leader (in
-            the loop below) and under the gold text (RN, on top of the Canvas), so
-            the title stays fully legible at every phase. */}
+        {/* SWEET-SPOT GOLD GLOW — CRITICAL BALANCING callout (studio mode). STATIC
+            (owner 2026-07-30 v3): the animated shimmer/pulse is GONE and the glow is
+            dialled WAY back (~13% of the old full glow) to a single faint, constant
+            gold under-glow on the box + leader. Legibility comes from the strong
+            STATIC drop shadow on the gold title text (drawn in RN over the Canvas). */}
         {goldCO && goldCO.glowBox ? (
           <Group>
-            <Path path={goldCO.glowBox} color={GOLD_INK} opacity={goldBaseOpacity}>
-              <BlurMask blur={5} style="normal" />
+            <Path path={goldCO.glowBox} color={GOLD_INK} opacity={GOLD_GLOW_OPACITY}>
+              <BlurMask blur={GOLD_GLOW_BLUR} style="normal" />
             </Path>
-            <Path path={goldCO.leaderPath} color={GOLD_INK} style="stroke" strokeWidth={4} opacity={goldBaseOpacity}>
+            <Path path={goldCO.leaderPath} color={GOLD_INK} style="stroke" strokeWidth={3} opacity={GOLD_GLOW_OPACITY}>
               <BlurMask blur={3} style="normal" />
-            </Path>
-            <Path path={goldCO.glowBox} color="#ffe28a" opacity={shimmerOpacity}>
-              <BlurMask blur={shimmerBlur} style="normal" />
-            </Path>
-            <Path path={goldCO.leaderPath} color="#ffe28a" style="stroke" strokeWidth={2.6} opacity={shimmerOpacity}>
-              <BlurMask blur={shimmerBlur} style="normal" />
             </Path>
           </Group>
         ) : null}
@@ -2569,16 +2572,11 @@ export function SplDialView(p: {
             true only in the studio 78–82 dB sweet spot, so no mode gating here. */}
         {p.sweetSpot ? (
           <>
-            {/* Base gold frame glow — breathes off the SAME shimmer as the callout. */}
-            <Path path={G.plate} color="#ffcf40" style="stroke" strokeWidth={5} opacity={borderBaseOpacity}>
-              <BlurMask blur={borderBlur} style="normal" />
+            {/* Subtle STATIC gold frame glow (owner 2026-07-30 v3 — no shimmer/pulse). */}
+            <Path path={G.plate} color="#ffcf40" style="stroke" strokeWidth={5} opacity={FRAME_GLOW_OPACITY}>
+              <BlurMask blur={FRAME_GLOW_BLUR} style="normal" />
             </Path>
-            {/* Bright #ffe28a highlight — identical shimmer (opacity + blur) to the
-                CRITICAL BALANCE glow, so border + callout shine as one gold pulse. */}
-            <Path path={G.plate} color="#ffe28a" style="stroke" strokeWidth={6} opacity={shimmerOpacity}>
-              <BlurMask blur={shimmerBlur} style="normal" />
-            </Path>
-            {/* Crisp gold frame on top — stays legible at every shimmer phase. */}
+            {/* Crisp gold frame on top — constant, no animation. */}
             <Path path={G.plate} color="#ffcf40" style="stroke" strokeWidth={2.4} opacity={0.95} />
           </>
         ) : null}
@@ -2861,13 +2859,16 @@ export function PeakAvgMeterView(p: {
 
   // Bright purple marker line at the very top of the avg fill (reads the exact
   // average level where purple meets the loudness peak).
+  // Bright PRIMARY average level LINE — a crisp, slightly-over-wide bar sitting
+  // exactly at the average's dBFS→pixel position (owner 2026-07-30): this is the
+  // reading, so it is drawn boldly and extends a few px past both bar edges.
   const avgCap = useDerivedValue(() => {
     const pk = engine.value;
     const av = Math.min(lAvg.value, pk);
     const pth = Skia.Path.Make();
     if (av > -59) {
       const v = Math.min(0, av);
-      pth.addRect(Skia.XYWHRect(barX, barBot - ((v + 60) / 60) * span - 1, barW, 2));
+      pth.addRect(Skia.XYWHRect(barX - 3, barBot - ((v + 60) / 60) * span - 1.4, barW + 6, 2.8));
     }
     return pth;
   }, [lAvg, engine]);
@@ -2880,6 +2881,39 @@ export function PeakAvgMeterView(p: {
     }
     return pth;
   }, [lHold, engine, showCap]);
+
+  // ── LIVE READOUT / TAGS riding the bar (owner 2026-07-30 — accuracy fix). The
+  // AVERAGE (purple) is the PRIMARY reading and must EQUAL the VU/dial number,
+  // which is round(rmsDb + splOffset). `avgY` tracks the average line's pixel
+  // position (same dBFS→pixel mapping as the bar + the gutter SPL numerals, so
+  // the value read off the scale lines up exactly); `avgTextProps` prints
+  // round(avg + splOffset) via that SAME mapping. The colored PEAK top gets a
+  // small "PK" tag so it reads clearly as the (naturally-higher) sample peak, not
+  // the level.
+  const avgY = useDerivedValue(() => {
+    const pk = engine.value;
+    const av = Math.min(lAvg.value, pk);
+    const v = Math.max(-60, Math.min(0, av));
+    return barBot - ((v + 60) / 60) * span;
+  }, [engine, lAvg]);
+  const avgLabelStyle = useAnimatedStyle(() => {
+    let top = avgY.value - 13; // seat the label just ABOVE the line
+    if (top < wellY) top = wellY;
+    return { transform: [{ translateY: top }] };
+  }, [avgY]);
+  const avgTextProps = useAnimatedProps(() => {
+    const pk = engine.value;
+    const av = Math.min(lAvg.value, pk);
+    const s = av > -119 ? Math.round(av + splOffset) : Math.round(-60 + splOffset);
+    const t = `AVG ${s}`;
+    return { text: t, defaultValue: t } as any;
+  }, [engine, lAvg, splOffset]);
+  const pkTagStyle = useAnimatedStyle(() => {
+    const pk = Math.max(-60, Math.min(0, engine.value));
+    let top = barBot - ((pk + 60) / 60) * span - 13;
+    if (top < wellY) top = wellY;
+    return { transform: [{ translateY: top }] };
+  }, [engine]);
 
   return (
     <View style={{ width: w, height: h }}>
@@ -2894,7 +2928,8 @@ export function PeakAvgMeterView(p: {
         <Path path={G.unlit} color="#12151b" opacity={0.95} />
         {/* AVERAGE — purple fill from the bottom up to the avg level (≤ peak). */}
         <Path path={litAvg} color={AVG_PURPLE} />
-        <Path path={avgCap} color="#d69bff" />
+        {/* PRIMARY reading: the bright average level LINE (equals the VU/dial SPL). */}
+        <Path path={avgCap} color="#efdcff" />
         {/* PEAK — loudness zones above the avg level. One vertical gradient keyed to
             ABSOLUTE y (barTop=0 dBFS … barBot=−60) so a segment's colour reflects
             its dB (green low → yellow → orange → red near/over the top). */}
@@ -2921,7 +2956,60 @@ export function PeakAvgMeterView(p: {
           {`${spl(d)}`}
         </Lbl>
       ))}
-      {/* Purple AVG + colored PK legend. */}
+      {/* PK tag riding the colored PEAK top — clarifies the colored top is the
+          (naturally higher) sample PEAK, not the level. */}
+      <Animated.Text
+        pointerEvents="none"
+        style={[
+          {
+            position: 'absolute',
+            left: barX,
+            top: 0,
+            width: barW,
+            textAlign: 'right',
+            fontFamily: fonts.oswaldSemiBold,
+            fontSize: 9.5,
+            letterSpacing: 0.6,
+            color: '#e8b45a',
+            includeFontPadding: false,
+            textShadowColor: 'rgba(0,0,0,0.92)',
+            textShadowRadius: 3,
+            textShadowOffset: { width: 0, height: 1 },
+          },
+          pkTagStyle,
+        ]}
+      >
+        PK
+      </Animated.Text>
+      {/* Live AVG readout RIDING the purple average line — the PRIMARY reading.
+          Prints round(avg + splOffset), the SAME number the VU/dial show, so the
+          user reads the average = the VU number. */}
+      <AnimatedTextInput
+        editable={false}
+        pointerEvents="none"
+        underlineColorAndroid="transparent"
+        animatedProps={avgTextProps}
+        style={[
+          {
+            position: 'absolute',
+            left: barX + 2,
+            top: 0,
+            width: barW,
+            padding: 0,
+            textAlign: 'left',
+            fontFamily: fonts.oswaldSemiBold,
+            fontSize: 11,
+            letterSpacing: 0.4,
+            color: '#f2e6ff',
+            includeFontPadding: false,
+            textShadowColor: 'rgba(0,0,0,0.94)',
+            textShadowRadius: 3,
+            textShadowOffset: { width: 0, height: 1 },
+          },
+          avgLabelStyle,
+        ]}
+      />
+      {/* Purple AVG + colored PK color key. */}
       <Lbl x={wellX} y={barBot + 5} w={wellW / 2} align="center" size={9.5} font={fonts.oswaldSemiBold} color={AVG_PURPLE} ls={0.6}>
         AVG
       </Lbl>
