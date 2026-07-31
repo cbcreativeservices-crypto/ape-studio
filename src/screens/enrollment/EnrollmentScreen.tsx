@@ -1169,6 +1169,18 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                   >
                     <DeckIcon color={showActive ? colors.blue : GRAY} fill={showActive ? BLUE : '#8a8a8a'} size={22} />
                   </Pressable>
+                  {/* Study icon alongside the 3-card icon (owner 2026-08-01): lit +
+                      opens the Dashboard when the topic is in the deck. */}
+                  <Pressable
+                    onPress={showActive ? () => goStudy(e.gs) : undefined}
+                    disabled={!showActive}
+                    hitSlop={8}
+                    accessibilityRole="button"
+                    accessibilityState={{ disabled: !showActive }}
+                    accessibilityLabel={showActive ? `Study ${nameFor(e.gs)}` : 'Load into the deck to study'}
+                  >
+                    <NavIcon icon="Study" lit={showActive} showLabel={false} />
+                  </Pressable>
                 </Pressable>
                 </Animated.View>
               );
