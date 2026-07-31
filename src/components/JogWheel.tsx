@@ -141,9 +141,14 @@ export function JogDial({
   centerRef.current = { x: width / 2, y: height / 2 };
   const DEAD_PX = 44; // ignore right at the centre (atan2 is unstable there)
 
+  // The dimple is DRAWN at 2 o'clock (−30° in atan2 terms); rotating the wheel by
+  // (fingerAngle + 30) puts the dimple exactly at the finger's angle. Tracking is
+  // ABSOLUTE — the dimple always sits where the finger is pressing, so it never
+  // drifts or flies off (no accumulation).
+  const DIMPLE_OFFSET = 30;
   const lastAngle = useRef(0);
   const accum = useRef(0);
-  const spinDeg = useRef(0);
+  const inDead = useRef(false);
   const lastStepAt = useRef(0);
   const disabledRef = useRef(disabled);
   disabledRef.current = disabled;
@@ -177,23 +182,35 @@ export function JogDial({
         onPanResponderTerminationRequest: () => false,
         onPanResponderGrant: (_e, g) => {
           onGrantRef.current();
-          lastAngle.current = angleAt(g.x0, g.y0);
+          const a0 = angleAt(g.x0, g.y0);
+          lastAngle.current = a0;
           accum.current = 0;
           lastStepAt.current = 0; // first detent applies immediately
-          spinDeg.current = 0; // start with the dimple at 2 o'clock every time
-          spin.setValue(0);
+          inDead.current = false;
+          spin.setValue(a0 + DIMPLE_OFFSET); // dimple appears exactly under the thumb
         },
         onPanResponderMove: (_e, g) => {
           if (disabledRef.current) return;
           const { x, y } = centerRef.current;
-          if (Math.hypot(g.moveX - x, g.moveY - y) < DEAD_PX) return;
+          // Right at the centre the angle is meaningless — hold steady and
+          // re-anchor on the way out so it never snaps/flies.
+          if (Math.hypot(g.moveX - x, g.moveY - y) < DEAD_PX) {
+            inDead.current = true;
+            return;
+          }
           const a = angleAt(g.moveX, g.moveY);
+          // ABSOLUTE: the dimple is placed exactly at the finger's angle.
+          spin.setValue(a + DIMPLE_OFFSET);
+          if (inDead.current) {
+            inDead.current = false;
+            lastAngle.current = a; // re-anchor detents without a jump
+            return;
+          }
+          // Detents count the shortest angular movement (throttled in step()).
           let d = a - lastAngle.current;
           while (d > 180) d -= 360;
           while (d < -180) d += 360;
           lastAngle.current = a;
-          spinDeg.current += d;
-          spin.setValue(spinDeg.current);
           accum.current += d;
           while (accum.current >= DETENT_DEG) {
             accum.current -= DETENT_DEG;
