@@ -20,8 +20,9 @@
  *    the geometric mean of the group (log-even), and the group is resolvable
  *    only if EVERY member is (AND of the native flags — one dishonest member
  *    grays the whole group).
- *  - 61 = 1/6 octave DERIVED from the fine FFT spectrum (spectrumEnabled only
- *    while 61 is selected): bin powers energy-summed into 61 log-spaced bands
+ *  - 61 = 1/6 octave DERIVED from the fine FFT spectrum (spectrumEnabled is
+ *    always ON so the native band frame stays populated — see the cfg note):
+ *    bin powers energy-summed into 61 log-spaced bands
  *    20 Hz–20 kHz; a band whose bin support is too sparse at this FFT size
  *    (fewer than one bin, or narrower than one bin width) renders grayed under
  *    the exact same `resolvable` grammar. Disclosed in the meta line.
@@ -498,11 +499,15 @@ export function RtaScreen({ navigation }: Props) {
   // Ref-stable config object: useDspEngine's start() closes over the object we
   // pass on mount, so settings changes MUTATE it (then live-apply below) —
   // a fresh object per render would leave START pushing stale settings.
-  // spectrumEnabled rides the 61-band mode only (config effect, owner spec).
+  // spectrumEnabled is ALWAYS on (bug fix 2026-08-01): the native engine only
+  // runs the FFT when spectrum is enabled, and the octave-band frame is derived
+  // from that FFT — so with it OFF, getBandsFrame() came back empty and the
+  // native band modes (7/10/15/31) drew nothing. Keeping the FFT running fills
+  // the bands for every mode and removes the warm-up delay when selecting 61.
   const cfg = useRef<EngineConfig>({
     fftSize: FFT_SIZE,
     fraction: 3,
-    spectrumEnabled: false,
+    spectrumEnabled: true,
     bandAvgAlpha: 0.35,
   }).current;
   const [mode, setMode] = useState<BandMode>(31);
@@ -539,12 +544,12 @@ export function RtaScreen({ navigation }: Props) {
     (m: BandMode) => {
       if (m === mode) return;
       const wantFraction = fractionFor(m);
-      const wantSpectrum = m === 61;
-      // Reconfigure the engine ONLY when it actually changes (fraction /
-      // spectrumEnabled) — 7↔15↔31 all ride the same native 1/3-oct frame.
-      const needsConfig = cfg.fraction !== wantFraction || cfg.spectrumEnabled !== wantSpectrum;
+      // spectrumEnabled stays ON for every mode (see cfg note) — the FFT must
+      // keep running so the native band frame is populated. Reconfigure ONLY
+      // when the octave FRACTION changes (10 = 1/1, everything else = 1/3);
+      // 7↔15↔31↔61 all ride the same native 1/3-oct FFT.
+      const needsConfig = cfg.fraction !== wantFraction;
       cfg.fraction = wantFraction;
-      cfg.spectrumEnabled = wantSpectrum;
       setMode(m);
       clearDerived(); // fresh derivation state — stale holds would lie
       // Live-apply: the native side restarts band averaging + per-band peak
