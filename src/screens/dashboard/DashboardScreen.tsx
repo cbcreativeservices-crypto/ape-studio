@@ -313,8 +313,10 @@ export function DashboardScreen() {
   const [loading, setLoading] = useState(true);
   const [topicIdx, setTopicIdx] = useState(0);
   // Jog-wheel popup (owner 2026-08-01): touching the small wheel opens a large
-  // wheel in the lower 2/3 of the screen; releasing it closes the popup.
+  // SSL wheel anchored to the small icon (dimple under the thumb); releasing it
+  // closes the popup.
   const [jogOpen, setJogOpen] = useState(false);
+  const [jogAnchor, setJogAnchor] = useState<{ x: number; y: number } | null>(null);
   // CM6 (Booth 2026-07-11): commercialMode renders a PUBLIC course (seq order
   // from the seed) through this same screen; institutional path unchanged.
   const { commercialMode, caps } = useEntitlement();
@@ -856,10 +858,17 @@ export function DashboardScreen() {
                   fallback={<View style={styles.topicTrophyEmpty} />}
                 />
               </Pressable>
-              {/* Jog wheel — touching it opens the big-wheel popup (owner
-                  2026-08-01); turning that scrolls the deck's topics. */}
+              {/* Jog wheel — touching it opens the big-wheel popup anchored to
+                  this icon (owner 2026-08-01); turning it scrolls the topics. */}
               <View style={styles.topicJog}>
-                <JogWheelTrigger size={96} disabled={topics.length <= 1} onPress={() => setJogOpen(true)} />
+                <JogWheelTrigger
+                  size={96}
+                  disabled={topics.length <= 1}
+                  onOpen={(a) => {
+                    setJogAnchor(a);
+                    setJogOpen(true);
+                  }}
+                />
               </View>
             </View>
 
@@ -1262,6 +1271,7 @@ export function DashboardScreen() {
           to close. */}
       <JogPopup
         visible={jogOpen}
+        anchor={jogAnchor}
         onClose={() => setJogOpen(false)}
         onStep={(d) => goTo(topicIdx + d)}
         label={topic?.name ?? ''}

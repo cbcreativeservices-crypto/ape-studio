@@ -424,7 +424,8 @@ export function SpectrogramScreen({ navigation }: Props) {
   }, [state]);
 
   const onStart = useCallback(() => {
-    setMicPaused(false);
+    // Don't clear micPaused here (strobe fix 2026-08-01) — it flashes the panel
+    // out for a frame during 'starting'; cleared once running (above).
     // Fresh run = fresh timeline: stale columns from a previous run would lie
     // about time continuity across the stop gap.
     setHistory([]);

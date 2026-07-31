@@ -613,7 +613,8 @@ export function RtaScreen({ navigation }: Props) {
   }, [state]);
 
   const onStart = useCallback(() => {
-    setMicPaused(false);
+    // Don't clear micPaused here (strobe fix 2026-08-01) — it flashes the frozen
+    // panel out for a frame during 'starting'. It's cleared once running (above).
     clearDerived(); // a fresh run must not inherit a previous run's holds
     void start();
   }, [clearDerived, start]);

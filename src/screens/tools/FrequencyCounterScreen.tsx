@@ -386,7 +386,7 @@ function LivePitchMode({
     if (running) setMicPaused(false);
   }, [running]);
   const onStart = useCallback(() => {
-    setMicPaused(false);
+    // Don't clear micPaused here (strobe fix 2026-08-01) — cleared once running.
     void start();
   }, [start]);
   const onStop = useCallback(() => {

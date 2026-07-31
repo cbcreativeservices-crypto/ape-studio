@@ -1,74 +1,96 @@
 /**
- * JogWheel — a black dished rotary jog wheel (owner 2026-08-01, reworked).
+ * JogWheel — an SSL-style dished jog wheel (owner 2026-08-01).
  *
- * On the Dashboard the small wheel is a TRIGGER (`JogWheelTrigger`): touching it
- * opens `JogPopup` — a LARGE wheel in the lower two-thirds of the screen. The
- * user turns the big wheel to scroll the deck's topics; the wheel moves in CLICK
- * DETENTS (~1/7 turn per step) with a Rigid haptic (the study action-button
- * click) and NO sound. As soon as they let go of the wheel, the popup closes.
- *
- * The wheel itself no longer visually spins (owner removed that animation) — the
- * feedback is the detent haptic + the topic scrolling underneath.
+ * On the Dashboard the small wheel is a TRIGGER (`JogWheelTrigger`) — the SAME
+ * graphic, just shrunk. Touching it opens `JogPopup`: a LARGE copy of the wheel
+ * placed so its finger DIMPLE lands exactly where the small icon was, i.e. right
+ * under the thumb that pressed it. The user then turns the wheel and it SPINS in
+ * a circular fashion (the whole face — dimple included — rotates to follow the
+ * finger, like a real jog wheel, not a joystick). It moves in click DETENTS
+ * (~1/7 turn per step) with a Rigid haptic (the study action-button click) and
+ * NO sound. As soon as they let go of the wheel — or tap outside it — the popup
+ * closes.
  *
  * `onStep(dir)` fires once per detent crossed (+1 CW / −1 CCW); `onRelease`
- * fires when the drag ends. Angle is computed from the touch RELATIVE to the
- * view (locationX/Y), so no window measuring is needed.
+ * fires when the drag ends.
  */
 import { useMemo, useRef } from 'react';
-import { Modal, PanResponder, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
-import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
+import { Animated, Modal, PanResponder, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import Svg, { Circle, Defs, Ellipse, RadialGradient, Stop } from 'react-native-svg';
 import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../features/settings/store';
 import { colors, fonts } from '../theme/tokens';
 
 const DETENT_DEG = 360 / 7; // ~51.4° per click → one hard full spin ≈ 7 steps
+/** Finger-dimple centre as a fraction of the wheel size from the TOP — shared so
+ *  the popup can align the big dimple to the small icon (the thumb press). */
+const DIMPLE_CY = 0.26;
 
-/** The pure dished-black wheel face: rim, concave dish, top sheen, finger
- *  dimple near the top (the "indent" the user rests a finger in). */
+/** The SSL-style dished-black wheel face: matte-black domed disc lit from the
+ *  upper-left, a concave centre, a faint purple sheen, and a finger dimple near
+ *  the top. Used at BOTH sizes unchanged (small icon = this, shrunk). */
 function JogFace({ size }: { size: number }) {
   const c = size / 2;
+  const dR = size * 0.11; // dimple radius
+  const dCy = size * DIMPLE_CY; // dimple centre y
   return (
     <Svg width={size} height={size}>
       <Defs>
-        <RadialGradient id="jogFace" cx="50%" cy="42%" r="62%">
-          <Stop offset="0" stopColor="#242428" />
-          <Stop offset="0.55" stopColor="#161619" />
-          <Stop offset="0.86" stopColor="#37373d" />
-          <Stop offset="1" stopColor="#0c0c0e" />
+        <RadialGradient id="jogBody" cx="40%" cy="34%" r="72%">
+          <Stop offset="0" stopColor="#43434a" />
+          <Stop offset="0.4" stopColor="#212127" />
+          <Stop offset="0.75" stopColor="#0e0e12" />
+          <Stop offset="1" stopColor="#050507" />
         </RadialGradient>
-        <RadialGradient id="jogDimple" cx="50%" cy="38%" r="60%">
-          <Stop offset="0" stopColor="#3a3a40" />
-          <Stop offset="0.7" stopColor="#0e0e10" />
-          <Stop offset="1" stopColor="#050506" />
+        <RadialGradient id="jogDish" cx="50%" cy="52%" r="58%">
+          <Stop offset="0" stopColor="#000000" stopOpacity="0.5" />
+          <Stop offset="0.7" stopColor="#000000" stopOpacity="0" />
+        </RadialGradient>
+        <RadialGradient id="jogDimple" cx="40%" cy="32%" r="70%">
+          <Stop offset="0" stopColor="#50505a" />
+          <Stop offset="0.5" stopColor="#141418" />
+          <Stop offset="1" stopColor="#000000" />
         </RadialGradient>
       </Defs>
-      {/* Rim */}
-      <Circle cx={c} cy={c} r={c - 1} fill="#050506" />
-      <Circle cx={c} cy={c} r={c - 1} stroke="#3c3c42" strokeWidth={1} fill="none" opacity={0.7} />
-      {/* Dished face */}
-      <Circle cx={c} cy={c} r={c - 4} fill="url(#jogFace)" />
-      {/* Subtle top highlight */}
-      <Circle cx={c} cy={c - size * 0.12} r={c * 0.62} fill="#ffffff" opacity={0.04} />
-      {/* Finger dimple */}
-      <Circle cx={c} cy={c - size * 0.18} r={size * 0.11} fill="url(#jogDimple)" />
-      <Circle cx={c} cy={c - size * 0.18} r={size * 0.11} stroke="#4a4a50" strokeWidth={0.8} fill="none" opacity={0.6} />
+      {/* Faint purple outer glow ring (owner: "some purple"). */}
+      <Circle cx={c} cy={c} r={c - 0.5} fill="none" stroke="#7a4dff" strokeWidth={size * 0.02} opacity={0.35} />
+      {/* Rim + matte-black domed body. */}
+      <Circle cx={c} cy={c} r={c - 2} fill="#08080a" />
+      <Circle cx={c} cy={c} r={c - 2} stroke="#3c3c44" strokeWidth={1} fill="none" opacity={0.7} />
+      <Circle cx={c} cy={c} r={c - 4} fill="url(#jogBody)" />
+      <Circle cx={c} cy={c} r={c - 4} fill="url(#jogDish)" />
+      {/* Upper-left light sheen + a faint purple counter-sheen lower-right. */}
+      <Ellipse cx={c - size * 0.15} cy={c - size * 0.2} rx={size * 0.28} ry={size * 0.16} fill="#ffffff" opacity={0.05} />
+      <Ellipse cx={c + size * 0.12} cy={c + size * 0.16} rx={size * 0.3} ry={size * 0.18} fill="#8a5cff" opacity={0.06} />
+      {/* Finger dimple near the top, with a small bright highlight. */}
+      <Circle cx={c} cy={dCy} r={dR} fill="url(#jogDimple)" />
+      <Circle cx={c} cy={dCy} r={dR} stroke="#5a5a64" strokeWidth={size * 0.008} fill="none" opacity={0.7} />
+      <Circle cx={c - dR * 0.35} cy={dCy - dR * 0.4} r={dR * 0.28} fill="#ffffff" opacity={0.2} />
     </Svg>
   );
 }
 
-/** Small static jog on the Dashboard — a button that opens the big-wheel popup. */
+/** Small static jog on the Dashboard — a button that measures its own position
+ *  and opens the big-wheel popup anchored to it (under the thumb). */
 export function JogWheelTrigger({
   size = 74,
   disabled = false,
-  onPress,
+  onOpen,
 }: {
   size?: number;
   disabled?: boolean;
-  onPress: () => void;
+  onOpen: (anchor: { x: number; y: number }) => void;
 }) {
+  const ref = useRef<View>(null);
+  const handle = () => {
+    const node = ref.current;
+    if (!node) return;
+    node.measureInWindow((x, y, w, h) => onOpen({ x: x + w / 2, y: y + h / 2 }));
+  };
   return (
     <Pressable
-      onPress={disabled ? undefined : onPress}
+      ref={ref}
+      onPress={disabled ? undefined : handle}
       disabled={disabled}
       hitSlop={8}
       accessibilityRole="button"
@@ -81,8 +103,8 @@ export function JogWheelTrigger({
   );
 }
 
-/** The interactive wheel: drag AROUND it to detent-step; `onRelease` fires when
- *  the drag ends (used to dismiss the popup). No visual rotation. */
+/** The interactive wheel: drag AROUND it to detent-step; the whole face SPINS
+ *  circularly to follow the finger. `onRelease` fires when the drag ends. */
 export function JogWheel({
   size = 74,
   onStep,
@@ -104,11 +126,15 @@ export function JogWheel({
   const disabledRef = useRef(disabled);
   disabledRef.current = disabled;
 
+  // Continuous rotation of the whole face — this is the "spin" (a real jog wheel
+  // turns; it is NOT a joystick). It follows the finger's angular movement 1:1.
+  const spin = useRef(new Animated.Value(0)).current;
+  const spinDeg = useRef(0);
+
   const angleAt = (lx: number, ly: number) => (Math.atan2(ly - c, lx - c) * 180) / Math.PI;
 
   const click = (dir: -1 | 1) => {
     onStepRef.current(dir);
-    // Same "click" the study action buttons use — haptic only, never a sound.
     if (hapticsEnabled()) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid).catch(() => {});
   };
 
@@ -130,6 +156,9 @@ export function JogWheel({
           while (d > 180) d -= 360;
           while (d < -180) d += 360;
           lastAngle.current = a;
+          // Spin the face by the same angular delta — circular, follows the finger.
+          spinDeg.current += d;
+          spin.setValue(spinDeg.current);
           accum.current += d;
           while (accum.current >= DETENT_DEG) {
             accum.current -= DETENT_DEG;
@@ -147,6 +176,12 @@ export function JogWheel({
     [c],
   );
 
+  const rotate = spin.interpolate({
+    inputRange: [-360, 360],
+    outputRange: ['-360deg', '360deg'],
+    extrapolate: 'extend',
+  });
+
   return (
     <View
       {...pan.panHandlers}
@@ -154,16 +189,19 @@ export function JogWheel({
       accessibilityRole="adjustable"
       accessibilityLabel="Jog wheel — turn to change the current topic"
     >
-      <JogFace size={size} />
+      <Animated.View style={{ width: size, height: size, transform: [{ rotate }] }}>
+        <JogFace size={size} />
+      </Animated.View>
     </View>
   );
 }
 
-/** Big-wheel popup (owner 2026-08-01): a large jog wheel (~3/4 screen width) in
- *  the lower two-thirds of the screen. The user turns it to scroll topics; as
- *  soon as they let go of the wheel — or tap anywhere outside it — it closes. */
+/** Big-wheel popup (owner 2026-08-01): a large SSL jog wheel placed so its
+ *  dimple sits exactly where the small icon was — under the thumb — so the user
+ *  can turn it immediately. Releasing the wheel (or tapping outside it) closes. */
 export function JogPopup({
   visible,
+  anchor,
   onClose,
   onStep,
   label,
@@ -171,6 +209,7 @@ export function JogPopup({
   disabled = false,
 }: {
   visible: boolean;
+  anchor: { x: number; y: number } | null;
   onClose: () => void;
   onStep: (dir: -1 | 1) => void;
   label: string;
@@ -178,22 +217,23 @@ export function JogPopup({
   disabled?: boolean;
 }) {
   const { width, height } = useWindowDimensions();
-  const wheelSize = Math.round(Math.min(width * 0.75, height * 0.45));
+  const size = Math.round(Math.min(width * 0.8, height * 0.5));
+  const a = anchor ?? { x: width / 2, y: height / 2 };
+  // Place the big DIMPLE at the anchor (the small icon / thumb press).
+  const left = Math.round(a.x - size / 2);
+  const top = Math.round(a.y - size * DIMPLE_CY);
   return (
     <Modal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
-      {/* Tap anywhere off the wheel closes; the wheel claims its own touches. */}
       <Pressable style={styles.backdrop} onPress={onClose} accessibilityRole="button" accessibilityLabel="Close jog wheel">
-        <View style={[styles.panel, { height: Math.round(height * 0.66) }]}>
-          <View style={styles.grabber} />
-          <Text style={styles.jogLabel} numberOfLines={1}>
-            {label}
-          </Text>
-          {sublabel ? <Text style={styles.jogSub}>{sublabel}</Text> : null}
-          <View style={styles.wheelWrap}>
-            <JogWheel size={wheelSize} disabled={disabled} onStep={onStep} onRelease={onClose} />
-          </View>
-          <Text style={styles.jogHint}>Turn to change topic · let go to close</Text>
+        <View style={[styles.jogHolder, { left, top, width: size, height: size }]}>
+          <JogWheel size={size} disabled={disabled} onStep={onStep} onRelease={onClose} />
         </View>
+        {label ? (
+          <Text style={[styles.jogLabel, { top: top + size + 12 }]} numberOfLines={1}>
+            {label}
+            {sublabel ? `  ·  ${sublabel}` : ''}
+          </Text>
+        ) : null}
       </Pressable>
     </Modal>
   );
@@ -203,27 +243,16 @@ const styles = StyleSheet.create({
   wrap: { alignItems: 'center', justifyContent: 'center' },
   disabled: { opacity: 0.45 },
 
-  backdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
+  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)' },
+  jogHolder: { position: 'absolute' },
+  jogLabel: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    textAlign: 'center',
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 15,
+    letterSpacing: 0.6,
+    color: colors.textPrimary,
   },
-  panel: {
-    width: '100%',
-    backgroundColor: '#141416',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    borderTopWidth: 1,
-    borderColor: '#2a2a2e',
-    alignItems: 'center',
-    paddingTop: 10,
-    paddingBottom: 26,
-    paddingHorizontal: 20,
-  },
-  grabber: { width: 42, height: 4, borderRadius: 2, backgroundColor: '#3a3a3e', marginBottom: 14 },
-  jogLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, letterSpacing: 0.4, color: colors.textPrimary, textAlign: 'center' },
-  jogSub: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.amber, marginTop: 3 },
-  wheelWrap: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  jogHint: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, textAlign: 'center' },
 });

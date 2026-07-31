@@ -138,10 +138,18 @@ export function WaveformScreen({ navigation }: Props) {
     stop();
   }, [stop]);
   const onStart = useCallback(() => {
-    setMicPaused(false);
+    // Do NOT clear micPaused here (owner 2026-08-01 strobe fix): clearing it
+    // during the 'starting' transition unmounts the frozen viewer for a frame
+    // and flashes the whole screen like a strobe after every STOP→START. It is
+    // cleared only once we are actually running (below), so the frozen viewer
+    // stays up and seamlessly goes live.
     setClipBase(0); // native clip counter restarts at 0 on capture start
     void start();
   }, [start]);
+  // Clear the paused flag ONLY when truly running (never during 'starting').
+  useEffect(() => {
+    if (state === 'running') setMicPaused(false);
+  }, [state]);
 
   // Open straight into the live oscilloscope — no redundant START screen (owner
   // 2026-08-01).
