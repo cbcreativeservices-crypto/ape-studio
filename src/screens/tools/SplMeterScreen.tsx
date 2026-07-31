@@ -412,7 +412,9 @@ export function SplMeterScreen({ navigation }: Props) {
   // spanning the full height of that column (top of the VU → just above the
   // circle meter). The LED height is measured from the left column via onLayout.
   const LED_GAP = 10;
-  const ledW = 78; // thin
+  // Wider (owner 2026-07-30) to fit the left-side AVG (purple) + PEAK (white)
+  // readouts beside the bar, the SPL scale to 110, and the red over-100 frame.
+  const ledW = 104;
   const leftColW = winW - 32 - LED_GAP - ledW;
   const vuW = leftColW; // the VU fills the left column width
   const vuH = Math.round(vuW * 0.56);
@@ -603,7 +605,7 @@ export function SplMeterScreen({ navigation }: Props) {
           <View style={styles.vuOpenFrame}>
             {viz ? <viz.VuGlyph size={58} /> : <VuGlyphFallback />}
           </View>
-          <Text style={styles.vuOpenLabel}>VU</Text>
+          <Text style={styles.vuOpenLabel}>VU View</Text>
         </Pressable>
       </View>
 
