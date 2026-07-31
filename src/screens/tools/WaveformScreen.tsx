@@ -63,7 +63,7 @@ const TRACE = '#5fd9c4';
 /** Vertical zoom chips — owner 2026-07-29: ×6 added, DEFAULT ×4. */
 const ZOOMS = [1, 2, 4, 6] as const;
 type Zoom = (typeof ZOOMS)[number];
-const DEFAULT_ZOOM: Zoom = 4;
+const DEFAULT_ZOOM: Zoom = 2;
 
 /** Time-window chips (seconds of history shown) — owner 2026-07-31: 0.5–4 s. */
 const WINDOWS = [0.5, 1, 2, 3, 4] as const;
@@ -89,6 +89,11 @@ export function WaveformScreen({ navigation }: Props) {
   // control still slices real data while frozen). Capture continues (spec §11
   // freeze control) — only the drawing stops updating.
   const [frozen, setFrozen] = useState<WaveBucket[] | null>(null);
+  // Clip-overrun display baseline (owner 2026-08-01): tapping the CLIP OVERRUNS
+  // readout zeroes the shown count by recording the current native total as a
+  // baseline; the display shows (total − baseline). The native counter keeps
+  // running (it resets to 0 on each capture start, when we also zero the base).
+  const [clipBase, setClipBase] = useState(0);
   const [justSaved, setJustSaved] = useState(false);
   const savedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Clear the SAVED ✓ timer on unmount (house review rule 2026-07-23).
@@ -134,6 +139,7 @@ export function WaveformScreen({ navigation }: Props) {
   }, [stop]);
   const onStart = useCallback(() => {
     setMicPaused(false);
+    setClipBase(0); // native clip counter restarts at 0 on capture start
     void start();
   }, [start]);
 
@@ -332,9 +338,19 @@ export function WaveformScreen({ navigation }: Props) {
                   <Text style={styles.statUnit}> dBFS</Text>
                 </Text>
               </Pressable>
-              <Pressable style={styles.statCell} onLongPress={() => help('clip_runs')} delayLongPress={260}>
+              {/* Tap to RESET the shown count; long-press for help (owner 2026-08-01). */}
+              <Pressable
+                style={styles.statCell}
+                onPress={() => meter && setClipBase(meter.clipRuns)}
+                onLongPress={() => help('clip_runs')}
+                delayLongPress={260}
+                accessibilityRole="button"
+                accessibilityLabel="Clip overruns — tap to reset the count"
+              >
                 <Text style={styles.statLabel}>CLIP OVERRUNS</Text>
-                <Text style={[styles.statValue, styles.statValueRed]}>{meter ? meter.clipRuns : '—'}</Text>
+                <Text style={[styles.statValue, styles.statValueRed]}>
+                  {meter ? Math.max(0, meter.clipRuns - clipBase) : '—'}
+                </Text>
               </Pressable>
               <Pressable style={styles.statCell} onLongPress={() => help('window')} delayLongPress={260}>
                 <Text style={styles.statLabel}>WINDOW</Text>
