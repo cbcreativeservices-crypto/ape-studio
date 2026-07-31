@@ -304,6 +304,17 @@ export function categoryLabRows(cat: LabCategory): LabLeaf[] {
   ];
 }
 
+/** Every category rendered as uniform lab ROWS (owner 2026-08-01: every topic
+ *  the same size, hub or single lab). A hub becomes ONE row that opens the hub,
+ *  followed by its attached extraLabs; a 'list' category contributes all its
+ *  labs. */
+export function categoryEntries(cat: LabCategory): LabLeaf[] {
+  if (cat.kind === 'hub') {
+    return [{ name: cat.name, blurb: cat.hubBlurb, route: cat.route, params: cat.params }, ...(cat.extraLabs ?? [])];
+  }
+  return categoryLabRows(cat);
+}
+
 /** The card's count label, e.g. "16 Labs" / "25 Calculators". */
 export function categoryCountLabel(cat: LabCategory): string {
   const n = categoryCount(cat);
