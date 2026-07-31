@@ -120,12 +120,16 @@ function SideLed({
   ledW,
   ledH,
   holdMode,
+  splOffset,
+  weightingLabel,
 }: {
   viz: VizMetersModule;
   live: LiveMeterDrive;
   ledW: number;
   ledH: number;
   holdMode: PeakHoldMode;
+  splOffset: number;
+  weightingLabel: string;
 }) {
   const phase = viz.usePhaseClock(true, 1 / VU_LOOP);
   if (ledH <= 0) return <View style={{ width: ledW }} />;
@@ -137,6 +141,8 @@ function SideLed({
       live={live}
       loopSeconds={VU_LOOP}
       holdMode={holdMode}
+      splOffset={splOffset}
+      weightingLabel={weightingLabel}
     />
   );
 }
@@ -1044,7 +1050,7 @@ export function SplMeterScreen({ navigation }: Props) {
                     </View>
                   </View>
                   {viz ? (
-                    <SideLed viz={viz} live={live} ledW={ledW} ledH={leftColH} holdMode={holdMode} />
+                    <SideLed viz={viz} live={live} ledW={ledW} ledH={leftColH} holdMode={holdMode} splOffset={splOffset} weightingLabel={weighting} />
                   ) : null}
                 </View>
 

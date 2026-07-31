@@ -935,8 +935,8 @@ export function VuMeterView(p: {
     const tailR = -12;
     const wb = 3.0;
     const wt = 1.0;
-    const ox = 2.6;
-    const oy = 2.8;
+    const ox = 3.4;
+    const oy = 3.7;
     const bx = cx + s * tailR + ox;
     const by = py - c * tailR + oy;
     const tx = cx + s * tipR + ox;
@@ -1067,8 +1067,8 @@ export function VuMeterView(p: {
         {/* Needle: soft ANIMATED drop shadow (offset down-right, blurred) that
             tracks the blade every frame via needleShadow ← needleRad; drawn UNDER
             the needle so the blade reads as floating above the face. */}
-        <Path path={needleShadow} color="#000000" opacity={0.4}>
-          <BlurMask blur={3} style="normal" />
+        <Path path={needleShadow} color="#050505" opacity={0.58}>
+          <BlurMask blur={3.5} style="normal" />
         </Path>
         <Path path={needlePath} color="#17130c" />
         <Circle cx={cx} cy={py} r={10}>
@@ -2698,11 +2698,15 @@ export function SplDialView(p: {
 // ─────────────────────────────────────────────────────────────────────────────
 // PeakAvg — thin live LED meter: PEAK + AVERAGE columns + user peak-hold
 
-/** M2-family LED meter for the SPL popup (owner 2026-07-30): TWO thin columns —
- *  instantaneous PEAK (amber, red over 0 dBFS) beside AVERAGE/RMS (green) — with
- *  a floating PEAK-HOLD cap whose linger is user-selectable via `holdMode`.
- *  Live-only (phone mic is mono): both columns follow the live SharedValues.
- *  dBFS headroom scale (−60..0), honest — peak may exceed 0 dBFS (F1). */
+/** M2-family LED meter for the SPL popup (owner 2026-07-30): ONE wide combined
+ *  bar. The instantaneous PEAK fills the bar in loudness colors (green low →
+ *  yellow → orange → red near/over the top) with a floating user PEAK-HOLD cap
+ *  (`holdMode`); the AVERAGE/RMS reads as a PURPLE fill from the bottom up to the
+ *  average level (always ≤ peak by nature), so purple(avg) sits below the
+ *  loudness-colored peak in a single bar. Live-only (phone mic is mono): follows
+ *  the live SharedValues. The printed SCALE is dB SPL — SPL = dBFS + `splOffset`
+ *  (dBFS alone is not meaningful to the user); the fill still maps the real dBFS
+ *  level, only the numerals are relabeled. */
 export function PeakAvgMeterView(p: {
   width: number;
   height?: number;
@@ -2711,53 +2715,65 @@ export function PeakAvgMeterView(p: {
   loopSeconds?: number;
   /** Peak-hold cap linger (default '1s'). 'off' hides the cap; 'inf' latches. */
   holdMode?: PeakHoldMode;
+  /** dB to ADD to a dBFS value to get estimated SPL (default 100). The bar's fill
+   *  still maps the actual dBFS level; only the printed SCALE is relabeled to SPL
+   *  via SPL = dBFS + splOffset. */
+  splOffset?: number;
+  /** The user's weighting curve label — e.g. "A"/"C"/"Z" (default ""). Shown in
+   *  the header caption as "dB SPL · <weightingLabel>"; empty ⇒ "LEVEL · dB SPL". */
+  weightingLabel?: string;
 }) {
   const w = p.width;
   const h = p.height ?? 260;
   const LOOP = p.loopSeconds ?? 4;
   const holdMode = p.holdMode ?? '1s';
+  const splOffset = p.splOffset ?? 100;
+  const weightingLabel = p.weightingLabel ?? '';
   const livePeak = p.live.peakDb;
   const liveRms = p.live.rmsDb;
   const holdSecs = holdMode === '1s' ? 1 : holdMode === '3s' ? 3 : holdMode === 'inf' ? 1e9 : 0;
   const showCap = holdMode !== 'off';
+
+  // Average marker color (owner 2026-07-30) — a distinct purple, drawn from the
+  // bottom up to the average level, below the loudness-colored peak fill.
+  const AVG_PURPLE = '#b45bff';
 
   const wellX = 7;
   const wellY = 28;
   const wellW = w - 14;
   const wellH = h - wellY - 30;
   const padI = 8;
-  const colGap = 12;
-  const colW = (wellW - padI * 2 - colGap) / 2;
-  const peakX = wellX + padI;
-  const avgX = peakX + colW + colGap;
+  // ONE wide bar occupying the old two-column footprint, with a right-side gutter
+  // for the SPL tick numerals (they used to sit BETWEEN the two columns).
+  const labelGutter = 22;
+  const barX = wellX + padI;
+  const barW = wellW - padI * 2 - labelGutter;
   const barTop = wellY + 7;
   const barBot = wellY + wellH - 7;
   const span = barBot - barTop;
   const SEG = 60;
   const segH = span / SEG;
   const yDb = (d: number) => barBot - ((d + 60) / 60) * span;
+  // SPL for a dBFS scale value (printed numerals only).
+  const spl = (d: number) => Math.round(d + splOffset);
 
-  // Static geometry: brushed panel, bezel well, unlit LED stacks, ticks.
+  // Static geometry: brushed panel, bezel well, one unlit LED stack, ticks.
   const G = useMemo(() => {
-    const unlitPk = Skia.Path.Make();
-    const unlitAv = Skia.Path.Make();
+    const unlit = Skia.Path.Make();
     for (let i = 0; i < SEG; i++) {
       const hi = -60 + ((i + 1) * 60) / SEG;
       const y = yDb(hi);
-      unlitPk.addRect(Skia.XYWHRect(peakX, y, colW, segH - 1));
-      unlitAv.addRect(Skia.XYWHRect(avgX, y, colW, segH - 1));
+      unlit.addRect(Skia.XYWHRect(barX, y, barW, segH - 1));
     }
     const well = Skia.Path.Make();
     well.addRRect(Skia.RRectXY(Skia.XYWHRect(wellX - 4, wellY - 4, wellW + 8, wellH + 8), 7, 7));
     const ticks = Skia.Path.Make();
-    for (const d of [0, -6, -12, -24, -40, -60]) {
+    for (const d of [0, -12, -24, -40, -60]) {
       const y = yDb(d);
-      ticks.moveTo(peakX + colW + 1, y);
-      ticks.lineTo(peakX + colW + 4, y);
-      ticks.moveTo(avgX - 4, y);
-      ticks.lineTo(avgX - 1, y);
+      ticks.moveTo(barX + barW + 1, y);
+      ticks.lineTo(barX + barW + 4, y);
     }
-    return { unlitPk, unlitAv, well, ticks };
+    return { unlit, well, ticks };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [w, h]);
 
@@ -2811,41 +2827,47 @@ export function PeakAvgMeterView(p: {
     return lPk.value;
   }, [p.phase, livePeak, liveRms, holdSecs, showCap, LOOP]);
 
+  // PEAK loudness fill — segments ABOVE the average level up to the peak. The
+  // region below the average is left for the purple avg fill (litAvg), so the two
+  // never overlap: purple at the bottom, loudness-colored peak above it.
   const litPeak = useDerivedValue(() => {
-    const lv = engine.value;
+    const pk = engine.value;
+    const av = Math.min(lAvg.value, pk); // avg can never exceed peak
     const pth = Skia.Path.Make();
     for (let i = 0; i < 60; i++) {
-      const lo = -60 + (i * 60) / 60;
-      const hi = lo + 60 / 60;
-      if (lv <= lo) break;
-      pth.addRect(Skia.XYWHRect(peakX, barBot - ((hi + 60) / 60) * span, colW, segH - 1));
+      const lo = -60 + i;
+      const hi = lo + 1;
+      if (pk <= lo) break;
+      if (lo < av) continue; // below the avg level ⇒ drawn purple, not loudness
+      pth.addRect(Skia.XYWHRect(barX, barBot - ((hi + 60) / 60) * span, barW, segH - 1));
     }
     return pth;
-  }, [engine]);
+  }, [engine, lAvg]);
 
-  const litPeakOver = useDerivedValue(() => {
-    const lv = engine.value;
-    const pth = Skia.Path.Make();
-    if (lv > 0) {
-      for (let i = 0; i < 60; i++) {
-        const lo = -60 + (i * 60) / 60;
-        const hi = lo + 60 / 60;
-        if (hi <= 0) continue;
-        if (lv <= lo) break;
-        pth.addRect(Skia.XYWHRect(peakX, barBot - ((hi + 60) / 60) * span, colW, segH - 1));
-      }
-    }
-    return pth;
-  }, [engine]);
-
+  // AVERAGE purple fill — bottom up to the average level (capped to the peak so
+  // it can never rise above it).
   const litAvg = useDerivedValue(() => {
-    const lv = lAvg.value;
+    const pk = engine.value;
+    const av = Math.min(lAvg.value, pk);
     const pth = Skia.Path.Make();
     for (let i = 0; i < 60; i++) {
-      const lo = -60 + (i * 60) / 60;
-      const hi = lo + 60 / 60;
-      if (lv <= lo) break;
-      pth.addRect(Skia.XYWHRect(avgX, barBot - ((hi + 60) / 60) * span, colW, segH - 1));
+      const lo = -60 + i;
+      const hi = lo + 1;
+      if (av <= lo) break;
+      pth.addRect(Skia.XYWHRect(barX, barBot - ((hi + 60) / 60) * span, barW, segH - 1));
+    }
+    return pth;
+  }, [lAvg, engine]);
+
+  // Bright purple marker line at the very top of the avg fill (reads the exact
+  // average level where purple meets the loudness peak).
+  const avgCap = useDerivedValue(() => {
+    const pk = engine.value;
+    const av = Math.min(lAvg.value, pk);
+    const pth = Skia.Path.Make();
+    if (av > -59) {
+      const v = Math.min(0, av);
+      pth.addRect(Skia.XYWHRect(barX, barBot - ((v + 60) / 60) * span - 1, barW, 2));
     }
     return pth;
   }, [lAvg, engine]);
@@ -2854,7 +2876,7 @@ export function PeakAvgMeterView(p: {
     const pth = Skia.Path.Make();
     if (showCap) {
       const hv = Math.max(-59, Math.min(0.4, lHold.value));
-      pth.addRect(Skia.XYWHRect(peakX, barBot - ((hv + 60) / 60) * span - 1.2, colW, 2.4));
+      pth.addRect(Skia.XYWHRect(barX, barBot - ((hv + 60) / 60) * span - 1.2, barW, 2.4));
     }
     return pth;
   }, [lHold, engine, showCap]);
@@ -2868,28 +2890,15 @@ export function PeakAvgMeterView(p: {
         <Path path={G.well} color="#08090b" />
         <Path path={G.well} color="#000000" style="stroke" strokeWidth={1.6} opacity={0.8} />
         <Path path={G.well} color="#3d4049" style="stroke" strokeWidth={0.8} opacity={0.5} />
-        {/* Unlit LED stacks. */}
-        <Path path={G.unlitPk} color="#2a2312" opacity={0.95} />
-        <Path path={G.unlitAv} color="#122419" opacity={0.95} />
-        {/* B1 (owner 2026-07-30): classic console zones — each lit LED colored by
-            its LEVEL/height (green low → yellow → orange → red near/over 0 dBFS),
-            applied to BOTH the PEAK and AVERAGE columns via one vertical gradient
-            keyed to ABSOLUTE y (barTop=0 dBFS … barBot=−60), so a segment's colour
-            reflects its dB regardless of how tall the lit stack is. */}
+        {/* Unlit LED stack (single combined bar). */}
+        <Path path={G.unlit} color="#12151b" opacity={0.95} />
+        {/* AVERAGE — purple fill from the bottom up to the avg level (≤ peak). */}
+        <Path path={litAvg} color={AVG_PURPLE} />
+        <Path path={avgCap} color="#d69bff" />
+        {/* PEAK — loudness zones above the avg level. One vertical gradient keyed to
+            ABSOLUTE y (barTop=0 dBFS … barBot=−60) so a segment's colour reflects
+            its dB (green low → yellow → orange → red near/over the top). */}
         <Path path={litPeak}>
-          <LinearGradient
-            start={vec(0, barTop)}
-            end={vec(0, barBot)}
-            colors={['#ff5f4e', '#e6902f', '#e8c341', '#4ea84e', '#3f8f3f']}
-            positions={[0, 0.1, 0.3, 0.55, 1]}
-          />
-        </Path>
-        {/* Over-0 dBFS emphasis (F1: peak never clamped) stays honest-red. */}
-        <Path path={litPeakOver} color="#ff5f4e" opacity={0.6}>
-          <BlurMask blur={4} style="normal" />
-        </Path>
-        <Path path={litPeakOver} color="#ff5f4e" />
-        <Path path={litAvg}>
           <LinearGradient
             start={vec(0, barTop)}
             end={vec(0, barBot)}
@@ -2904,20 +2913,20 @@ export function PeakAvgMeterView(p: {
       {/* Item 12: the meter's gray reference text is lightened to #b6bac4 so it
           reads clearly on the dark meter background (was the dim #767a85 default). */}
       <Lbl x={10} y={7} w={w - 20} align="left" size={8} font={fonts.oswaldSemiBold} ls={1} color="#b6bac4">
-        LEVEL · dBFS
+        {weightingLabel ? `dB SPL · ${weightingLabel}` : 'LEVEL · dB SPL'}
       </Lbl>
-      {/* Tall-meter pass (owner 2026-07-30): reference text a couple px larger so the
-          dBFS scale + column labels read easily when the meter spans a full column. */}
-      {[0, -6, -12, -24, -40, -60].map((d) => (
-        <Lbl key={d} x={(peakX + colW + avgX) / 2 - 15} y={yDb(d) - 5} w={30} size={9} color="#b6bac4">
-          {`${d}`}
+      {/* SPL scale numerals in the right-side gutter — SPL = dBFS + splOffset. */}
+      {[0, -12, -24, -40, -60].map((d) => (
+        <Lbl key={d} x={barX + barW + 6} y={yDb(d) - 5} w={labelGutter} align="left" size={9} color="#b6bac4">
+          {`${spl(d)}`}
         </Lbl>
       ))}
-      <Lbl x={peakX + colW / 2 - 20} y={barBot + 5} w={40} size={9.5} font={fonts.oswaldSemiBold} color="#e0a43a" ls={0.6}>
-        PK
-      </Lbl>
-      <Lbl x={avgX + colW / 2 - 20} y={barBot + 5} w={40} size={9.5} font={fonts.oswaldSemiBold} color="#4fd08a" ls={0.6}>
+      {/* Purple AVG + colored PK legend. */}
+      <Lbl x={wellX} y={barBot + 5} w={wellW / 2} align="center" size={9.5} font={fonts.oswaldSemiBold} color={AVG_PURPLE} ls={0.6}>
         AVG
+      </Lbl>
+      <Lbl x={wellX + wellW / 2} y={barBot + 5} w={wellW / 2} align="center" size={9.5} font={fonts.oswaldSemiBold} color="#e0a43a" ls={0.6}>
+        PK
       </Lbl>
       <Lbl x={10} y={h - 14} w={w - 20} align="left" size={8.5} color="#b6bac4">
         {`HOLD ${holdMode.toUpperCase()} · MONO`}
