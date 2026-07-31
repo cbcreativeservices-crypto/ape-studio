@@ -127,6 +127,9 @@ function Lbl(props: {
   /** Optional soft text shadow/glow (SPL dial CRITICAL BALANCE sweet-spot title). */
   shadowColor?: string;
   shadowRadius?: number;
+  /** Optional shadow offset — with a dark colour this reads as a real DROP shadow
+   *  (default {0,0} = a centred glow, so existing callers are unchanged). */
+  shadowOffset?: { width: number; height: number };
   children: string;
 }) {
   return (
@@ -146,7 +149,7 @@ function Lbl(props: {
           ? {
               textShadowColor: props.shadowColor,
               textShadowRadius: props.shadowRadius ?? 6,
-              textShadowOffset: { width: 0, height: 0 },
+              textShadowOffset: props.shadowOffset ?? { width: 0, height: 0 },
             }
           : null),
       }}
@@ -2188,12 +2191,16 @@ export function SplDialView(p: {
     [p.phase],
   );
   // Bright #ffe28a highlight — shared by the callout box/leader AND the border.
-  const shimmerOpacity = useDerivedValue(() => 0.12 + 0.5 * shimmer01.value, [shimmer01]);
-  const shimmerBlur = useDerivedValue(() => 6 + 8 * shimmer01.value, [shimmer01]);
+  // GLOW/SHIMMER DIALLED BACK ~53% (owner 2026-07-30): both the shimmer amplitude
+  // AND the base glow opacity/blur are ~halved (×0.47) so the sweet-spot gold reads
+  // as a subtler, classier breathe rather than a strong pulse — paired with a
+  // stronger STATIC drop shadow on the CRITICAL BALANCE text (below).
+  const shimmerOpacity = useDerivedValue(() => 0.056 + 0.235 * shimmer01.value, [shimmer01]);
+  const shimmerBlur = useDerivedValue(() => 2.8 + 3.8 * shimmer01.value, [shimmer01]);
   // Base gold glow layers that also gently breathe (kept softer than the highlight).
-  const goldBaseOpacity = useDerivedValue(() => 0.34 + 0.18 * shimmer01.value, [shimmer01]);
-  const borderBaseOpacity = useDerivedValue(() => 0.42 + 0.22 * shimmer01.value, [shimmer01]);
-  const borderBlur = useDerivedValue(() => 7 + 6 * shimmer01.value, [shimmer01]);
+  const goldBaseOpacity = useDerivedValue(() => 0.16 + 0.085 * shimmer01.value, [shimmer01]);
+  const borderBaseOpacity = useDerivedValue(() => 0.2 + 0.103 * shimmer01.value, [shimmer01]);
+  const borderBlur = useDerivedValue(() => 3.3 + 2.8 * shimmer01.value, [shimmer01]);
 
   // ── CALLOUT LABELS (owner 2026-07-30 redesign v2 — distribute around the WHOLE
   // circle): every descriptive/reference label is placed RADIALLY OUTSIDE its
@@ -2214,10 +2221,20 @@ export function SplDialView(p: {
     const lineH = 14; // line-to-line breathing room within a callout block
     const goldLineH = 21; // taller step for the ENLARGED CRITICAL BALANCE title
     type CoLine = { t: string; size: number; color: string; ls?: number };
+    type Col = 'L' | 'C' | 'R';
     // `color` = the zone colour that tints this callout's leader + anchor dot.
     // `gold` marks the sweet-spot CRITICAL BALANCE callout (studio mode) — it gets
     // the enlarged title + the animated shiny-gold shimmer glow.
-    type CoDef = { spl: number; color: string; lines: CoLine[]; gold?: boolean };
+    // Placement overrides (owner 2026-07-30) used to hand-balance SPL/OPTIMAL:
+    //   forceCol — pin to a column, bypassing the sign/fan-out auto-placement;
+    //   rScale   — scale the vertical label ray (>1 lifts the box toward the top,
+    //              <1 drops it toward the arc);
+    //   nearer   — pull the box toward the dial by N px (side cols) or nudge a
+    //              centre box right by N px.
+    type CoDef = {
+      spl: number; color: string; lines: CoLine[]; gold?: boolean;
+      forceCol?: Col; rScale?: number; nearer?: number;
+    };
     const defs: CoDef[] =
       mode === 'spl'
         ? [
@@ -2444,10 +2461,10 @@ export function SplDialView(p: {
         {goldCO && goldCO.glowBox ? (
           <Group>
             <Path path={goldCO.glowBox} color={GOLD_INK} opacity={goldBaseOpacity}>
-              <BlurMask blur={9} style="normal" />
+              <BlurMask blur={5} style="normal" />
             </Path>
             <Path path={goldCO.leaderPath} color={GOLD_INK} style="stroke" strokeWidth={4} opacity={goldBaseOpacity}>
-              <BlurMask blur={5} style="normal" />
+              <BlurMask blur={3} style="normal" />
             </Path>
             <Path path={goldCO.glowBox} color="#ffe28a" opacity={shimmerOpacity}>
               <BlurMask blur={shimmerBlur} style="normal" />

@@ -21,6 +21,15 @@ export type AwardCategory = 'specialization' | 'program';
  */
 export const COREQ_TOPIC_GS: number[] = [100, 120, 1590];
 
+/** The 4th required requisite for EVERY certificate/program (owner 2026-07-30):
+ *  the "Foundations in Audio" lab (in the Ear Training & Audio Lab). Unlike the
+ *  three COREQ topics it is a LAB, not a Dashboard course — so it is surfaced as
+ *  its own green lab-link container in "My Enrollments" (never a Dashboard card),
+ *  and listed by name in the requisite banner. Route: the 'FoundationsCourse'
+ *  screen. Its progress is remembered by the lab itself. */
+export const FOUNDATIONS_REQ_NAME = 'Foundations in Audio';
+export const FOUNDATIONS_LAB_ROUTE = 'FoundationsCourse';
+
 /** A titled block of policy prose. */
 export type AwardPolicy = { title: string; paragraphs: string[] };
 

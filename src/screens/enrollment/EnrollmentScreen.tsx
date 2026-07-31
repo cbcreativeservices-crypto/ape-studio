@@ -27,7 +27,13 @@ import { HomeIcon } from '../../components/HomeIcon';
 import { NavIcon } from '../../components/nav/NavIcon';
 import { LedMeter, segmentsForPct } from '../../components/LedMeter';
 import { MATRIX_SUBJECTS } from '../../data/courseTopicMatrix';
-import { COREQ_TOPIC_GS, PROGRAM_PATHS, SPECIALIZED_CERTIFICATES } from '../awards/awardsData';
+import {
+  COREQ_TOPIC_GS,
+  FOUNDATIONS_LAB_ROUTE,
+  FOUNDATIONS_REQ_NAME,
+  PROGRAM_PATHS,
+  SPECIALIZED_CERTIFICATES,
+} from '../awards/awardsData';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { useEnrollmentProgress } from '../../features/enrollment/enrollmentProgress';
 import {
@@ -956,6 +962,35 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
         {displayedBundles.filter((b) => !isBundleDone(b.topics)).map(renderBundle)}
         {displayedDerived.filter((d) => !isBundleDone(d.topics)).map(renderDerived)}
 
+        {/* 4th requisite (owner 2026-07-30): the "Foundations in Audio" LAB. A
+            green requisite container that links to the Foundations lab in the Ear
+            Training & Audio Lab — NOT the Dashboard — so it has NO 3-card deck
+            icon. Shows only while the student holds a certificate/program; it
+            vanishes when the last award is removed, but the lab keeps its own
+            progress so they can continue later. */}
+        {hasCredential ? (
+          <Pressable
+            style={[styles.card, styles.cardCore, styles.foundationsCard]}
+            onPress={() => navigation.navigate(FOUNDATIONS_LAB_ROUTE)}
+            accessibilityRole="button"
+            accessibilityLabel={`Open the ${FOUNDATIONS_REQ_NAME} lab`}
+          >
+            <View style={styles.cardTop}>
+              <Text style={styles.cardName} numberOfLines={2}>
+                {FOUNDATIONS_REQ_NAME}
+              </Text>
+            </View>
+            <View style={styles.cardActionRow}>
+              <Text style={styles.cardSubject} numberOfLines={1}>
+                Foundations Lab · Ear Training &amp; Audio Lab
+              </Text>
+              <Text style={styles.requiredTag}>Required</Text>
+              <View style={{ flex: 1 }} />
+              <Text style={styles.foundationsOpen}>OPEN LAB ›</Text>
+            </View>
+          </Pressable>
+        ) : null}
+
         {displayed.length === 0 && displayedBundles.length === 0 ? (
           <Text style={styles.empty}>
             {enrolled.length === 0 && bundles.length === 0 ? 'No topics yet.' : 'Nothing matches those filters.'}
@@ -1544,6 +1579,10 @@ const styles = StyleSheet.create({
   // Required core courses — green FILL, but WHITE border like other topics (user
   // request 2026-07-23; border color comes from `card`).
   cardCore: { backgroundColor: '#0f1f14' },
+  // The 4th requisite Foundations LAB container (owner 2026-07-30): green like a
+  // core, a hair brighter border to read as a link, no 3-card deck icon.
+  foundationsCard: { borderColor: 'rgba(55,224,95,.55)' },
+  foundationsOpen: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.8, color: GREEN },
   // Lifted (held) card during reorder — pops out with a shadow (user request 2026-07-23).
   cardLifted: {
     borderColor: 'rgba(255,255,255,.9)',
