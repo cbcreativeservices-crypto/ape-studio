@@ -167,6 +167,10 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   const [payPrompt, setPayPrompt] = useState(false);
   const [homeSetupOpen, setHomeSetupOpen] = useState(false);
   const [homeFull, setHomeFull] = useState(false);
+  // Clear-list confirm popup (owner 2026-08-01): the bottom red ✕ is now a fixed
+  // SQUARE button that opens this popup; the destructive hold-to-confirm lives
+  // INSIDE the popup, so the ✕ never grows/reflows the bottom action row.
+  const [clearConfirmOpen, setClearConfirmOpen] = useState(false);
   const [filters, setFilters] = useState<Set<FilterKey>>(new Set());
   const dragAccum = useRef(0);
   // Press-hold-to-lift reorder (owner 2026-07-31): hold a topic still for 2 s and
@@ -1437,31 +1441,24 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
         {/* Bottom actions: return to top + global expand/collapse of every
             enrollment-list container (user request 2026-07-24). */}
         <View style={styles.bottomActions}>
-          {/* Bottom-left: 5s hold → confirm → reset the enrollment list to the
-              new-user default. Progress is kept; topics re-add from Browse & Add
-              below (user request 2026-07-25). */}
-          <HoldToActivate
-            label="✕"
-            holdingLabel="CLEAR LIST"
-            tint="#e0342f"
-            onComplete={() =>
-              Alert.alert(
-                'Clear enrollment list?',
-                'This resets your enrollment list to the new-user default. Your progress is kept — you can add any topic back from the Browse & Add lists below.',
-                [
-                  { text: 'Cancel', style: 'cancel' },
-                  { text: 'Clear list', style: 'destructive', onPress: () => resetEnrollment() },
-                ],
-              )
-            }
-          />
+          {/* Bottom-left: a fixed SQUARE red ✕. Tapping it opens the clear-list
+              confirm popup (with a press-hold to confirm) — it never grows or
+              reflows the row (owner 2026-08-01). */}
+          <Pressable
+            style={styles.clearSquareBtn}
+            onPress={() => setClearConfirmOpen(true)}
+            accessibilityRole="button"
+            accessibilityLabel="Clear enrollment list"
+          >
+            <Text style={styles.clearSquareText}>✕</Text>
+          </Pressable>
           <Pressable
             style={styles.bottomBtn}
             onPress={() => scrollRef.current?.scrollTo({ y: 0, animated: true })}
             accessibilityRole="button"
             accessibilityLabel="Return to top"
           >
-            <Text style={styles.returnTopText}>↑ RETURN TO TOP</Text>
+            <Text style={styles.returnTopText}>↑ TOP</Text>
           </Pressable>
           <Pressable
             style={styles.bottomBtn}
@@ -1517,6 +1514,39 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
         title="Home screen is full"
         lines={[`You can place up to ${HOME_MAX} topics on your Home screen.`, 'Remove one first to add another.']}
       />
+
+      {/* Clear-list confirm popup — press-and-HOLD the red bar to confirm the
+          reset; the ✕ square opens it (owner 2026-08-01). */}
+      <Modal
+        visible={clearConfirmOpen}
+        transparent
+        animationType="fade"
+        statusBarTranslucent
+        onRequestClose={() => setClearConfirmOpen(false)}
+      >
+        <View style={styles.clearBackdrop}>
+          <Pressable style={StyleSheet.absoluteFill} onPress={() => setClearConfirmOpen(false)} accessibilityLabel="Dismiss" />
+          <View style={styles.clearCard}>
+            <Text style={styles.clearTitle}>Clear enrollment list?</Text>
+            <Text style={styles.clearBody}>
+              This resets your enrollment list to the new-user default. Your progress is kept — add any
+              topic back from the Browse &amp; Add lists below.
+            </Text>
+            <HoldToActivate
+              label="HOLD TO CLEAR LIST"
+              holdingLabel="CLEARING"
+              tint="#e0342f"
+              onComplete={() => {
+                setClearConfirmOpen(false);
+                resetEnrollment();
+              }}
+            />
+            <Pressable style={styles.clearCancel} onPress={() => setClearConfirmOpen(false)} accessibilityRole="button" accessibilityLabel="Cancel">
+              <Text style={styles.clearCancelText}>CANCEL</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
 
       {/* Home screen customizer (paid). */}
       <HomeSetupSheet visible={homeSetupOpen} onClose={() => setHomeSetupOpen(false)} paid={paid} />
@@ -1604,15 +1634,44 @@ const styles = StyleSheet.create({
   },
   pinnedLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: GREEN, marginBottom: 4 },
   // Bottom action row: return-to-top + expand/collapse all.
-  bottomActions: { flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap', gap: 8, marginTop: 10 },
+  bottomActions: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap', gap: 8, marginTop: 10 },
   bottomBtn: {
     borderWidth: 1,
     borderColor: '#3a3a3a',
     backgroundColor: '#161616',
     borderRadius: 8,
     paddingVertical: 9,
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
+    justifyContent: 'center',
   },
+  // Fixed SQUARE red ✕ that opens the clear-list confirm popup (owner 2026-08-01)
+  // — a constant size, so it never grows or wraps the bottom action row.
+  clearSquareBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#e0342f',
+    backgroundColor: '#1a0f0e',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  clearSquareText: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, lineHeight: 20, color: '#e0342f' },
+  clearBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.72)', alignItems: 'center', justifyContent: 'center', padding: 24 },
+  clearCard: {
+    width: '100%',
+    maxWidth: 380,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#3a2020',
+    backgroundColor: '#151517',
+    padding: 18,
+    gap: 12,
+  },
+  clearTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 0.4, color: colors.textPrimary },
+  clearBody: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
+  clearCancel: { alignSelf: 'center', paddingVertical: 8, paddingHorizontal: 16 },
+  clearCancelText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textSub },
   returnTopBtn: {
     alignSelf: 'center',
     marginTop: 10,
@@ -1623,7 +1682,7 @@ const styles = StyleSheet.create({
     paddingVertical: 9,
     paddingHorizontal: 18,
   },
-  returnTopText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textSecondary },
+  returnTopText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.6, color: colors.textSecondary },
 
   // Slim Continue banner (notification height).
   continueBar: {
