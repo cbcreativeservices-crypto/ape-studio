@@ -17,7 +17,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { devBypass } from '../config/devMode';
-import { usePopupsSuppressed } from '../features/dev/popupSuppressStore';
+import { useOverlaysSuppressed } from '../features/dev/popupSuppressStore';
 
 export const MAX_OPENS = 5;
 
@@ -37,9 +37,9 @@ export function useCoachMark(storageKey: string, dismissAfter: number) {
   const qualified = useRef(false); // this session already counted
   const opens = useRef(0);
   const started = useRef(false);
-  // Dev master kill-switch: when suppression is on, never enter the visible
-  // state — this wins even over DEV_BYPASS.alwaysShowIntros below.
-  const suppressed = usePopupsSuppressed();
+  // Suppression: never enter the visible state when the dev kill-switch is on
+  // OR Low-Light Production Mode is engaged — wins over DEV_BYPASS.alwaysShowIntros.
+  const suppressed = useOverlaysSuppressed();
 
   useEffect(() => {
     if (started.current) return; // once per mount

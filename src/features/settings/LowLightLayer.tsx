@@ -13,10 +13,10 @@
  * and the warm ember reads gentler than red in a dark theater. The top line is
  * also thicker (doubled) to match the audio frame's new weight.
  */
-import { useEffect } from 'react';
-import { AppState, Pressable, StyleSheet, Text, View } from 'react-native';
-import { fonts } from '../../theme/tokens';
-import { checkLowLightExpiry, LOW_LIGHT_DIM, toggleLowLight, useLowLight } from './lowLight';
+import { useEffect, useState } from 'react';
+import { AppState, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { colors, fonts } from '../../theme/tokens';
+import { checkLowLightExpiry, LOW_LIGHT_DIM, onLowLightActivated, toggleLowLight, useLowLight } from './lowLight';
 
 // Burnt, darker, glowing orange (owner request 2026-07-26) — the low-light
 // indicator hue, deliberately distinct from the audio-output frame's red.
@@ -58,19 +58,70 @@ export function LowLightRow() {
       onPress={toggleLowLight}
       accessibilityRole="switch"
       accessibilityState={{ checked: on }}
-      accessibilityLabel="Low light mode"
-      accessibilityHint="Dims the whole app to reduce brightness."
+      accessibilityLabel="Low-Light Production Mode"
+      accessibilityHint="Dims the whole app and stops anything from appearing on screen. Tap the screen quickly six times to cancel it."
       style={[styles.row, on && styles.rowOn]}
     >
       <View style={[styles.dot, on && styles.dotOn]} />
       <Text style={[styles.label, on && styles.labelOn]}>
-        LOW LIGHT MODE{on ? ' · ON' : ''}
+        LOW-LIGHT PRODUCTION MODE{on ? ' · ON' : ''}
       </Text>
       <View style={{ flex: 1 }} />
       <View style={[styles.track, on && styles.trackOn]}>
         <View style={[styles.thumb, on && styles.thumbOn]} />
       </View>
     </Pressable>
+  );
+}
+
+/**
+ * LowLightProductionGate — mounted once at the app root. The moment Low-Light
+ * Production Mode is switched ON, it shows a single confirming popup that tells
+ * the user (a) nothing will appear/flash anywhere in the app while it's on, and
+ * (b) they can cancel it at any time by tapping the screen quickly six times (or
+ * from Settings). This is the ONE popup allowed on enable — everything else is
+ * suppressed. It self-closes when the mode turns off.
+ */
+export function LowLightProductionGate() {
+  const on = useLowLight();
+  const [showInfo, setShowInfo] = useState(false);
+  // Show ONLY on an explicit user activation (never on a persisted-on relaunch).
+  useEffect(() => onLowLightActivated(() => setShowInfo(true)), []);
+  // Any time the mode is off, make sure the notice is closed (6-tap, toggle-off,
+  // or expiry).
+  useEffect(() => {
+    if (!on) setShowInfo(false);
+  }, [on]);
+
+  if (!on || !showInfo) return null;
+  return (
+    <Modal transparent animationType="fade" visible statusBarTranslucent onRequestClose={() => setShowInfo(false)}>
+      <View style={styles.gateBackdrop}>
+        <View style={styles.gateCard}>
+          <Text style={styles.gateEyebrow}>LOW-LIGHT PRODUCTION MODE</Text>
+          <Text style={styles.gateTitle}>Nothing will appear on screen</Text>
+          <View style={styles.gateRule} />
+          <Text style={styles.gateBody}>
+            While this mode is on, no pop-ups, notifications, intros, or other screens will appear
+            anywhere in the app. The display stays dim and steady, so nothing flashes during a show.
+          </Text>
+          <Text style={styles.gateBody}>
+            You can cancel it at any time: tap the screen quickly six times in a row. You can also turn
+            it off from this switch in Settings.
+          </Text>
+          <Pressable
+            style={styles.gateBtn}
+            onPress={() => setShowInfo(false)}
+            accessibilityRole="button"
+            accessibilityLabel="Got it"
+          >
+            <Text style={styles.gateBtnText}>GOT IT</Text>
+          </Pressable>
+        </View>
+      </View>
+      {/* Keep the popup itself under the dim wash so it doesn't read bright. */}
+      <LowLightDim />
+    </Modal>
   );
 }
 
@@ -124,4 +175,38 @@ const styles = StyleSheet.create({
   trackOn: { backgroundColor: '#3a1f0d', borderColor: EMBER, alignItems: 'flex-end' },
   thumb: { width: 12, height: 12, borderRadius: 6, backgroundColor: '#777' },
   thumbOn: { backgroundColor: EMBER },
+
+  // On-enable confirmation popup — kept DARK + ember-accented so it doesn't
+  // flash bright in a theater (owner 2026-08-01).
+  gateBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,.86)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 26,
+  },
+  gateCard: {
+    width: '100%',
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(194,84,15,.55)',
+    backgroundColor: '#120b06',
+    padding: 20,
+    gap: 10,
+  },
+  gateEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 2, color: EMBER },
+  gateTitle: { fontFamily: fonts.oswaldMedium, fontSize: 22, color: colors.textPrimary },
+  gateRule: { width: 44, height: 2, backgroundColor: EMBER, borderRadius: 1 },
+  gateBody: { fontFamily: fonts.barlowMedium, fontSize: 15, lineHeight: 22, color: colors.textSecondary },
+  gateBtn: {
+    alignSelf: 'center',
+    marginTop: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 28,
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: 'rgba(194,84,15,.7)',
+    backgroundColor: '#241206',
+  },
+  gateBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1, color: EMBER },
 });

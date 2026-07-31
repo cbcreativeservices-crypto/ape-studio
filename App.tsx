@@ -15,8 +15,8 @@ import { touchAudioActivity } from './src/features/audio/audioOutputStore';
 import { AudioBorderFrame } from './src/features/audio/AudioBorderFrame';
 import { MicFeedbackGuard } from './src/features/audio/MicFeedbackGuard';
 import { ShakeToMute } from './src/features/audio/ShakeToMute';
-import { LowLightDim } from './src/features/settings/LowLightLayer';
-import { touchLowLight } from './src/features/settings/lowLight';
+import { LowLightDim, LowLightProductionGate } from './src/features/settings/LowLightLayer';
+import { registerLowLightTap, touchLowLight } from './src/features/settings/lowLight';
 import { useAccountLocalSync } from './src/features/account/accountLocalSync';
 import { colors, fontAssets } from './src/theme/tokens';
 
@@ -66,6 +66,9 @@ export default function App() {
             style={{ flex: 1 }}
             onStartShouldSetResponderCapture={() => {
               touchLowLight();
+              // Six fast taps anywhere cancels Low-Light Production Mode (owner
+              // 2026-08-01) — the escape hatch while everything else is hidden.
+              registerLowLightTap();
               // Keep audio output alive while the app is being used — the 20-min
               // auto-mute only fires after real inactivity (owner 2026-07-30).
               touchAudioActivity();
@@ -76,6 +79,9 @@ export default function App() {
               <RootNavigator />
             </NavigationContainer>
             <LowLightDim />
+            {/* Low-Light Production Mode's one-time on-enable notice + the
+                6-tap cancel affordance (owner 2026-08-01). */}
+            <LowLightProductionGate />
             {/* Persistent thin red frame whenever audio output is enabled — a
                 global "the app can sound" indicator on every screen. */}
             <AudioBorderFrame />

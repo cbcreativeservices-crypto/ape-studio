@@ -26,9 +26,21 @@ let on = false;
 let touchedAt = 0;
 let hydrated = false;
 const listeners = new Set<() => void>();
+// Fires ONLY when the mode is switched ON by an explicit setLowLight(true) — the
+// user toggling it — NOT when async hydration restores a persisted-on state on
+// cold launch. The on-enable popup subscribes here so it never shows on relaunch.
+const activationListeners = new Set<() => void>();
 
 function emit() {
   listeners.forEach((l) => l());
+}
+
+/** Subscribe to explicit user activations of the mode. Returns an unsubscribe. */
+export function onLowLightActivated(cb: () => void): () => void {
+  activationListeners.add(cb);
+  return () => {
+    activationListeners.delete(cb);
+  };
 }
 
 export function getLowLight(): boolean {
@@ -58,6 +70,10 @@ export function setLowLight(next: boolean): void {
   void AsyncStorage.setItem(KEY, next ? '1' : '0');
   void AsyncStorage.setItem(KEY_AT, String(touchedAt));
   emit();
+  // Explicit activation (user turned it ON) → notify the on-enable popup. Async
+  // hydration restores `on` directly (not via this function), so a persisted-on
+  // cold launch never fires this.
+  if (next) activationListeners.forEach((l) => l());
 }
 
 /** Refresh the "last touched" clock (owner 2026-07-30: reset on last user
@@ -82,6 +98,29 @@ export function checkLowLightExpiry(): void {
 
 export function toggleLowLight(): void {
   setLowLight(!on);
+}
+
+// ---- 6-tap emergency cancel (owner 2026-08-01) ----------------------------
+// In Low-Light Production Mode nothing else appears on screen, so the escape
+// hatch is a gesture: tap the screen quickly SIX times in a row to cancel the
+// mode immediately. Called from the app-root touch capture on every touch-down.
+const CANCEL_TAPS = 6;
+const CANCEL_WINDOW_MS = 3000; // all six within this rolling window
+let tapTimes: number[] = [];
+
+export function registerLowLightTap(): void {
+  if (!on) {
+    if (tapTimes.length) tapTimes = [];
+    return;
+  }
+  const now = Date.now();
+  tapTimes.push(now);
+  // Keep only the taps still inside the rolling window.
+  while (tapTimes.length && now - tapTimes[0] > CANCEL_WINDOW_MS) tapTimes.shift();
+  if (tapTimes.length >= CANCEL_TAPS) {
+    tapTimes = [];
+    setLowLight(false);
+  }
 }
 
 /** Live subscription — re-renders the caller whenever the mode flips. */

@@ -9,7 +9,7 @@ import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-nati
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../theme/tokens';
 import { LowLightDim } from '../settings/LowLightLayer';
-import { usePopupsSuppressed } from '../dev/popupSuppressStore';
+import { useOverlaysSuppressed } from '../dev/popupSuppressStore';
 import { isIntroEmpty, type LearningIntro } from './learningIntros';
 
 const SECTIONS: { head: string; get: (i: LearningIntro) => string | undefined }[] = [
@@ -36,8 +36,9 @@ export function LearningIntroSheet({
 }) {
   const insets = useSafeAreaInsets();
   const empty = isIntroEmpty(intro);
-  // Dev master kill-switch wins over the caller's `visible`.
-  const suppressed = usePopupsSuppressed();
+  // Suppression wins over the caller's `visible` — dev kill-switch OR Low-Light
+  // Production Mode.
+  const suppressed = useOverlaysSuppressed();
   if (suppressed) return null;
 
   return (

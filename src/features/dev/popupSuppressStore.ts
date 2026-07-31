@@ -11,6 +11,7 @@
  */
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getLowLight, useLowLight } from '../settings/lowLight';
 
 const STORAGE_KEY = 'ape:devSuppressPopups';
 
@@ -68,4 +69,20 @@ export function usePopupsSuppressed(): boolean {
     };
   }, []);
   return snap;
+}
+
+// ---- Combined overlay suppression (owner 2026-08-01) ----------------------
+// Overlays/popups must NOT auto-appear when EITHER the dev kill-switch is on OR
+// Low-Light Production Mode is engaged (in production mode nothing may flash on
+// screen). These are SEPARATE from the raw dev flag on purpose — the dev menu's
+// toggle keeps reading `usePopupsSuppressed` so it shows its OWN state, while
+// every auto-overlay reads these combined helpers.
+export function areOverlaysSuppressed(): boolean {
+  return arePopupsSuppressed() || getLowLight();
+}
+
+/** Live combined view — true when popups are dev-suppressed OR low-light
+ *  production mode is on. */
+export function useOverlaysSuppressed(): boolean {
+  return usePopupsSuppressed() || useLowLight();
 }
