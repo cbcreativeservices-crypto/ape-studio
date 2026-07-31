@@ -1924,6 +1924,21 @@ export function ScopeView(p: {
  *
  *  The digital readouts now live on the VU face; the level and peak props are
  *  kept OPTIONAL only for prop-compatibility and are no longer drawn here. */
+/** Per-mode, per-callout EXACT label positions the owner tuned in the layout
+ *  designer (fractions of the dial box w×h — device-independent, so they map to
+ *  any screen). When a callout's dB has an entry here, its label goes EXACTLY at
+ *  (fx·w, fy·h) with its leader from there to the true dB anchor — bypassing the
+ *  auto column/stack placement. Modes/callouts absent here keep the auto layout.
+ *  (Owner 2026-07-31: studio tuned; spl/optimal to follow.) */
+const CALLOUT_POS: Record<string, Record<number, { fx: number; fy: number }>> = {
+  studio: {
+    72: { fx: 0.4302, fy: 0.4209 }, // GENERAL EDITING
+    62: { fx: 0.3477, fy: 0.5395 }, // BACKGROUND · DETAIL
+    79: { fx: 0.5713, fy: 0.433 },  // CRITICAL BALANCING
+    90: { fx: 0.6915, fy: 0.5609 }, // IMPACT CHECK
+  },
+};
+
 export function SplDialView(p: {
   width: number;
   height?: number;
@@ -2453,9 +2468,22 @@ export function SplDialView(p: {
     if (goldItem) goldItem.ty = Math.max(topLimit - 16, goldItem.ty - 12);
 
     const laid = items.map((i) => {
-      const midY = i.ty + i.th / 2;
-      const fromX = i.innerX;
-      const fromY = i.col === 'C' ? i.ty + i.th : midY;
+      let align = i.align, bx = i.bx, bw = i.bw, ty = i.ty;
+      let fromX = i.innerX;
+      let fromY = i.col === 'C' ? i.ty + i.th : i.ty + i.th / 2;
+      // EXACT owner-tuned position (fractions of w×h) — overrides the auto layout.
+      const ov = CALLOUT_POS[mode]?.[i.def.spl];
+      if (ov) {
+        const lx = ov.fx * w, ly = ov.fy * h;
+        const titleSize = i.def.lines[0]?.size ?? 12;
+        const isC = Math.abs(ov.fx - 0.5) * w < 24 && ly < cy - Rface * 0.4;
+        align = isC ? 'center' : ov.fx < 0.5 ? 'right' : 'left';
+        if (align === 'right') { bx = 0; bw = lx; }
+        else if (align === 'left') { bx = lx; bw = w - lx; }
+        else { bx = lx - 70; bw = 140; }
+        ty = Math.round(ly - 0.78 * titleSize); // designer y is the title baseline; Lbl y is the top
+        fromX = lx; fromY = ly + 2;
+      }
       const leaderPath = Skia.Path.Make();
       leaderPath.moveTo(fromX, fromY);
       leaderPath.lineTo(i.ax, i.ay);
@@ -2467,7 +2495,7 @@ export function SplDialView(p: {
       // at most a whisper of glow carried by its leader only (see the Canvas group).
       return {
         spl: i.def.spl, color: i.def.color, lines: i.def.lines, gold: !!i.def.gold,
-        align: i.align, bx: i.bx, bw: i.bw, ty: i.ty, lineH: i.lh, leaderPath, dotPath,
+        align, bx, bw, ty, lineH: i.lh, leaderPath, dotPath,
       };
     });
     return { items: laid };
