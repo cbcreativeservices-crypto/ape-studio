@@ -48,6 +48,7 @@ import {
   type SignalKey,
 } from './meterEngine';
 import { fonts } from '../../../theme/tokens';
+import { LOUDNESS_STOPS } from '../../../features/tools/levelColor';
 export { usePhaseClock, useVizClock } from '../foundations/viz';
 
 // House lab palette (visual standards §3).
@@ -2793,15 +2794,15 @@ export function PeakAvgMeterView(p: {
   const barTop = wellY + 7;
   const barBot = wellY + wellH - 7;
   const span = barBot - barTop;
-  // SCALE TO 110 (owner 2026-07-30): the bar + printed scale now run 40 dB SPL at
-  // the BOTTOM to 110 dB SPL at the TOP (was 40→100). The fill maps the real dBFS
-  // level via SPL = dBFS + splOffset, so top dBFS = 110 − splOffset and bottom
-  // dBFS = 40 − splOffset. Everything (peak fill, avg line, hold cap, ticks) uses
-  // this SPL→pixel remap; SPL→pixel itself is offset-independent (nice for static
-  // geometry). `ySpl` maps a dB-SPL value to its pixel y.
+  // SCALE (owner 2026-07-31): the bar + printed scale run 40 dB SPL at the BOTTOM
+  // to 100 dB SPL at the TOP (reverted from the brief 110 experiment). The fill
+  // maps the real dBFS level via SPL = dBFS + splOffset, so top dBFS = 100 −
+  // splOffset and bottom dBFS = 40 − splOffset. Everything (peak fill, avg line,
+  // hold cap, ticks) uses this SPL→pixel remap; SPL→pixel itself is offset-
+  // independent (nice for static geometry). `ySpl` maps a dB-SPL value to its px y.
   const SPL_BOT = 40;
-  const SPL_TOP = 110;
-  const SPL_SPAN = SPL_TOP - SPL_BOT; // 70 dB tall
+  const SPL_TOP = 100;
+  const SPL_SPAN = SPL_TOP - SPL_BOT; // 60 dB tall
   const SEG = SPL_SPAN;               // one LED segment per dB SPL
   const segH = span / SEG;
   const ySpl = (s: number) => barBot - ((s - SPL_BOT) / SPL_SPAN) * span;
@@ -2821,7 +2822,7 @@ export function PeakAvgMeterView(p: {
     const well = Skia.Path.Make();
     well.addRRect(Skia.RRectXY(Skia.XYWHRect(wellX - 4, wellY - 4, wellW + 8, wellH + 8), 7, 7));
     const ticks = Skia.Path.Make();
-    for (const s of [40, 50, 60, 70, 80, 90, 100, 110]) {
+    for (const s of [40, 50, 60, 70, 80, 90, 100]) {
       const y = barBot - ((s - SPL_BOT) / SPL_SPAN) * span;
       ticks.moveTo(barX + barW + 1, y);
       ticks.lineTo(barX + barW + 4, y);
@@ -3022,14 +3023,15 @@ export function PeakAvgMeterView(p: {
         {/* PRIMARY reading: the bright average level LINE (equals the VU/dial SPL). */}
         <Path path={avgCap} color="#efdcff" />
         {/* PEAK — loudness zones above the avg level. One vertical gradient keyed to
-            ABSOLUTE y (barTop=110 dB SPL … barBot=40) so a segment's colour reflects
-            its level (green low → yellow → orange → red near/over the top). */}
+            ABSOLUTE y (barTop=100 dB SPL … barBot=40) using the app-wide MIDI
+            velocity ramp: MIDI-0 blue at the BOTTOM climbing through green/yellow/
+            orange to red at the TOP (owner 2026-07-31). */}
         <Path path={litPeak}>
           <LinearGradient
             start={vec(0, barTop)}
             end={vec(0, barBot)}
-            colors={['#ff5f4e', '#e6902f', '#e8c341', '#4ea84e', '#3f8f3f']}
-            positions={[0, 0.1, 0.3, 0.55, 1]}
+            colors={LOUDNESS_STOPS.map((s) => s.color)}
+            positions={LOUDNESS_STOPS.map((s) => s.pos)}
           />
         </Path>
         {/* Floating user peak-hold cap. */}
@@ -3044,9 +3046,10 @@ export function PeakAvgMeterView(p: {
       <Lbl x={10} y={7} w={w - 20} align="left" size={8} font={fonts.oswaldSemiBold} ls={1} color="#b6bac4">
         {weightingLabel ? `dB SPL · ${weightingLabel}` : 'LEVEL · dB SPL'}
       </Lbl>
-      {/* SPL scale numerals in the right-side gutter — now 40 … 110 dB SPL. */}
-      {[40, 50, 60, 70, 80, 90, 100, 110].map((s) => (
-        <Lbl key={s} x={barX + barW + 6} y={ySpl(s) - 5} w={labelGutter} align="left" size={8.5} color="#b6bac4">
+      {/* SPL scale numerals in the right-side gutter — 40 … 100 dB SPL, +1 pt
+          larger (owner 2026-07-31). */}
+      {[40, 50, 60, 70, 80, 90, 100].map((s) => (
+        <Lbl key={s} x={barX + barW + 6} y={ySpl(s) - 5.5} w={labelGutter} align="left" size={9.5} color="#b6bac4">
           {`${s}`}
         </Lbl>
       ))}
