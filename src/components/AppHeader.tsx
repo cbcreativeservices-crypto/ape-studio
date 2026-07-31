@@ -12,20 +12,25 @@ import { colors, fonts } from '../theme/tokens';
 export function AppHeader({
   right,
   onLogoPress,
+  logo,
 }: {
   right?: ReactNode;
   /** Dashboard passes this to open About/Credits (Booth 2026-07-08). */
   onLogoPress?: () => void;
+  /** Override the brand logo glyph (Dashboard uses the blue Study icon, owner
+   *  2026-08-01). Defaults to the company BrandLogo. */
+  logo?: ReactNode;
 }) {
+  const glyph = logo ?? <BrandLogo size={47} />;
   return (
     <View style={styles.row}>
       <View style={styles.left}>
         {onLogoPress ? (
           <Pressable onPress={onLogoPress} hitSlop={6} accessibilityRole="button" accessibilityLabel="About this app">
-            <BrandLogo size={47} />
+            {glyph}
           </Pressable>
         ) : (
-          <BrandLogo size={47} />
+          glyph
         )}
         <View style={{ flexShrink: 1 }}>
           <Text style={styles.wordmark}>

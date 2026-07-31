@@ -37,6 +37,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { StudyStackParamList } from '../../navigation/types';
 import Svg, { Circle, Rect, Defs, LinearGradient as SvgLinearGradient, Stop, Line } from 'react-native-svg';
 import { AppHeader } from '../../components/AppHeader';
+import { NavIcon } from '../../components/nav/NavIcon';
 import { DeckIcon } from '../../components/DeckIcon';
 import { ElevatedFrame } from '../../components/ElevatedFrame';
 import { GlassButton } from '../../components/GlassButton';
@@ -781,6 +782,15 @@ export function DashboardScreen() {
             Logo tap → About/Credits (Dashboard only). */}
         <AppHeader
           onLogoPress={() => (navigation as any).navigate('About')}
+          // Dashboard uses the blue Study icon in place of the company logo
+          // (owner 2026-08-01).
+          logo={
+            <View style={styles.studyLogo}>
+              <View style={{ transform: [{ scale: 2.1 }] }}>
+                <NavIcon icon="Study" lit showLabel={false} />
+              </View>
+            </View>
+          }
           right={
             // "My Enrollments" → the enrollment screen. Styled to MATCH the home
             // screen's green Enrollments nav button (dark box + green border/text)
@@ -1430,6 +1440,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(55,224,95,.1)',
   },
   myEnrollBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 0.2, color: '#37e05f' },
+  // Blue Study icon standing in for the company logo (owner 2026-08-01) — the
+  // NavIcon Study glyph scaled up to the logo footprint.
+  studyLogo: { width: 47, height: 47, alignItems: 'center', justifyContent: 'center' },
   modeBtnTextOn: { color: colors.amber },
   modeBtnTextOnGreen: { color: '#37e05f' },
   pilotDot: {
