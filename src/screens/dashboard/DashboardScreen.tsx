@@ -1667,7 +1667,10 @@ const styles = StyleSheet.create({
   // NO offset: any nudge made it drift off the fill and read as a second shadow
   // crossing the outer edge. Zero-offset = aligned with the letter floor, so the
   // white line lives inside the incised channel and never crosses the deboss.
-  engTrace: { color: 'rgba(235,235,235,0.55)' },
+  // A hair SMALLER than the debossed letter (owner 2026-08-01) so the sides of
+  // the incised groove show around the white trace — scaled from its centre so
+  // it stays aligned in the channel.
+  engTrace: { color: 'rgba(235,235,235,0.55)', transform: [{ scale: 0.96 }] },
   // Base floor style shared by all fills (color set per variant).
   // The letter FLOOR only — NO white text-shadow (owner 2026-08-01): the lit lip
   // is drawn once by engLight; a shadow here duplicated it and read as an extra
