@@ -37,10 +37,18 @@ function JogBase({ size }: { size: number }) {
           <Stop offset="0.86" stopColor="#0b0b0e" />
           <Stop offset="1" stopColor="#050506" />
         </RadialGradient>
+        {/* Outer depth — a dark vignette hugging the rim so the knob reads as a
+            raised object lifted off the background. */}
+        <RadialGradient id="jogEdge" cx="50%" cy="50%" r="50%">
+          <Stop offset="0.78" stopColor="#000000" stopOpacity="0" />
+          <Stop offset="0.97" stopColor="#000000" stopOpacity="0.6" />
+          <Stop offset="1" stopColor="#000000" stopOpacity="0.25" />
+        </RadialGradient>
       </Defs>
       <Circle cx={c} cy={c} r={c - 1} fill="#08080a" />
-      <Circle cx={c} cy={c} r={c - 1} stroke="#34343a" strokeWidth={1} fill="none" opacity={0.65} />
       <Circle cx={c} cy={c} r={c - 3} fill="url(#jogBody)" />
+      <Circle cx={c} cy={c} r={c - 1} fill="url(#jogEdge)" />
+      <Circle cx={c} cy={c} r={c - 1} stroke="#34343a" strokeWidth={1} fill="none" opacity={0.6} />
     </Svg>
   );
 }
@@ -73,6 +81,10 @@ function JogFeatures({ size }: { size: number }) {
       </Defs>
       <Ellipse cx={c} cy={size * 0.72} rx={size * 0.4} ry={size * 0.28} fill="url(#jogSh)" />
       <Ellipse cx={c} cy={size * 0.3} rx={size * 0.36} ry={size * 0.24} fill="url(#jogHi)" />
+      {/* Rim glint + rim shadow near the edges — sharper than the broad
+          shading; they ORBIT as the wheel turns, giving depth as it rotates. */}
+      <Ellipse cx={c} cy={size * 0.11} rx={size * 0.17} ry={size * 0.045} fill="#ffffff" opacity={0.16} />
+      <Ellipse cx={c} cy={size * 0.89} rx={size * 0.19} ry={size * 0.05} fill="#000000" opacity={0.34} />
       <Circle cx={dCx} cy={dCy} r={dR} fill="url(#jogDimple)" />
       <Circle cx={dCx} cy={dCy} r={dR} stroke="#5a5a64" strokeWidth={size * 0.008} fill="none" opacity={0.7} />
       <Circle cx={dCx - dR * 0.35} cy={dCy - dR * 0.4} r={dR * 0.3} fill="#ffffff" opacity={0.22} />
@@ -218,7 +230,8 @@ export function JogDial({
  *  clipped. */
 export function JogOverlay({ active, spin }: { active: boolean; spin: Animated.Value }) {
   const { width, height } = useWindowDimensions();
-  const size = Math.round(Math.min(width * 0.62, height * 0.4));
+  // 23% larger than before (owner 2026-08-01), still capped to fit the screen.
+  const size = Math.round(Math.min(width * 0.62, height * 0.4) * 1.23);
   const rotate = spin.interpolate({
     inputRange: [-360, 360],
     outputRange: ['-360deg', '360deg'],

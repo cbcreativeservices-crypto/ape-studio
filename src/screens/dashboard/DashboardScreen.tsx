@@ -921,8 +921,9 @@ export function DashboardScreen() {
               </Pressable>
               {/* Jog dial — hold it and turn; the big mirror wheel opens
                   instantly and the same gesture scrolls the topics (owner
-                  2026-08-01). Endless spin: the index wraps. */}
-              <View style={styles.topicJog}>
+                  2026-08-01). Endless spin: the index wraps. Hidden (but still
+                  driving the gesture) while the full-size wheel is open. */}
+              <View style={[styles.topicJog, jogActive && styles.hidden]}>
                 <JogDial
                   size={96}
                   disabled={topics.length <= 1}
@@ -1546,6 +1547,8 @@ const styles = StyleSheet.create({
   topicTrophy: { width: 100, height: 100 },
   // Jog wheel under the trophy image, centered + enlarged (owner 2026-08-01).
   topicJog: { width: 96, height: 96, alignItems: 'center', justifyContent: 'center' },
+  // Small dial hidden (still interactive) while the full-size wheel is open.
+  hidden: { opacity: 0 },
   topicTrophyEmpty: {
     width: 100,
     height: 100,
