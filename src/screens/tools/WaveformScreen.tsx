@@ -193,20 +193,17 @@ export function WaveformScreen({ navigation }: Props) {
     // EVERY screen pixel (linearly interpolated between bucket centres) so the
     // waveform is drawn as finely as the screen allows — one filled amber body,
     // like a DAW, not a coarse outlined trace.
+    // SAMPLE-AND-HOLD, NOT interpolated (owner 2026-08-01): each pixel takes the
+    // NEAREST bucket's exact min/max/rms, so every bucket draws as a flat-topped
+    // rectangular bar (the DAW peak look). Interpolating between bucket centres
+    // slewed the edges into triangles when the buckets are wide (e.g. the 0.5 s
+    // window) — that rounding is gone.
     const sampleAt = (px: number) => {
       let f = n - 0.5 - (panelW - px) / colW; // fractional bucket index at this x
       if (f < 0) f = 0;
       if (f > n - 1) f = n - 1;
-      const i0 = Math.floor(f);
-      const i1 = Math.min(n - 1, i0 + 1);
-      const t = f - i0;
-      const a = displayBuckets[i0];
-      const b = displayBuckets[i1];
-      return {
-        max: a.max + (b.max - a.max) * t,
-        min: a.min + (b.min - a.min) * t,
-        rms: a.rms + (b.rms - a.rms) * t,
-      };
+      const b = displayBuckets[Math.round(f)];
+      return { max: b.max, min: b.min, rms: b.rms };
     };
     let top = ''; // max edge, left → right
     let bottomRev = ''; // min edge, right → left (closes the area)
@@ -330,20 +327,20 @@ export function WaveformScreen({ navigation }: Props) {
             <View style={styles.statGrid}>
               <Pressable style={styles.statCell} onLongPress={() => help('peak')} delayLongPress={260}>
                 <Text style={styles.statLabel}>PEAK</Text>
-                <Text style={[styles.statValue, styles.statValueRed]}>
+                <Text style={styles.statValue}>
                   {fmtDb(meter?.peakDb)}
                   <Text style={styles.statUnit}> dBFS</Text>
                 </Text>
               </Pressable>
               <Pressable style={styles.statCell} onLongPress={() => help('clip_runs')} delayLongPress={260}>
-                <Text style={styles.statLabel}>CLIP RUNS</Text>
+                <Text style={styles.statLabel}>CLIP OVERRUNS</Text>
                 <Text style={[styles.statValue, styles.statValueRed]}>{meter ? meter.clipRuns : '—'}</Text>
               </Pressable>
               <Pressable style={styles.statCell} onLongPress={() => help('window')} delayLongPress={260}>
                 <Text style={styles.statLabel}>WINDOW</Text>
                 <Text style={styles.statValue}>
                   {shownSec.toFixed(1)}
-                  <Text style={[styles.statUnit, styles.statUnitBlue]}> s</Text>
+                  <Text style={[styles.statUnit, styles.statUnitWhite]}> s</Text>
                 </Text>
               </Pressable>
             </View>
@@ -619,6 +616,7 @@ const styles = StyleSheet.create({
   statValueBlue: { color: '#7fa8ff' },
   statUnit: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: colors.amberLabel },
   statUnitBlue: { color: '#7fa8ff' },
+  statUnitWhite: { color: colors.textPrimary },
   calNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub },
 
   // Live quality warning line (spec §6) — house amber warning style.
