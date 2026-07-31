@@ -26,7 +26,7 @@
  * guard → 2 Hz keepalive → stop on toggle/blur/unmount).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Svg, { Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import Animated, {
@@ -189,7 +189,14 @@ export function NoiseLabScreen() {
               ? `PHONE SPEAKER OUTPUT — ${SPEAKER_HPF_HZ} Hz HPF ON ${selected.label}`
               : 'IDEALIZED SPECTRAL SLOPES — ANALYTIC, NOT A MEASUREMENT'}
           </Text>
-          <SlopeChart selectedKey={color} selectedSlope={selected.slope} speakerView={speakerView} />
+          {/* Tapping the display toggles play/stop (owner 2026-07-31). */}
+          <Pressable
+            onPress={engineReady ? () => (running ? stopNoise() : void startNoise()) : undefined}
+            accessibilityRole="button"
+            accessibilityLabel={running ? 'Tap to stop' : 'Tap to play noise'}
+          >
+            <SlopeChart selectedKey={color} selectedSlope={selected.slope} speakerView={speakerView} />
+          </Pressable>
           <Text style={styles.caption}>
             {speakerView
               ? `Amber = ${selected.label.toLowerCase()} after the speaker high-pass; the ideal straight slopes stay dim behind it. Below ${SPEAKER_HPF_HZ} Hz the response rolls off at −12 dB/oct — that low energy never reaches the driver.`

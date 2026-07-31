@@ -23,7 +23,7 @@
  * shell renders the Guided-Lesson entry row itself.
  */
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Svg, { Line, Rect, Text as SvgText } from 'react-native-svg';
 import { ApeDsp, GEN_MODES } from '../../../modules/ape-dsp';
@@ -202,7 +202,14 @@ export function FmLabScreen() {
           <Text style={styles.badge}>
             SIDEBAND SPECTRUM — EXACT BESSEL AMPLITUDES J_k(I) · THE MATH THE VOICE PLAYS
           </Text>
-          <SidebandGraph fc={carrier} fm={fm} index={index} />
+          {/* Tapping the display toggles play/stop (owner 2026-07-31). */}
+          <Pressable
+            onPress={fmReady ? () => (running ? stop() : void strike()) : undefined}
+            accessibilityRole="button"
+            accessibilityLabel={running ? 'Tap to stop' : 'Tap to strike the FM voice'}
+          >
+            <SidebandGraph fc={carrier} fm={fm} index={index} />
+          </Pressable>
           <Text style={styles.caption}>
             {index === 0
               ? 'Index 0 — no modulation: the pure carrier alone.'

@@ -304,15 +304,22 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
           the response-curve source of truth). Not drag-interactive — no
           InteractionZone needed. */}
       <CollapsibleSection title="DISPLAY" onHelp={() => openLesson('display')}>
-        {fxAnim && config.anim ? (
-          <>
-            <Text style={styles.badge}>{ANIM_BADGE}</Text>
-            <fxAnim.FxAnimHero model={config.anim(values)} active={focused} grDb={running ? grDb : 0} />
-          </>
-        ) : null}
-        <Text style={styles.badge}>{config.heroBadge}</Text>
-        {config.Hero(values)}
-        {config.heroCaption ? <Text style={styles.caption}>{config.heroCaption(values)}</Text> : null}
+        {/* Tapping the display toggles play/stop (owner 2026-07-31). */}
+        <Pressable
+          onPress={fxReady ? () => (running ? stop() : void start()) : undefined}
+          accessibilityRole="button"
+          accessibilityLabel={running ? 'Tap to stop the effect audio' : 'Tap to play the source through the effect'}
+        >
+          {fxAnim && config.anim ? (
+            <>
+              <Text style={styles.badge}>{ANIM_BADGE}</Text>
+              <fxAnim.FxAnimHero model={config.anim(values)} active={focused} grDb={running ? grDb : 0} />
+            </>
+          ) : null}
+          <Text style={styles.badge}>{config.heroBadge}</Text>
+          {config.Hero(values)}
+          {config.heroCaption ? <Text style={styles.caption}>{config.heroCaption(values)}</Text> : null}
+        </Pressable>
         <DisplayGuideButton onPress={() => openLesson('display')} />
       </CollapsibleSection>
 

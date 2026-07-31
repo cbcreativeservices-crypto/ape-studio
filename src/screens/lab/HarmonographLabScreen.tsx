@@ -26,7 +26,7 @@
  *   - engine v2/absent states the interval audio needs the v3 build (§1.7).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Svg, { Circle, Defs, Line, Path, RadialGradient, Rect, Stop } from 'react-native-svg';
 import Animated, {
@@ -218,14 +218,26 @@ export function HarmonographLabScreen() {
             it draws itself over ~3 s on every selection change, then holds. */}
         <View style={styles.panelCard}>
           <Text style={styles.badge}>DETERMINISTIC FIGURE — DRAWN FROM THE EQUATIONS</Text>
-          <HarmonographFigure
-            n1={ratio.n1}
-            n2={ratio.n2}
-            phaseDeg={phase}
-            endAmp={damping.endAmp}
-            rotary={rotary}
-            detune={detune}
-          />
+          {/* Tapping the display toggles play/stop (owner 2026-07-31) — matches
+              the header button's gate (interval play needs v3 + no detune). */}
+          <Pressable
+            onPress={
+              additiveReady && detune === 0
+                ? () => (running ? stopInterval() : void startInterval())
+                : undefined
+            }
+            accessibilityRole="button"
+            accessibilityLabel={running ? 'Tap to stop' : 'Tap to play interval'}
+          >
+            <HarmonographFigure
+              n1={ratio.n1}
+              n2={ratio.n2}
+              phaseDeg={phase}
+              endAmp={damping.endAmp}
+              rotary={rotary}
+              detune={detune}
+            />
+          </Pressable>
           <Text style={styles.caption}>
             {detune === 0
               ? `${ratio.label} (${ratio.interval.toLowerCase()}) — a simple integer ratio closes into a stable figure.`

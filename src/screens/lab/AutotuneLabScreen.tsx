@@ -21,7 +21,7 @@
  * generator. What you see IS what you hear.
  */
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Svg, { Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { ApeDsp, GEN_MODES } from '../../../modules/ape-dsp';
@@ -226,7 +226,14 @@ export function AutotuneLabScreen() {
           <Text style={styles.badge}>
             CENTS GRID — THE DRAWN CURVE IS THE EXACT RETUNE MATH THE AUDIO FOLLOWS
           </Text>
-          <CentsGrid amount={amount} tau={tau} activeNote={activeNote} />
+          {/* Tapping the display toggles play/stop (owner 2026-07-31). */}
+          <Pressable
+            onPress={engineReady ? () => (playing ? stop() : void play()) : undefined}
+            accessibilityRole="button"
+            accessibilityLabel={playing ? 'Tap to stop' : 'Tap to play'}
+          >
+            <CentsGrid amount={amount} tau={tau} activeNote={activeNote} />
+          </Pressable>
           <Text style={styles.caption}>
             Gray = as sung (out of tune) · amber = corrected pitch over the note’s duration (time runs
             downward within each note).
