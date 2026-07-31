@@ -124,6 +124,9 @@ function Lbl(props: {
   align?: 'left' | 'center' | 'right';
   font?: string;
   ls?: number;
+  /** Optional soft text shadow/glow (SPL dial CRITICAL BALANCE sweet-spot title). */
+  shadowColor?: string;
+  shadowRadius?: number;
   children: string;
 }) {
   return (
@@ -139,6 +142,13 @@ function Lbl(props: {
         color: props.color ?? TEXT_DIM,
         letterSpacing: props.ls,
         includeFontPadding: false,
+        ...(props.shadowColor
+          ? {
+              textShadowColor: props.shadowColor,
+              textShadowRadius: props.shadowRadius ?? 6,
+              textShadowOffset: { width: 0, height: 0 },
+            }
+          : null),
       }}
     >
       {props.children}
@@ -2165,6 +2175,26 @@ export function SplDialView(p: {
     return tintRed;
   }, [liveRms, p.splOffset, greenStart]);
 
+  // ── SWEET-SPOT GOLD SHIMMER (owner 2026-07-30): one shiny-gold oscillation,
+  // derived from the existing `phase` clock, that BOTH the CRITICAL BALANCE
+  // callout glow (studio mode) and the `sweetSpot` plate frame breathe off — so
+  // they pulse together as a single "you're in the sweet spot" gold glow. A
+  // bright highlight (#ffe28a) shimmers over the base gold (#d4a017 / #ffcf40):
+  // its opacity + BlurMask blur ride the same sine, while the crisp gold stroke +
+  // gold TEXT stay fully opaque so everything reads legibly at every phase.
+  const SHIMMER_K = 3; // shimmer cycles per phase loop (~0.75 Hz at a 4 s loop)
+  const shimmer01 = useDerivedValue(
+    () => 0.5 + 0.5 * Math.sin(p.phase.value * SHIMMER_K),
+    [p.phase],
+  );
+  // Bright #ffe28a highlight — shared by the callout box/leader AND the border.
+  const shimmerOpacity = useDerivedValue(() => 0.12 + 0.5 * shimmer01.value, [shimmer01]);
+  const shimmerBlur = useDerivedValue(() => 6 + 8 * shimmer01.value, [shimmer01]);
+  // Base gold glow layers that also gently breathe (kept softer than the highlight).
+  const goldBaseOpacity = useDerivedValue(() => 0.34 + 0.18 * shimmer01.value, [shimmer01]);
+  const borderBaseOpacity = useDerivedValue(() => 0.42 + 0.22 * shimmer01.value, [shimmer01]);
+  const borderBlur = useDerivedValue(() => 7 + 6 * shimmer01.value, [shimmer01]);
+
   // ── CALLOUT LABELS (owner 2026-07-30 redesign v2 — distribute around the WHOLE
   // circle): every descriptive/reference label is placed RADIALLY OUTSIDE its
   // exact-dB anchor, so the labels ring the arc — lower-left (low dB) sweeping up
@@ -2182,9 +2212,12 @@ export function SplDialView(p: {
       return { x: cx + Math.sin(a) * arcR, y: cy - Math.cos(a) * arcR };
     };
     const lineH = 14; // line-to-line breathing room within a callout block
+    const goldLineH = 21; // taller step for the ENLARGED CRITICAL BALANCE title
     type CoLine = { t: string; size: number; color: string; ls?: number };
     // `color` = the zone colour that tints this callout's leader + anchor dot.
-    type CoDef = { spl: number; color: string; lines: CoLine[] };
+    // `gold` marks the sweet-spot CRITICAL BALANCE callout (studio mode) — it gets
+    // the enlarged title + the animated shiny-gold shimmer glow.
+    type CoDef = { spl: number; color: string; lines: CoLine[]; gold?: boolean };
     const defs: CoDef[] =
       mode === 'spl'
         ? [
@@ -2215,8 +2248,10 @@ export function SplDialView(p: {
             // IMPACT CHECK orange.
             { spl: 62, color: Z_GREEN, lines: [ { t: 'BACKGROUND · DETAIL', size: 10.5, color: Z_GREEN, ls: 0.1 }, { t: '60–65 dB SPL', size: 10, color: inkDim } ] },
             { spl: 72, color: Z_GREEN, lines: [ { t: 'GENERAL EDITING', size: 12, color: Z_GREEN, ls: 0.2 }, { t: '70–75 dB SPL', size: 10, color: inkDim } ] },
-            // CRITICAL BALANCE = the sweet spot — GOLD callout + leader (owner 2026-07-30).
-            { spl: 79, color: GOLD_INK, lines: [ { t: 'CRITICAL BALANCE', size: 12, color: GOLD_INK, ls: 0.2 }, { t: '79 dB SPL C', size: 10, color: inkDim } ] },
+            // CRITICAL BALANCE = the sweet spot — the KEY marker: ENLARGED gold title
+            // (bigger than the other callouts) with the animated shiny-gold shimmer
+            // glow + leader (owner 2026-07-30).
+            { spl: 79, color: GOLD_INK, gold: true, lines: [ { t: 'CRITICAL BALANCE', size: 15.5, color: GOLD_INK, ls: 0.3 }, { t: '79 dB SPL C', size: 10, color: inkDim } ] },
             { spl: 90, color: Z_ORANGE, lines: [ { t: 'IMPACT CHECK', size: 12.5, color: Z_ORANGE, ls: 0.3 }, { t: '85–95 dB SPL · brief', size: 9.5, color: inkDim } ] },
           ];
 
@@ -2253,7 +2288,7 @@ export function SplDialView(p: {
 
     type Col = 'L' | 'C' | 'R';
     type Item = {
-      def: CoDef; sn: number; cs: number; col: Col; th: number; ly: number;
+      def: CoDef; sn: number; cs: number; col: Col; th: number; lh: number; ly: number;
       ty: number; bx: number; bw: number; align: 'left' | 'center' | 'right';
       innerX: number; ax: number; ay: number;
     };
@@ -2263,8 +2298,9 @@ export function SplDialView(p: {
       const cs = Math.cos(a);
       const an = anchor(d.spl);
       const col: Col = Math.abs(sn) < CENTER_SIN ? 'C' : sn < 0 ? 'L' : 'R';
+      const lh = d.gold ? goldLineH : lineH;
       return {
-        def: d, sn, cs, col, th: d.lines.length * lineH, ly: cy - cs * labelR,
+        def: d, sn, cs, col, th: d.lines.length * lh, lh, ly: cy - cs * labelR,
         ty: 0, bx: 0, bw: 0, align: 'center', innerX: 0, ax: an.x, ay: an.y,
       };
     });
@@ -2317,14 +2353,37 @@ export function SplDialView(p: {
       leaderPath.lineTo(i.ax, i.ay);
       const dotPath = Skia.Path.Make();
       dotPath.addCircle(i.ax, i.ay, 2.8);
+      // SWEET-SPOT gold GLOW box: a soft rounded-rect sized to hug the ENLARGED
+      // CRITICAL BALANCE title, positioned per its column alignment. The shimmer
+      // layers blur THIS box + the leader together as one shiny-gold glow.
+      let glowBox: SkPathT | null = null;
+      if (i.def.gold) {
+        const title = i.def.lines[0];
+        const approxW = Math.min(
+          i.bw + 16,
+          title.t.length * title.size * 0.6 + (title.ls ?? 0) * title.t.length + 16,
+        );
+        const gx =
+          i.align === 'left'
+            ? i.bx - 6
+            : i.align === 'right'
+            ? i.bx + i.bw - approxW + 6
+            : i.bx + (i.bw - approxW) / 2;
+        glowBox = Skia.Path.Make();
+        glowBox.addRRect(Skia.RRectXY(Skia.XYWHRect(gx, i.ty - 6, approxW, i.th + 10), 9, 9));
+      }
       return {
-        spl: i.def.spl, color: i.def.color, lines: i.def.lines,
-        align: i.align, bx: i.bx, bw: i.bw, ty: i.ty, lineH, leaderPath, dotPath,
+        spl: i.def.spl, color: i.def.color, lines: i.def.lines, gold: !!i.def.gold,
+        align: i.align, bx: i.bx, bw: i.bw, ty: i.ty, lineH: i.lh, leaderPath, dotPath, glowBox,
       };
     });
     return { items: laid };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [w, h, mode]);
+
+  // The CRITICAL BALANCE callout (studio mode only) — its glow box + leader get
+  // the animated shiny-gold shimmer drawn under the (legible) gold title text.
+  const goldCO = CO.items.find((it) => it.gold && it.glowBox) ?? null;
 
   return (
     <View style={{ width: w, height: h }}>
@@ -2375,6 +2434,29 @@ export function SplDialView(p: {
         {mode === 'studio' ? (
           <Path path={G.sizeTicks} color={Z_GREEN} style="stroke" strokeWidth={1.8} />
         ) : null}
+        {/* SWEET-SPOT SHIMMER — CRITICAL BALANCE callout glow (studio mode). A soft
+            gold glow under the enlarged title + its leader, animated off the shared
+            `phase`-derived shimmer so it pulses in lock-step with the plate frame.
+            Base gold (#d4a017) breathes gently; a bright #ffe28a highlight shimmers
+            over it (opacity + blur ride the sine). Drawn UNDER the crisp leader (in
+            the loop below) and under the gold text (RN, on top of the Canvas), so
+            the title stays fully legible at every phase. */}
+        {goldCO && goldCO.glowBox ? (
+          <Group>
+            <Path path={goldCO.glowBox} color={GOLD_INK} opacity={goldBaseOpacity}>
+              <BlurMask blur={9} style="normal" />
+            </Path>
+            <Path path={goldCO.leaderPath} color={GOLD_INK} style="stroke" strokeWidth={4} opacity={goldBaseOpacity}>
+              <BlurMask blur={5} style="normal" />
+            </Path>
+            <Path path={goldCO.glowBox} color="#ffe28a" opacity={shimmerOpacity}>
+              <BlurMask blur={shimmerBlur} style="normal" />
+            </Path>
+            <Path path={goldCO.leaderPath} color="#ffe28a" style="stroke" strokeWidth={2.6} opacity={shimmerOpacity}>
+              <BlurMask blur={shimmerBlur} style="normal" />
+            </Path>
+          </Group>
+        ) : null}
         {/* LEADER LINES: each callout's hairline + anchor dot, tinted its ZONE
             colour (owner 2026-07-30). Drawn UNDER the node so the live node point
             is never obscured. */}
@@ -2399,9 +2481,16 @@ export function SplDialView(p: {
             true only in the studio 78–82 dB sweet spot, so no mode gating here. */}
         {p.sweetSpot ? (
           <>
-            <Path path={G.plate} color="#ffcf40" style="stroke" strokeWidth={5} opacity={0.55}>
-              <BlurMask blur={8} style="normal" />
+            {/* Base gold frame glow — breathes off the SAME shimmer as the callout. */}
+            <Path path={G.plate} color="#ffcf40" style="stroke" strokeWidth={5} opacity={borderBaseOpacity}>
+              <BlurMask blur={borderBlur} style="normal" />
             </Path>
+            {/* Bright #ffe28a highlight — identical shimmer (opacity + blur) to the
+                CRITICAL BALANCE glow, so border + callout shine as one gold pulse. */}
+            <Path path={G.plate} color="#ffe28a" style="stroke" strokeWidth={6} opacity={shimmerOpacity}>
+              <BlurMask blur={shimmerBlur} style="normal" />
+            </Path>
+            {/* Crisp gold frame on top — stays legible at every shimmer phase. */}
             <Path path={G.plate} color="#ffcf40" style="stroke" strokeWidth={2.4} opacity={0.95} />
           </>
         ) : null}
@@ -2433,6 +2522,8 @@ export function SplDialView(p: {
               font={fonts.oswaldSemiBold}
               ls={ln.ls}
               color={ln.color}
+              shadowColor={it.gold && i === 0 ? withAlpha('#ffe28a', 0.95) : undefined}
+              shadowRadius={it.gold && i === 0 ? 7 : undefined}
             >
               {ln.t}
             </Lbl>

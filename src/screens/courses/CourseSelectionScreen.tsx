@@ -102,6 +102,14 @@ const SIDE_PAD = Math.round((SCREEN_W - CARD_W) / 2);
 /** Lit switch width on the cards — narrower than the card (Booth 2026-07-09q). */
 const CARD_BTN_W = Math.round(CARD_W * 0.62);
 const POSITION_KEY = 'ape:courseCarouselIdx';
+// Session landing memory (owner 2026-07-30). These module-level vars survive
+// component remounts but RESET when the app process restarts — which is exactly
+// the "cold start vs in-session return" signal we need:
+//  • Cold app start  → land on the DEFAULT card (Glossary for anyone without a
+//    paid Home default; otherwise the paid user's chosen/last-added Home card).
+//  • In-session return from a card → restore the card the user last had centered.
+let sessionLanded = false;
+let lastCenteredId: string | null = null;
 // HOME always lands on the GLOSSARY card (Booth 2026-07-11). Found by kind at
 // landing time (was a fixed index; the deck head is now [Lab][Tools][Glossary]
 // after the 2026-07-26 far-left Lab move, so a hardcoded index would drift).
@@ -436,7 +444,7 @@ function CourseCardView({
     return (
       <View style={styles.cardOuter}>
         <View style={styles.cardAbove}>
-          <Text style={[styles.cardAboveText, { color: '#5bff85' }]}>FREE INCLUDED</Text>
+          <Text style={[styles.cardAboveText, { color: '#5bff85' }]}>INCLUDED FOR EVERYONE</Text>
           <View style={[styles.cardAboveRule, { backgroundColor: '#5bff85' }]} />
         </View>
         <ImageBackground
@@ -524,9 +532,9 @@ function CourseCardView({
             : '#ffc64d';
   // Cards the student can mark into their own deck (academy mode).
   const eyebrow = isTools
-    ? 'FREE INCLUDED'
+    ? 'INCLUDED FOR EVERYONE'
     : isGlossary
-      ? 'FREE INCLUDED'
+      ? 'INCLUDED FOR EVERYONE'
       : free
         ? 'FREE TOPIC' // keep the free-topic subtitle in every mode (2026-07-18 fix)
         : pub
@@ -881,19 +889,42 @@ export function CourseSelectionScreen() {
     return Math.max(0, PROGRAM_PATHS.length - shown);
   }, [displayDeck]);
 
-  // Entering HOME fronts the GLOSSARY card by default (Booth 2026-07-11) — BUT
-  // when the user has picked a default landing card in Home Setup, open on that
-  // card instead (user request 2026-07-24). Keyed on `cards` + the default so it
-  // fires on focus/reload and when the choice changes.
+  // Latest deck for the (stable) onViewableItemsChanged callback to read.
+  const deckRef = useRef(displayDeck);
+  deckRef.current = displayDeck;
+
+  // Landing card (owner 2026-07-30). `load()` re-runs on every focus and rebuilds
+  // `cards`, so this effect fires on focus/reload. We branch on `sessionLanded`:
+  //  • First landing this SESSION (cold app start) → the DEFAULT card: the paid
+  //    user's chosen Home default, else their last-added Home card, else Glossary
+  //    (which is where free users always land). Free users have no Home cards, so
+  //    they fall straight through to Glossary on every cold start, as required.
+  //  • Any later landing (returning from a card, tab switch) → restore the card
+  //    the user last had centered, so going back returns you where you were.
   useEffect(() => {
-    if (!displayDeck || displayDeck.length === 0) return;
-    // Default landing = the Glossary card, wherever it sits in the deck.
-    let target = Math.max(0, displayDeck.findIndex((c) => c.kind === 'glossary'));
-    if (defaultHomeGs != null) {
-      const i = displayDeck.findIndex((c) => c.id === `home-${defaultHomeGs}`);
-      if (i >= 0) target = i;
+    const deck = displayDeck;
+    if (!deck || deck.length === 0) return;
+    const findId = (id: string) => deck.findIndex((c) => c.id === id);
+    const glossaryIdx = Math.max(0, deck.findIndex((c) => c.kind === 'glossary'));
+    let target: number;
+    if (!sessionLanded) {
+      target = glossaryIdx;
+      if (defaultHomeGs != null) {
+        const i = findId(`home-${defaultHomeGs}`);
+        if (i >= 0) target = i;
+      } else if (homeGs.length > 0) {
+        // Paid user with no explicit default → their LATEST-added Home card
+        // (homeGs appends, so the last entry is the newest). Stays until they
+        // move another there (a new add) or pick one in Home Setup.
+        const i = findId(`home-${homeGs[homeGs.length - 1]}`);
+        if (i >= 0) target = i;
+      }
+      sessionLanded = true;
+    } else {
+      const i = lastCenteredId ? findId(lastCenteredId) : -1;
+      target = i >= 0 ? i : glossaryIdx;
     }
-    target = Math.min(target, displayDeck.length - 1);
+    target = Math.min(Math.max(0, target), deck.length - 1);
     setActiveIdx(target);
     const t = setTimeout(() => listRef.current?.scrollToIndex({ index: target, animated: false }), 0);
     return () => clearTimeout(t);
@@ -904,6 +935,9 @@ export function CourseSelectionScreen() {
     const idx = viewableItems[0]?.index;
     if (idx != null) {
       setActiveIdx(idx);
+      // Remember the centered card (by id) so an in-session return re-centers it.
+      const id = deckRef.current?.[idx]?.id;
+      if (id) lastCenteredId = id;
       void AsyncStorage.setItem(POSITION_KEY, String(idx));
     }
   }).current;
