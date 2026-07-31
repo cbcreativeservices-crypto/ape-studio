@@ -166,6 +166,7 @@ function VuHero({
   centerText,
   centerColor,
   sweetSpot,
+  onToggle,
 }: {
   viz: VizMetersModule;
   live: LiveMeterDrive;
@@ -179,13 +180,18 @@ function VuHero({
   centerText: string;
   centerColor?: string;
   sweetSpot: boolean;
+  /** Tap the dial (not the mode chips) to toggle the meter START/STOP. */
+  onToggle?: () => void;
 }) {
   const phase = viz.usePhaseClock(true, 1 / VU_LOOP);
   return (
     // SPL gauge — its OWN full-width row so labels sit outside the arc. The
     // STUDIO/SPL chooser is pinned to the TOP-LEFT corner of the container
-    // (owner 2026-07-30); the LED shares the top row with the VU.
+    // (owner 2026-07-30); the LED shares the top row with the VU. Tapping the
+    // dial toggles START/STOP; the corner mode chips render OVER this Pressable
+    // and keep their own taps (owner 2026-07-31).
     <View style={{ width: dialW, alignSelf: 'center', height: dialH }}>
+      <Pressable onPress={onToggle} accessibilityRole={onToggle ? 'button' : undefined}>
       <viz.SplDialView
         width={dialW}
         height={dialH}
@@ -199,6 +205,7 @@ function VuHero({
         centerColor={centerColor}
         sweetSpot={sweetSpot}
       />
+      </Pressable>
       <View style={styles.dialModeCorner}>
         {(['studio', 'spl', 'optimal'] as const).map((m) => (
           <Pressable
@@ -751,8 +758,14 @@ export function SplMeterScreen({ navigation }: Props) {
               </View>
             </View>
 
-            {/* Big live readout of the selected weighting × response. */}
-            <View style={styles.readoutCard}>
+            {/* Big live readout of the selected weighting × response. Tapping the
+                display toggles the meter START/STOP (owner 2026-07-31). */}
+            <Pressable
+              style={styles.readoutCard}
+              onPress={running ? stopMeter : startMeter}
+              accessibilityRole="button"
+              accessibilityLabel={running ? 'Tap to stop the meter' : 'Tap to start the meter'}
+            >
               <Text style={styles.readoutEyebrow}>
                 {`L${weighting}${response === 'fast' ? 'F' : 'S'} · ${weighting}-WEIGHTED · ${response.toUpperCase()}`}
               </Text>
@@ -760,7 +773,7 @@ export function SplMeterScreen({ navigation }: Props) {
                 {meter ? fmtDb(shown(selectedLevelDb(meter, weighting, response))) : '—'}
               </Text>
               <Text style={styles.readoutSub}>{unitLabel}</Text>
-            </View>
+            </Pressable>
             <DisplayGuideButton onPress={helpAll} />
 
             {/* PEAK / PEAK HOLD — may exceed 0 dBFS (F1): red at ≥ 0, never clamped. */}
@@ -770,7 +783,9 @@ export function SplMeterScreen({ navigation }: Props) {
                   ceiling, not acoustic level (F1). */}
               <Pressable style={styles.peakCell} onLongPress={() => help('peak')} delayLongPress={260}>
                 <Text style={styles.cellLabel}>PEAK (dBFS)</Text>
-                <Text style={[styles.cellValue, meter != null && meter.peakDb >= 0 && styles.cellValueHot]}>
+                {/* Peak text readouts are always red (owner 2026-07-31); the ≥0
+                    dBFS ceiling still escalates to the hot state. */}
+                <Text style={[styles.cellValue, styles.cellValueMax, meter != null && meter.peakDb >= 0 && styles.cellValueHot]}>
                   {meter ? fmtDb(meter.peakDb) : '—'}
                 </Text>
               </Pressable>
@@ -1180,6 +1195,7 @@ export function SplMeterScreen({ navigation }: Props) {
                     centerText={dialCenterText}
                     centerColor={dialCenterColor}
                     sweetSpot={inSweetSpot}
+                    onToggle={running ? stopMeter : startMeter}
                   />
                 ) : null}
 
