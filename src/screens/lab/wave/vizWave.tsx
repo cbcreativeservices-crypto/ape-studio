@@ -228,10 +228,8 @@ function LineBust({ path, stroke, sw }: { path: SkPathT; stroke: string; sw: num
 // ColorMatrix recolors every pixel to the accent and keeps the source alpha,
 // so ONE asset serves every tint (owner 2026-08-02, replacing the old buildClaves
 // / ListenerGlyph vector redraws that distorted the crossing).
-const ICON_CLAVES = require('../../../../assets/icons/claves.png');
 const ICON_HEAD_FRONT = require('../../../../assets/icons/head-front.png');
 
-const CLAVE_SIZE = 24; // tiny source marker, px (longest side)
 const HEAD_SIZE = 28; // listener head, px
 
 type SkImageT = ReturnType<typeof useImage>;
@@ -901,7 +899,6 @@ export function RoomSceneView(p: RoomSceneProps) {
   const mode = p.mode ?? 'interference';
   const geo = useMemo(() => roomGeo(scene, w, h), [scene, w, h]);
   const key = sceneKey(scene);
-  const clavesImg = useImage(ICON_CLAVES);
   const headFrontImg = useImage(ICON_HEAD_FRONT);
   const nx = p.modal?.nx ?? 1;
   const ny = p.modal?.ny ?? 0;
@@ -1228,20 +1225,6 @@ export function RoomSceneView(p: RoomSceneProps) {
     })),
     [key, geo], // eslint-disable-line react-hooks/exhaustive-deps
   );
-  const pointHalo = useDerivedValue(() => {
-    const r = 6.5 + 1.8 * Math.sin(p.phase.value);
-    const path = Skia.Path.Make();
-    for (let i = 0; i < pointSrcs.length; i++) {
-      if (!pointSrcs[i].muted) path.addCircle(pointSrcs[i].x, pointSrcs[i].y, r);
-    }
-    return path;
-  }, [p.phase, pointSrcs]);
-  const pointCores = useMemo(() => {
-    const path = Skia.Path.Make();
-    for (const s of pointSrcs) if (!s.muted) path.addCircle(s.x, s.y, 3.2);
-    return path;
-  }, [pointSrcs]);
-
   // Selection ring position (amber, per contract selectedId).
   const selPos = useMemo(() => {
     if (!p.selectedId) return null;
@@ -1411,21 +1394,11 @@ export function RoomSceneView(p: RoomSceneProps) {
           </>
         ) : null}
         {/* Sources: illustrated glyphs by kind (visual standards §1). Point
-            sources use the owner's crossed-claves icon (the click point = the
-            acoustic origin); it falls back to the amber dot while the image
-            loads. */}
-        {clavesImg ? (
-          pointSrcs.filter((s) => !s.muted).map((s, i) => (
-            <IconMark key={`clave${i}`} image={clavesImg} cx={s.x} cy={s.y} size={CLAVE_SIZE} color={WAVE} plate />
-          ))
-        ) : (
-          <>
-            <Path path={pointHalo} color={WAVE} style="stroke" strokeWidth={1.6} opacity={0.4}>
-              <BlurMask blur={3} style="normal" />
-            </Path>
-            <Path path={pointCores} color={WAVE} opacity={0.95} />
-          </>
-        )}
+            sources use the small side-view PA speaker (same icon as the
+            diffraction lab), owner 2026-08-02. */}
+        {pointSrcs.filter((s) => !s.muted).map((s, i) => (
+          <SideSpeakerGlyph key={`spk${i}`} x={s.x} y={s.y} s={1.15} />
+        ))}
         {scene.sources.map((s) =>
           s.kind === 'speaker' ? (
             <SpeakerGlyph key={s.id} src={s} x={geo.x0 + s.x * geo.pxPerM} y={geo.y0 + s.y * geo.pxPerM} freq={freq} dim={!!s.muted} />
