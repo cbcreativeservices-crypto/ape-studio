@@ -648,14 +648,11 @@ const PULSE_FADE_END = 2.98 / 3;
 const PULSE_FADE_START = 0.9;
 
 /** `segGain` = amplitude gain while travelling segment i (1.0 leaving the
- *  source, × √(1−α) after each bounce) — the MATERIAL effect the nodes show.
- *  `absorbed` traces are absorption probes: they leave the source, reach a wall
- *  and DIE there (never reflect back) — the count per wall scales with α. */
-type TraceRay = { pts: number[]; cum: number[]; len: number; order: number; segGain: number[]; absorbed?: boolean };
-
-/** A node whose remaining amplitude is below this is treated as absorbed — it
- *  dies at the wall instead of arriving (foam, fiberglass…). */
-const PULSE_DEAD = 0.008;
+ *  source, × √(1−α) after each bounce) — the MATERIAL loss. `free` traces are
+ *  the extra diffuse reflections (multi-bounce paths that reach the listener);
+ *  the rest are the line-traced image-source reflections. Every trace ENDS at
+ *  the listener. */
+type TraceRay = { pts: number[]; cum: number[]; len: number; order: number; segGain: number[]; free?: boolean };
 
 // The nodes carry LOUDNESS in the app-wide MIDI velocity colours (levelColor:
 // 1 = red / full scale → 0 = MIDI-0 blue / silence — src/features/tools/
@@ -705,46 +702,51 @@ const NODE_TIME_STRETCH = 1.37;
 type NodeState = { x: number; y: number; amp: number; r: number };
 
 /** Position + loudness (amp 0..1) + radius of a ray's node at wavefront
- *  distance `dist`, or null if it has been absorbed or is already gone. */
-function nodeState(ray: TraceRay, dist: number, maxLen: number, minLen: number): NodeState | null {
+ *  distance `dist` — travels source→listener, then holds at the listener. */
+function nodeState(ray: TraceRay, dist: number, minLen: number, timeEnv: number): NodeState {
   'worklet';
-  const speed = maxLen / PULSE_ARRIVE;
-  const arrived = dist >= ray.len;
-  // Absorption probes DIE at the wall (no arrival, no reflection); real rays
-  // hold briefly at the listener as they arrive.
-  if (ray.absorbed ? arrived : dist > ray.len + speed * 0.07) return null;
-  const travelled = arrived ? ray.len : dist;
+  const travelled = Math.min(dist, ray.len); // stop at the listener
   let i = 1;
   while (i < ray.cum.length - 1 && travelled > ray.cum[i]) i++;
-  const gain = ray.segGain[i - 1] ?? 1;
-  if (gain < PULSE_DEAD) return null; // absorbed at a wall — never arrives
   const d0 = ray.cum[i - 1];
   const seg = ray.cum[i] - d0 || 1;
   const f = (travelled - d0) / seg;
   const x = ray.pts[(i - 1) * 2] + (ray.pts[i * 2] - ray.pts[(i - 1) * 2]) * f;
   const y = ray.pts[(i - 1) * 2 + 1] + (ray.pts[i * 2 + 1] - ray.pts[(i - 1) * 2 + 1]) * f;
-  // Loudness = distance spreading (1/r from the direct distance) × material
-  // gain left. Distance gives the smooth red→blue gradient (direct = red,
-  // longer reflections cooler); material steps it down at each bounce.
-  const ref = minLen * NODE_TIME_STRETCH; // stretched 1/r reference (slower decay)
-  const ratio = ref / Math.max(ref, travelled); // 1 within the (stretched) direct dist → 0 far
-  const amp = Math.max(0, Math.min(1, gain * Math.pow(ratio, DIST_POW)));
-  const base = arrived ? 2.9 : 2.3;
-  const r = base * (0.42 + 0.58 * amp); // floored so weak (blue) reflections stay visible
+  // ECHO LEVEL is per-RAY, from its OWN total path length (1/r vs the direct)
+  // and the material it lost — NOT the shared wavefront distance. So a
+  // close-wall reflection (short path) stays REDDER and a far one (long path,
+  // more time) sits closer to BLUE; different reflections now read as different
+  // colours instead of all the same. `timeEnv` then decays every node to blue
+  // by the end of the pulse (all full blue at PULSE_FADE_END).
+  const finalGain = ray.segGain[ray.segGain.length - 1] ?? 1;
+  const ref = minLen * NODE_TIME_STRETCH;
+  const level = finalGain * Math.pow(ref / Math.max(ref, ray.len), DIST_POW);
+  const amp = Math.max(0, Math.min(1, level * timeEnv));
+  const r = 2.5 * (0.34 + 0.66 * amp);
   return { x, y, amp, r };
 }
 
-/** The travelling nodes for ALL rays, coloured by loudness on the MIDI velocity
- *  ramp (red loud → blue quiet) and shrinking as they travel. Quantised into
- *  NODE_BUCKETS colour paths so the whole fan stays a fixed set of paths/frame. */
+/** Global loudness envelope: full until PULSE_FADE_START, then eased to 0 by
+ *  PULSE_FADE_END so every node is full blue (lowest level) at 2.98 s. */
+function pulseTimeEnv(u: number): number {
+  'worklet';
+  if (u < PULSE_FADE_START) return 1;
+  return Math.max(0, 1 - (u - PULSE_FADE_START) / (PULSE_FADE_END - PULSE_FADE_START));
+}
+
+/** The nodes for ALL rays, coloured by each ray's ECHO LEVEL (its own path
+ *  length + material) on the MIDI ramp, decaying to blue over the pulse.
+ *  Quantised into NODE_BUCKETS colour paths (fixed set of paths/frame). */
 function PulseNodes({ t, traces, maxLen, minLen }: { t: SharedValue<number>; traces: TraceRay[]; maxLen: number; minLen: number }) {
   // A soft bloom under every node so they read over the heat field.
   const glow = useDerivedValue(() => {
     const p = Skia.Path.Make();
     const dist = t.value * (maxLen / PULSE_ARRIVE);
+    const env = pulseTimeEnv(t.value);
     for (let k = 0; k < traces.length; k++) {
-      const n = nodeState(traces[k], dist, maxLen, minLen);
-      if (n) p.addCircle(n.x, n.y, n.r * 1.5);
+      const n = nodeState(traces[k], dist, minLen, env);
+      p.addCircle(n.x, n.y, n.r * 1.5);
     }
     return p;
   }, [t, traces, maxLen, minLen]);
@@ -756,30 +758,24 @@ function PulseNodes({ t, traces, maxLen, minLen }: { t: SharedValue<number>; tra
       useDerivedValue(() => {
         const p = Skia.Path.Make();
         const dist = t.value * (maxLen / PULSE_ARRIVE);
+        const env = pulseTimeEnv(t.value);
         for (let k = 0; k < traces.length; k++) {
-          const n = nodeState(traces[k], dist, maxLen, minLen);
-          if (n && Math.round(n.amp * (NODE_BUCKETS - 1)) === b) p.addCircle(n.x, n.y, n.r);
+          const n = nodeState(traces[k], dist, minLen, env);
+          if (Math.round(n.amp * (NODE_BUCKETS - 1)) === b) p.addCircle(n.x, n.y, n.r);
         }
         return p;
       }, [t, traces, maxLen, minLen]),
     );
   }
-  // Clean tail-out: the whole node cloud fades to nothing by PULSE_FADE_END so
-  // even long free-bounce nodes are gone before the next pulse.
-  const fade = useDerivedValue(() => {
-    const u = t.value;
-    if (u < PULSE_FADE_START) return 1;
-    return Math.max(0, 1 - (u - PULSE_FADE_START) / (PULSE_FADE_END - PULSE_FADE_START));
-  }, [t]);
   return (
-    <Group opacity={fade}>
+    <>
       <Path path={glow} color="#eaf0ff" opacity={0.26} blendMode="plus">
         <BlurMask blur={5} style="normal" />
       </Path>
       {buckets.map((path, b) => (
         <Path key={b} path={path} color={NODE_COLORS[b]} />
       ))}
-    </Group>
+    </>
   );
 }
 
@@ -870,6 +866,21 @@ function marchWall(px: number, py: number, dx: number, dy: number, W: number, H:
   else if (dy < -1e-9) { const t = -py / dy; if (t < best) { best = t; wall = 0; } }
   if (!Number.isFinite(best)) return { x: px, y: py, wall: 0 };
   return { x: px + dx * best, y: py + dy * best, wall };
+}
+
+/** Does segment (ax,ay)→(bx,by) pass within R of the listener (lx,ly)? If so,
+ *  returns how far along the segment (0..1) the ray first enters the R circle —
+ *  the point where the free node should end AT the listener's head. */
+function segReachesListener(ax: number, ay: number, bx: number, by: number, lx: number, ly: number, R: number): number | null {
+  const dx = bx - ax;
+  const dy = by - ay;
+  const L2 = dx * dx + dy * dy;
+  if (L2 < 1e-9) return null;
+  let tt = ((lx - ax) * dx + (ly - ay) * dy) / L2;
+  tt = Math.max(0, Math.min(1, tt));
+  const cx = ax + dx * tt;
+  const cy = ay + dy * tt;
+  return Math.hypot(cx - lx, cy - ly) <= R ? tt : null;
 }
 
 const RAY_COLORS = [WAVE, ACCENT_BLUE, '#4d5d85']; // direct · 1st bounce · 2nd
@@ -1034,22 +1045,21 @@ export function RoomSceneView(p: RoomSceneProps) {
         appendArrow(arrows[order], X(b[0]) - (dx / len) * 12, Y(b[1]) - (dy / len) * 12, dx / len, dy / len, 6);
       }
     }
-    // Free "reverb" nodes (owner 2026-08-02): a FIXED count every pulse, every
-    // material — they leave the source in spread pseudo-random directions and
-    // bounce around the room, losing √(1−α) at each wall. At the FIRST wall a
-    // material-scaled fraction is ABSORBED (dies into the wall surface); the
-    // rest reflect and keep bouncing until they fade. So the COUNT is always the
-    // same — only the FATE shifts with material: fiberglass swallows most at the
-    // walls (but never ALL — ABSORB_SCALE caps it, so some still bounce), glass
-    // keeps nearly all bouncing around. Not line-traced (pulse nodes only).
-    const FREE_NODES = 14;
+    // Free diffuse reflections (owner 2026-08-02): cast many rays that bounce
+    // around the room and KEEP ONLY the ones that reach the listener's head —
+    // extra multi-bounce reflection paths beyond the line-traced order-≤2 set.
+    // Each keeps the √(1−α) material loss along its path, so a long/absorptive
+    // route arrives quieter (bluer). Not line-traced — pulse nodes only.
+    const FREE_CAST = 60; // rays cast per source
+    const FREE_KEEP = 12; // max diffuse reflections drawn
     const FREE_MAX_BOUNCES = 6;
-    const ABSORB_SCALE = 0.7; // caps the absorbed fraction so even fiberglass reflects some
-    const FREE_FADE = 0.05; // stop bouncing once this quiet
+    const FREE_FADE = 0.02; // too quiet to have survived to the listener
+    const LR = Math.max(0.35, 0.5 * (scene.w + scene.h) * 0.06); // head catch radius, m
     for (const s of scene.sources) {
       if (s.muted) continue;
-      for (let n = 0; n < FREE_NODES; n++) {
-        const ang = (n / FREE_NODES) * Math.PI * 2 + (hashFrac(n) - 0.5) * ((Math.PI * 2) / FREE_NODES);
+      let kept = 0;
+      for (let n = 0; n < FREE_CAST && kept < FREE_KEEP; n++) {
+        const ang = hashFrac(n * 1.37 + 0.11) * Math.PI * 2;
         let dx = Math.cos(ang);
         let dy = Math.sin(ang);
         let px = s.x;
@@ -1057,21 +1067,30 @@ export function RoomSceneView(p: RoomSceneProps) {
         let amp = 1;
         const pathM: [number, number][] = [[px, py]];
         const segGain: number[] = [];
+        let reached = false;
         for (let k = 0; k < FREE_MAX_BOUNCES; k++) {
           const hit = marchWall(px, py, dx, dy, scene.w, scene.h);
+          // After ≥1 bounce, does this leg pass through the listener's head?
+          if (k >= 1) {
+            const tt = segReachesListener(px, py, hit.x, hit.y, scene.listener.x, scene.listener.y, LR);
+            if (tt !== null) {
+              pathM.push([scene.listener.x, scene.listener.y]);
+              segGain.push(amp);
+              reached = true;
+              break;
+            }
+          }
           pathM.push([hit.x, hit.y]);
           segGain.push(amp);
-          if (scene.boundary[hit.wall] === 'open') break; // exits the room
-          const alpha = alphaAt(scene.boundary[hit.wall], freq);
-          if (k === 0 && hashFrac(n * 3 + 1) < alpha * ABSORB_SCALE) break; // absorbed into the wall
-          const aAfter = amp * Math.sqrt(Math.max(0, 1 - alpha));
-          if (aAfter < FREE_FADE) break; // faded out over the bounces
+          if (scene.boundary[hit.wall] === 'open') break; // exits the room — lost
+          const aAfter = amp * Math.sqrt(Math.max(0, 1 - alphaAt(scene.boundary[hit.wall], freq)));
+          if (aAfter < FREE_FADE) break; // absorbed before reaching the listener
           if (hit.wall === 0 || hit.wall === 2) dy = -dy; else dx = -dx;
           amp = aAfter;
           px = hit.x;
           py = hit.y;
         }
-        if (pathM.length < 2) continue;
+        if (!reached) continue; // only keep rays that end at the listener
         const flat: number[] = [];
         for (const [mx, my] of pathM) flat.push(X(mx), Y(my));
         const cum: number[] = [0];
@@ -1080,7 +1099,10 @@ export function RoomSceneView(p: RoomSceneProps) {
           total += Math.hypot(flat[i * 2] - flat[(i - 1) * 2], flat[i * 2 + 1] - flat[(i - 1) * 2 + 1]);
           cum.push(total);
         }
-        if (total > 1) traces.push({ pts: flat, cum, len: total, order: 0, segGain, absorbed: true });
+        if (total > 1) {
+          traces.push({ pts: flat, cum, len: total, order: 0, segGain, free: true });
+          kept++;
+        }
       }
     }
     return { byOrder, arrows, traces };
@@ -1095,17 +1117,17 @@ export function RoomSceneView(p: RoomSceneProps) {
   // radius IS the nodes' travelled distance (they ride its wavefront).
   const traces = rays && p.layers.pressure && mode !== 'modal' ? rays.traces : null;
   const tracing = !!traces && traces.length > 0;
-  // Timing + colour reference come from the REAL rays only (not absorption
-  // probes): longest reflection sets the 2 s pacing; shortest = the direct
-  // sound, the 1/r colour anchor (direct arrives red, longer reflections cooler).
+  // Pacing spans the LONGEST path (incl. diffuse reflections) so they all reach
+  // the listener within the pulse; the colour reference is the SHORTEST real
+  // reflection = the direct sound (reddest), so echo colour tracks path length.
   const maxLen = useMemo(() => {
     let m = 1;
-    if (traces) for (const r of traces) if (!r.absorbed) m = Math.max(m, r.len);
+    if (traces) for (const r of traces) m = Math.max(m, r.len);
     return m;
   }, [traces]);
   const minLen = useMemo(() => {
     let m = Infinity;
-    if (traces) for (const r of traces) if (!r.absorbed) m = Math.min(m, r.len);
+    if (traces) for (const r of traces) if (!r.free) m = Math.min(m, r.len);
     return Number.isFinite(m) ? m : 1;
   }, [traces]);
   const pulseOrigins = useMemo(() => {
