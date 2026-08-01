@@ -25,7 +25,7 @@
  *
  * ONLY this file imports Skia (via wave/skiaGate.requireWaveViz()).
  */
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { PanResponder, StyleSheet, Text as RNText, View } from 'react-native';
 import {
   BlurMask,
@@ -39,7 +39,15 @@ import {
   Skia,
   vec,
 } from '@shopify/react-native-skia';
-import { useDerivedValue, type SharedValue } from 'react-native-reanimated';
+import {
+  cancelAnimation,
+  Easing,
+  useDerivedValue,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+  type SharedValue,
+} from 'react-native-reanimated';
 import { fonts } from '../../../theme/tokens';
 import { useScrollLock } from '../LabShell';
 import {
@@ -561,6 +569,98 @@ function RoomRing({ phase, srcs, i }: { phase: SharedValue<number>; srcs: RingSr
   );
 }
 
+// ── Pulse tracer (owner 2026-08-02) ─────────────────────────────────────────
+// Every PULSE_MS a pulse leaves the source and a node rides EVERY visible ray
+// at one constant speed (sound doesn't travel faster on longer paths), so the
+// direct ray arrives first and each reflection arrives later in true
+// path-length order. All traces complete by PULSE_ARRIVE of the cycle; the
+// remainder is a beat of silence before the next pulse. Node counts are FIXED
+// per frame (one circle per ray); the ring is one path.
+
+const PULSE_MS = 2000;
+const PULSE_ARRIVE = 0.9; // every trace lands by 90% of the cycle
+
+type TraceRay = { pts: number[]; cum: number[]; len: number; order: number };
+
+/** The travelling nodes for one reflection order (color-matched to its rays).
+ *  A node past its ray's end holds briefly at the listener as an arrival flash. */
+function PulseNodes({
+  t,
+  traces,
+  order,
+  maxLen,
+  color,
+}: {
+  t: SharedValue<number>;
+  traces: TraceRay[];
+  order: number;
+  maxLen: number;
+  color: string;
+}) {
+  const path = useDerivedValue(() => {
+    const p = Skia.Path.Make();
+    const speed = maxLen / PULSE_ARRIVE; // px per unit cycle — SAME for every ray
+    const dist = t.value * speed;
+    for (let k = 0; k < traces.length; k++) {
+      const ray = traces[k];
+      if (ray.order !== order) continue;
+      if (dist <= ray.len) {
+        // Interpolate along the polyline via the cumulative lengths.
+        let i = 1;
+        while (i < ray.cum.length - 1 && dist > ray.cum[i]) i++;
+        const d0 = ray.cum[i - 1];
+        const seg = ray.cum[i] - d0 || 1;
+        const f = (dist - d0) / seg;
+        const x = ray.pts[(i - 1) * 2] + (ray.pts[i * 2] - ray.pts[(i - 1) * 2]) * f;
+        const y = ray.pts[(i - 1) * 2 + 1] + (ray.pts[i * 2 + 1] - ray.pts[(i - 1) * 2 + 1]) * f;
+        p.addCircle(x, y, 3.4);
+      } else if (dist - ray.len < speed * 0.07) {
+        // Arrival flash: the node holds at the listener for a beat, then goes.
+        const n = ray.pts.length;
+        p.addCircle(ray.pts[n - 2], ray.pts[n - 1], 4.4);
+      }
+    }
+    return p;
+  }, [t, traces, order, maxLen]);
+  return (
+    <>
+      <Path path={path} color={color} opacity={0.55} blendMode="plus">
+        <BlurMask blur={5} style="normal" />
+      </Path>
+      <Path path={path} color="#f4f7ff" opacity={0.92} blendMode="plus" />
+    </>
+  );
+}
+
+/** The pulse itself: a bright ring expanding from each source at the nodes'
+ *  exact speed (the nodes ride this wavefront), fading as it grows. */
+function PulseRing({
+  t,
+  origins,
+  maxLen,
+}: {
+  t: SharedValue<number>;
+  origins: { x: number; y: number }[];
+  maxLen: number;
+}) {
+  const path = useDerivedValue(() => {
+    const p = Skia.Path.Make();
+    const r = t.value * (maxLen / PULSE_ARRIVE);
+    if (r > 1.5) for (let i = 0; i < origins.length; i++) p.addCircle(origins[i].x, origins[i].y, r);
+    return p;
+  }, [t, origins, maxLen]);
+  const op = useDerivedValue(() => 0.5 * (1 - t.value) * (1 - t.value), [t]);
+  const glowOp = useDerivedValue(() => 0.24 * (1 - t.value) * (1 - t.value), [t]);
+  return (
+    <>
+      <Path path={path} color={WAVE} style="stroke" strokeWidth={2.8} opacity={glowOp} blendMode="plus">
+        <BlurMask blur={4} style="normal" />
+      </Path>
+      <Path path={path} color="#ffe9bd" style="stroke" strokeWidth={1.2} opacity={op} blendMode="plus" />
+    </>
+  );
+}
+
 // ── Ray helpers (image-source reflection polylines) ──────────────────────────
 
 /** Mirror a point across boundary b (same construct as waveEngine's internal
@@ -687,10 +787,13 @@ export function RoomSceneView(p: RoomSceneProps) {
   const walls = useMemo(() => buildWalls(scene, geo, freq), [key, geo, freq]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── RAYS: image-source reflection polylines, order ≤ 2 ────────────────────
+  // Also emits TRACES — each ray's px polyline + cumulative segment lengths —
+  // for the pulse tracer below (owner 2026-08-02).
   const rays = useMemo(() => {
     if (!p.layers.rays) return null;
     const byOrder = [Skia.Path.Make(), Skia.Path.Make(), Skia.Path.Make()];
     const arrows = [Skia.Path.Make(), Skia.Path.Make(), Skia.Path.Make()];
+    const traces: TraceRay[] = [];
     const X = (mx: number) => geo.x0 + mx * geo.pxPerM;
     const Y = (my: number) => geo.y0 + my * geo.pxPerM;
     const L = scene.listener;
@@ -719,6 +822,16 @@ export function RoomSceneView(p: RoomSceneProps) {
         const path = byOrder[order];
         path.moveTo(X(pts[0][0]), Y(pts[0][1]));
         for (let i = 1; i < pts.length; i++) path.lineTo(X(pts[i][0]), Y(pts[i][1]));
+        // Trace polyline (px) + cumulative lengths for the pulse nodes.
+        const flat: number[] = [];
+        for (const [mx, my] of pts) flat.push(X(mx), Y(my));
+        const cum: number[] = [0];
+        let total = 0;
+        for (let i = 1; i < pts.length; i++) {
+          total += Math.hypot(flat[i * 2] - flat[(i - 1) * 2], flat[i * 2 + 1] - flat[(i - 1) * 2 + 1]);
+          cum.push(total);
+        }
+        traces.push({ pts: flat, cum, len: total, order });
         // Arrowhead just before the listener, along the final segment.
         const a = pts[pts.length - 2];
         const b = pts[pts.length - 1];
@@ -728,9 +841,46 @@ export function RoomSceneView(p: RoomSceneProps) {
         appendArrow(arrows[order], X(b[0]) - (dx / len) * 12, Y(b[1]) - (dy / len) * 12, dx / len, dy / len, 6);
       }
     }
-    return { byOrder, arrows };
+    return { byOrder, arrows, traces };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, freq, geo, p.layers.rays]);
+
+  // ── PULSE TRACER (owner 2026-08-02): with RAYS + PRESSURE both on, every
+  // 2 s a pulse leaves the source; a node rides EVERY visible ray at ONE
+  // constant speed, so the direct ray lands at the listener first and each
+  // reflection lands later in true path-length order — all before the next
+  // pulse fires. A bright expanding ring marks the pulse itself; the ring
+  // radius IS the nodes' travelled distance (they ride its wavefront).
+  const traces = rays && p.layers.pressure && mode !== 'modal' ? rays.traces : null;
+  const tracing = !!traces && traces.length > 0;
+  const maxLen = useMemo(
+    () => (traces ? traces.reduce((m, r) => Math.max(m, r.len), 1) : 1),
+    [traces],
+  );
+  const pulseOrigins = useMemo(() => {
+    if (!traces) return [];
+    const seen = new Set<string>();
+    const out: { x: number; y: number }[] = [];
+    for (const r of traces) {
+      const k = `${Math.round(r.pts[0])},${Math.round(r.pts[1])}`;
+      if (!seen.has(k)) {
+        seen.add(k);
+        out.push({ x: r.pts[0], y: r.pts[1] });
+      }
+    }
+    return out;
+  }, [traces]);
+  const pulseT = useSharedValue(0);
+  useEffect(() => {
+    if (!tracing) {
+      cancelAnimation(pulseT);
+      pulseT.value = 0;
+      return;
+    }
+    pulseT.value = 0;
+    pulseT.value = withRepeat(withTiming(1, { duration: PULSE_MS, easing: Easing.linear }), -1, false);
+    return () => cancelAnimation(pulseT);
+  }, [tracing, pulseT]);
 
   // ── ARRIVALS: fan of time-of-arrival ticks at the listener ────────────────
   const arrivalFan = useMemo(() => {
@@ -959,6 +1109,17 @@ export function RoomSceneView(p: RoomSceneProps) {
         {ringSrcs.length > 0
           ? Array.from({ length: RING_N }, (_, i) => <RoomRing key={i} phase={p.phase} srcs={ringSrcs} i={i} />)
           : null}
+        {/* PULSE TRACER (RAYS + PRESSURE combined): the 2 s pulse ring + one
+            node per ray riding its line at constant speed — direct arrives
+            first, reflections later, all landed before the next pulse. */}
+        {tracing && traces ? (
+          <>
+            <PulseRing t={pulseT} origins={pulseOrigins} maxLen={maxLen} />
+            {[0, 1, 2].map((o) => (
+              <PulseNodes key={o} t={pulseT} traces={traces} order={o} maxLen={maxLen} color={RAY_COLORS[o]} />
+            ))}
+          </>
+        ) : null}
         {/* ARRIVALS: tick fan + pulsing listener halo. */}
         {arrivalFan ? (
           <>
