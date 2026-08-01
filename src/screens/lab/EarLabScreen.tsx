@@ -1,19 +1,14 @@
 /**
  * EarLabScreen — AUDIO FUNDAMENTALS & TRAINING LAB landing (owner 2026-08-01).
  *
- * The lab is partitioned in the title into two top-level sections:
- *   • AUDIO FUNDAMENTALS — the FREE + required part. Shown as ONE flat list of
- *     labs in a logical order (no category headers, owner 2026-08-01).
- *   • TRAINING LAB       — the members-only part. Keeps its category headers,
- *     with the labs listed beneath each.
- *
- * Every lab is the SAME uniform row size whether it is one big lab environment
- * (Wave Physics, Visual Audio Analysis, Digital Systems, Calculators — a row
- * that opens that lab's own module drill-down) or a single lab. Planned labs
- * show as non-tappable "in development — soon to be released" rows (§1.7: no
- * dead links). Fully data-driven from labCatalog.
+ * Two top-level sections, each grouped into SUBJECT categories (owner
+ * 2026-08-01): AUDIO FUNDAMENTALS (Sound, then Signal) and TRAINING LAB
+ * (Equalization, Dynamics, Time Effects, … Calculators). Each subject shows a
+ * header + its labs; a subject that IS one big lab environment (the Calculator
+ * Lab) is a tappable header that opens its own drill-down. Planned labs show as
+ * non-tappable "in development — soon to be released" rows (§1.7: no dead
+ * links). Fully data-driven from labCatalog.
  */
-import { Fragment } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -46,12 +41,9 @@ export function EarLabScreen({ navigation }: Props) {
   const openLeaf = (leaf: LabLeaf) => {
     if (leaf.route) go(leaf.route, leaf.params);
   };
-
-  // AUDIO FUNDAMENTALS — one flat, logically-ordered list (catalog order:
-  // Foundations → Wave Physics → Mics & Loudspeakers → Digital → Visual Audio
-  // Analysis (+ Harmonograph) → Interactive), no category grouping.
-  const fundamentals = sectionCategories('fundamentals').flatMap(categoryEntries);
-  const training = sectionCategories('training');
+  const openHub = (cat: LabCategory) => {
+    if (cat.kind === 'hub') go(cat.route, cat.params);
+  };
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -68,50 +60,45 @@ export function EarLabScreen({ navigation }: Props) {
       <ScrollView contentContainerStyle={styles.scroll}>
         <Text style={styles.intro}>{INTRO}</Text>
 
-        {/* ── AUDIO FUNDAMENTALS — flat list, no category headers ── */}
-        <View style={styles.section}>
-          <View style={styles.sectionHead}>
-            <Text style={styles.sectionTitle}>AUDIO FUNDAMENTALS</Text>
-            <Text style={styles.sectionNote}>Free & required</Text>
+        {SECTIONS.map((sec) => (
+          <View key={sec.key} style={styles.section}>
+            <View style={styles.sectionHead}>
+              <Text style={styles.sectionTitle}>{sec.title}</Text>
+              <Text style={styles.sectionNote}>{sec.note}</Text>
+            </View>
+            {sectionCategories(sec.key).map((cat) => (
+              <View key={cat.id} style={styles.catBlock}>
+                {cat.kind === 'hub' ? (
+                  // A hub subject is one lab environment — a tappable header that
+                  // opens its own module drill-down (e.g. the Calculator Lab).
+                  <CategoryLabel cat={cat} onPress={() => openHub(cat)} />
+                ) : (
+                  <>
+                    <CategoryLabel cat={cat} />
+                    {categoryEntries(cat).map((leaf) => (
+                      <LabRow key={leaf.name} leaf={leaf} onOpen={() => openLeaf(leaf)} inset />
+                    ))}
+                  </>
+                )}
+              </View>
+            ))}
           </View>
-          {fundamentals.map((leaf) => (
-            <LabRow key={leaf.name} leaf={leaf} onOpen={() => openLeaf(leaf)} />
-          ))}
-        </View>
-
-        {/* ── TRAINING LAB — keeps category headers ── */}
-        <View style={styles.section}>
-          <View style={styles.sectionHead}>
-            <Text style={styles.sectionTitle}>TRAINING LAB</Text>
-            <Text style={styles.sectionNote}>Members only</Text>
-          </View>
-          {training.map((cat) => (
-            <Fragment key={cat.id}>
-              {cat.kind === 'hub' ? (
-                // A hub is one lab — a single uniform row, no header of its own.
-                categoryEntries(cat).map((leaf) => (
-                  <LabRow key={leaf.name} leaf={leaf} onOpen={() => openLeaf(leaf)} />
-                ))
-              ) : (
-                <View style={styles.catBlock}>
-                  <CategoryLabel cat={cat} />
-                  {categoryEntries(cat).map((leaf) => (
-                    <LabRow key={leaf.name} leaf={leaf} onOpen={() => openLeaf(leaf)} inset />
-                  ))}
-                </View>
-              )}
-            </Fragment>
-          ))}
-        </View>
+        ))}
       </ScrollView>
     </View>
   );
 }
 
-/** Small category header (glyph + name + count) for Training-Lab groups. */
-function CategoryLabel({ cat }: { cat: LabCategory }) {
-  return (
-    <View style={styles.catLabel}>
+const SECTIONS = [
+  { key: 'fundamentals' as const, title: 'AUDIO FUNDAMENTALS', note: 'Free & required' },
+  { key: 'training' as const, title: 'TRAINING LAB', note: 'Members only' },
+];
+
+/** Subject header (glyph + name + count). Tappable (a card, with a chevron) when
+ *  the subject is a single hub lab; a plain label when it heads a list of labs. */
+function CategoryLabel({ cat, onPress }: { cat: LabCategory; onPress?: () => void }) {
+  const inner = (
+    <>
       <View style={styles.iconBadgeSm}>
         <Text style={styles.iconGlyphSm}>{cat.glyph}</Text>
       </View>
@@ -119,7 +106,20 @@ function CategoryLabel({ cat }: { cat: LabCategory }) {
         <Text style={styles.catName}>{cat.name}</Text>
         <Text style={styles.catCount}>{categoryCountLabel(cat)}</Text>
       </View>
-    </View>
+      {onPress ? <Text style={styles.rowChevron}>›</Text> : null}
+    </>
+  );
+  return onPress ? (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={`${cat.name}, ${categoryCountLabel(cat)}`}
+      style={({ pressed }) => [styles.catLabel, styles.catCard, pressed && styles.rowPressed]}
+    >
+      {inner}
+    </Pressable>
+  ) : (
+    <View style={styles.catLabel}>{inner}</View>
   );
 }
 
@@ -171,8 +171,19 @@ const styles = StyleSheet.create({
 
   catBlock: { gap: 8, marginTop: 4 },
 
-  // Training-Lab category label (its labs are the tappable rows beneath).
+  // Subject header (its labs are the tappable rows beneath).
   catLabel: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingTop: 2 },
+  // A hub subject is a single tappable card that opens its own lab.
+  catCard: {
+    paddingTop: 0,
+    minHeight: 56,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255,198,77,.42)',
+    backgroundColor: '#17140c',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+  },
   iconBadgeSm: {
     width: 30,
     height: 30,
