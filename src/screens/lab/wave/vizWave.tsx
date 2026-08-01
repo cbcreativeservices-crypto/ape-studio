@@ -673,6 +673,15 @@ const NODE_COLORS: string[] = Array.from({ length: NODE_BUCKETS }, (_, i) =>
   levelColor(i / (NODE_BUCKETS - 1)),
 ); // index 0 = blue (quiet) … last = red (loud)
 
+// The WALL MATERIAL is the dominant driver of a node's level (owner 2026-08-02):
+// its loudness is mostly the accumulated reflection gain — √(1−α) at each
+// bounce (segGain) — which STEPS down at every wall. Hard/reflective glass
+// (α≈0) barely drops, so its reflections stay loud/red; absorptive fiberglass
+// (α≈0.98) takes a huge bite, so a node that hit the wall orange comes back out
+// blue. Distance is only a gentle secondary fade so a glass reflection doesn't
+// wash out just for travelling — material, not distance, sets the colour.
+const PULSE_DIST_FADE = 0.22;
+
 type NodeState = { x: number; y: number; amp: number; r: number };
 
 /** Position + loudness (amp 0..1) + radius of a ray's node at wavefront
@@ -692,10 +701,12 @@ function nodeState(ray: TraceRay, dist: number, maxLen: number): NodeState | nul
   const f = (travelled - d0) / seg;
   const x = ray.pts[(i - 1) * 2] + (ray.pts[i * 2] - ray.pts[(i - 1) * 2]) * f;
   const y = ray.pts[(i - 1) * 2 + 1] + (ray.pts[i * 2 + 1] - ray.pts[(i - 1) * 2 + 1]) * f;
-  // Loudness fades with distance travelled (dominant) AND the material gain
-  // left, so the colour marches red→blue and the node shrinks as it goes.
+  // Loudness is mostly the MATERIAL gain left (steps down at each bounce — big
+  // for absorbers, tiny for glass) with only a gentle distance fade, so the
+  // colour/size step at a wall reads the wall's absorption: glass reflections
+  // stay warm, absorptive ones drop toward blue right at the bounce.
   const distFrac = Math.min(1, travelled / maxLen);
-  const amp = Math.max(0, Math.min(1, (1 - distFrac) * gain));
+  const amp = Math.max(0, Math.min(1, gain * (1 - PULSE_DIST_FADE * distFrac)));
   const base = arrived ? 2.9 : 2.3;
   const r = base * (0.28 + 0.72 * amp); // smaller the quieter/farther it is
   return { x, y, amp, r };
