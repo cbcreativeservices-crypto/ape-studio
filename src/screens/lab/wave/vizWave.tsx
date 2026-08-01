@@ -643,12 +643,14 @@ const PULSE_MS = 2000;
 const PULSE_ARRIVE = 0.9; // every trace lands by 90% of the cycle
 
 /** `segGain` = amplitude gain while travelling segment i (1.0 leaving the
- *  source, × √(1−α) after each bounce) — the MATERIAL effect the nodes show. */
-type TraceRay = { pts: number[]; cum: number[]; len: number; order: number; segGain: number[] };
+ *  source, × √(1−α) after each bounce) — the MATERIAL effect the nodes show.
+ *  `absorbed` traces are absorption probes: they leave the source, reach a wall
+ *  and DIE there (never reflect back) — the count per wall scales with α. */
+type TraceRay = { pts: number[]; cum: number[]; len: number; order: number; segGain: number[]; absorbed?: boolean };
 
 /** A node whose remaining amplitude is below this is treated as absorbed — it
  *  dies at the wall instead of arriving (foam, fiberglass…). */
-const PULSE_DEAD = 0.03;
+const PULSE_DEAD = 0.008;
 
 // The nodes carry LOUDNESS in the app-wide MIDI velocity colours (levelColor:
 // 1 = red / full scale → 0 = MIDI-0 blue / silence — src/features/tools/
@@ -691,7 +693,9 @@ function nodeState(ray: TraceRay, dist: number, maxLen: number, minLen: number):
   'worklet';
   const speed = maxLen / PULSE_ARRIVE;
   const arrived = dist >= ray.len;
-  if (dist > ray.len + speed * 0.07) return null; // past its arrival hold — gone
+  // Absorption probes DIE at the wall (no arrival, no reflection); real rays
+  // hold briefly at the listener as they arrive.
+  if (ray.absorbed ? arrived : dist > ray.len + speed * 0.07) return null;
   const travelled = arrived ? ray.len : dist;
   let i = 1;
   while (i < ray.cum.length - 1 && travelled > ray.cum[i]) i++;
@@ -709,7 +713,7 @@ function nodeState(ray: TraceRay, dist: number, maxLen: number, minLen: number):
   const ratio = ref / Math.max(ref, travelled); // 1 within the (stretched) direct dist → 0 far
   const amp = Math.max(0, Math.min(1, gain * Math.pow(ratio, DIST_POW)));
   const base = arrived ? 2.9 : 2.3;
-  const r = base * (0.28 + 0.72 * amp); // smaller the quieter/farther it is
+  const r = base * (0.42 + 0.58 * amp); // floored so weak (blue) reflections stay visible
   return { x, y, amp, r };
 }
 
@@ -986,6 +990,32 @@ export function RoomSceneView(p: RoomSceneProps) {
         appendArrow(arrows[order], X(b[0]) - (dx / len) * 12, Y(b[1]) - (dy / len) * 12, dx / len, dy / len, 6);
       }
     }
+    // Absorption probes (owner 2026-08-02): extra nodes that leave the source,
+    // reach a wall and are ABSORBED (die there — they never reflect back into
+    // the room). The number per wall scales with that wall's α at this
+    // frequency, so a glass room absorbs almost none (its energy returns as the
+    // reflection rays above) while a fiberglass room shows most nodes swallowed
+    // at the walls — making the material difference obvious. Probes are pulse
+    // nodes only (not static ray lines), so they don't clutter the ray view.
+    const PROBE_PER_WALL = 4;
+    for (const s of scene.sources) {
+      if (s.muted) continue;
+      const sx = X(s.x);
+      const sy = Y(s.y);
+      for (let b = 0; b < 4; b++) {
+        if (scene.boundary[b] === 'open') continue;
+        const nAbs = Math.round(alphaAt(scene.boundary[b], freq) * PROBE_PER_WALL);
+        for (let j = 0; j < nAbs; j++) {
+          const frac = (j + 1) / (nAbs + 1); // spread the probes across the wall span
+          const wx = b === 0 || b === 2 ? frac * scene.w : b === 1 ? scene.w : 0;
+          const wy = b === 1 || b === 3 ? frac * scene.h : b === 2 ? scene.h : 0;
+          const ex = X(wx);
+          const ey = Y(wy);
+          const len = Math.hypot(ex - sx, ey - sy) || 1;
+          traces.push({ pts: [sx, sy, ex, ey], cum: [0, len], len, order: 0, segGain: [1], absorbed: true });
+        }
+      }
+    }
     return { byOrder, arrows, traces };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, freq, geo, p.layers.rays]);
@@ -998,16 +1028,19 @@ export function RoomSceneView(p: RoomSceneProps) {
   // radius IS the nodes' travelled distance (they ride its wavefront).
   const traces = rays && p.layers.pressure && mode !== 'modal' ? rays.traces : null;
   const tracing = !!traces && traces.length > 0;
-  const maxLen = useMemo(
-    () => (traces ? traces.reduce((m, r) => Math.max(m, r.len), 1) : 1),
-    [traces],
-  );
-  // Shortest path = the direct sound; it's the 1/r colour reference (the direct
-  // arrives red, longer reflections cooler).
-  const minLen = useMemo(
-    () => (traces && traces.length ? traces.reduce((m, r) => Math.min(m, r.len), Infinity) : 1),
-    [traces],
-  );
+  // Timing + colour reference come from the REAL rays only (not absorption
+  // probes): longest reflection sets the 2 s pacing; shortest = the direct
+  // sound, the 1/r colour anchor (direct arrives red, longer reflections cooler).
+  const maxLen = useMemo(() => {
+    let m = 1;
+    if (traces) for (const r of traces) if (!r.absorbed) m = Math.max(m, r.len);
+    return m;
+  }, [traces]);
+  const minLen = useMemo(() => {
+    let m = Infinity;
+    if (traces) for (const r of traces) if (!r.absorbed) m = Math.min(m, r.len);
+    return Number.isFinite(m) ? m : 1;
+  }, [traces]);
   const pulseOrigins = useMemo(() => {
     if (!traces) return [];
     const seen = new Set<string>();
