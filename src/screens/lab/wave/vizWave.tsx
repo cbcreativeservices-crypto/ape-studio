@@ -31,12 +31,15 @@ import {
   BlurMask,
   Canvas,
   Circle,
+  ColorMatrix,
   DashPathEffect,
   Group,
+  Image as SkImage,
   Line as SkLine,
   LinearGradient,
   Path,
   Skia,
+  useImage,
   vec,
 } from '@shopify/react-native-skia';
 import {
@@ -221,6 +224,73 @@ function LineBust({ path, stroke, sw }: { path: SkPathT; stroke: string; sw: num
     <Group>
       <Path path={path} color={HEAD_PLATE} />
       <Path path={path} color={stroke} style="stroke" strokeWidth={sw} strokeCap="round" strokeJoin="round" />
+    </Group>
+  );
+}
+
+// ── Owner line-art icons (real uploaded assets — NOT redrawn) ────────────────
+// The crossed-claves source icon and the front/side head icons the owner
+// supplied (assets/icons/*). Those PNGs are keyed to transparency straight from
+// the owner's exact pixels (luminance → alpha), so nothing is reinterpreted —
+// the sticks cross exactly as drawn. Rendered as TINTED Skia images: a
+// ColorMatrix recolors every pixel to the accent and keeps the source alpha,
+// so ONE asset serves every tint (owner 2026-08-02, replacing the old buildClaves
+// / ListenerGlyph vector redraws that distorted the crossing).
+const ICON_CLAVES = require('../../../../assets/icons/claves.png');
+const ICON_HEAD_FRONT = require('../../../../assets/icons/head-front.png');
+
+const CLAVE_SIZE = 24; // tiny source marker, px (longest side)
+const HEAD_SIZE = 28; // listener head, px
+
+type SkImageT = ReturnType<typeof useImage>;
+
+/** Color matrix that recolors every pixel to `hex` and KEEPS the source alpha
+ *  (the transparent line-art asset takes on the accent). */
+function tintMatrix(hex: string): number[] {
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+  return [0, 0, 0, 0, r, 0, 0, 0, 0, g, 0, 0, 0, 0, b, 0, 0, 0, 1, 0];
+}
+const PLATE_MATRIX = tintMatrix('#0a0b0e'); // dark soft backing for readability
+
+/** Draw an owner icon centered at (cx,cy), longest side = `size` px, tinted to
+ *  `color`. `plate` lays a blurred dark copy behind so the line art stays
+ *  legible over the heat field (the head-icon plate idiom, image form). */
+function IconMark({
+  image,
+  cx,
+  cy,
+  size,
+  color,
+  opacity = 1,
+  plate = false,
+}: {
+  image: SkImageT;
+  cx: number;
+  cy: number;
+  size: number;
+  color: string;
+  opacity?: number;
+  plate?: boolean;
+}) {
+  if (!image) return null;
+  const s = size / Math.max(image.width(), image.height());
+  const w = image.width() * s;
+  const h = image.height() * s;
+  const x = cx - w / 2;
+  const y = cy - h / 2;
+  return (
+    <Group opacity={opacity}>
+      {plate ? (
+        <SkImage image={image} x={x - 1} y={y - 1} width={w + 2} height={h + 2} fit="contain">
+          <ColorMatrix matrix={PLATE_MATRIX} />
+          <BlurMask blur={3} style="normal" />
+        </SkImage>
+      ) : null}
+      <SkImage image={image} x={x} y={y} width={w} height={h} fit="contain">
+        <ColorMatrix matrix={tintMatrix(color)} />
+      </SkImage>
     </Group>
   );
 }
@@ -738,6 +808,8 @@ export function RoomSceneView(p: RoomSceneProps) {
   const mode = p.mode ?? 'interference';
   const geo = useMemo(() => roomGeo(scene, w, h), [scene, w, h]);
   const key = sceneKey(scene);
+  const clavesImg = useImage(ICON_CLAVES);
+  const headFrontImg = useImage(ICON_HEAD_FRONT);
   const nx = p.modal?.nx ?? 1;
   const ny = p.modal?.ny ?? 0;
 
@@ -1178,23 +1250,42 @@ export function RoomSceneView(p: RoomSceneProps) {
             ))}
           </>
         ) : null}
-        {/* Sources: illustrated glyphs by kind (visual standards §1). */}
-        <Path path={pointHalo} color={WAVE} style="stroke" strokeWidth={1.6} opacity={0.4}>
-          <BlurMask blur={3} style="normal" />
-        </Path>
-        <Path path={pointCores} color={WAVE} opacity={0.95} />
+        {/* Sources: illustrated glyphs by kind (visual standards §1). Point
+            sources use the owner's crossed-claves icon (the click point = the
+            acoustic origin); it falls back to the amber dot while the image
+            loads. */}
+        {clavesImg ? (
+          pointSrcs.filter((s) => !s.muted).map((s, i) => (
+            <IconMark key={`clave${i}`} image={clavesImg} cx={s.x} cy={s.y} size={CLAVE_SIZE} color={WAVE} plate />
+          ))
+        ) : (
+          <>
+            <Path path={pointHalo} color={WAVE} style="stroke" strokeWidth={1.6} opacity={0.4}>
+              <BlurMask blur={3} style="normal" />
+            </Path>
+            <Path path={pointCores} color={WAVE} opacity={0.95} />
+          </>
+        )}
         {scene.sources.map((s) =>
           s.kind === 'speaker' ? (
             <SpeakerGlyph key={s.id} src={s} x={geo.x0 + s.x * geo.pxPerM} y={geo.y0 + s.y * geo.pxPerM} freq={freq} dim={!!s.muted} />
           ) : s.kind === 'sub' ? (
             <SubGlyph key={s.id} x={geo.x0 + s.x * geo.pxPerM} y={geo.y0 + s.y * geo.pxPerM} dim={!!s.muted} />
           ) : s.muted ? (
-            // Muted point source: the pulsing halo skips it; show a dim core ring.
+            // Muted point source: the claves icon skips it; show a dim core ring.
             <Circle key={s.id} cx={geo.x0 + s.x * geo.pxPerM} cy={geo.y0 + s.y * geo.pxPerM} r={3.2} color="#6a6e7a" style="stroke" strokeWidth={1.2} opacity={0.5} />
           ) : null,
         )}
-        {/* The listener — line-art front head + shoulders. */}
-        <ListenerGlyph x={geo.x0 + scene.listener.x * geo.pxPerM} y={geo.y0 + scene.listener.y * geo.pxPerM} />
+        {/* The listener — the owner's front-head line icon (LINE + a green
+            accent wash), falling back to the vector glyph while it loads. */}
+        {headFrontImg ? (
+          <>
+            <IconMark image={headFrontImg} cx={geo.x0 + scene.listener.x * geo.pxPerM} cy={geo.y0 + scene.listener.y * geo.pxPerM} size={HEAD_SIZE} color={LINE} plate />
+            <IconMark image={headFrontImg} cx={geo.x0 + scene.listener.x * geo.pxPerM} cy={geo.y0 + scene.listener.y * geo.pxPerM} size={HEAD_SIZE} color={ACCENT_GREEN} opacity={0.28} />
+          </>
+        ) : (
+          <ListenerGlyph x={geo.x0 + scene.listener.x * geo.pxPerM} y={geo.y0 + scene.listener.y * geo.pxPerM} />
+        )}
         {/* Selection: amber ring (sources by id, listener as 'listener'). */}
         {selPos ? (
           <Circle cx={selPos.x} cy={selPos.y} r={16} color={WAVE} style="stroke" strokeWidth={1.6} opacity={0.85} />
