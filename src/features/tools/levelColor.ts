@@ -21,9 +21,9 @@ export const MIDLINE_BLUE = '#2f74ff';
  *  line). Velocity ramp: red → orange → yellow → green → blue. */
 export const LOUDNESS_STOPS: ReadonlyArray<{ pos: number; color: string }> = [
   { pos: 0, color: '#ff5f4e' }, // full scale — red
-  { pos: 0.26, color: '#e6902f' }, // orange
-  { pos: 0.48, color: '#e8c341' }, // yellow
-  { pos: 0.72, color: '#3fae52' }, // green
+  { pos: 0.32, color: '#e6902f' }, // orange (widened: more orange/yellow before green)
+  { pos: 0.6, color: '#e8c341' }, // yellow
+  { pos: 0.83, color: '#3fae52' }, // green (pushed toward the quiet end)
   { pos: 1, color: MIDLINE_BLUE }, // silence / mid line — MIDI-0 blue
 ];
 

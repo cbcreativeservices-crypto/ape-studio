@@ -828,6 +828,26 @@ function appendArrow(p: SkPathT, x: number, y: number, ux: number, uy: number, s
   p.close();
 }
 
+/** Deterministic pseudo-random in [0,1) from an integer — stable across renders
+ *  (the free nodes keep their directions between frames) yet looks random. */
+function hashFrac(i: number): number {
+  const x = Math.sin(i * 127.1 + 311.7) * 43758.5453;
+  return x - Math.floor(x);
+}
+
+/** March from (px,py) in direction (dx,dy) to the first W×H wall it exits
+ *  (meters). Returns the hit point + wall (0 top · 1 right · 2 bottom · 3 left). */
+function marchWall(px: number, py: number, dx: number, dy: number, W: number, H: number): { x: number; y: number; wall: number } {
+  let best = Infinity;
+  let wall = 0;
+  if (dx > 1e-9) { const t = (W - px) / dx; if (t < best) { best = t; wall = 1; } }
+  else if (dx < -1e-9) { const t = -px / dx; if (t < best) { best = t; wall = 3; } }
+  if (dy > 1e-9) { const t = (H - py) / dy; if (t < best) { best = t; wall = 2; } }
+  else if (dy < -1e-9) { const t = -py / dy; if (t < best) { best = t; wall = 0; } }
+  if (!Number.isFinite(best)) return { x: px, y: py, wall: 0 };
+  return { x: px + dx * best, y: py + dy * best, wall };
+}
+
 const RAY_COLORS = [WAVE, ACCENT_BLUE, '#4d5d85']; // direct · 1st bounce · 2nd
 const ARRIVAL_COLORS = [WAVE, ACCENT_BLUE, '#5a6c94'];
 
@@ -990,30 +1010,53 @@ export function RoomSceneView(p: RoomSceneProps) {
         appendArrow(arrows[order], X(b[0]) - (dx / len) * 12, Y(b[1]) - (dy / len) * 12, dx / len, dy / len, 6);
       }
     }
-    // Absorption probes (owner 2026-08-02): extra nodes that leave the source,
-    // reach a wall and are ABSORBED (die there — they never reflect back into
-    // the room). The number per wall scales with that wall's α at this
-    // frequency, so a glass room absorbs almost none (its energy returns as the
-    // reflection rays above) while a fiberglass room shows most nodes swallowed
-    // at the walls — making the material difference obvious. Probes are pulse
-    // nodes only (not static ray lines), so they don't clutter the ray view.
-    const PROBE_PER_WALL = 4;
+    // Free "reverb" nodes (owner 2026-08-02): a FIXED count every pulse, every
+    // material — they leave the source in spread pseudo-random directions and
+    // bounce around the room, losing √(1−α) at each wall. At the FIRST wall a
+    // material-scaled fraction is ABSORBED (dies into the wall surface); the
+    // rest reflect and keep bouncing until they fade. So the COUNT is always the
+    // same — only the FATE shifts with material: fiberglass swallows most at the
+    // walls (but never ALL — ABSORB_SCALE caps it, so some still bounce), glass
+    // keeps nearly all bouncing around. Not line-traced (pulse nodes only).
+    const FREE_NODES = 14;
+    const FREE_MAX_BOUNCES = 6;
+    const ABSORB_SCALE = 0.7; // caps the absorbed fraction so even fiberglass reflects some
+    const FREE_FADE = 0.05; // stop bouncing once this quiet
     for (const s of scene.sources) {
       if (s.muted) continue;
-      const sx = X(s.x);
-      const sy = Y(s.y);
-      for (let b = 0; b < 4; b++) {
-        if (scene.boundary[b] === 'open') continue;
-        const nAbs = Math.round(alphaAt(scene.boundary[b], freq) * PROBE_PER_WALL);
-        for (let j = 0; j < nAbs; j++) {
-          const frac = (j + 1) / (nAbs + 1); // spread the probes across the wall span
-          const wx = b === 0 || b === 2 ? frac * scene.w : b === 1 ? scene.w : 0;
-          const wy = b === 1 || b === 3 ? frac * scene.h : b === 2 ? scene.h : 0;
-          const ex = X(wx);
-          const ey = Y(wy);
-          const len = Math.hypot(ex - sx, ey - sy) || 1;
-          traces.push({ pts: [sx, sy, ex, ey], cum: [0, len], len, order: 0, segGain: [1], absorbed: true });
+      for (let n = 0; n < FREE_NODES; n++) {
+        const ang = (n / FREE_NODES) * Math.PI * 2 + (hashFrac(n) - 0.5) * ((Math.PI * 2) / FREE_NODES);
+        let dx = Math.cos(ang);
+        let dy = Math.sin(ang);
+        let px = s.x;
+        let py = s.y;
+        let amp = 1;
+        const pathM: [number, number][] = [[px, py]];
+        const segGain: number[] = [];
+        for (let k = 0; k < FREE_MAX_BOUNCES; k++) {
+          const hit = marchWall(px, py, dx, dy, scene.w, scene.h);
+          pathM.push([hit.x, hit.y]);
+          segGain.push(amp);
+          if (scene.boundary[hit.wall] === 'open') break; // exits the room
+          const alpha = alphaAt(scene.boundary[hit.wall], freq);
+          if (k === 0 && hashFrac(n * 3 + 1) < alpha * ABSORB_SCALE) break; // absorbed into the wall
+          const aAfter = amp * Math.sqrt(Math.max(0, 1 - alpha));
+          if (aAfter < FREE_FADE) break; // faded out over the bounces
+          if (hit.wall === 0 || hit.wall === 2) dy = -dy; else dx = -dx;
+          amp = aAfter;
+          px = hit.x;
+          py = hit.y;
         }
+        if (pathM.length < 2) continue;
+        const flat: number[] = [];
+        for (const [mx, my] of pathM) flat.push(X(mx), Y(my));
+        const cum: number[] = [0];
+        let total = 0;
+        for (let i = 1; i < pathM.length; i++) {
+          total += Math.hypot(flat[i * 2] - flat[(i - 1) * 2], flat[i * 2 + 1] - flat[(i - 1) * 2 + 1]);
+          cum.push(total);
+        }
+        if (total > 1) traces.push({ pts: flat, cum, len: total, order: 0, segGain, absorbed: true });
       }
     }
     return { byOrder, arrows, traces };
