@@ -713,15 +713,16 @@ function nodeState(ray: TraceRay, dist: number, minLen: number, timeEnv: number)
   const f = (travelled - d0) / seg;
   const x = ray.pts[(i - 1) * 2] + (ray.pts[i * 2] - ray.pts[(i - 1) * 2]) * f;
   const y = ray.pts[(i - 1) * 2 + 1] + (ray.pts[i * 2 + 1] - ray.pts[(i - 1) * 2 + 1]) * f;
-  // ECHO LEVEL is per-RAY, from its OWN total path length (1/r vs the direct)
-  // and the material it lost — NOT the shared wavefront distance. So a
-  // close-wall reflection (short path) stays REDDER and a far one (long path,
-  // more time) sits closer to BLUE; different reflections now read as different
-  // colours instead of all the same. `timeEnv` then decays every node to blue
-  // by the end of the pulse (all full blue at PULSE_FADE_END).
-  const finalGain = ray.segGain[ray.segGain.length - 1] ?? 1;
+  // Every sound LEAVES THE SOURCE FULL RED in EVERY room — before any bounce
+  // the gain is 1, so the colour at the source is identical regardless of wall
+  // treatment. It then cools with DISTANCE travelled and STEPS cooler at each
+  // bounce by that wall's √(1−α) (glass barely, fiberglass a lot). So the rooms
+  // differ only AFTER the walls act: a close/reflective path arrives redder, a
+  // far/absorptive one arrives bluer. `timeEnv` decays everything to blue by
+  // the end of the pulse (all full blue at PULSE_FADE_END).
+  const gain = ray.segGain[i - 1] ?? 1; // material left on the CURRENT segment
   const ref = minLen * NODE_TIME_STRETCH;
-  const level = finalGain * Math.pow(ref / Math.max(ref, ray.len), DIST_POW);
+  const level = gain * Math.pow(ref / Math.max(ref, travelled), DIST_POW);
   const amp = Math.max(0, Math.min(1, level * timeEnv));
   const r = 2.5 * (0.34 + 0.66 * amp);
   return { x, y, amp, r };
