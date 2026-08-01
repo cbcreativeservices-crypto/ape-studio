@@ -639,8 +639,13 @@ function RoomRing({ phase, srcs, i }: { phase: SharedValue<number>; srcs: RingSr
 // remainder is a beat of silence before the next pulse. Node counts are FIXED
 // per frame (one circle per ray); the ring is one path.
 
-const PULSE_MS = 2000;
-const PULSE_ARRIVE = 0.9; // every trace lands by 90% of the cycle
+const PULSE_MS = 3000; // 3 s between pulses — more time to watch the decay
+const PULSE_ARRIVE = 0.9; // every reflection lands by 90% of the cycle
+// Everything fades to nothing by this fraction of the cycle (2.98 s of 3 s),
+// leaving a clean beat before the next pulse — catches even long free-bounce
+// nodes that would otherwise still be travelling at the reset.
+const PULSE_FADE_END = 2.98 / 3;
+const PULSE_FADE_START = 0.9;
 
 /** `segGain` = amplitude gain while travelling segment i (1.0 leaving the
  *  source, × √(1−α) after each bounce) — the MATERIAL effect the nodes show.
@@ -661,10 +666,22 @@ const PULSE_DEAD = 0.008;
 // short paths finish while the front is still near the source, the DIRECT node
 // arrives red/orange and the long, multiply-bounced reflections arrive blue
 // (owner 2026-08-02). Quantised into NODE_BUCKETS colour paths (fixed/frame).
-const NODE_BUCKETS = 18;
-const NODE_COLORS: string[] = Array.from({ length: NODE_BUCKETS }, (_, i) =>
-  levelColor(i / (NODE_BUCKETS - 1)),
-); // index 0 = blue (quiet) … last = red (loud)
+const NODE_BUCKETS = 24;
+// Loudness also drives BRIGHTNESS (owner 2026-08-02): as level rises the colour
+// gets brighter (blended toward white by amp × NODE_BRIGHT), so the loudest red
+// at emission is visibly brighter than the same red a moment later as it dims.
+// amp = 0 blends nothing — the quiet blue floor is left exactly as-is (never
+// darkened).
+const NODE_BRIGHT = 0.42;
+function brightenHex(hex: string, amt: number): string {
+  const n = parseInt(hex.slice(1), 16);
+  const mix = (c: number) => Math.round(c + (255 - c) * amt).toString(16).padStart(2, '0');
+  return `#${mix((n >> 16) & 255)}${mix((n >> 8) & 255)}${mix(n & 255)}`;
+}
+const NODE_COLORS: string[] = Array.from({ length: NODE_BUCKETS }, (_, i) => {
+  const amp = i / (NODE_BUCKETS - 1);
+  return brightenHex(levelColor(amp), amp * NODE_BRIGHT);
+}); // index 0 = blue (quiet, unbrightened) … last = bright red (loud)
 
 // A node's loudness has TWO parts (owner 2026-08-02):
 //  1. DISTANCE — spherical spreading (1/r) referenced to the DIRECT path
@@ -747,15 +764,22 @@ function PulseNodes({ t, traces, maxLen, minLen }: { t: SharedValue<number>; tra
       }, [t, traces, maxLen, minLen]),
     );
   }
+  // Clean tail-out: the whole node cloud fades to nothing by PULSE_FADE_END so
+  // even long free-bounce nodes are gone before the next pulse.
+  const fade = useDerivedValue(() => {
+    const u = t.value;
+    if (u < PULSE_FADE_START) return 1;
+    return Math.max(0, 1 - (u - PULSE_FADE_START) / (PULSE_FADE_END - PULSE_FADE_START));
+  }, [t]);
   return (
-    <>
+    <Group opacity={fade}>
       <Path path={glow} color="#eaf0ff" opacity={0.26} blendMode="plus">
         <BlurMask blur={5} style="normal" />
       </Path>
       {buckets.map((path, b) => (
         <Path key={b} path={path} color={NODE_COLORS[b]} />
       ))}
-    </>
+    </Group>
   );
 }
 
