@@ -194,7 +194,7 @@ function LayerChips({
   return (
     <View style={dstyles.chipRow}>
       <LabChip label="PRESSURE" selected={layers.pressure} onPress={() => t('pressure')} onLongPress={() => help('layers')} />
-      <LabChip label="HEAT" selected={layers.heat} onPress={() => t('heat')} onLongPress={() => help('layers')} />
+      <LabChip label="AMPLITUDE MAP" selected={layers.heat} onPress={() => t('heat')} onLongPress={() => help('layers')} />
       <LabChip label="RAYS" selected={layers.rays} onPress={() => t('rays')} onLongPress={() => help(raysKey)} />
       <LabChip label="ARRIVALS" selected={layers.arrivals} onPress={() => t('arrivals')} onLongPress={() => help('arrivals')} />
     </View>
@@ -319,7 +319,7 @@ export function ReflectionModule(p: WaveModuleProps) {
         <DragSlider
           value={logFrac(freq, 63, 8000)}
           onChange={(v) => setFreq(fracLog(v, 63, 8000))}
-          label="FREQUENCY"
+          label="FREQUENCY  (use with Amplitude Map)"
           readout={fmtHz(freq)}
           onHelp={() => p.help('reflection')}
         />
