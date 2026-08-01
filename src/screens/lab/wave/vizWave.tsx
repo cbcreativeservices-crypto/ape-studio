@@ -724,6 +724,10 @@ function appendArrow(p: SkPathT, x: number, y: number, ux: number, uy: number, s
 const RAY_COLORS = [WAVE, ACCENT_BLUE, '#4d5d85']; // direct · 1st bounce · 2nd
 const ARRIVAL_COLORS = [WAVE, ACCENT_BLUE, '#5a6c94'];
 
+/** One arrival readout: time (geometric) + level relative to the direct (the
+ *  material/frequency-driven number). */
+type ArrivalLabel = { x: number; y: number; ms: string; db: string; color: string };
+
 // ── RoomSceneView — the one view all 16 modules render through ───────────────
 
 export function RoomSceneView(p: RoomSceneProps) {
@@ -820,7 +824,12 @@ export function RoomSceneView(p: RoomSceneProps) {
     for (const s of scene.sources) {
       if (s.muted) continue;
       for (const img of imageSources(scene, s, freq, 2)) {
-        if (img.bounces.length > 0 && img.gain < 0.02) continue; // open wall etc.
+        // The ROOM governs how a reflection BEHAVES (the node shrinks/dies as
+        // it travels — see segGain), NOT how many rays emanate from the source
+        // (owner 2026-08-02). So every geometric reflection is kept regardless
+        // of material; only a genuinely OPEN boundary produces no reflection at
+        // all (sound passes through), so those alone are dropped.
+        if (img.bounces.some((b) => scene.boundary[b] === 'open')) continue;
         const order = img.bounces.length;
         let pts: [number, number][] | null = null;
         if (order === 0) {
@@ -917,28 +926,35 @@ export function RoomSceneView(p: RoomSceneProps) {
   const arrivalFan = useMemo(() => {
     if (!p.layers.arrivals) return null;
     const list = arrivalsAt(scene, scene.listener.x, scene.listener.y, freq, 2).slice(0, 5);
-    if (list.length === 0) return { ticks: [] as { path: SkPathT; color: string }[], labels: [] as { x: number; y: number; text: string; color: string }[] };
+    if (list.length === 0) return { ticks: [] as { path: SkPathT; color: string }[], labels: [] as ArrivalLabel[] };
     const lx = geo.x0 + scene.listener.x * geo.pxPerM;
     const ly = geo.y0 + scene.listener.y * geo.pxPerM;
-    const maxDb = list[0].levelDb;
+    const maxDb = list[0].levelDb; // the direct arrival (earliest = loudest)
     const byColor = new Map<string, SkPathT>();
-    const labels: { x: number; y: number; text: string; color: string }[] = [];
+    const labels: ArrivalLabel[] = [];
     for (let i = 0; i < list.length; i++) {
       const a = list[i];
       const ang = ((-135 + (i * 90) / Math.max(1, list.length - 1)) * Math.PI) / 180;
-      const norm = Math.pow(10, (a.levelDb - maxDb) / 20);
+      // Level of THIS arrival relative to the direct — the number the ROOM and
+      // FREQUENCY actually move: reflected arrivals lose √(1−α) of amplitude at
+      // every bounce (glass barely drops, fiberglass plummets), and α is
+      // frequency-dependent, so switching material or sweeping frequency
+      // re-labels every reflected tick (owner 2026-08-02). Direct = 0.0 dB ref.
+      const relDb = a.levelDb - maxDb;
+      const norm = Math.pow(10, relDb / 20); // 0..1 linear, drives tick length
       const r0 = 14;
-      const r1 = r0 + 8 + 14 * norm;
+      const r1 = r0 + 8 + 20 * norm;
       const color = ARRIVAL_COLORS[Math.min(2, a.bounces.length)];
       let path = byColor.get(color);
       if (!path) { path = Skia.Path.Make(); byColor.set(color, path); }
       path.moveTo(lx + Math.cos(ang) * r0, ly - 4 + Math.sin(ang) * r0);
       path.lineTo(lx + Math.cos(ang) * r1, ly - 4 + Math.sin(ang) * r1);
-      const lr = r1 + (i % 2 === 0 ? 9 : 17); // stagger so close arrivals don't collide
+      const lr = r1 + (i % 2 === 0 ? 12 : 24); // stagger so close arrivals don't collide
       labels.push({
         x: lx + Math.cos(ang) * lr,
         y: ly - 4 + Math.sin(ang) * lr,
-        text: `${(a.t * 1000).toFixed(1)}`,
+        ms: `${(a.t * 1000).toFixed(1)} ms`,
+        db: i === 0 ? 'direct' : `${relDb <= -0.05 ? '−' : ''}${Math.abs(relDb).toFixed(0)} dB`,
         color,
       });
     }
@@ -1204,16 +1220,12 @@ export function RoomSceneView(p: RoomSceneProps) {
         </RNText>
         {arrivalFan
           ? arrivalFan.labels.map((l, i) => (
-              <RNText key={i} style={[styles.msLabel, { left: l.x - 17, top: l.y - 6, color: l.color }]}>
-                {l.text}
-              </RNText>
+              <View key={i} pointerEvents="none" style={{ position: 'absolute', left: l.x - 24, top: l.y - 10, width: 48, alignItems: 'center' }}>
+                <RNText style={[styles.msLabel, { color: l.color }]}>{l.ms}</RNText>
+                <RNText style={[styles.dbLabel, { color: l.color }]}>{l.db}</RNText>
+              </View>
             ))
           : null}
-        {arrivalFan && arrivalFan.labels.length > 0 ? (
-          <RNText style={[styles.msLabel, { left: geo.x0 + scene.listener.x * geo.pxPerM - 17, top: geo.y0 + scene.listener.y * geo.pxPerM + 12, color: '#8f95a6' }]}>
-            ms
-          </RNText>
-        ) : null}
       </View>
     </View>
   );
@@ -1651,11 +1663,16 @@ const styles = StyleSheet.create({
     color: '#8f95a6',
   },
   msLabel: {
-    position: 'absolute',
-    width: 34,
     textAlign: 'center',
     fontFamily: fonts.mono,
     fontSize: 8,
+  },
+  dbLabel: {
+    textAlign: 'center',
+    fontFamily: fonts.mono,
+    fontSize: 9,
+    fontWeight: '700',
+    marginTop: 0.5,
   },
   sceneLabel: {
     position: 'absolute',
