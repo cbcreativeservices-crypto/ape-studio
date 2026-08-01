@@ -11,7 +11,6 @@ export type WaveModuleId =
   | 'echo' | 'reverb';
 
 export const WAVE_MODULES: { id: WaveModuleId; num: string; title: string; blurb: string }[] = [
-  { id: 'builder', num: '◎', title: 'Room Builder', blurb: 'The engine itself: build a room, place sources and a listener, toggle every layer.' },
   { id: 'reflection', num: '1', title: 'Reflection Visualizer', blurb: 'Law of reflection, first reflections, path lengths, the image-source idea.' },
   { id: 'absorption', num: '2', title: 'Absorption Laboratory', blurb: 'Materials, α by frequency, RT60 — and why bass is harder to absorb.' },
   { id: 'diffusion', num: '3', title: 'Diffusion Laboratory', blurb: 'Specular vs diffuse: scattering preserves energy — it doesn’t remove it.' },
@@ -27,4 +26,6 @@ export const WAVE_MODULES: { id: WaveModuleId; num: string; title: string; blurb
   { id: 'beamsteer', num: '13', title: 'Beam Steering', blurb: 'DSP delays tilt the beam without moving the box.' },
   { id: 'echo', num: '14', title: 'Echo Laboratory', blurb: 'Discrete echoes vs fused reflections — the ~50 ms threshold.' },
   { id: 'reverb', num: '15', title: 'Reverberation Laboratory', blurb: 'Direct → early → late → diffuse: reverb as a buildup, not a thing.' },
+  // Room Builder last: it combines every concept the other modules isolate (owner 2026-08-01).
+  { id: 'builder', num: '◎', title: 'Room Builder', blurb: 'The engine itself: build a room, place sources and a listener, toggle every layer.' },
 ];

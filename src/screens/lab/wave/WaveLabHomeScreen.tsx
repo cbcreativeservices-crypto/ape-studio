@@ -1,6 +1,7 @@
 /**
- * WaveLabHomeScreen — Wave Physics Laboratory landing (v4 §9): the Room
- * Builder up top (it IS the engine), then the 15 modules as presets of it.
+ * WaveLabHomeScreen — Wave Physics Laboratory landing (v4 §9): the 15 modules
+ * (each a preset of the engine), then the Room Builder LAST — it combines every
+ * concept the other modules isolate (owner 2026-08-01).
  */
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -16,8 +17,8 @@ export function WaveLabHomeScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [lessonOpen, setLessonOpen] = useState(false);
-  const builder = WAVE_MODULES[0];
-  const modules = WAVE_MODULES.slice(1);
+  const builder = WAVE_MODULES.find((m) => m.id === 'builder');
+  const modules = WAVE_MODULES.filter((m) => m.id !== 'builder');
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -40,13 +41,6 @@ export function WaveLabHomeScreen() {
           Geometric + analytic wave models drawn live (illustrative, never a measurement). The
           real-time pressure-field simulation is a future native release.
         </Text>
-        <Pressable style={[styles.card, styles.builderCard]} onPress={() => navigation.navigate('WaveModule', { id: builder.id })}>
-          <Text style={styles.cardTag}>{builder.num}</Text>
-          <View style={{ flex: 1, gap: 2 }}>
-            <Text style={styles.cardName}>{builder.title}</Text>
-            <Text style={styles.caption}>{builder.blurb}</Text>
-          </View>
-        </Pressable>
         <Text style={styles.sectionTitle}>THE 15 MODULES</Text>
         {modules.map((m) => (
           <Pressable key={m.id} style={styles.card} onPress={() => navigation.navigate('WaveModule', { id: m.id })}>
@@ -57,6 +51,18 @@ export function WaveLabHomeScreen() {
             </View>
           </Pressable>
         ))}
+        {builder && (
+          <>
+            <Text style={styles.sectionTitle}>PUT IT ALL TOGETHER</Text>
+            <Pressable style={[styles.card, styles.builderCard]} onPress={() => navigation.navigate('WaveModule', { id: builder.id })}>
+              <Text style={styles.cardTag}>{builder.num}</Text>
+              <View style={{ flex: 1, gap: 2 }}>
+                <Text style={styles.cardName}>{builder.title}</Text>
+                <Text style={styles.caption}>{builder.blurb}</Text>
+              </View>
+            </Pressable>
+          </>
+        )}
         <Pressable style={styles.lessonBtn} onPress={() => setLessonOpen(true)}>
           <Text style={styles.lessonText}>ⓘ GUIDED LESSON</Text>
         </Pressable>

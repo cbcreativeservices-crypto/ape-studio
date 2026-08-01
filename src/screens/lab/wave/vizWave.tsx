@@ -128,7 +128,6 @@ export function modalColor(t01: number): string {
 
 const BUCKET_N = 32;
 const JET_BUCKETS: string[] = Array.from({ length: BUCKET_N }, (_, i) => jetColor(i / (BUCKET_N - 1)));
-const MODAL_BUCKETS: string[] = Array.from({ length: BUCKET_N }, (_, i) => modalColor(i / (BUCKET_N - 1)));
 
 /** Walk one row of a quantized field and emit ONE rect per contiguous run of
  *  same-bucket cells. Copied from micspeaker/viz.tsx (addFieldRow) — this
@@ -589,14 +588,27 @@ const RING_N = 3;
 
 type RingSrc = { x: number; y: number; dirDeg: number; spreadDeg: number; spacing: number };
 
-function RoomRing({ phase, srcs, i }: { phase: SharedValue<number>; srcs: RingSrc[]; i: number }) {
+function RoomRing({
+  phase,
+  srcs,
+  i,
+  count = RING_N,
+}: {
+  phase: SharedValue<number>;
+  srcs: RingSrc[];
+  i: number;
+  /** Length of the ring train (default RING_N). Scenes that must span a wide
+   *  canvas at wavelength-true spacing pass a larger count so the wavefronts
+   *  actually reach across (e.g. the diffraction barrier). */
+  count?: number;
+}) {
   const path = useDerivedValue(() => {
     const f = (phase.value / (2 * Math.PI)) % 1;
     const p = Skia.Path.Make();
     for (let k = 0; k < srcs.length; k++) {
       const s = srcs[k];
       const r = (f + i) * s.spacing;
-      const maxR = RING_N * s.spacing;
+      const maxR = count * s.spacing;
       if (r < 2.5 || r > maxR) continue;
       if (s.spreadDeg >= 355) {
         p.addCircle(s.x, s.y, r);
@@ -608,17 +620,17 @@ function RoomRing({ phase, srcs, i }: { phase: SharedValue<number>; srcs: RingSr
       }
     }
     return p;
-  }, [phase, srcs, i]);
+  }, [phase, srcs, i, count]);
   const lineOp = useDerivedValue(() => {
     const f = (phase.value / (2 * Math.PI)) % 1;
-    const u = (f + i) / RING_N;
+    const u = (f + i) / count;
     return 0.42 * Math.min(1, u / 0.12) * (1 - u) * (1 - u);
-  }, [phase, i]);
+  }, [phase, i, count]);
   const glowOp = useDerivedValue(() => {
     const f = (phase.value / (2 * Math.PI)) % 1;
-    const u = (f + i) / RING_N;
+    const u = (f + i) / count;
     return 0.2 * Math.min(1, u / 0.12) * (1 - u) * (1 - u);
-  }, [phase, i]);
+  }, [phase, i, count]);
   return (
     <>
       <Path path={path} color="#bcd4ff" style="stroke" strokeWidth={3.4} opacity={glowOp} blendMode="plus">
@@ -920,7 +932,11 @@ export function RoomSceneView(p: RoomSceneProps) {
         addFieldRow(buckets, COLS, geo.x0, geo.y0 + r * ch, cw, ch, (c) => {
           const mx = ((c + 0.5) / COLS) * scene.w;
           const pr = modePressure(scene, nx, ny, mx, my); // ±1
-          return Math.round(((pr + 1) / 2) * (BUCKET_N - 1));
+          // MIDI amplitude scheme (owner 2026-08-01): colour by |pressure| so a
+          // node (0) reads as the navy silence floor and an antinode (1) as red
+          // — identical to every other amplitude display in the app. The sign is
+          // carried by the breathe (below), not by colour.
+          return Math.round(Math.abs(pr) * (BUCKET_N - 1));
         });
       }
     } else {
@@ -939,16 +955,13 @@ export function RoomSceneView(p: RoomSceneProps) {
   }, [key, freq, mode, nx, ny, geo, p.layers.heat]);
 
   // Modal maps BREATHE with the phase clock when the pressure layer is on —
-  // physically true: standing-wave pressure = pattern × cos(ωt), so the two
-  // groups below (normal palette / sign-flipped palette) trade places each
-  // half cycle and the whole map dims through zero at the crossings.
+  // physically true: standing-wave pressure = pattern × cos(ωt). Colouring by
+  // |pressure| on the app-wide MIDI ramp, the map swells at the antinodes (red)
+  // and dims through the node/silence floor (navy) twice per cycle; |cos ωt|
+  // carries that oscillation.
   const modalAnimate = p.layers.pressure && mode === 'modal';
-  const modalOpA = useDerivedValue(
-    () => (modalAnimate ? Math.max(0, Math.cos(p.phase.value)) * 0.92 : 0.92),
-    [p.phase, modalAnimate],
-  );
-  const modalOpB = useDerivedValue(
-    () => (modalAnimate ? Math.max(0, -Math.cos(p.phase.value)) * 0.92 : 0),
+  const modalOp = useDerivedValue(
+    () => (modalAnimate ? Math.abs(Math.cos(p.phase.value)) * 0.92 : 0.92),
     [p.phase, modalAnimate],
   );
 
@@ -1322,18 +1335,11 @@ export function RoomSceneView(p: RoomSceneProps) {
         </Path>
         {/* HEAT map (≤32 bucket paths, memoized — see the useMemo above). */}
         {heat && mode === 'modal' ? (
-          <>
-            <Group opacity={modalOpA}>
-              {heat.map((path, i) => (
-                <Path key={`a${i}`} path={path} color={MODAL_BUCKETS[i]} />
-              ))}
-            </Group>
-            <Group opacity={modalOpB}>
-              {heat.map((path, i) => (
-                <Path key={`b${i}`} path={path} color={MODAL_BUCKETS[BUCKET_N - 1 - i]} />
-              ))}
-            </Group>
-          </>
+          <Group opacity={modalOp}>
+            {heat.map((path, i) => (
+              <Path key={i} path={path} color={JET_BUCKETS[i]} />
+            ))}
+          </Group>
         ) : null}
         {heat && mode !== 'modal'
           ? heat.map((path, i) => <Path key={i} path={path} color={JET_BUCKETS[i]} opacity={0.88} />)
@@ -1474,6 +1480,7 @@ function DiffractedRing({
   sweep,
   amp,
   i,
+  count = RING_N,
 }: {
   phase: SharedValue<number>;
   cx: number;
@@ -1483,21 +1490,22 @@ function DiffractedRing({
   sweep: number;
   amp: number;
   i: number;
+  count?: number;
 }) {
   const path = useDerivedValue(() => {
     const f = (phase.value / (2 * Math.PI)) % 1;
     const r = (f + i) * spacing;
     const p = Skia.Path.Make();
-    if (r >= 3 && r <= RING_N * spacing) {
+    if (r >= 3 && r <= count * spacing) {
       p.addArc({ x: cx - r, y: cy - r, width: 2 * r, height: 2 * r }, a0, sweep);
     }
     return p;
-  }, [phase, cx, cy, spacing, a0, sweep, i]);
+  }, [phase, cx, cy, spacing, a0, sweep, i, count]);
   const op = useDerivedValue(() => {
     const f = (phase.value / (2 * Math.PI)) % 1;
-    const u = (f + i) / RING_N;
+    const u = (f + i) / count;
     return 0.55 * amp * Math.min(1, u / 0.12) * (1 - u) * (1 - u);
-  }, [phase, amp, i]);
+  }, [phase, amp, i, count]);
   return <Path path={path} color="#bcd4ff" style="stroke" strokeWidth={1.3} opacity={op} blendMode="plus" />;
 }
 
@@ -1551,6 +1559,14 @@ export function BarrierSceneView(p: {
   const sy = groundY - syM * ppm;
   const bx = bxM * ppm;
   const eY = groundY - barM * ppm;
+
+  // Ring trains long enough to SPAN the scene at the current (wavelength-true)
+  // spacing — so the wavefronts actually travel to the barrier and wrap over it,
+  // instead of dying in a tiny cluster at the source (owner 2026-08-01, "not
+  // animating / unclear"). Count changes only with freq/geometry (a re-render),
+  // never per frame, so the worklet node count stays fixed between frames.
+  const primaryCount = Math.max(3, Math.min(48, Math.ceil(Math.hypot(w - sx, groundY - sy) / spacing) + 1));
+  const diffCount = Math.max(3, Math.min(48, Math.ceil(Math.hypot(w - bx, groundY - eY) / spacing) + 1));
 
   // ── Shadow shading: Maekawa dB sampled over the region behind the barrier,
   //    quantized to 14 dimming buckets, run-length merged. Memoized per
@@ -1636,8 +1652,8 @@ export function BarrierSceneView(p: {
           <LinearGradient start={vec(0, 0)} end={vec(0, groundY)} colors={['#111420', '#0c0c0f']} />
         </Path>
         {/* Primary wavefronts (wavelength-true spacing). */}
-        {Array.from({ length: RING_N }, (_, i) => (
-          <RoomRing key={i} phase={p.phase} srcs={primarySrcs} i={i} />
+        {Array.from({ length: primaryCount }, (_, i) => (
+          <RoomRing key={i} phase={p.phase} srcs={primarySrcs} i={i} count={primaryCount} />
         ))}
         {/* Maekawa shadow: dimming buckets behind the barrier (idx 0 = clear). */}
         {shadow.map((path, i) =>
@@ -1646,7 +1662,7 @@ export function BarrierSceneView(p: {
         {/* Diffracted (Huygens) train wrapping past the edge — brightness per
             band from the Maekawa dB; low freq wraps visibly, highs shadow. */}
         {bands.map((b, k) =>
-          Array.from({ length: RING_N }, (_, i) => (
+          Array.from({ length: diffCount }, (_, i) => (
             <DiffractedRing
               key={`${k}-${i}`}
               phase={p.phase}
@@ -1657,6 +1673,7 @@ export function BarrierSceneView(p: {
               sweep={b.sweep}
               amp={b.amp}
               i={i}
+              count={diffCount}
             />
           )),
         )}

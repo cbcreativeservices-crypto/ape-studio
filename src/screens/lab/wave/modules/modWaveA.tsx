@@ -329,7 +329,7 @@ export function ReflectionModule(p: WaveModuleProps) {
         <DragSlider
           value={logFrac(freq, 63, 8000)}
           onChange={(v) => setFreq(fracLog(v, 63, 8000))}
-          label="FREQUENCY RESULT"
+          label="REFLECTED FREQUENCY"
           readout={fmtHz(freq)}
           onHelp={() => p.help('reflection')}
         />
@@ -454,7 +454,7 @@ export function AbsorptionModule(p: WaveModuleProps) {
         <DragSlider
           value={logFrac(freq, 63, 8000)}
           onChange={(v) => setFreq(fracLog(v, 63, 8000))}
-          label="FREQUENCY"
+          label="ABSORPTION FREQUENCY"
           readout={fmtHz(freq)}
           onHelp={() => p.help('absorption')}
         />
@@ -944,7 +944,7 @@ export function InterferenceModule(p: WaveModuleProps) {
         <DragSlider
           value={logFrac(freq, 63, 2000)}
           onChange={(v) => setFreq(Math.max(63, Math.round(fracLog(v, 63, 2000) / 5) * 5))}
-          label="FREQUENCY — BOTH SOURCES"
+          label="OUTPUT FREQUENCY — BOTH SOURCES"
           readout={fmtHz(freq)}
           onHelp={() => p.help('interference')}
         />

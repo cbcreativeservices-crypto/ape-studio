@@ -242,7 +242,7 @@ export function CoverageModule(p: WaveModuleProps) {
         <DragSlider
           value={freqV}
           onChange={setFreqV}
-          label="FREQUENCY — WATCH THE PATTERN WIDTH"
+          label="OUTPUT FREQUENCY — WATCH THE PATTERN WIDTH"
           readout={fmtHz(freq)}
           onHelp={() => p.help('coverage_pattern')}
         />
@@ -366,7 +366,7 @@ export function LineArrayModule(p: WaveModuleProps) {
         <DragSlider
           value={freqV}
           onChange={setFreqV}
-          label="FREQUENCY — LF COUPLES · HF BEAMS"
+          label="OUTPUT FREQUENCY — LF COUPLES · HF BEAMS"
           readout={fmtHz(freq)}
           onHelp={() => p.help('line_array')}
         />
@@ -628,7 +628,7 @@ export function CardioidSubModule(p: WaveModuleProps) {
           <LabChip label="WRONG WAY" selected={isWrongWay} onPress={() => setPreset(false)} onLongPress={() => p.help('cardioid_sub')} />
         </View>
         <Badge text="CARDIOID = REAR DELAYED BY SPACING/c AND POLARITY-INVERTED → BROADBAND REAR CANCEL · WRONG WAY = SAME DELAY, POLARITY NORMAL → THE NULL FLIPS TOWARD THE AUDIENCE (DEEPEST NEAR c/4d ≈ 71 Hz)" />
-        <DragSlider value={freqV} onChange={setFreqV} label="FREQUENCY" readout={`${freq} Hz`} onHelp={() => p.help('cardioid_sub')} />
+        <DragSlider value={freqV} onChange={setFreqV} label="OUTPUT FREQUENCY" readout={`${freq} Hz`} onHelp={() => p.help('cardioid_sub')} />
         <DragSlider
           value={delayV}
           onChange={setDelayV}
@@ -763,7 +763,7 @@ export function BeamSteerModule(p: WaveModuleProps) {
           ))}
         </View>
         <DragSlider value={steerV} onChange={setSteerV} label="STEER" readout={`${steer}°`} onHelp={() => p.help('beam_steer')} />
-        <DragSlider value={freqV} onChange={setFreqV} label="FREQUENCY" readout={`${freq} Hz`} onHelp={() => p.help('beam_steer')} />
+        <DragSlider value={freqV} onChange={setFreqV} label="OUTPUT FREQUENCY" readout={`${freq} Hz`} onHelp={() => p.help('beam_steer')} />
         <ReadoutGrid
           help={p.help}
           helpKey="beam_steer"
