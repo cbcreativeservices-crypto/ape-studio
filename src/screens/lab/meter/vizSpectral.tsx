@@ -40,6 +40,7 @@ import {
   type WaterfallOpts,
 } from './meterEngine';
 import { fonts } from '../../../theme/tokens';
+import { heatColor as levelHeatColor } from '../../../features/tools/levelColor';
 export { usePhaseClock, useVizClock } from '../foundations/viz';
 
 const TAU = Math.PI * 2;
@@ -404,41 +405,22 @@ export function SpectrumPatternView(p: {
 const SG_COLS = 160; // time cells
 const SG_ROWS = 112; // frequency cells
 
-// Perceptual heat colormap: black → deep blue → magenta → orange → white
-// (classic spectrogram ramp — NOT the coverage jet). Piecewise-linear through
-// 8 stops, quantized to 32 buckets so the whole map is ≤32 Skia paths.
-const HEAT_STOPS: { t: number; rgb: [number, number, number] }[] = [
-  { t: 0.0, rgb: [0, 0, 4] }, // black — silence
-  { t: 0.14, rgb: [24, 15, 62] }, // deep blue
-  { t: 0.29, rgb: [75, 20, 120] }, // violet
-  { t: 0.43, rgb: [130, 37, 129] }, // magenta
-  { t: 0.57, rgb: [184, 55, 121] }, // hot pink-magenta
-  { t: 0.71, rgb: [229, 89, 90] }, // red-orange
-  { t: 0.85, rgb: [251, 140, 90] }, // orange
-  { t: 1.0, rgb: [252, 250, 210] }, // white-hot
-];
-
-/** Heat colormap: t01 ∈ [0,1] → CSS rgb(). Same interpolation shape as the
- *  coverage jetColor in micspeaker/viz.tsx (house idiom), different ramp. */
+// Heat colormap: the app-wide amplitude ramp (owner 2026-08-02) — red = loud →
+// blue = quiet (levelColor heatColor), so the spectrogram/waterfall level
+// colours match every meter, waveform and the other labs' heat maps. Quantized
+// to 32 buckets so the whole map is ≤32 Skia paths.
 function heatColor(t01: number): string {
-  const t = Math.max(0, Math.min(1, t01));
-  let i = 0;
-  while (i < HEAT_STOPS.length - 2 && t > HEAT_STOPS[i + 1].t) i++;
-  const a = HEAT_STOPS[i];
-  const b = HEAT_STOPS[i + 1];
-  const f = (t - a.t) / (b.t - a.t);
-  const mix = (k: 0 | 1 | 2) =>
-    Math.round(a.rgb[k] + (b.rgb[k] - a.rgb[k]) * Math.max(0, Math.min(1, f)));
-  return `rgb(${mix(0)},${mix(1)},${mix(2)})`;
+  return levelHeatColor(t01);
 }
 
 const HEAT_BUCKET_COUNT = 32;
 const HEAT_BUCKETS: string[] = Array.from({ length: HEAT_BUCKET_COUNT }, (_, i) =>
   heatColor(i / (HEAT_BUCKET_COUNT - 1)),
 );
-// Legend gradient: hottest at the top.
-const LEGEND_COLORS = [...HEAT_STOPS].reverse().map((s) => `rgb(${s.rgb[0]},${s.rgb[1]},${s.rgb[2]})`);
-const LEGEND_POS = [...HEAT_STOPS].reverse().map((s) => 1 - s.t);
+// Legend gradient: hottest (red) at the top → quiet (blue) at the bottom.
+const LEGEND_SAMPLES = [1, 0.8, 0.6, 0.4, 0.2, 0];
+const LEGEND_COLORS = LEGEND_SAMPLES.map((t) => heatColor(t));
+const LEGEND_POS = LEGEND_SAMPLES.map((t) => 1 - t);
 
 /** M6 — spectrogram teaching view: time→, freq↑, color=level; scrolling
  *  cursor on the phase clock; axis teaching labels always on. */

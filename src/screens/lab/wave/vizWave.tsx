@@ -52,7 +52,7 @@ import {
   type SharedValue,
 } from 'react-native-reanimated';
 import { fonts } from '../../../theme/tokens';
-import { levelColor } from '../../../features/tools/levelColor';
+import { heatColor, levelColor } from '../../../features/tools/levelColor';
 import { useScrollLock } from '../LabShell';
 import {
   MATERIALS,
@@ -86,22 +86,12 @@ const BODY_LO = '#1e1f26';
 type SkPathT = ReturnType<typeof Skia.Path.Make>;
 
 // ── Colormaps ────────────────────────────────────────────────────────────────
-// Jet ramp copied from micspeaker/viz.tsx (owner directive 2026-07-29):
-// deep navy (quiet) → blue → cyan → green → yellow → orange → red (hot),
-// quantized to ≤32 buckets so each map renders as ~32 Skia paths.
+// The SPL heat map uses the app-wide amplitude ramp (levelColor heatColor:
+// red = loud → blue = quiet), so it matches every meter, waveform and the
+// other labs' heat maps (owner 2026-08-02). The MODAL pressure map keeps its
+// own DIVERGING ramp below — it shows pressure SIGN (±), not loudness.
 
 type RampStop = { t: number; rgb: [number, number, number] };
-
-const JET_STOPS: RampStop[] = [
-  { t: 0.0, rgb: [11, 28, 74] },
-  { t: 0.14, rgb: [29, 63, 168] },
-  { t: 0.28, rgb: [30, 125, 221] },
-  { t: 0.42, rgb: [25, 199, 194] },
-  { t: 0.56, rgb: [63, 208, 108] },
-  { t: 0.7, rgb: [232, 225, 58] },
-  { t: 0.84, rgb: [242, 140, 38] },
-  { t: 1.0, rgb: [216, 31, 31] },
-];
 
 // Diverging ramp for MODAL pressure maps: bright ice blue at strong negative
 // pressure, near-black at the nulls, warm amber at strong positive — so the
@@ -125,9 +115,10 @@ function rampColor(stops: RampStop[], t01: number): string {
   return `rgb(${mix(0)},${mix(1)},${mix(2)})`;
 }
 
-/** Jet-style colormap, t01 ∈ [0,1] → CSS rgb() (exported for module legends). */
+/** SPL heat-map colormap, t01 ∈ [0,1] (0 = quiet, 1 = loud) → the app-wide
+ *  amplitude ramp. Kept named jetColor for the module legends that import it. */
 export function jetColor(t01: number): string {
-  return rampColor(JET_STOPS, t01);
+  return heatColor(t01);
 }
 
 /** Diverging modal colormap, t01 ∈ [0,1] (0 = −1 pressure, 1 = +1). */

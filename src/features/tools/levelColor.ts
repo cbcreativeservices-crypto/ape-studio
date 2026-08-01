@@ -57,6 +57,22 @@ export function levelColor(l: number): string {
 }
 
 /**
+ * Heat-map / spectrogram colour for a LEVEL fraction `t01` (0 = silence,
+ * 1 = loudest). The single app-wide amplitude ramp — MIDI-0 blue (quiet) →
+ * green → yellow → orange → red (loud) — with the very bottom darkened toward
+ * deep navy so silence reads as background on a 2-D field, not a wall of blue.
+ * ONE ramp means every heat map, spectrogram, meter and waveform speaks the
+ * same colours, so "red = loud, blue = quiet" transfers between labs (owner
+ * 2026-08-02: unify ALL app heat maps on this).
+ */
+export function heatColor(t01: number): string {
+  const t = Math.max(0, Math.min(1, t01));
+  const [r, g, b] = hexToRgb(levelColor(t)); // blue(quiet) → red(loud)
+  const k = 0.22 + 0.78 * Math.min(1, t / 0.1); // deep-navy floor at silence → full ramp
+  return rgbToHex(r * k, g * k, b * k);
+}
+
+/**
  * SVG gradient stops for a zero-centred waveform: symmetric about the middle so
  * amplitude MAGNITUDE drives the colour — MIDI-0 blue at the centre (zero line),
  * climbing through green/yellow/orange to red at ±full scale (top AND bottom).

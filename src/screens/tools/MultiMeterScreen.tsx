@@ -69,7 +69,7 @@ import Svg, { Defs, G, Line, LinearGradient, Path, Rect, Stop } from 'react-nati
 import { ApeDsp, type EngineConfig } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
-import { MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
+import { heatColor, MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO, type MultimeterSnapshotPayload } from '../../features/tools/measure/types';
@@ -171,29 +171,11 @@ const ANCHOR_RISE_DB = 1;
 const ANCHOR_FALL_DB = 3;
 
 /** MIDI-velocity rainbow — COPIED from SpectrogramScreen (owner 2026-07-29):
- *  near-silence stays near-black/deep blue, then blue → cyan → green → yellow
- *  → orange → red. Local copy per house rule (mirror, don't refactor shipped
- *  screens). Provenance: src/screens/tools/SpectrogramScreen.tsx MIDI_STOPS. */
-const MIDI_STOPS = [
-  [0.0, 6, 6, 24],
-  [0.13, 18, 30, 158],
-  [0.28, 32, 104, 224],
-  [0.42, 20, 192, 214],
-  [0.56, 34, 206, 88],
-  [0.72, 250, 222, 56],
-  [0.86, 255, 138, 28],
-  [1.0, 255, 44, 24],
-] as const;
-
+ *  near-silence stays deep navy, then blue → green → yellow → orange → red.
+ *  The app-wide amplitude ramp (owner 2026-08-02) — shared heatColor so this
+ *  raster matches every meter, waveform and lab heat map. */
 function midiVelocityColor(t: number): string {
-  const x = Math.min(1, Math.max(0, t));
-  let i = 0;
-  while (i < MIDI_STOPS.length - 2 && x > MIDI_STOPS[i + 1][0]) i++;
-  const a = MIDI_STOPS[i];
-  const b = MIDI_STOPS[i + 1];
-  const f = b[0] > a[0] ? (x - a[0]) / (b[0] - a[0]) : 0;
-  const ch = (k: 1 | 2 | 3) => Math.round(a[k] + (b[k] - a[k]) * f);
-  return `rgb(${ch(1)},${ch(2)},${ch(3)})`;
+  return heatColor(t);
 }
 
 /** ≤12 quantized colors — the per-column path-batching buckets (fewer than the

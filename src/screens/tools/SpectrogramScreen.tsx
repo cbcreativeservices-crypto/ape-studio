@@ -49,6 +49,7 @@ import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO } from '../../features/tools/measure/types';
 import { colors, fonts } from '../../theme/tokens';
+import { heatColor } from '../../features/tools/levelColor';
 import { EngineGate } from './EngineGate';
 import { useToolHelp, HelpHead, DisplayGuideButton, readoutKey } from '../../features/lab/guidedLessons';
 import type { RootStackParamList } from '../../navigation/types';
@@ -81,26 +82,11 @@ const DYN_RANGES = [40, 60, 80] as const;
  *  very dark blue, then deep blue → cyan → green → yellow → orange → red
  *  (hue sweep ≈ 240° → 0°, saturated on the dark background). Piecewise linear
  *  over 8 stops [t, r, g, b]. */
-const MIDI_STOPS = [
-  [0.0, 6, 6, 24],
-  [0.13, 18, 30, 158],
-  [0.28, 32, 104, 224],
-  [0.42, 20, 192, 214],
-  [0.56, 34, 206, 88],
-  [0.72, 250, 222, 56],
-  [0.86, 255, 138, 28],
-  [1.0, 255, 44, 24],
-] as const;
-
+// The app-wide amplitude ramp (owner 2026-08-02): red = loud → blue = quiet
+// (levelColor heatColor), so the spectrogram level colours match every meter,
+// waveform and lab heat map. Kept named midiVelocityColor for its callers.
 function midiVelocityColor(t: number): string {
-  const x = Math.min(1, Math.max(0, t));
-  let i = 0;
-  while (i < MIDI_STOPS.length - 2 && x > MIDI_STOPS[i + 1][0]) i++;
-  const a = MIDI_STOPS[i];
-  const b = MIDI_STOPS[i + 1];
-  const f = b[0] > a[0] ? (x - a[0]) / (b[0] - a[0]) : 0;
-  const ch = (k: 1 | 2 | 3) => Math.round(a[k] + (b[k] - a[k]) * f);
-  return `rgb(${ch(1)},${ch(2)},${ch(3)})`;
+  return heatColor(t);
 }
 
 /** ≤32 quantized colors — the per-column path-batching buckets. */

@@ -57,6 +57,7 @@ import {
 // Reuse the house clocks (same Skia-gated load condition as this file).
 import { usePhaseClock } from '../foundations/viz';
 import { fonts } from '../../../theme/tokens';
+import { heatColor } from '../../../features/tools/levelColor';
 export { usePhaseClock, useVizClock } from '../foundations/viz';
 
 const PARTICLE = '#cfd2d8';
@@ -3091,32 +3092,15 @@ export const DISPERSIONS: { key: string; label: string; hDeg: number; vDeg: numb
 
 export type CoverageClass = 'red' | 'green' | 'yellow' | 'gray';
 
-// ── Jet colormap (heat-map rendering, owner directive 2026-07-29) ────────────
-// Deep navy (below range / no coverage) → blue → cyan → green → yellow →
-// orange → red (hottest). Piecewise-linear through 8 stops, quantized to 32
-// buckets so each map renders as ~32 Skia paths, never thousands of nodes.
+// ── Heat-map colormap (owner 2026-08-02: the app-wide amplitude ramp) ────────
+// red = loud → blue = quiet (levelColor heatColor), quantized to 32 buckets so
+// each map renders as ~32 Skia paths. Unified with every meter/waveform and the
+// other labs' heat maps so "red = loud" transfers between labs.
 
-const JET_STOPS: { t: number; rgb: [number, number, number] }[] = [
-  { t: 0.0, rgb: [11, 28, 74] }, // #0b1c4a deep navy — no coverage
-  { t: 0.14, rgb: [29, 63, 168] }, // blue
-  { t: 0.28, rgb: [30, 125, 221] }, // azure
-  { t: 0.42, rgb: [25, 199, 194] }, // cyan
-  { t: 0.56, rgb: [63, 208, 108] }, // green — target range
-  { t: 0.7, rgb: [232, 225, 58] }, // yellow
-  { t: 0.84, rgb: [242, 140, 38] }, // orange
-  { t: 1.0, rgb: [216, 31, 31] }, // #d81f1f red — hottest
-];
-
-/** Jet-style colormap: t01 ∈ [0,1] → CSS rgb() through the 8 stops above. */
+/** Heat-map colormap: t01 ∈ [0,1] (0 = quiet, 1 = loud). Kept named jetColor for
+ *  the screens/legends that import it. */
 export function jetColor(t01: number): string {
-  const t = Math.max(0, Math.min(1, t01));
-  let i = 0;
-  while (i < JET_STOPS.length - 2 && t > JET_STOPS[i + 1].t) i++;
-  const a = JET_STOPS[i];
-  const b = JET_STOPS[i + 1];
-  const f = (t - a.t) / (b.t - a.t);
-  const mix = (k: 0 | 1 | 2) => Math.round(a.rgb[k] + (b.rgb[k] - a.rgb[k]) * Math.max(0, Math.min(1, f)));
-  return `rgb(${mix(0)},${mix(1)},${mix(2)})`;
+  return heatColor(t01);
 }
 
 const JET_BUCKET_COUNT = 32;
