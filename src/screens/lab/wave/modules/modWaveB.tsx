@@ -212,6 +212,10 @@ export function CoverageModule(p: WaveModuleProps) {
   return (
     <View style={{ gap: 12 }}>
       <PanelCard>
+        {/* Owner 2026-08-01 layout: guide → layer buttons → display → hint →
+            setting chips → sliders → readouts (reflection-visualizer treatment). */}
+        <DisplayGuideButton onPress={() => p.help('coverage_pattern')} />
+        <LayerChips layers={layers} onLayers={setLayers} help={p.help} />
         {viz ? (
           <SceneHero
             viz={viz}
@@ -226,8 +230,9 @@ export function CoverageModule(p: WaveModuleProps) {
           <VizUnavailableCard />
         )}
         <Badge text={MODEL_BADGE} />
-        <DisplayGuideButton onPress={() => p.help('coverage_pattern')} />
-        <LayerChips layers={layers} onLayers={setLayers} help={p.help} />
+        <Text style={dstyles.caption}>
+          Drag the listener off-axis and sweep the frequency: on-axis it barely changes, off-axis the highs fall away first. Aim the HF pattern, not the cabinet.
+        </Text>
         <View style={dstyles.chipRow}>
           {COVERAGE_CHIPS.map((c) => (
             <LabChip key={c} label={`${c}°`} selected={cov === c} onPress={() => setCov(c)} onLongPress={() => p.help('coverage_pattern')} />
@@ -252,9 +257,6 @@ export function CoverageModule(p: WaveModuleProps) {
           ]}
         />
         <Badge text="EFFECTIVE COVERAGE = −6 dB POINTS PROBED FROM THE ENGINE'S DIRECTIVITY MODEL (NOMINAL AT 1 kHz — WIDER LOW, NARROWER HIGH)" />
-        <Text style={dstyles.caption}>
-          Drag the listener off-axis and sweep the frequency: on-axis it barely changes, off-axis the highs fall away first. Aim the HF pattern, not the cabinet.
-        </Text>
       </PanelCard>
       <Mistakes
         items={[
@@ -337,6 +339,10 @@ export function LineArrayModule(p: WaveModuleProps) {
   return (
     <View style={{ gap: 12 }}>
       <PanelCard>
+        {/* Owner 2026-08-01 layout: guide → layer buttons → display → hint →
+            sliders → readouts (reflection-visualizer treatment). */}
+        <DisplayGuideButton onPress={() => p.help('line_array')} />
+        <LayerChips layers={layers} onLayers={setLayers} help={p.help} />
         {viz ? (
           <SceneHero
             viz={viz}
@@ -351,11 +357,9 @@ export function LineArrayModule(p: WaveModuleProps) {
           <VizUnavailableCard />
         )}
         <Badge text={MODEL_BADGE} />
-        <DisplayGuideButton onPress={() => p.help('line_array')} />
         <Text style={dstyles.caption}>
           SECTION VIEW — x is distance into the venue, y is height (audience floor along the bottom). Drag the listener to a seat.
         </Text>
-        <LayerChips layers={layers} onLayers={setLayers} help={p.help} />
         <DragSlider value={nV} onChange={setNV} label="BOXES" readout={`${n}`} onHelp={() => p.help('line_array')} />
         <DragSlider value={splayV} onChange={setSplayV} label="SPLAY (PER BOX)" readout={`${splay.toFixed(1)}°`} onHelp={() => p.help('line_array')} />
         <DragSlider value={hangV} onChange={setHangV} label="HEIGHT (HANG DEPTH)" readout={`${yTop.toFixed(2)} m`} onHelp={() => p.help('line_array')} />
@@ -450,6 +454,10 @@ export function DelayAlignModule(p: WaveModuleProps) {
   return (
     <View style={{ gap: 12 }}>
       <PanelCard>
+        {/* Owner 2026-08-01 layout: guide → layer buttons → display → controls
+            below (reflection-visualizer treatment). */}
+        <DisplayGuideButton onPress={() => p.help('delay_align')} />
+        <LayerChips layers={layers} onLayers={setLayers} help={p.help} />
         {viz ? (
           <SceneHero
             viz={viz}
@@ -464,8 +472,6 @@ export function DelayAlignModule(p: WaveModuleProps) {
           <VizUnavailableCard />
         )}
         <Badge text={MODEL_BADGE} />
-        <DisplayGuideButton onPress={() => p.help('delay_align')} />
-        <LayerChips layers={layers} onLayers={setLayers} help={p.help} />
         <DragSlider
           value={freqV}
           onChange={setFreqV}
@@ -596,6 +602,10 @@ export function CardioidSubModule(p: WaveModuleProps) {
   return (
     <View style={{ gap: 12 }}>
       <PanelCard>
+        {/* Owner 2026-08-01 layout: guide → layer buttons → display → hint →
+            presets/sliders → readouts (reflection-visualizer treatment). */}
+        <DisplayGuideButton onPress={() => p.help('cardioid_sub')} />
+        <LayerChips layers={layers} onLayers={setLayers} help={p.help} />
         {viz ? (
           <SceneHero
             viz={viz}
@@ -610,11 +620,9 @@ export function CardioidSubModule(p: WaveModuleProps) {
           <VizUnavailableCard />
         )}
         <Badge text={MODEL_BADGE} />
-        <DisplayGuideButton onPress={() => p.help('cardioid_sub')} />
         <Text style={dstyles.caption}>
           Two subs 1.2 m apart, audience toward the bottom. The listener is the FRONT probe (drag it); the REAR probe sits fixed 3 m behind the stack.
         </Text>
-        <LayerChips layers={layers} onLayers={setLayers} help={p.help} />
         <View style={dstyles.chipRow}>
           <LabChip label="CARDIOID" selected={isCardioid} onPress={() => setPreset(true)} onLongPress={() => p.help('cardioid_sub')} />
           <LabChip label="WRONG WAY" selected={isWrongWay} onPress={() => setPreset(false)} onLongPress={() => p.help('cardioid_sub')} />
@@ -731,6 +739,10 @@ export function BeamSteerModule(p: WaveModuleProps) {
   return (
     <View style={{ gap: 12 }}>
       <PanelCard>
+        {/* Owner 2026-08-01 layout: guide → layer buttons → display → settings
+            below (reflection-visualizer treatment). */}
+        <DisplayGuideButton onPress={() => p.help('beam_steer')} />
+        <LayerChips layers={layers} onLayers={setLayers} help={p.help} />
         {viz ? (
           <SceneHero
             viz={viz}
@@ -745,8 +757,6 @@ export function BeamSteerModule(p: WaveModuleProps) {
           <VizUnavailableCard />
         )}
         <Badge text={MODEL_BADGE} />
-        <DisplayGuideButton onPress={() => p.help('beam_steer')} />
-        <LayerChips layers={layers} onLayers={setLayers} help={p.help} />
         <View style={dstyles.chipRow}>
           {STEER_N_CHIPS.map((k) => (
             <LabChip key={k} label={`${k} BOXES`} selected={n === k} onPress={() => setN(k)} onLongPress={() => p.help('beam_steer')} />
@@ -858,6 +868,10 @@ export function EchoModule(p: WaveModuleProps) {
   return (
     <View style={{ gap: 12 }}>
       <PanelCard>
+        {/* Owner 2026-08-01 layout: guide → layer buttons → display → presets
+            below (reflection-visualizer treatment). */}
+        <DisplayGuideButton onPress={() => p.help('echo')} />
+        <LayerChips layers={layers} onLayers={setLayers} help={p.help} />
         {viz ? (
           <SceneHero
             viz={viz}
@@ -872,13 +886,11 @@ export function EchoModule(p: WaveModuleProps) {
           <VizUnavailableCard />
         )}
         <Badge text={MODEL_BADGE} />
-        <DisplayGuideButton onPress={() => p.help('echo')} />
         <View style={dstyles.chipRow}>
           {ECHO_PRESETS.map((e) => (
             <LabChip key={e.key} label={e.label} selected={presetKey === e.key} onPress={() => pick(e)} onLongPress={() => p.help('echo')} />
           ))}
         </View>
-        <LayerChips layers={layers} onLayers={setLayers} help={p.help} />
         <Text style={dstyles.eyebrow}>ECHO TIMELINE — ARRIVALS AT THE LISTENER</Text>
         <ArrivalTimeline arrivals={arrivals} thresholdMs={50} />
         <Badge text="STEMS = arrivalsAt (DIRECT + 1st/2nd-ORDER IMAGE-SOURCE REFLECTIONS) · AMBER FUSES WITH THE DIRECT (<50 ms) · RED READS AS A DISCRETE ECHO" />
@@ -968,6 +980,10 @@ export function ReverbModule(p: WaveModuleProps) {
   return (
     <View style={{ gap: 12 }}>
       <PanelCard>
+        {/* Owner 2026-08-01 layout: guide → layer buttons → display → controls
+            below (reflection-visualizer treatment). */}
+        <DisplayGuideButton onPress={() => p.help('reverb_field')} />
+        <LayerChips layers={layers} onLayers={setLayers} help={p.help} />
         {viz ? (
           <SceneHero
             viz={viz}
@@ -982,8 +998,6 @@ export function ReverbModule(p: WaveModuleProps) {
           <VizUnavailableCard />
         )}
         <Badge text={MODEL_BADGE} />
-        <DisplayGuideButton onPress={() => p.help('reverb_field')} />
-        <LayerChips layers={layers} onLayers={setLayers} help={p.help} />
         <DragSlider
           value={absV}
           onChange={setAbsV}
@@ -1111,6 +1125,10 @@ export function RoomBuilderModule(p: WaveModuleProps) {
   return (
     <View style={{ gap: 12 }}>
       <PanelCard>
+        {/* Owner 2026-08-01 layout: guide → layer buttons → display → controls
+            below (reflection-visualizer treatment). */}
+        <DisplayGuideButton onPress={() => p.help('room_builder')} />
+        <LayerChips layers={layers} onLayers={setLayers} help={p.help} />
         {viz ? (
           <SceneHero
             viz={viz}
@@ -1131,8 +1149,6 @@ export function RoomBuilderModule(p: WaveModuleProps) {
           <VizUnavailableCard />
         )}
         <Badge text={MODEL_BADGE} />
-        <DisplayGuideButton onPress={() => p.help('room_builder')} />
-        <LayerChips layers={layers} onLayers={setLayers} help={p.help} />
         <DragSlider value={wV} onChange={setWV} label="ROOM WIDTH" readout={`${roomW.toFixed(2)} m`} onHelp={() => p.help('room_builder')} />
         <DragSlider value={hV} onChange={setHV} label="ROOM DEPTH" readout={`${roomH.toFixed(2)} m`} onHelp={() => p.help('room_builder')} />
         <DragSlider

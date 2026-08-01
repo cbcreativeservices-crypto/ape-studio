@@ -420,6 +420,10 @@ export function AbsorptionModule(p: WaveModuleProps) {
   return (
     <View style={{ gap: 12 }}>
       <PanelCard>
+        {/* Owner 2026-08-01 layout: guide → layer buttons → display → hint →
+            materials → sliders → readouts (reflection-visualizer treatment). */}
+        <DisplayGuideButton onPress={() => p.help('layers')} />
+        <LayerChips layers={layers} onChange={setLayers} help={p.help} />
         {viz ? (
           <RoomView
             viz={viz}
@@ -435,8 +439,6 @@ export function AbsorptionModule(p: WaveModuleProps) {
           <VizUnavailableCard />
         )}
         <Badge text={HONESTY} />
-        <DisplayGuideButton onPress={() => p.help('layers')} />
-        <LayerChips layers={layers} onChange={setLayers} help={p.help} />
         <Text style={dstyles.caption}>Treat the walls — every boundary takes the material you pick.</Text>
         <View style={dstyles.chipRow}>
           {ABSORB_MATS.map((m) => (
@@ -544,6 +546,10 @@ export function DiffusionModule(p: WaveModuleProps) {
   return (
     <View style={{ gap: 12 }}>
       <PanelCard>
+        {/* Owner 2026-08-01 layout: guide → layer buttons → display → hint/
+            settings below (reflection-visualizer treatment). */}
+        <DisplayGuideButton onPress={() => p.help('diffusion')} />
+        <LayerChips layers={layers} onChange={setLayers} help={p.help} />
         {viz ? (
           <RoomView
             viz={viz}
@@ -560,8 +566,6 @@ export function DiffusionModule(p: WaveModuleProps) {
         )}
         <Badge text={HONESTY} />
         <Badge text="THE ENGINE DRAWS THE SPECULAR RAY — A DIFFUSER FANS THAT SAME ENERGY INTO MANY DIM RAYS FROM THE BOUNCE POINT: SPREAD, NOT REMOVED" />
-        <DisplayGuideButton onPress={() => p.help('diffusion')} />
-        <LayerChips layers={layers} onChange={setLayers} help={p.help} />
         <View style={dstyles.chipRow}>
           <LabChip
             label={diffuser ? 'DIFFUSER ON (TOP WALL)' : 'DIFFUSER OFF'}
@@ -899,6 +903,10 @@ export function InterferenceModule(p: WaveModuleProps) {
   return (
     <View style={{ gap: 12 }}>
       <PanelCard>
+        {/* Owner 2026-08-01 layout: guide → layer buttons → display → hint/
+            settings below (reflection-visualizer treatment). */}
+        <DisplayGuideButton onPress={() => p.help('layers')} />
+        <LayerChips layers={layers} onChange={setLayers} help={p.help} />
         {viz ? (
           <RoomView
             viz={viz}
@@ -915,8 +923,6 @@ export function InterferenceModule(p: WaveModuleProps) {
         )}
         <Badge text={HONESTY} />
         <Badge text="BOUNDARIES SET TO OPENINGS (FREE FIELD) — ONLY THE TWO DIRECT WAVES INTERFERE · LEVEL IS dB RE ONE SOURCE AT 1 m" />
-        <DisplayGuideButton onPress={() => p.help('layers')} />
-        <LayerChips layers={layers} onChange={setLayers} help={p.help} />
         <Text style={dstyles.caption}>
           Drag BOTH sources and the listener. Source 2 carries the delay and polarity controls.
         </Text>
@@ -1048,6 +1054,10 @@ export function CombModule(p: WaveModuleProps) {
   return (
     <View style={{ gap: 12 }}>
       <PanelCard>
+        {/* Owner 2026-08-01 layout: guide → layer buttons → display → settings
+            below (reflection-visualizer treatment). */}
+        <DisplayGuideButton onPress={() => p.help('comb')} />
+        <LayerChips layers={layers} onChange={setLayers} help={p.help} raysKey="image_source" />
         {viz ? (
           <RoomView
             viz={viz}
@@ -1063,8 +1073,6 @@ export function CombModule(p: WaveModuleProps) {
         )}
         <Badge text={HONESTY} />
         <Badge text="ONE SOURCE + ONE REFLECTIVE WALL (RIGHT) — THE OTHER BOUNDARIES ARE OPENINGS" />
-        <DisplayGuideButton onPress={() => p.help('comb')} />
-        <LayerChips layers={layers} onChange={setLayers} help={p.help} raysKey="image_source" />
         <DragSlider
           value={(scene.w - 3) / 7}
           onChange={(v) => setRoomW(clampSnap(3 + v * 7, 3, 10))}
@@ -1174,6 +1182,21 @@ export function StandingWaveModule(p: WaveModuleProps) {
   return (
     <View style={{ gap: 12 }}>
       <PanelCard>
+        {/* Owner 2026-08-01 layout: guide → mode buttons → display → settings
+            below (reflection-visualizer treatment; the mode chips ARE this
+            module's layer row). */}
+        <DisplayGuideButton onPress={() => p.help('standing_wave')} />
+        <View style={dstyles.chipRow}>
+          {MODE_LIST.map((m, i) => (
+            <LabChip
+              key={`${m.nx}-${m.ny}`}
+              label={`(${m.nx},${m.ny})`}
+              selected={modeIdx === i}
+              onPress={() => setModeIdx(i)}
+              onLongPress={() => p.help('standing_wave')}
+            />
+          ))}
+        </View>
         {viz ? (
           <RoomView
             viz={viz}
@@ -1191,18 +1214,6 @@ export function StandingWaveModule(p: WaveModuleProps) {
         )}
         <Badge text={HONESTY} />
         <Badge text="MODAL PRESSURE MAP — BRIGHT = ANTINODE (PRESSURE MAX), DARK = NODE (PRESSURE MIN) · DRAG THE LISTENER THROUGH IT" />
-        <DisplayGuideButton onPress={() => p.help('standing_wave')} />
-        <View style={dstyles.chipRow}>
-          {MODE_LIST.map((m, i) => (
-            <LabChip
-              key={`${m.nx}-${m.ny}`}
-              label={`(${m.nx},${m.ny})`}
-              selected={modeIdx === i}
-              onPress={() => setModeIdx(i)}
-              onLongPress={() => p.help('standing_wave')}
-            />
-          ))}
-        </View>
         <DragSlider
           value={(scene.w - 2) / 8}
           onChange={(v) => setW(clampSnap(2 + v * 8, 2, 10))}
