@@ -98,7 +98,7 @@ import { isFeedbackAllowed, noteAudioActivity, useFeedbackAllowed } from '../../
 import { FeedbackAllowRow } from '../../features/audio/FeedbackAllowRow';
 import { guardToneLevelForEngine, LOW_FREQ_ADVISORY } from '../../features/audio/speakerSafety';
 import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
-import { MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
+import { heatColor, MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 import { WARNING_INFO } from '../../features/tools/measure/types';
 import { EngineGate } from '../tools/EngineGate';
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../features/lab/guidedLessons';
@@ -203,30 +203,16 @@ function buildWavePath(wave: readonly number[], w: number): string {
   return d;
 }
 
-/** RX-style heat ramp — black → deep navy → blue → orange → amber →
- *  near-white (black at silence = the panel background). rampColor()
- *  interpolates continuously (analytic bands/lobes); the live heatmap and
- *  legend use LIVE_STEPS discrete samples of the same ramp, so the SVG node
- *  count stays = steps regardless of cell count. */
-const RAMP_RGB: readonly [number, number, number][] = [
-  [0, 0, 0], // #000000
-  [0, 26, 77], // #001a4d
-  [10, 74, 194], // #0a4ac2
-  [255, 138, 0], // #ff8a00
-  [255, 194, 26], // #ffc21a
-  [255, 246, 216], // #fff6d8
-];
+// Harmonic-intensity heatmap uses the app-wide amplitude ramp (owner
+// 2026-08-02) — red = loud → blue = quiet (levelColor heatColor), so it matches
+// every meter, waveform and the other labs' heat maps. The live heatmap and
+// legend use LIVE_STEPS discrete samples so the SVG node count stays = steps
+// regardless of cell count.
 const LIVE_STEPS = 8; // discrete live-heatmap color buckets (≤8 <Path>s)
 
-/** Intensity (0..1) → interpolated ramp color. */
+/** Intensity (0..1) → shared heat-map color. */
 function rampColor(t: number): string {
-  const x = Math.min(1, Math.max(0, t)) * (RAMP_RGB.length - 1);
-  const i = Math.min(RAMP_RGB.length - 2, Math.floor(x));
-  const f = x - i;
-  const a = RAMP_RGB[i];
-  const b = RAMP_RGB[i + 1];
-  const ch = (k: 0 | 1 | 2) => Math.round(a[k] + (b[k] - a[k]) * f);
-  return `rgb(${ch(0)},${ch(1)},${ch(2)})`;
+  return heatColor(t);
 }
 
 /** Discrete live-step colors, sampled at each bucket's center — module-level

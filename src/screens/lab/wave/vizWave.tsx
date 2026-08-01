@@ -678,6 +678,10 @@ const NODE_COLORS: string[] = Array.from({ length: NODE_BUCKETS }, (_, i) =>
 // The two multiply: distance gives the gradient, material gives the per-bounce
 // step. Only the direct (shortest, unbounced) reaches the listener red.
 const DIST_POW = 0.58;
+// Stretch the distance/time colour decay so nodes hold their warmer colours
+// ~37% longer before cooling (owner 2026-08-02) — scales the 1/r reference
+// length, so any given colour is reached at 37% more travel (= time).
+const NODE_TIME_STRETCH = 1.37;
 
 type NodeState = { x: number; y: number; amp: number; r: number };
 
@@ -701,7 +705,8 @@ function nodeState(ray: TraceRay, dist: number, maxLen: number, minLen: number):
   // Loudness = distance spreading (1/r from the direct distance) × material
   // gain left. Distance gives the smooth red→blue gradient (direct = red,
   // longer reflections cooler); material steps it down at each bounce.
-  const ratio = minLen / Math.max(minLen, travelled); // 1 within the direct dist → 0 far
+  const ref = minLen * NODE_TIME_STRETCH; // stretched 1/r reference (slower decay)
+  const ratio = ref / Math.max(ref, travelled); // 1 within the (stretched) direct dist → 0 far
   const amp = Math.max(0, Math.min(1, gain * Math.pow(ratio, DIST_POW)));
   const base = arrived ? 2.9 : 2.3;
   const r = base * (0.28 + 0.72 * amp); // smaller the quieter/farther it is
