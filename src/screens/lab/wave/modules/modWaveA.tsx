@@ -268,10 +268,18 @@ export function ReflectionModule(p: WaveModuleProps) {
   );
   const direct = arrivals.find((a) => a.bounces.length === 0);
   const first = arrivals.find((a) => a.bounces.length === 1);
+  // The 1st reflection's LEVEL relative to the direct sound — the arrival number
+  // that moves with EVERYTHING: spreading (position), material gain, and
+  // frequency-dependent α. So changing any setting re-solves the arrivals.
+  const firstRelDb = direct && first ? first.levelDb - direct.levelDb : null;
 
   const readouts = [
     { k: 'DIRECT PATH', v: direct ? `${fmtM(direct.pathLen)} · ${fmtMs(direct.t)}` : '—' },
     { k: '1ST REFLECTION', v: first ? `${fmtM(first.pathLen)} · ${fmtMs(first.t)}` : '—' },
+    {
+      k: '1ST REFL. LEVEL',
+      v: firstRelDb != null ? `${firstRelDb <= -0.05 ? '−' : ''}${Math.abs(firstRelDb).toFixed(1)} dB` : '—',
+    },
     {
       k: 'PATH DIFFERENCE',
       v:
@@ -285,6 +293,10 @@ export function ReflectionModule(p: WaveModuleProps) {
   return (
     <View style={{ gap: 12 }}>
       <PanelCard>
+        {/* Owner 2026-08-01 layout: guide → layer buttons → display → drag hint
+            → wall materials → frequency → readouts. */}
+        <DisplayGuideButton onPress={() => p.help('layers')} />
+        <LayerChips layers={layers} onChange={setLayers} help={p.help} raysKey="image_source" />
         {viz ? (
           <RoomView
             viz={viz}
@@ -300,8 +312,6 @@ export function ReflectionModule(p: WaveModuleProps) {
           <VizUnavailableCard />
         )}
         <Badge text={HONESTY} />
-        <DisplayGuideButton onPress={() => p.help('layers')} />
-        <LayerChips layers={layers} onChange={setLayers} help={p.help} raysKey="image_source" />
         <Text style={dstyles.caption}>
           Drag the source and the listener — the rays and arrival numbers re-solve instantly.
         </Text>
@@ -319,7 +329,7 @@ export function ReflectionModule(p: WaveModuleProps) {
         <DragSlider
           value={logFrac(freq, 63, 8000)}
           onChange={(v) => setFreq(fracLog(v, 63, 8000))}
-          label="FREQUENCY  (use with Wave Field)"
+          label="FREQUENCY RESULT"
           readout={fmtHz(freq)}
           onHelp={() => p.help('reflection')}
         />
