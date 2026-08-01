@@ -1471,42 +1471,79 @@ export function RoomSceneView(p: RoomSceneProps) {
 const BARRIER_SCENE_M = 30; // canvas width spans 30 m (side view)
 const BARRIER_TEMP_C = 20;
 
-function DiffractedRing({
+/** A whole wavefront TRAIN drawn in ONE worklet path — a full run of concentric
+ *  circles at wavelength-true spacing. One component (not N RoomRings), so the
+ *  barrier scene reconciles cheaply while a slider drags on the JS thread. The
+ *  circles are drawn to `maxR` (clipped by the count loop and the canvas), so
+ *  the wave reaches the barrier and beyond regardless of frequency. */
+function WaveTrain({
+  phase,
+  x,
+  y,
+  spacing,
+  count,
+  maxR,
+}: {
+  phase: SharedValue<number>;
+  x: number;
+  y: number;
+  spacing: number;
+  count: number;
+  maxR: number;
+}) {
+  const path = useDerivedValue(() => {
+    const f = (phase.value / (2 * Math.PI)) % 1;
+    const p = Skia.Path.Make();
+    for (let k = 0; k < count; k++) {
+      const r = (f + k) * spacing;
+      if (r >= 2.5 && r <= maxR) p.addCircle(x, y, r);
+    }
+    return p;
+  }, [phase, x, y, spacing, count, maxR]);
+  return (
+    <>
+      <Path path={path} color="#bcd4ff" style="stroke" strokeWidth={3.0} opacity={0.15} blendMode="plus">
+        <BlurMask blur={4} style="normal" />
+      </Path>
+      <Path path={path} color="#e6f0ff" style="stroke" strokeWidth={1.2} opacity={0.32} blendMode="plus" />
+    </>
+  );
+}
+
+/** The diffracted (Huygens) wavelet train wrapping past the barrier edge, drawn
+ *  as ONE worklet path per band. `amp` (real Maekawa dB at the band's mid-angle)
+ *  sets brightness — low freq wraps visibly, highs stay in shadow. */
+function DiffractedTrain({
   phase,
   cx,
   cy,
   spacing,
+  count,
   a0,
   sweep,
   amp,
-  i,
-  count = RING_N,
+  maxR,
 }: {
   phase: SharedValue<number>;
   cx: number;
   cy: number;
   spacing: number;
+  count: number;
   a0: number;
   sweep: number;
   amp: number;
-  i: number;
-  count?: number;
+  maxR: number;
 }) {
   const path = useDerivedValue(() => {
     const f = (phase.value / (2 * Math.PI)) % 1;
-    const r = (f + i) * spacing;
     const p = Skia.Path.Make();
-    if (r >= 3 && r <= count * spacing) {
-      p.addArc({ x: cx - r, y: cy - r, width: 2 * r, height: 2 * r }, a0, sweep);
+    for (let k = 0; k < count; k++) {
+      const r = (f + k) * spacing;
+      if (r >= 3 && r <= maxR) p.addArc({ x: cx - r, y: cy - r, width: 2 * r, height: 2 * r }, a0, sweep);
     }
     return p;
-  }, [phase, cx, cy, spacing, a0, sweep, i, count]);
-  const op = useDerivedValue(() => {
-    const f = (phase.value / (2 * Math.PI)) % 1;
-    const u = (f + i) / count;
-    return 0.55 * amp * Math.min(1, u / 0.12) * (1 - u) * (1 - u);
-  }, [phase, amp, i, count]);
-  return <Path path={path} color="#bcd4ff" style="stroke" strokeWidth={1.3} opacity={op} blendMode="plus" />;
+  }, [phase, cx, cy, spacing, count, a0, sweep, maxR]);
+  return <Path path={path} color="#bcd4ff" style="stroke" strokeWidth={1.3} opacity={0.55 * amp} blendMode="plus" />;
 }
 
 /** Small side-view PA speaker (front toward +x) — recognizable object, not a
@@ -1560,13 +1597,17 @@ export function BarrierSceneView(p: {
   const bx = bxM * ppm;
   const eY = groundY - barM * ppm;
 
-  // Ring trains long enough to SPAN the scene at the current (wavelength-true)
-  // spacing — so the wavefronts actually travel to the barrier and wrap over it,
-  // instead of dying in a tiny cluster at the source (owner 2026-08-01, "not
-  // animating / unclear"). Count changes only with freq/geometry (a re-render),
-  // never per frame, so the worklet node count stays fixed between frames.
-  const primaryCount = Math.max(3, Math.min(48, Math.ceil(Math.hypot(w - sx, groundY - sy) / spacing) + 1));
-  const diffCount = Math.max(3, Math.min(48, Math.ceil(Math.hypot(w - bx, groundY - eY) / spacing) + 1));
+  // Ring-train lengths are derived from the CANVAS geometry and the 10 px
+  // spacing floor — NOT the live frequency or barrier height — so the count is
+  // constant while either slider is dragged and Skia nodes are never remounted
+  // mid-drag (keeps the fixed-per-frame node-count invariant; a frequency-tied
+  // count was the source of the slider jank). Sized so that even at the tightest
+  // (10 px floor) spacing the wavefronts reach past the barrier and wrap into the
+  // shadow; at lower frequencies the surplus rings fall off-canvas and are clipped.
+  const SPACING_FLOOR = 10; // must match the `spacing` clamp floor above
+  const primaryCount = Math.min(40, Math.ceil((bx - sx) / SPACING_FLOOR) + 6);
+  const diffCount = Math.min(40, Math.ceil((w - bx) / SPACING_FLOOR) + 2);
+  const trainMaxR = Math.hypot(w, groundY); // clip rings to the canvas
 
   // ── Shadow shading: Maekawa dB sampled over the region behind the barrier,
   //    quantized to 14 dimming buckets, run-length merged. Memoized per
@@ -1622,13 +1663,6 @@ export function BarrierSceneView(p: {
     return [mk(th0, mid), mk(mid, thMax)];
   }, [w, groundY, ppm, bx, eY, sx, sy, sxM, syM, bxM, barM, p.freq]);
 
-  // Primary wavefront train from the source (full rings; the ground strip and
-  // the shadow shading drawn AFTER them dim whatever runs behind/below).
-  const primarySrcs = useMemo<RingSrc[]>(
-    () => [{ x: sx, y: sy, dirDeg: 0, spreadDeg: 360, spacing }],
-    [sx, sy, spacing],
-  );
-
   const barrier = useMemo(() => {
     const path = Skia.Path.Make();
     path.addRect(Skia.XYWHRect(bx - 2.5, eY, 5, groundY - eY));
@@ -1652,31 +1686,27 @@ export function BarrierSceneView(p: {
           <LinearGradient start={vec(0, 0)} end={vec(0, groundY)} colors={['#111420', '#0c0c0f']} />
         </Path>
         {/* Primary wavefronts (wavelength-true spacing). */}
-        {Array.from({ length: primaryCount }, (_, i) => (
-          <RoomRing key={i} phase={p.phase} srcs={primarySrcs} i={i} count={primaryCount} />
-        ))}
+        <WaveTrain phase={p.phase} x={sx} y={sy} spacing={spacing} count={primaryCount} maxR={trainMaxR} />
         {/* Maekawa shadow: dimming buckets behind the barrier (idx 0 = clear). */}
         {shadow.map((path, i) =>
           i === 0 ? null : <Path key={i} path={path} color="#06070b" opacity={(i / 13) * 0.82} />,
         )}
         {/* Diffracted (Huygens) train wrapping past the edge — brightness per
             band from the Maekawa dB; low freq wraps visibly, highs shadow. */}
-        {bands.map((b, k) =>
-          Array.from({ length: diffCount }, (_, i) => (
-            <DiffractedRing
-              key={`${k}-${i}`}
-              phase={p.phase}
-              cx={bx}
-              cy={eY}
-              spacing={spacing}
-              a0={b.a0}
-              sweep={b.sweep}
-              amp={b.amp}
-              i={i}
-              count={diffCount}
-            />
-          )),
-        )}
+        {bands.map((b, k) => (
+          <DiffractedTrain
+            key={k}
+            phase={p.phase}
+            cx={bx}
+            cy={eY}
+            spacing={spacing}
+            count={diffCount}
+            a0={b.a0}
+            sweep={b.sweep}
+            amp={b.amp}
+            maxR={trainMaxR}
+          />
+        ))}
         {/* The knife-edge barrier: concrete-toned slab, lit edge cap. */}
         <Path path={barrier}>
           <LinearGradient start={vec(bx - 2.5, 0)} end={vec(bx + 2.5, 0)} colors={['#6a6e79', '#3a3d46']} />
