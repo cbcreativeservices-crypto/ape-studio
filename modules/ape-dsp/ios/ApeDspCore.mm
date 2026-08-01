@@ -24,7 +24,7 @@ namespace {
 constexpr size_t kRingCapacity = 1 << 18;  // 262144 frames ≈ 5.5 s @ 48 kHz (≥2 s spec)
 constexpr size_t kScratchSize = 8192;
 constexpr double kStallSeconds = 0.5;  // tech spec §2.2 watchdog
-constexpr size_t kMaxWaveBuckets = 120;
+constexpr size_t kMaxWaveBuckets = 1200;  // 5 ms buckets × 1200 = 6 s (fine trace)
 
 double nowSeconds() {
   using namespace std::chrono;

@@ -130,7 +130,7 @@ class EngineHub {
     cSlow_.configure(1.0, fs);
     // Pitch: 50 ms window, 25 ms max lag → ~40 Hz floor at 48 kHz.
     pitch_ = PitchDetector(static_cast<size_t>(fs * 0.05), static_cast<size_t>(fs * 0.025));
-    wave_.configure(static_cast<size_t>(fs * 0.05), 120);  // 50 ms × 120 = 6 s
+    wave_.configure(static_cast<size_t>(fs * 0.005), 1200);  // 5 ms × 1200 = 6 s (fine trace)
     roll_.assign(kRollSize, 0.0f);
     rollHead_ = 0;
     rollFilled_ = 0;

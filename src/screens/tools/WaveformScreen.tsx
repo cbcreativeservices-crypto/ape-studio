@@ -49,11 +49,14 @@ import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'WaveformLive'>;
 
-const BUCKET_SEC = 0.05;
-/** The native ring's REAL capacity: 50 ms × 120 = 6.0 s (WaveEnvelope.hpp,
- *  kMaxWaveBuckets on both bridges). The window control caps here — honest. */
-const ENGINE_HISTORY_BUCKETS = 120;
-const ENGINE_HISTORY_SEC = ENGINE_HISTORY_BUCKETS * BUCKET_SEC;
+/** The native ring spans 6.0 s of history (WaveEnvelope.hpp: bucketFrames ×
+ *  historyBuckets). The bucket DURATION is derived from the actual bucket COUNT
+ *  the engine sends — so if the native resolution changes (owner 2026-08-02:
+ *  finer buckets → a smoother, less blocky trace) this display auto-adapts with
+ *  no code change here. */
+const ENGINE_HISTORY_SEC = 6.0;
+/** Slice headroom — the engine never sends more than its ring capacity. */
+const MAX_BUCKETS = 4096;
 const PANEL_H = 240;
 /** Vertical inset of the drawable area (leaves the clip-tick lane at top). */
 const PAD_V = 16;
@@ -107,18 +110,24 @@ export function WaveformScreen({ navigation }: Props) {
   // getWaveform() is newest-first → reverse so index 0 is oldest, drawn
   // leftmost, newest at the right edge (oscilloscope convention, §11 View 1).
   const liveBuckets = useMemo(
-    () => frames.waveform.slice(0, ENGINE_HISTORY_BUCKETS).reverse(),
+    () => frames.waveform.slice(0, MAX_BUCKETS).reverse(),
     [frames.waveform],
   );
-  const windowBuckets = Math.round(windowSec / BUCKET_SEC);
   const source = frozen ?? liveBuckets;
+  // Bucket DURATION from the ring's real capacity (the most buckets seen this
+  // session): finer native buckets → more buckets/second → a finer trace, with
+  // the time axis staying correct automatically.
+  const capRef = useRef(1);
+  if (liveBuckets.length > capRef.current) capRef.current = liveBuckets.length;
+  const bucketSec = ENGINE_HISTORY_SEC / capRef.current;
+  const windowBuckets = Math.min(source.length, Math.max(1, Math.round(windowSec / bucketSec)));
   /** The buckets actually on screen: the newest `windowBuckets` of the real
    *  history — a shorter run early in capture simply shows what exists. */
   const displayBuckets = useMemo(
     () => source.slice(Math.max(0, source.length - windowBuckets)),
     [source, windowBuckets],
   );
-  const shownSec = displayBuckets.length * BUCKET_SEC;
+  const shownSec = displayBuckets.length * bucketSec;
 
   const meter = frames.meter;
   // Live quality flags (spec §6) — the SAME flags get stored on save.
@@ -168,13 +177,13 @@ export function WaveformScreen({ navigation }: Props) {
       input_device: 'Device microphone (uncalibrated)',
       calibration_status: 'not_applicable',
       sample_rate: ApeDsp.getInfo()?.sampleRate ?? null,
-      measurement_settings: { bucket_ms: 50, zoom, window_sec: windowSec },
+      measurement_settings: { bucket_ms: Math.round(bucketSec * 1000), zoom, window_sec: windowSec },
       quality_state: evaluateQuality(flags),
       warning_flags: flags,
       data_payload: {
         kind: 'waveform_snapshot',
         envelope: displayBuckets.map((b) => ({ min: b.min, max: b.max })),
-        durationSec: displayBuckets.length * BUCKET_SEC,
+        durationSec: displayBuckets.length * bucketSec,
         peakDbfs: meter.peakDb, // never clamped — may exceed 0 dBFS (F1)
         clippedRuns: meter.clipRuns,
         channels: 1,
@@ -183,7 +192,7 @@ export function WaveformScreen({ navigation }: Props) {
     setJustSaved(true);
     if (savedTimer.current) clearTimeout(savedTimer.current);
     savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
-  }, [meter, displayBuckets, shownSec, zoom, windowSec, flags]);
+  }, [meter, displayBuckets, shownSec, zoom, windowSec, flags, bucketSec]);
 
   // ---- Scope geometry (pure display math over REAL buckets) ----------------
   // Builds: a closed min/max envelope area (gradient fill), the envelope
