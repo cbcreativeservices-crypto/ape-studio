@@ -673,20 +673,25 @@ const NODE_COLORS: string[] = Array.from({ length: NODE_BUCKETS }, (_, i) =>
   levelColor(i / (NODE_BUCKETS - 1)),
 ); // index 0 = blue (quiet) … last = red (loud)
 
-// The WALL MATERIAL is the dominant driver of a node's level (owner 2026-08-02):
-// its loudness is mostly the accumulated reflection gain — √(1−α) at each
-// bounce (segGain) — which STEPS down at every wall. Hard/reflective glass
-// (α≈0) barely drops, so its reflections stay loud/red; absorptive fiberglass
-// (α≈0.98) takes a huge bite, so a node that hit the wall orange comes back out
-// blue. Distance is only a gentle secondary fade so a glass reflection doesn't
-// wash out just for travelling — material, not distance, sets the colour.
-const PULSE_DIST_FADE = 0.22;
+// A node's loudness has TWO parts (owner 2026-08-02):
+//  1. DISTANCE — spherical spreading (1/r) referenced to the DIRECT path
+//     length: a node is red/full at the direct distance and cools smoothly
+//     red→orange→yellow→green→blue the farther it travels. So the shortest
+//     path (the DIRECT sound) arrives red, and every LONGER reflection arrives
+//     cooler, passing through all the in-between colours. DIST_POW < 1 softens
+//     the 1/r curve so the mid colours get more of the room.
+//  2. MATERIAL — the accumulated reflection gain √(1−α) (segGain) STEPS the
+//     loudness down at each bounce: glass (α≈0) barely, fiberglass (α≈0.98) a
+//     lot, so an absorptive bounce drops the colour cooler right at the wall.
+// The two multiply: distance gives the gradient, material gives the per-bounce
+// step. Only the direct (shortest, unbounced) reaches the listener red.
+const DIST_POW = 0.8;
 
 type NodeState = { x: number; y: number; amp: number; r: number };
 
 /** Position + loudness (amp 0..1) + radius of a ray's node at wavefront
  *  distance `dist`, or null if it has been absorbed or is already gone. */
-function nodeState(ray: TraceRay, dist: number, maxLen: number): NodeState | null {
+function nodeState(ray: TraceRay, dist: number, maxLen: number, minLen: number): NodeState | null {
   'worklet';
   const speed = maxLen / PULSE_ARRIVE;
   const arrived = dist >= ray.len;
@@ -701,12 +706,11 @@ function nodeState(ray: TraceRay, dist: number, maxLen: number): NodeState | nul
   const f = (travelled - d0) / seg;
   const x = ray.pts[(i - 1) * 2] + (ray.pts[i * 2] - ray.pts[(i - 1) * 2]) * f;
   const y = ray.pts[(i - 1) * 2 + 1] + (ray.pts[i * 2 + 1] - ray.pts[(i - 1) * 2 + 1]) * f;
-  // Loudness is mostly the MATERIAL gain left (steps down at each bounce — big
-  // for absorbers, tiny for glass) with only a gentle distance fade, so the
-  // colour/size step at a wall reads the wall's absorption: glass reflections
-  // stay warm, absorptive ones drop toward blue right at the bounce.
-  const distFrac = Math.min(1, travelled / maxLen);
-  const amp = Math.max(0, Math.min(1, gain * (1 - PULSE_DIST_FADE * distFrac)));
+  // Loudness = distance spreading (1/r from the direct distance) × material
+  // gain left. Distance gives the smooth red→blue gradient (direct = red,
+  // longer reflections cooler); material steps it down at each bounce.
+  const ratio = minLen / Math.max(minLen, travelled); // 1 within the direct dist → 0 far
+  const amp = Math.max(0, Math.min(1, gain * Math.pow(ratio, DIST_POW)));
   const base = arrived ? 2.9 : 2.3;
   const r = base * (0.28 + 0.72 * amp); // smaller the quieter/farther it is
   return { x, y, amp, r };
@@ -715,17 +719,17 @@ function nodeState(ray: TraceRay, dist: number, maxLen: number): NodeState | nul
 /** The travelling nodes for ALL rays, coloured by loudness on the MIDI velocity
  *  ramp (red loud → blue quiet) and shrinking as they travel. Quantised into
  *  NODE_BUCKETS colour paths so the whole fan stays a fixed set of paths/frame. */
-function PulseNodes({ t, traces, maxLen }: { t: SharedValue<number>; traces: TraceRay[]; maxLen: number }) {
+function PulseNodes({ t, traces, maxLen, minLen }: { t: SharedValue<number>; traces: TraceRay[]; maxLen: number; minLen: number }) {
   // A soft bloom under every node so they read over the heat field.
   const glow = useDerivedValue(() => {
     const p = Skia.Path.Make();
     const dist = t.value * (maxLen / PULSE_ARRIVE);
     for (let k = 0; k < traces.length; k++) {
-      const n = nodeState(traces[k], dist, maxLen);
+      const n = nodeState(traces[k], dist, maxLen, minLen);
       if (n) p.addCircle(n.x, n.y, n.r * 1.5);
     }
     return p;
-  }, [t, traces, maxLen]);
+  }, [t, traces, maxLen, minLen]);
   // One colour path per loudness bucket (fixed count → stable hook order).
   const buckets: SharedValue<SkPathT>[] = [];
   for (let b = 0; b < NODE_BUCKETS; b++) {
@@ -735,11 +739,11 @@ function PulseNodes({ t, traces, maxLen }: { t: SharedValue<number>; traces: Tra
         const p = Skia.Path.Make();
         const dist = t.value * (maxLen / PULSE_ARRIVE);
         for (let k = 0; k < traces.length; k++) {
-          const n = nodeState(traces[k], dist, maxLen);
+          const n = nodeState(traces[k], dist, maxLen, minLen);
           if (n && Math.round(n.amp * (NODE_BUCKETS - 1)) === b) p.addCircle(n.x, n.y, n.r);
         }
         return p;
-      }, [t, traces, maxLen]),
+      }, [t, traces, maxLen, minLen]),
     );
   }
   return (
@@ -999,6 +1003,12 @@ export function RoomSceneView(p: RoomSceneProps) {
   const tracing = !!traces && traces.length > 0;
   const maxLen = useMemo(
     () => (traces ? traces.reduce((m, r) => Math.max(m, r.len), 1) : 1),
+    [traces],
+  );
+  // Shortest path = the direct sound; it's the 1/r colour reference (the direct
+  // arrives red, longer reflections cooler).
+  const minLen = useMemo(
+    () => (traces && traces.length ? traces.reduce((m, r) => Math.min(m, r.len), Infinity) : 1),
     [traces],
   );
   const pulseOrigins = useMemo(() => {
@@ -1266,7 +1276,7 @@ export function RoomSceneView(p: RoomSceneProps) {
         {tracing && traces ? (
           <>
             <PulseRing t={pulseT} origins={pulseOrigins} maxLen={maxLen} />
-            <PulseNodes t={pulseT} traces={traces} maxLen={maxLen} />
+            <PulseNodes t={pulseT} traces={traces} maxLen={maxLen} minLen={minLen} />
           </>
         ) : null}
         {/* ARRIVALS: tick fan + pulsing listener halo. */}
