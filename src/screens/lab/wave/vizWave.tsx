@@ -52,6 +52,7 @@ import {
   type SharedValue,
 } from 'react-native-reanimated';
 import { fonts } from '../../../theme/tokens';
+import { levelColor } from '../../../features/tools/levelColor';
 import { useScrollLock } from '../LabShell';
 import {
   MATERIALS,
@@ -657,67 +658,87 @@ type TraceRay = { pts: number[]; cum: number[]; len: number; order: number; segG
 /** A node whose remaining amplitude is below this is treated as absorbed — it
  *  dies at the wall instead of arriving (foam, fiberglass…). */
 const PULSE_DEAD = 0.03;
-/** Node radius from the segment's amplitude gain (base ≈ half the original
- *  size; glass ≈ full, absorbers visibly shrink it). */
-const nodeR = (base: number, gain: number): number => {
-  'worklet';
-  return base * (0.35 + 0.65 * gain);
-};
 
-/** The travelling nodes for one reflection order (color-matched to its rays).
- *  A node past its ray's end holds briefly at the listener as an arrival flash. */
-function PulseNodes({
-  t,
-  traces,
-  order,
-  maxLen,
-  color,
-}: {
-  t: SharedValue<number>;
-  traces: TraceRay[];
-  order: number;
-  maxLen: number;
-  color: string;
-}) {
-  const path = useDerivedValue(() => {
+// The nodes carry LOUDNESS in the app-wide MIDI velocity colours (levelColor:
+// 1 = red / full scale → 0 = MIDI-0 blue / silence — src/features/tools/
+// levelColor). A node's loudness = how far the wavefront has expanded (all
+// nodes ride ONE wavefront, so distance ∝ elapsed time) × the material gain it
+// has left. So a node LEAVES the source red and full-size and, as the front
+// travels out, fades through orange → yellow → green → blue AND shrinks. Since
+// short paths finish while the front is still near the source, the DIRECT node
+// arrives red/orange and the long, multiply-bounced reflections arrive blue
+// (owner 2026-08-02). Quantised into NODE_BUCKETS colour paths (fixed/frame).
+const NODE_BUCKETS = 18;
+const NODE_COLORS: string[] = Array.from({ length: NODE_BUCKETS }, (_, i) =>
+  levelColor(i / (NODE_BUCKETS - 1)),
+); // index 0 = blue (quiet) … last = red (loud)
+
+type NodeState = { x: number; y: number; amp: number; r: number };
+
+/** Position + loudness (amp 0..1) + radius of a ray's node at wavefront
+ *  distance `dist`, or null if it has been absorbed or is already gone. */
+function nodeState(ray: TraceRay, dist: number, maxLen: number): NodeState | null {
+  'worklet';
+  const speed = maxLen / PULSE_ARRIVE;
+  const arrived = dist >= ray.len;
+  if (dist > ray.len + speed * 0.07) return null; // past its arrival hold — gone
+  const travelled = arrived ? ray.len : dist;
+  let i = 1;
+  while (i < ray.cum.length - 1 && travelled > ray.cum[i]) i++;
+  const gain = ray.segGain[i - 1] ?? 1;
+  if (gain < PULSE_DEAD) return null; // absorbed at a wall — never arrives
+  const d0 = ray.cum[i - 1];
+  const seg = ray.cum[i] - d0 || 1;
+  const f = (travelled - d0) / seg;
+  const x = ray.pts[(i - 1) * 2] + (ray.pts[i * 2] - ray.pts[(i - 1) * 2]) * f;
+  const y = ray.pts[(i - 1) * 2 + 1] + (ray.pts[i * 2 + 1] - ray.pts[(i - 1) * 2 + 1]) * f;
+  // Loudness fades with distance travelled (dominant) AND the material gain
+  // left, so the colour marches red→blue and the node shrinks as it goes.
+  const distFrac = Math.min(1, travelled / maxLen);
+  const amp = Math.max(0, Math.min(1, (1 - distFrac) * gain));
+  const base = arrived ? 2.9 : 2.3;
+  const r = base * (0.28 + 0.72 * amp); // smaller the quieter/farther it is
+  return { x, y, amp, r };
+}
+
+/** The travelling nodes for ALL rays, coloured by loudness on the MIDI velocity
+ *  ramp (red loud → blue quiet) and shrinking as they travel. Quantised into
+ *  NODE_BUCKETS colour paths so the whole fan stays a fixed set of paths/frame. */
+function PulseNodes({ t, traces, maxLen }: { t: SharedValue<number>; traces: TraceRay[]; maxLen: number }) {
+  // A soft bloom under every node so they read over the heat field.
+  const glow = useDerivedValue(() => {
     const p = Skia.Path.Make();
-    const speed = maxLen / PULSE_ARRIVE; // px per unit cycle — SAME for every ray
-    const dist = t.value * speed;
+    const dist = t.value * (maxLen / PULSE_ARRIVE);
     for (let k = 0; k < traces.length; k++) {
-      const ray = traces[k];
-      if (ray.order !== order) continue;
-      if (dist <= ray.len) {
-        // Interpolate along the polyline via the cumulative lengths.
-        let i = 1;
-        while (i < ray.cum.length - 1 && dist > ray.cum[i]) i++;
-        // MATERIAL effect: the node carries this segment's remaining amplitude
-        // — glass keeps it near full size after a bounce, foam shrinks it, and
-        // below PULSE_DEAD it is absorbed (dies at the wall, never arrives).
-        const gain = ray.segGain[i - 1] ?? 1;
-        if (gain < PULSE_DEAD) continue;
-        const d0 = ray.cum[i - 1];
-        const seg = ray.cum[i] - d0 || 1;
-        const f = (dist - d0) / seg;
-        const x = ray.pts[(i - 1) * 2] + (ray.pts[i * 2] - ray.pts[(i - 1) * 2]) * f;
-        const y = ray.pts[(i - 1) * 2 + 1] + (ray.pts[i * 2 + 1] - ray.pts[(i - 1) * 2 + 1]) * f;
-        p.addCircle(x, y, nodeR(2.3, gain));
-      } else if (dist - ray.len < speed * 0.07) {
-        // Arrival flash — sized by what SURVIVED the bounces; absorbed rays
-        // never flash (their node already died at a wall).
-        const gain = ray.segGain[ray.segGain.length - 1] ?? 1;
-        if (gain < PULSE_DEAD) continue;
-        const n = ray.pts.length;
-        p.addCircle(ray.pts[n - 2], ray.pts[n - 1], nodeR(2.9, gain));
-      }
+      const n = nodeState(traces[k], dist, maxLen);
+      if (n) p.addCircle(n.x, n.y, n.r * 1.5);
     }
     return p;
-  }, [t, traces, order, maxLen]);
+  }, [t, traces, maxLen]);
+  // One colour path per loudness bucket (fixed count → stable hook order).
+  const buckets: SharedValue<SkPathT>[] = [];
+  for (let b = 0; b < NODE_BUCKETS; b++) {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    buckets.push(
+      useDerivedValue(() => {
+        const p = Skia.Path.Make();
+        const dist = t.value * (maxLen / PULSE_ARRIVE);
+        for (let k = 0; k < traces.length; k++) {
+          const n = nodeState(traces[k], dist, maxLen);
+          if (n && Math.round(n.amp * (NODE_BUCKETS - 1)) === b) p.addCircle(n.x, n.y, n.r);
+        }
+        return p;
+      }, [t, traces, maxLen]),
+    );
+  }
   return (
     <>
-      <Path path={path} color={color} opacity={0.55} blendMode="plus">
+      <Path path={glow} color="#eaf0ff" opacity={0.26} blendMode="plus">
         <BlurMask blur={5} style="normal" />
       </Path>
-      <Path path={path} color="#f4f7ff" opacity={0.92} blendMode="plus" />
+      {buckets.map((path, b) => (
+        <Path key={b} path={path} color={NODE_COLORS[b]} />
+      ))}
     </>
   );
 }
@@ -1234,9 +1255,7 @@ export function RoomSceneView(p: RoomSceneProps) {
         {tracing && traces ? (
           <>
             <PulseRing t={pulseT} origins={pulseOrigins} maxLen={maxLen} />
-            {[0, 1, 2].map((o) => (
-              <PulseNodes key={o} t={pulseT} traces={traces} order={o} maxLen={maxLen} color={RAY_COLORS[o]} />
-            ))}
+            <PulseNodes t={pulseT} traces={traces} maxLen={maxLen} />
           </>
         ) : null}
         {/* ARRIVALS: tick fan + pulsing listener halo. */}
