@@ -679,13 +679,14 @@ const NODE_COLORS: string[] = Array.from({ length: NODE_BUCKETS }, (_, i) =>
 //     red→orange→yellow→green→blue the farther it travels. So the shortest
 //     path (the DIRECT sound) arrives red, and every LONGER reflection arrives
 //     cooler, passing through all the in-between colours. DIST_POW < 1 softens
-//     the 1/r curve so the mid colours get more of the room.
+//     the 1/r curve so the mid colours get more of the room (lower = gentler,
+//     slower red→blue transition).
 //  2. MATERIAL — the accumulated reflection gain √(1−α) (segGain) STEPS the
 //     loudness down at each bounce: glass (α≈0) barely, fiberglass (α≈0.98) a
 //     lot, so an absorptive bounce drops the colour cooler right at the wall.
 // The two multiply: distance gives the gradient, material gives the per-bounce
 // step. Only the direct (shortest, unbounced) reaches the listener red.
-const DIST_POW = 0.8;
+const DIST_POW = 0.58;
 
 type NodeState = { x: number; y: number; amp: number; r: number };
 
