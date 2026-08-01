@@ -580,7 +580,19 @@ function RoomRing({ phase, srcs, i }: { phase: SharedValue<number>; srcs: RingSr
 const PULSE_MS = 2000;
 const PULSE_ARRIVE = 0.9; // every trace lands by 90% of the cycle
 
-type TraceRay = { pts: number[]; cum: number[]; len: number; order: number };
+/** `segGain` = amplitude gain while travelling segment i (1.0 leaving the
+ *  source, × √(1−α) after each bounce) — the MATERIAL effect the nodes show. */
+type TraceRay = { pts: number[]; cum: number[]; len: number; order: number; segGain: number[] };
+
+/** A node whose remaining amplitude is below this is treated as absorbed — it
+ *  dies at the wall instead of arriving (foam, fiberglass…). */
+const PULSE_DEAD = 0.03;
+/** Node radius from the segment's amplitude gain (base ≈ half the original
+ *  size; glass ≈ full, absorbers visibly shrink it). */
+const nodeR = (base: number, gain: number): number => {
+  'worklet';
+  return base * (0.35 + 0.65 * gain);
+};
 
 /** The travelling nodes for one reflection order (color-matched to its rays).
  *  A node past its ray's end holds briefly at the listener as an arrival flash. */
@@ -608,16 +620,24 @@ function PulseNodes({
         // Interpolate along the polyline via the cumulative lengths.
         let i = 1;
         while (i < ray.cum.length - 1 && dist > ray.cum[i]) i++;
+        // MATERIAL effect: the node carries this segment's remaining amplitude
+        // — glass keeps it near full size after a bounce, foam shrinks it, and
+        // below PULSE_DEAD it is absorbed (dies at the wall, never arrives).
+        const gain = ray.segGain[i - 1] ?? 1;
+        if (gain < PULSE_DEAD) continue;
         const d0 = ray.cum[i - 1];
         const seg = ray.cum[i] - d0 || 1;
         const f = (dist - d0) / seg;
         const x = ray.pts[(i - 1) * 2] + (ray.pts[i * 2] - ray.pts[(i - 1) * 2]) * f;
         const y = ray.pts[(i - 1) * 2 + 1] + (ray.pts[i * 2 + 1] - ray.pts[(i - 1) * 2 + 1]) * f;
-        p.addCircle(x, y, 3.4);
+        p.addCircle(x, y, nodeR(1.7, gain));
       } else if (dist - ray.len < speed * 0.07) {
-        // Arrival flash: the node holds at the listener for a beat, then goes.
+        // Arrival flash — sized by what SURVIVED the bounces; absorbed rays
+        // never flash (their node already died at a wall).
+        const gain = ray.segGain[ray.segGain.length - 1] ?? 1;
+        if (gain < PULSE_DEAD) continue;
         const n = ray.pts.length;
-        p.addCircle(ray.pts[n - 2], ray.pts[n - 1], 4.4);
+        p.addCircle(ray.pts[n - 2], ray.pts[n - 1], nodeR(2.2, gain));
       }
     }
     return p;
@@ -831,7 +851,18 @@ export function RoomSceneView(p: RoomSceneProps) {
           total += Math.hypot(flat[i * 2] - flat[(i - 1) * 2], flat[i * 2 + 1] - flat[(i - 1) * 2 + 1]);
           cum.push(total);
         }
-        traces.push({ pts: flat, cum, len: total, order });
+        // Per-SEGMENT amplitude gain (owner 2026-08-02): 1.0 until the first
+        // bounce, then × √(1−α) of each wall hit — so the node's size after a
+        // bounce shows the MATERIAL: glass (α≈0) keeps almost everything,
+        // acoustic foam swallows most of it. Changing a wall material rebuilds
+        // these gains (this memo keys on the scene), changing node behaviour.
+        const segGain: number[] = [1];
+        let g = 1;
+        for (let bi = 0; bi < img.bounces.length; bi++) {
+          g *= Math.sqrt(Math.max(0, 1 - alphaAt(scene.boundary[img.bounces[bi]], freq)));
+          segGain.push(g);
+        }
+        traces.push({ pts: flat, cum, len: total, order, segGain });
         // Arrowhead just before the listener, along the final segment.
         const a = pts[pts.length - 2];
         const b = pts[pts.length - 1];
