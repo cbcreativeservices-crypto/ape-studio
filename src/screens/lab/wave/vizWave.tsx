@@ -630,14 +630,14 @@ function PulseNodes({
         const f = (dist - d0) / seg;
         const x = ray.pts[(i - 1) * 2] + (ray.pts[i * 2] - ray.pts[(i - 1) * 2]) * f;
         const y = ray.pts[(i - 1) * 2 + 1] + (ray.pts[i * 2 + 1] - ray.pts[(i - 1) * 2 + 1]) * f;
-        p.addCircle(x, y, nodeR(1.7, gain));
+        p.addCircle(x, y, nodeR(2.3, gain));
       } else if (dist - ray.len < speed * 0.07) {
         // Arrival flash — sized by what SURVIVED the bounces; absorbed rays
         // never flash (their node already died at a wall).
         const gain = ray.segGain[ray.segGain.length - 1] ?? 1;
         if (gain < PULSE_DEAD) continue;
         const n = ray.pts.length;
-        p.addCircle(ray.pts[n - 2], ray.pts[n - 1], nodeR(2.2, gain));
+        p.addCircle(ray.pts[n - 2], ray.pts[n - 1], nodeR(2.9, gain));
       }
     }
     return p;
