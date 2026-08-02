@@ -19,22 +19,21 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.ProcessLifecycleOwner
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import java.util.concurrent.Executors
 
-/** Headless lifecycle owner so CameraX can bind without an Activity/Fragment. */
-private class CaptureLifecycle : LifecycleOwner {
-  private val reg = LifecycleRegistry(this)
-  override val lifecycle: Lifecycle get() = reg
-  fun start() { reg.currentState = Lifecycle.State.RESUMED }
-  fun stop() { reg.currentState = Lifecycle.State.DESTROYED }
-}
+// Headless capture note: CameraX needs a LifecycleOwner but this module has no
+// Activity/Fragment. Rather than hand-roll a LifecycleOwner (whose LifecycleOwner/
+// LifecycleRegistry API shape differs across androidx.lifecycle versions), we bind
+// to the app-wide ProcessLifecycleOwner supplied by lifecycle-process. It is
+// RESUMED whenever the app is foregrounded (which it always is when the user is on
+// the Light Pulse screen), so binding opens the camera immediately; when the app
+// backgrounds, CameraX auto-unbinds and releases the camera, then re-binds on
+// return. stop() calls unbindAll() to release regardless.
 
 /** Thread-safe rolling store of (timestamp_ms, luma) with a monotonic seq. */
 private class LumaRing(private val cap: Int = 512) {
@@ -79,7 +78,6 @@ class ApeOpticalModule : Module() {
   private val ring = LumaRing()
   private val analysisExec = Executors.newSingleThreadExecutor()
   private var provider: ProcessCameraProvider? = null
-  private var lifecycleOwner: CaptureLifecycle? = null
   private var running = false
   private var lastError = ""
 
@@ -112,12 +110,13 @@ class ApeOpticalModule : Module() {
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
             .build()
           analysis.setAnalyzer(analysisExec) { image -> analyze(image) }
-          val owner = CaptureLifecycle()
           prov.unbindAll()
-          prov.bindToLifecycle(owner, CameraSelector.DEFAULT_BACK_CAMERA, analysis)
-          owner.start()
+          prov.bindToLifecycle(
+            ProcessLifecycleOwner.get(),
+            CameraSelector.DEFAULT_BACK_CAMERA,
+            analysis,
+          )
           provider = prov
-          lifecycleOwner = owner
           running = true
           lastError = ""
           promise.resolve(null)
@@ -133,8 +132,7 @@ class ApeOpticalModule : Module() {
       if (ctx != null && provider != null) {
         ContextCompat.getMainExecutor(ctx).execute {
           try { provider?.unbindAll() } catch (_: Exception) {}
-          lifecycleOwner?.stop()
-          provider = null; lifecycleOwner = null; running = false
+          provider = null; running = false
         }
       } else { running = false }
     }

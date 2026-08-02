@@ -26,4 +26,8 @@ dependencies {
   implementation "androidx.camera:camera-core:${camerax}"
   implementation "androidx.camera:camera-camera2:${camerax}"
   implementation "androidx.camera:camera-lifecycle:${camerax}"
+
+  // ProcessLifecycleOwner (headless CameraX binding). camera-lifecycle pulls
+  // lifecycle-common/runtime but NOT lifecycle-process, where this class lives.
+  implementation "androidx.lifecycle:lifecycle-process:2.8.7"
 }
