@@ -10,7 +10,7 @@
  *    entry preselects its course/topic.
  * Search by term · empty: "No results for [filter]" · bottom nav visible.
  */
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from 'react';
 import { Alert, FlatList, Image, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type StyleProp, type TextStyle } from 'react-native';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -45,6 +45,17 @@ import {
 } from '../../features/glossary/learningProfiles';
 import { getLabLesson } from '../../features/lab/guidedLessons';
 import type { StudyStackParamList } from '../../navigation/types';
+
+// Search-field dictation button. Loaded via a GUARDED require so a dev client
+// that predates the expo-speech-recognition native module shows no mic instead
+// of crashing (that module throws at import when the native side is absent —
+// see GlossaryDictation.tsx). Resolves to the real button once a build bundles it.
+let GlossaryDictation: ComponentType<{ onText: (t: string) => void }> | null = null;
+try {
+  GlossaryDictation = require('./GlossaryDictation').GlossaryDictation;
+} catch {
+  GlossaryDictation = null;
+}
 
 /** Small framed-image glyph — marks a term that has a media element. */
 function MediaGlyph({ color = '#7fbfff', size = 17 }: { color?: string; size?: number }) {
@@ -616,6 +627,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
   useEffect(() => () => {
     if (settleTimer.current) clearTimeout(settleTimer.current);
   }, []);
+
   const [filter, setFilter] = useState<Filter>('all');
   const [topicPickerOpen, setTopicPickerOpen] = useState(false);
   // Member gate for the topic filter (user request 2026-07-25): free/lapsed/
@@ -1206,7 +1218,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
           accessibilityRole="button"
           accessibilityLabel={cardView ? 'Switch to list view' : 'Switch to cards view'}
         >
-          <Text style={styles.headerToggleText}>{cardView ? 'LIST VIEW' : 'CARD VIEW'}</Text>
+          <Text style={styles.headerToggleText}>{cardView ? 'LIST' : 'CARDS'}</Text>
         </Pressable>
         {/* Which definition the speakers read (Booth 2026-07-10):
             ADV = official definition (default) · BEG = plain English. */}
@@ -1274,6 +1286,9 @@ export function GlossaryScreen({ route, navigation }: Props) {
             <Text style={styles.searchClear}>✕</Text>
           </Pressable>
         ) : null}
+        {/* Tap to dictate the search instead of typing (owner 2026-08-01).
+            Absent until a build bundles the speech-recognition native module. */}
+        {GlossaryDictation ? <GlossaryDictation onText={onSearchChange} /> : null}
       </View>
 
       {/* Filters never scroll — they wrap in place (Booth 2026-07-09b). In LIST
@@ -2173,6 +2188,12 @@ const styles = StyleSheet.create({
     borderColor: colors.hairlineAlt,
     borderRadius: 12,
     padding: 16,
+    // Very subtle gray lift so each card reads as its own surface (owner 2026-08-01).
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.28,
+    shadowRadius: 3,
+    elevation: 2,
   },
   cardItemExpanded: { backgroundColor: '#1a160e', borderColor: 'rgba(255,180,0,.35)', paddingVertical: 20 },
   cardTerm: { fontSize: 18 },

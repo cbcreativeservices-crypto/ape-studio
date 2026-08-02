@@ -122,11 +122,17 @@ export type RootStackParamList = {
   Rt60Live: undefined;
   /** Spike-0 dev-only debug screen (ape-dsp proof) — __DEV__ entry on ToolsHub. */
   DspDebug: undefined;
-  /** AUDIO LEARNING LAB landing menu (v4 MASTER §13) — reached from the pinned
-   *  "Ear Training & Critical Listening Lab" HOME card. Menu into the 16 audio
-   *  labs + Signal Chain Builder + Wave Physics Lab. Its own card/route (NOT a
-   *  ToolsHub tile). */
-  EarLab: undefined;
+  /** AUDIO LEARNING fork (owner 2026-08-02): the two-way landing that separates
+   *  the free Audio Fundamentals from the members-only Training Labs BEFORE the
+   *  combined lab list. The HOME "Audio Fundamentals & Training Lab" card opens
+   *  this; each card routes into EarLab with the matching `section`. */
+  AudioLearning: undefined;
+  /** AUDIO LEARNING LAB landing menu (v4 MASTER §13). `section` filters the list
+   *  to one side of the fork (owner 2026-08-02): 'fundamentals' (free) or
+   *  'training' (members). Omitted = the full combined list (deep links / legacy).
+   *  Menu into the audio labs + Signal Chain Builder + Wave Physics Lab. Its own
+   *  card/route (NOT a ToolsHub tile). */
+  EarLab: { section?: 'fundamentals' | 'training' } | undefined;
   /** Second level of the Audio Learning Lab hierarchy (owner IA restructure
    *  2026-07-29): the labs inside one category. `id` = labCatalog category id. */
   LabCategory: { id: string };

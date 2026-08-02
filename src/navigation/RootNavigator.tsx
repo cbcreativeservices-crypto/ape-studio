@@ -31,6 +31,7 @@ import { Rt60Screen } from '../screens/tools/Rt60Screen';
 import { FrequencyCounterScreen } from '../screens/tools/FrequencyCounterScreen';
 import { MultiMeterScreen } from '../screens/tools/MultiMeterScreen';
 import { DspDebugScreen } from '../screens/tools/DspDebugScreen';
+import { AudioLearningScreen } from '../screens/lab/AudioLearningScreen';
 import { EarLabScreen } from '../screens/lab/EarLabScreen';
 import { LabCategoryScreen } from '../screens/lab/LabCategoryScreen';
 import { HarmonicLabScreen } from '../screens/lab/HarmonicLabScreen';
@@ -123,6 +124,7 @@ export function RootNavigator() {
       {/* Audio Learning Lab (v4 MASTER §13) — the pinned Home card opens the
           EarLab landing menu; HarmonicLab is the one live lab today. Bottom nav
           hidden like the other tool screens. */}
+      <Stack.Screen name="AudioLearning" component={AudioLearningScreen} />
       <Stack.Screen name="EarLab" component={EarLabScreen} />
       <Stack.Screen name="LabCategory" component={LabCategoryScreen} />
       <Stack.Screen name="HarmonicLab" component={HarmonicLabScreen} />

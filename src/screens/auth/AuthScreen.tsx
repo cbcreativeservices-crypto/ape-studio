@@ -15,14 +15,12 @@
 import { useState } from 'react';
 import {
   ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
+import { KeyboardAwareScrollView } from '../../features/keyboard/keyboardControllerSafe';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -138,13 +136,14 @@ export function AuthScreen({ navigation }: Props) {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.root} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <ScrollView
+    <View style={styles.root}>
+      <KeyboardAwareScrollView
         contentContainerStyle={[
           styles.scroll,
           { paddingTop: insets.top + spacing.xxl, paddingBottom: insets.bottom + spacing.xxl },
         ]}
         keyboardShouldPersistTaps="handled"
+        bottomOffset={24}
       >
         {/* Header — logo + wordmark */}
         <View style={styles.header}>
@@ -220,11 +219,11 @@ export function AuthScreen({ navigation }: Props) {
           </Text>
         </Text>
         <Text style={styles.guestNote}>Guest Mode is free — but your progress isn’t saved without an account.</Text>
-      </ScrollView>
+      </KeyboardAwareScrollView>
 
       {/* First-run greeting, shown OVER the login screen (user request 2026-07-23). */}
       <AppWelcomeOverlay />
-    </KeyboardAvoidingView>
+    </View>
   );
 }
 

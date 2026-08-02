@@ -54,8 +54,8 @@ type Card =
   | { kind: 'tools'; id: 'tools' }
   | { kind: 'glossary'; id: 'glossary' }
   /** Ear Training & Audio Lab — pinned FAR LEFT, left of tools (owner request
-   *  2026-07-26; was right of tools/glossary). Its own card/route → 'EarLab'
-   *  (NOT a ToolsHub tile). */
+   *  2026-07-26; was right of tools/glossary). Opens the 'AudioLearning' fork
+   *  (Fundamentals vs Training Labs) → 'EarLab' (NOT a ToolsHub tile). */
   | { kind: 'lab'; id: 'lab' }
   /** Free-topic taster card (Booth 2026-07-11) — gs0 / gs36, after Glossary. */
   | { kind: 'freeTopic'; id: string; gs: number; name: string; courseOrder: number }
@@ -63,6 +63,10 @@ type Card =
   | { kind: 'public'; id: string; order: number; name: string; topicCount: number; hasFreeTopic: boolean }
   /** Placeholder standalone topic — catalog stub, content pending (Booth 2026-07-11). */
   | { kind: 'comingTopic'; id: string; name: string }
+  /** Front-end-only PURPLE program placeholder card (owner 2026-08-01) — a
+   *  finalized program slot with no public course/content yet (art supplied
+   *  later). Renders locked; tapping raises the membership prompt. */
+  | { kind: 'programStub'; id: string; name: string }
   /** Far-right tally card — how many Specialization Certificates a student can
    *  earn (user request 2026-07-22). Tapping opens the Certificates screen. */
   | { kind: 'more'; id: 'more'; count: number }
@@ -200,6 +204,9 @@ const CARD_TITLE_RENAMES: Record<string, string> = {
   'Sound Reinforcement Systems': 'Live Sound Production',
   'Audio System Design and Maintenance': 'Audio Electronics, Service & Repair',
   'Recording Arts': 'Studio Recording',
+  // Owner 2026-08-01: repurpose the Intro-to-Audio program card as the
+  // Broadcast/Podcast/Streaming program card (moved after Music Production).
+  'Intro to Audio': 'Broadcast, Podcast and Streaming Audio',
 };
 // The "Career and Business" card is retitled to "+ N other programs", where N =
 // Academy Program Certificates NOT represented by a card in the current deck
@@ -220,6 +227,7 @@ function rawCardTitle(item: Card): string | null {
     case 'freeTopic':
     case 'public':
     case 'comingTopic':
+    case 'programStub':
     case 'course':
       return item.name;
     default:
@@ -247,6 +255,8 @@ function dotColorFor(card: Card): string {
       return colors.amber; // standalone topic
     case 'public':
       return card.topicCount > 1 ? colors.purple : colors.amber; // course vs single topic
+    case 'programStub':
+      return colors.purple; // purple program placeholder
     case 'course':
       return colors.purple; // full course
     case 'homeTopic':
@@ -326,7 +336,7 @@ function CourseCardView({
 }) {
   // CM3: the card RENDERS entitlement capabilities (server-owned once live) —
   // it never decides them. Flag OFF ⇒ everything unlocked-looking as today.
-  const { commercialMode, caps } = useEntitlement();
+  const { commercialMode, caps, entitlement } = useEntitlement();
 
   // "+ XX other" tally card — its own compact look, far right of the deck.
   // (After the hook above so hook order stays stable.)
@@ -344,8 +354,7 @@ function CourseCardView({
           accessibilityLabel={`Plus ${item.count} other certificates — view certificates`}
         >
           <Text style={styles.moreCount}>+{item.count}</Text>
-          <Text style={styles.moreLabel}>OTHER CERTIFICATES</Text>
-          <Text style={styles.moreSub}>specialization certificates to earn</Text>
+          <Text style={styles.moreLabel}>OTHER SPECIALIZATION CERTIFICATES AVAILABLE</Text>
           <View style={{ height: 14 }} />
           <Text style={styles.moreCta}>VIEW CERTIFICATES ›</Text>
         </Pressable>
@@ -360,21 +369,65 @@ function CourseCardView({
     return (
       <View style={styles.cardOuter}>
         <View style={styles.cardAbove}>
-          <Text style={[styles.cardAboveText, { color: colors.textSubAlt }]}>CERTIFICATE PROGRAMS</Text>
-          <View style={[styles.cardAboveRule, { backgroundColor: colors.textSubAlt }]} />
+          <Text style={[styles.cardAboveText, { color: '#c4a2ff' }]}>Professional Program Certificate</Text>
+          <View style={[styles.cardAboveRule, { backgroundColor: '#c4a2ff' }]} />
         </View>
         <Pressable
           style={[styles.card, styles.moreCard]}
           onPress={onOpenPrograms}
           accessibilityRole="button"
-          accessibilityLabel={`Plus ${otherProgramsCount} other programs — view programs`}
+          accessibilityLabel={`Plus ${otherProgramsCount} other professional certification programs — view programs`}
         >
           <Text style={styles.moreCount}>+{otherProgramsCount}</Text>
-          <Text style={styles.moreLabel}>OTHER PROGRAMS</Text>
-          <Text style={styles.moreSub}>professional certificate programs</Text>
+          <Text style={styles.moreLabel}>OTHER PROFESSIONAL CERTIFICATION PROGRAMS</Text>
           <View style={{ height: 14 }} />
           <Text style={styles.moreCta}>VIEW PROGRAMS ›</Text>
         </Pressable>
+      </View>
+    );
+  }
+
+  // Purple PROGRAM placeholder card (owner 2026-08-01) — a finalized program
+  // slot with no public course/content yet. Renders exactly like the other
+  // Professional Program Certificate cards but always locked; art fills in later
+  // via CARD_IMAGE[item.id]. Tapping raises the membership prompt.
+  if (item.kind === 'programStub') {
+    const stubUrl = cardImageUrl(item.id);
+    const stubInner = (
+      <>
+        <LinearGradient
+          colors={['rgba(8,8,10,0.55)', 'rgba(8,8,10,0)', 'rgba(8,8,10,0.45)', 'rgba(8,8,10,0.95)']}
+          locations={[0, 0.3, 0.58, 1]}
+          style={StyleSheet.absoluteFill}
+        />
+        <View style={styles.lockTint} />
+        <View>
+          <Text style={styles.cardTitle}>{item.name}</Text>
+        </View>
+        <View style={{ alignItems: 'center' }}>
+          <View style={{ width: CARD_BTN_W }}>
+            <GlassButton label="🔒 ACADEMY MODE" tint="steel" height={50} fontSize={13} onPress={onLockedPress} />
+          </View>
+        </View>
+      </>
+    );
+    return (
+      <View style={styles.cardOuter}>
+        <View style={styles.cardAbove}>
+          <Text style={[styles.cardAboveText, { color: '#c4a2ff' }]}>Professional Program Certificate</Text>
+          <View style={[styles.cardAboveRule, { backgroundColor: '#c4a2ff' }]} />
+        </View>
+        {stubUrl ? (
+          <ImageBackground
+            source={{ uri: stubUrl }}
+            style={[styles.card, { borderColor: 'rgba(196,162,255,.65)' }]}
+            imageStyle={[styles.cardImg, { opacity: 0.7 }]}
+          >
+            {stubInner}
+          </ImageBackground>
+        ) : (
+          <View style={[styles.card, styles.cardNoImg, { borderColor: 'rgba(196,162,255,.65)' }]}>{stubInner}</View>
+        )}
       </View>
     );
   }
@@ -488,11 +541,16 @@ function CourseCardView({
             : course!.code;
   const url = cardImageUrl(key);
   // Free-tier nuance (§3): a SINGLE-topic taster card containing a free topic is
-  // OPENABLE for free/lapsed users. A multi-topic PROFESSIONAL CERTIFICATE
-  // (topicCount > 1) is a paid credential — it must NOT read as open just because
-  // one of its topics is free (owner 2026-08-01); it opens only with full access.
+  // OPENABLE for free/lapsed users. Any other public card — multi-topic
+  // Professional Program Certificates AND single-topic non-free cards like
+  // Podcasting/Broadcast + Film/Game — is paid content: it opens ONLY with full
+  // (academy) access. Gate on ENTITLEMENT, never caps: the dev bypass forces
+  // caps=academy for everyone, so caps read those paid cards as open in dev
+  // (owner 2026-08-01). In production capsFor(entitlement) matches this exactly.
   const pubOpenable =
-    !!pub && (caps.allTopics || (caps.freeTopics && pub.hasFreeTopic && pub.topicCount <= 1));
+    !!pub &&
+    (entitlement === 'academy' ||
+      (entitlement !== 'anonymous' && pub.hasFreeTopic && pub.topicCount <= 1));
   // Free-topic tasters are ALWAYS unlocked + full-color (Booth 2026-07-11).
   // Coming-soon topic stubs are locked (content pending).
   const locked = (!!course && !course.enrolled) || (!!pub && !pubOpenable) || !!coming;
@@ -545,7 +603,7 @@ function CourseCardView({
             // multi-topic = 'Professional Certificate'; single-topic =
             // 'Specialization Certificate'.
             pub.topicCount > 1
-            ? 'Professional Certificate'
+            ? 'Professional Program Certificate'
             : 'Specialization Certificate'
           : coming
             ? 'Specialization Certificate'
@@ -720,6 +778,26 @@ export function CourseSelectionScreen() {
       // TOPIC cards — live pubs + coming-soon stubs — form one A–Z group on
       // the right (Booth 2026-07-16: alphabetized; Worship Sound lands last).
       const multiPub = pubCards.filter((c) => c.topicCount > 1).sort((a, b) => a.order - b.order);
+      // Purple PROGRAM cards in the owner's finalized order (2026-08-01):
+      //   Live Sound Production (3) · AI Audio [placeholder] · Audio Electronics (4)
+      //   · Studio Recording (5) · Music Production (6) · Broadcast/Podcast (2, the
+      //   repurposed Intro-to-Audio card) · "+ N other programs" (9).
+      // Built from the multi-topic public courses by catalog order; any not
+      // explicitly placed are appended so nothing is dropped if the catalog shifts.
+      const AI_STUB: Card = { kind: 'programStub', id: 'prog-ai-audio', name: 'AI Audio and Emerging Production' };
+      const byPubOrder = new Map(multiPub.map((c) => [c.order, c]));
+      const PROGRAM_LINEUP = [3, 4, 5, 6, 2, 9];
+      const placedOrders = new Set<number>();
+      const programCards: Card[] = [];
+      for (const o of PROGRAM_LINEUP) {
+        const c = byPubOrder.get(o);
+        if (c) {
+          programCards.push(c);
+          placedOrders.add(o);
+        }
+        if (o === 3) programCards.push(AI_STUB); // AI Audio between Live Sound (3) and Audio Electronics (4)
+      }
+      for (const c of multiPub) if (!placedOrders.has(c.order)) programCards.push(c);
       const singlePub = pubCards.filter((c) => c.topicCount <= 1);
       const comingCards = COMING_TOPICS.map((name, i) => ({
         kind: 'comingTopic' as const,
@@ -745,7 +823,7 @@ export function CourseSelectionScreen() {
           name: ft.gs === 0 ? 'Pro Audio Safety' : ft.name,
           courseOrder: ft.courseOrder,
         })),
-        ...multiPub,
+        ...programCards,
         // A–Z topic group (live single-topic pubs + coming-soon stubs).
         ...topicCards,
         // Far-right tally card (only when there's more to tease).
@@ -968,7 +1046,9 @@ export function CourseSelectionScreen() {
   }, [navigation]);
 
   const openLab = useCallback(() => {
-    (navigation as any).navigate('EarLab');
+    // The HOME lab card now opens the Audio Learning fork (free Fundamentals vs
+    // members-only Training Labs) before the combined list (owner 2026-08-02).
+    (navigation as any).navigate('AudioLearning');
   }, [navigation]);
 
   const openMore = useCallback(() => {
@@ -1163,7 +1243,7 @@ export function CourseSelectionScreen() {
         </View>
       </View>
 
-      <Text style={styles.title}>SELECT A COURSE</Text>
+      <Text style={styles.academyTitle}>Start Learning</Text>
 
       <FlatList
         ref={listRef}
@@ -1255,8 +1335,10 @@ export function CourseSelectionScreen() {
 
       {/* The app WELCOME now greets first-run users BEFORE the login screen
           (user request 2026-07-23, AppWelcomeOverlay on AuthScreen). Home keeps
-          only the "Our Commitment to You" popup. */}
-      <ScreenIntroOverlay introKey="commitment" delayMs={8000} />
+          only the "Our Commitment to You" popup. Paid (academy) users see it
+          once ever; everyone else once per app session — resets each launch
+          (owner 2026-08-01). */}
+      <ScreenIntroOverlay introKey="commitment" delayMs={8000} sessionOnly={entitlement !== 'academy'} />
     </View>
   );
 }
@@ -1318,11 +1400,11 @@ const styles = StyleSheet.create({
   },
   // Sized to match the AWARDS label and dropped lower / closer to the cards
   // below it (Booth 2026-07-15).
-  title: {
-    fontFamily: fonts.oswaldSemiBold,
-    fontSize: 11,
-    letterSpacing: 2.4,
-    color: colors.textSub,
+  academyTitle: {
+    fontFamily: fonts.oswaldMedium,
+    fontSize: 14,
+    letterSpacing: 1.2,
+    color: '#fff',
     textAlign: 'center',
     marginTop: 6,
     marginBottom: -6,

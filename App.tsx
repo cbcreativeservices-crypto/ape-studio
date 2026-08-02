@@ -3,12 +3,17 @@
  * Loads the locked type families, wraps the app in a dark navigation theme +
  * safe-area provider, and renders the RootNavigator. Dark theme, portrait-only.
  */
+import { useEffect } from 'react';
 import { useFonts } from 'expo-font';
 import { View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { DarkTheme, NavigationContainer, type Theme } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { KeyboardProvider } from './src/features/keyboard/keyboardControllerSafe';
 import { RootNavigator } from './src/navigation/RootNavigator';
+import { navigationRef } from './src/navigation/navigationRef';
+import { LabPreviewOverlay } from './src/features/lab/LabPreviewOverlay';
+import { endLabPreview, getLabPreview } from './src/features/lab/labPreviewStore';
 import { EntitlementProvider } from './src/features/commercial/EntitlementProvider';
 import { AudioOutputGate } from './src/features/audio/AudioOutputGate';
 import { touchAudioActivity } from './src/features/audio/audioOutputStore';
@@ -41,6 +46,17 @@ export default function App() {
   // stable. Kept separate from AudioOutputGate's own onAuthStateChange.
   useAccountLocalSync();
 
+  // Clear a stale Training-Lab preview if the user leaves the previewed lab by
+  // any route (swipe-back, etc.) — so the grayed overlay never sticks over the
+  // wrong screen (owner 2026-08-02).
+  useEffect(() => {
+    const unsub = navigationRef.addListener('state', () => {
+      const p = getLabPreview();
+      if (p.active && navigationRef.getCurrentRoute()?.name !== p.route) endLabPreview();
+    });
+    return unsub;
+  }, []);
+
   // Hold on a dark surface until fonts resolve (avoids a white flash + FOUT).
   if (!fontsLoaded) {
     return <View style={{ flex: 1, backgroundColor: colors.splashBg }} />;
@@ -48,6 +64,10 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
+      {/* Global keyboard handling (owner 2026-08-01): powers KeyboardAwareScrollView
+          so focused fields lift above the keyboard instead of being covered.
+          Native module — inert until a build bundles it (no crash before then). */}
+      <KeyboardProvider>
       <StatusBar style="light" />
       {/* Commercial entitlement context (CM1) — inert while commercialMode is
           OFF; no consumers yet, so app behavior is unchanged. */}
@@ -75,7 +95,7 @@ export default function App() {
               return false;
             }}
           >
-            <NavigationContainer theme={navTheme}>
+            <NavigationContainer theme={navTheme} ref={navigationRef}>
               <RootNavigator />
             </NavigationContainer>
             <LowLightDim />
@@ -93,9 +113,13 @@ export default function App() {
                 sound, a decisive shake instantly silences everything and
                 re-locks the app to silent. Renders nothing. */}
             <ShakeToMute />
+            {/* Free-user Training-Lab preview: grayed, non-interactive scrim +
+                Academy upgrade sheet over the live lab (owner 2026-08-02). */}
+            <LabPreviewOverlay />
           </View>
         </AudioOutputGate>
       </EntitlementProvider>
+      </KeyboardProvider>
     </SafeAreaProvider>
   );
 }

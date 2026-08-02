@@ -24,6 +24,7 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { AppState, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { HoldToActivate } from '../../components/HoldToActivate';
+import { getLabPreview } from '../lab/labPreviewStore';
 import { supabase } from '../../lib/supabase';
 import { colors, fonts } from '../../theme/tokens';
 import {
@@ -69,6 +70,13 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
     () => ({
       requestAudioOutput: () =>
         new Promise<boolean>((resolve) => {
+          // Free-user lab PREVIEW (behind glass): never produce output and never
+          // raise the "audio output is off" popup — the user is only viewing, not
+          // using the lab (owner 2026-08-02). Mic INPUT/readouts are unaffected.
+          if (getLabPreview().active) {
+            resolve(false);
+            return;
+          }
           // Fast path — already enabled: just refresh activity and go.
           if (isAudioOutputEnabled()) {
             noteAudioActivity();

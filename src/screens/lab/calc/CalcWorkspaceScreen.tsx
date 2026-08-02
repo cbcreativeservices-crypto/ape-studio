@@ -7,7 +7,8 @@
  * terms, OS share sheet, and the Calculation Chain (SEND → / USE).
  */
 import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, Share, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, Share, StyleSheet, Text, TextInput, View } from 'react-native';
+import { KeyboardAwareScrollView } from '../../../features/keyboard/keyboardControllerSafe';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
@@ -175,7 +176,7 @@ export function CalcWorkspaceScreen() {
           <Text style={styles.subtitle}>{ws.tagline}</Text>
         </View>
       </View>
-      <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+      <KeyboardAwareScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" bottomOffset={24}>
         <Text style={styles.body}>{ws.intro}</Text>
 
         <Text style={styles.eyebrow}>WHAT ARE YOU TRYING TO DETERMINE?</Text>
@@ -322,7 +323,7 @@ export function CalcWorkspaceScreen() {
           <Text style={styles.glossLink}>OPEN THE GLOSSARY ›</Text>
         </Pressable>
         <Text style={styles.caption}>Full definitions, plain-English versions, and linked labs live there.</Text>
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </View>
   );
 }

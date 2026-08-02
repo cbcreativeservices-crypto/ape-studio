@@ -14,6 +14,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../theme/tokens';
 import type { RootStackParamList } from '../../navigation/types';
+import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { startLabPreview } from '../../features/lab/labPreviewStore';
 import {
   categoryCountLabel,
   categoryEntries,
@@ -21,6 +23,7 @@ import {
   sectionCategories,
   type LabCategory,
   type LabLeaf,
+  type LabSection,
 } from './labCatalog';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'EarLab'>;
@@ -29,21 +32,67 @@ const INTRO =
   'A professional audio curriculum in two parts: the free, required Audio ' +
   'Fundamentals, and the members-only Training Lab. Choose a lab to hear it, ' +
   'see it, measure it, and take it apart.';
+const FUNDAMENTALS_INTRO =
+  'Included free for everyone: the essential principles of sound and signal — ' +
+  'hear them, see them, measure them, and take them apart.';
+const TRAINING_INTRO_MEMBER =
+  'Your members-only workbench: interactive demonstrations, visualizations, ' +
+  'controls and guided experiments across every audio discipline.';
+const TRAINING_INTRO_FREE =
+  'Preview everything the Training Labs include with Academy membership. Browse ' +
+  'the full catalog below — unlock any lab to launch it.';
 
-export function EarLabScreen({ navigation }: Props) {
+export function EarLabScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
+  const { entitlement } = useEntitlement();
+  const isMember = entitlement === 'academy';
+  const section = route.params?.section; // undefined = the full combined list
 
   // navigate is over-strict about the (route, params?) tuple across a union of
   // routes; go loose (the app-wide escape hatch) since routes/params come from
   // the typed labCatalog.
   const go = navigation.navigate as unknown as (route: string, params?: object) => void;
 
-  const openLeaf = (leaf: LabLeaf) => {
-    if (leaf.route) go(leaf.route, leaf.params);
+  // Training labs are members-only. Free users still OPEN the real lab (live
+  // readouts / animations / mic), but a preview flag makes the root overlay gray
+  // it out, block interaction, and show the Academy upgrade sheet (owner
+  // 2026-08-02). Fundamentals are free to everyone.
+  const isLocked = (sec: LabSection) => sec === 'training' && !isMember;
+
+  const openLeaf = (leaf: LabLeaf, sec: LabSection) => {
+    if (!leaf.route) return;
+    if (isLocked(sec)) startLabPreview(leaf.route, leaf.name);
+    go(leaf.route, leaf.params);
   };
   const openHub = (cat: LabCategory) => {
-    if (cat.kind === 'hub') go(cat.route, cat.params);
+    if (cat.kind !== 'hub') return;
+    if (isLocked(cat.section)) startLabPreview(cat.route, cat.name);
+    go(cat.route, cat.params);
   };
+
+  const shownSections = section ? SECTIONS.filter((s) => s.key === section) : SECTIONS;
+  const headerTitle =
+    section === 'fundamentals'
+      ? 'AUDIO FUNDAMENTALS'
+      : section === 'training'
+        ? 'TRAINING LABS'
+        : 'AUDIO FUNDAMENTALS & TRAINING LAB';
+  const headerSub =
+    section === 'fundamentals'
+      ? 'Free & required — the foundation'
+      : section === 'training'
+        ? isMember
+          ? 'Members-only hands-on labs'
+          : 'Preview — included with Academy membership'
+        : "The Academy's hands-on labs";
+  const intro =
+    section === 'fundamentals'
+      ? FUNDAMENTALS_INTRO
+      : section === 'training'
+        ? isMember
+          ? TRAINING_INTRO_MEMBER
+          : TRAINING_INTRO_FREE
+        : INTRO;
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -52,38 +101,41 @@ export function EarLabScreen({ navigation }: Props) {
           <Text style={styles.back}>‹</Text>
         </Pressable>
         <View style={{ flexShrink: 1 }}>
-          <Text style={styles.title}>AUDIO FUNDAMENTALS & TRAINING LAB</Text>
-          <Text style={styles.subtitle}>The Academy's hands-on labs</Text>
+          <Text style={styles.title}>{headerTitle}</Text>
+          <Text style={styles.subtitle}>{headerSub}</Text>
         </View>
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll}>
-        <Text style={styles.intro}>{INTRO}</Text>
+        <Text style={styles.intro}>{intro}</Text>
 
-        {SECTIONS.map((sec) => (
-          <View key={sec.key} style={styles.section}>
-            <View style={styles.sectionHead}>
-              <Text style={styles.sectionTitle}>{sec.title}</Text>
-              <Text style={styles.sectionNote}>{sec.note}</Text>
-            </View>
-            {sectionCategories(sec.key).map((cat) => (
-              <View key={cat.id} style={styles.catBlock}>
-                {cat.kind === 'hub' ? (
-                  // A hub subject is one lab environment — a tappable header that
-                  // opens its own module drill-down (e.g. the Calculator Lab).
-                  <CategoryLabel cat={cat} onPress={() => openHub(cat)} />
-                ) : (
-                  <>
-                    <CategoryLabel cat={cat} />
-                    {categoryEntries(cat).map((leaf) => (
-                      <LabRow key={leaf.name} leaf={leaf} onOpen={() => openLeaf(leaf)} inset />
-                    ))}
-                  </>
-                )}
+        {shownSections.map((sec) => {
+          const locked = isLocked(sec.key);
+          return (
+            <View key={sec.key} style={styles.section}>
+              <View style={styles.sectionHead}>
+                <Text style={styles.sectionTitle}>{sec.title}</Text>
+                <Text style={styles.sectionNote}>{locked ? 'Members only · preview' : sec.note}</Text>
               </View>
-            ))}
-          </View>
-        ))}
+              {sectionCategories(sec.key).map((cat) => (
+                <View key={cat.id} style={styles.catBlock}>
+                  {cat.kind === 'hub' ? (
+                    // A hub subject is one lab environment — a tappable header that
+                    // opens its own module drill-down (e.g. the Calculator Lab).
+                    <CategoryLabel cat={cat} locked={locked} onPress={() => openHub(cat)} />
+                  ) : (
+                    <>
+                      <CategoryLabel cat={cat} />
+                      {categoryEntries(cat).map((leaf) => (
+                        <LabRow key={leaf.name} leaf={leaf} locked={locked} onOpen={() => openLeaf(leaf, sec.key)} inset />
+                      ))}
+                    </>
+                  )}
+                </View>
+              ))}
+            </View>
+          );
+        })}
       </ScrollView>
     </View>
   );
@@ -96,7 +148,7 @@ const SECTIONS = [
 
 /** Subject header (glyph + name + count). Tappable (a card, with a chevron) when
  *  the subject is a single hub lab; a plain label when it heads a list of labs. */
-function CategoryLabel({ cat, onPress }: { cat: LabCategory; onPress?: () => void }) {
+function CategoryLabel({ cat, onPress, locked }: { cat: LabCategory; onPress?: () => void; locked?: boolean }) {
   const inner = (
     <>
       <View style={styles.iconBadgeSm}>
@@ -106,14 +158,14 @@ function CategoryLabel({ cat, onPress }: { cat: LabCategory; onPress?: () => voi
         <Text style={styles.catName}>{cat.name}</Text>
         <Text style={styles.catCount}>{categoryCountLabel(cat)}</Text>
       </View>
-      {onPress ? <Text style={styles.rowChevron}>›</Text> : null}
+      {onPress ? <Text style={locked ? styles.lock : styles.rowChevron}>{locked ? '🔒' : '›'}</Text> : null}
     </>
   );
   return onPress ? (
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
-      accessibilityLabel={`${cat.name}, ${categoryCountLabel(cat)}`}
+      accessibilityLabel={`${cat.name}, ${categoryCountLabel(cat)}${locked ? ', Academy members only' : ''}`}
       style={({ pressed }) => [styles.catLabel, styles.catCard, pressed && styles.rowPressed]}
     >
       {inner}
@@ -125,15 +177,22 @@ function CategoryLabel({ cat, onPress }: { cat: LabCategory; onPress?: () => voi
 
 /** One uniform lab row (identical size for hub labs and single labs). Dev
  *  placeholders are non-tappable + labeled. */
-function LabRow({ leaf, onOpen, inset }: { leaf: LabLeaf; onOpen: () => void; inset?: boolean }) {
+function LabRow({ leaf, onOpen, inset, locked }: { leaf: LabLeaf; onOpen: () => void; inset?: boolean; locked?: boolean }) {
   const dev = leaf.status === 'development';
+  const showLock = !!locked && !dev; // preview: readable + a small lock, never dimmed
   return (
     <Pressable
       onPress={dev ? undefined : onOpen}
       disabled={dev}
       accessibilityRole="button"
       accessibilityState={{ disabled: dev }}
-      accessibilityLabel={dev ? `${leaf.name}, in development` : `Open ${leaf.name}`}
+      accessibilityLabel={
+        dev
+          ? `${leaf.name}, in development`
+          : showLock
+            ? `${leaf.name}, Academy members only — tap to preview and unlock`
+            : `Open ${leaf.name}`
+      }
       style={({ pressed }) => [styles.row, inset && styles.rowInset, dev && styles.rowDev, pressed && !dev && styles.rowPressed]}
     >
       <View style={{ flex: 1 }}>
@@ -141,7 +200,13 @@ function LabRow({ leaf, onOpen, inset }: { leaf: LabLeaf; onOpen: () => void; in
         <Text style={styles.rowBlurb} numberOfLines={2}>{leaf.blurb}</Text>
         {dev ? <Text style={styles.devNote}>{DEV_NOTE}</Text> : null}
       </View>
-      {dev ? <Text style={styles.soon}>SOON</Text> : <Text style={styles.rowChevron}>›</Text>}
+      {dev ? (
+        <Text style={styles.soon}>SOON</Text>
+      ) : showLock ? (
+        <Text style={styles.lock}>🔒</Text>
+      ) : (
+        <Text style={styles.rowChevron}>›</Text>
+      )}
     </Pressable>
   );
 }
@@ -220,4 +285,5 @@ const styles = StyleSheet.create({
   devNote: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1, color: '#7a7c80', marginTop: 4 },
   soon: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.2, color: '#7a7c80', paddingHorizontal: 4 },
   rowChevron: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, color: colors.amber, paddingHorizontal: 4 },
+  lock: { fontSize: 15, paddingHorizontal: 4 },
 });

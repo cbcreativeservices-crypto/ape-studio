@@ -80,13 +80,10 @@ const SPECIALIZATION: AwardPage = {
   label: 'Specialization',
   headline: 'SPECIALIZATION CERTIFICATE',
   introTitle: 'Build Your Academy Credentials',
-  // The three required cores are BULLETED (user request 2026-07-22), and the
-  // old 3rd paragraph was dropped.
+  // Cores + the training lab named inline (owner 2026-08-01).
   intro:
-    'Begin by completing the three required core courses (required only once):\n' +
-    '      •  Professional Audio Safety\n' +
-    '      •  Grounding & Electrical\n' +
-    '      •  Workplace Skills\n\n' +
+    'Begin by completing the three required core topics and one training lab (required only once):    ' +
+    'Professional Audio Safety, Grounding & Electrical, Workplace Skills, and the Audio Foundations Lab.\n\n' +
     'Then choose a specialization, complete its three required topics, and pass the final assessment to earn ' +
     'your certificate.',
   accent: '#ffc64d', // gold — single-topic award
@@ -95,7 +92,7 @@ const SPECIALIZATION: AwardPage = {
       level: 'Level 1',
       title: 'Academy Specialization Certificate',
       corequisite: ['Pro Audio Safety', 'Grounding & Electrical', 'Workplace Skills'],
-      requirements: ['Complete the 3 specialization topics', 'Sound Fundamentals Lab'],
+      requirements: ['Complete the 3 specialization topics', 'Audio Fundamentals Lab'],
       // Catalog of the 68 predefined Specialized Certificates (choose one).
       builder: 'specializations',
     },
@@ -118,13 +115,13 @@ const PROGRAM: AwardPage = {
       level: 'Level 2',
       title: 'Professional Certificate Program',
       corequisite: ['Pro Audio Safety', 'Grounding & Electrical', 'Workplace Skills'],
-      requirements: ["Complete a program's topic path", 'Sound Fundamentals Lab'],
+      requirements: ["Complete a program's topic path", 'Audio Fundamentals Lab'],
       // Interactive: pick from the established program paths.
       builder: 'programs',
       note:
-        'Academy graduates represent the Pro Audio Training Academy professionally in the field, worldwide. ' +
-        "The Academy's programs are rigorous by design — their graduates emerge among the most knowledgeable " +
-        'audio professionals in the world.',
+        'Academy graduates represent the Pro Audio Training Academy professionally throughout the world. ' +
+        "The Academy's programs are rigorous by design, and graduates emerge among the most knowledgeable " +
+        'in their chosen field of professional audio.',
     },
   ],
 };

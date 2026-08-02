@@ -11,7 +11,8 @@
  * after the ruling (react-native-qrcode-svg already installed).
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { KeyboardAwareScrollView } from '../../features/keyboard/keyboardControllerSafe';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -210,7 +211,7 @@ export function ProfileScreen() {
     const academy = entitlement === 'academy';
     return (
       <View style={[styles.root, { paddingTop: insets.top }]}>
-        <ScrollView contentContainerStyle={styles.bodyScroll} keyboardShouldPersistTaps="handled">
+        <KeyboardAwareScrollView contentContainerStyle={styles.bodyScroll} keyboardShouldPersistTaps="handled" bottomOffset={24}>
           <View style={styles.headerRow}>
             <Text style={styles.college}>PRO AUDIO TRAINING ACADEMY</Text>
             <Pressable
@@ -511,7 +512,7 @@ export function ProfileScreen() {
               />
             </View>
           )}
-        </ScrollView>
+        </KeyboardAwareScrollView>
       </View>
     );
   }

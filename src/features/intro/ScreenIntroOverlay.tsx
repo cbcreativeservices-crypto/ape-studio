@@ -10,6 +10,7 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { devBypass } from '../../config/devMode';
 import { useOverlaysSuppressed } from '../dev/popupSuppressStore';
@@ -17,16 +18,40 @@ import { colors, fonts } from '../../theme/tokens';
 import { LowLightDim } from '../settings/LowLightLayer';
 import { INTRO_STORAGE_PREFIX, SCREEN_INTROS, type IntroKey } from './screenIntros';
 
-export function useScreenIntro(key: IntroKey) {
+// Session-only "seen" flags — in-memory, cleared on app process restart — for
+// intros that must reshow once each new app session instead of retiring forever
+// (e.g. the Commitment popup for free users, owner 2026-08-01).
+const sessionShownIntros = new Set<IntroKey>();
+
+/**
+ * @param sessionOnly when true, the intro shows once per APP SESSION (tracked in
+ *   memory, resets on relaunch) rather than once-ever (persisted). Used to give
+ *   free users a per-session Commitment popup while paid users see it once.
+ */
+export function useScreenIntro(key: IntroKey, sessionOnly = false) {
   const [visible, setVisible] = useState(false);
   // Suppression: NOTHING shows when the dev kill-switch is on OR Low-Light
   // Production Mode is engaged — this wins even over DEV_BYPASS.alwaysShowIntros.
   const suppressed = useOverlaysSuppressed();
+  // An intro must only show while its host screen is actually FOCUSED — never
+  // when the screen is merely mounted underneath another (e.g. the Dashboard is
+  // the Study stack's initial route, so it mounts under the Glossary; without
+  // this gate its "Method Cards" intro flashed before the Glossary appeared).
+  const focused = useIsFocused();
 
   useEffect(() => {
     let alive = true;
     if (devBypass('alwaysShowIntros')) {
       setVisible(true); // every entry = first time (dev)
+      return;
+    }
+    if (sessionOnly) {
+      // Once per app session: mark shown on first entry so it can't reappear
+      // later this session; the flag clears on relaunch, so it returns next time.
+      if (!sessionShownIntros.has(key)) {
+        sessionShownIntros.add(key);
+        setVisible(true);
+      }
       return;
     }
     (async () => {
@@ -36,17 +61,18 @@ export function useScreenIntro(key: IntroKey) {
     return () => {
       alive = false;
     };
-  }, [key]);
+  }, [key, sessionOnly]);
 
   const dismiss = useCallback(() => {
     setVisible(false);
-    // Dev bypass: never persist — it must return on the next entry.
-    if (!devBypass('alwaysShowIntros')) {
+    // Dev bypass never persists; sessionOnly is tracked in memory only (above),
+    // so it also never persists — either way it returns on the next app launch.
+    if (!devBypass('alwaysShowIntros') && !sessionOnly) {
       void AsyncStorage.setItem(INTRO_STORAGE_PREFIX + key, '1');
     }
-  }, [key]);
+  }, [key, sessionOnly]);
 
-  return { visible: visible && !suppressed, dismiss };
+  return { visible: visible && focused && !suppressed, dismiss };
 }
 
 export function IntroSheet({
@@ -114,8 +140,17 @@ export function IntroSheet({
   );
 }
 
-export function ScreenIntroOverlay({ introKey, delayMs = 0 }: { introKey: IntroKey; delayMs?: number }) {
-  const { visible, dismiss } = useScreenIntro(introKey);
+export function ScreenIntroOverlay({
+  introKey,
+  delayMs = 0,
+  sessionOnly = false,
+}: {
+  introKey: IntroKey;
+  delayMs?: number;
+  /** Show once per app session (resets on relaunch) instead of once-ever. */
+  sessionOnly?: boolean;
+}) {
+  const { visible, dismiss } = useScreenIntro(introKey, sessionOnly);
   if (!visible) return null;
   return <IntroSheet introKey={introKey} onDismiss={dismiss} delayMs={delayMs} />;
 }

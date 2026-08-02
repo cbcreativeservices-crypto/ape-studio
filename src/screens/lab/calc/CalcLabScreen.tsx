@@ -24,6 +24,12 @@ export function CalcLabScreen() {
         <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
+        {/* Lab glyph: the purple Σ that brands the Audio Calculator Lab (matches
+            the glossary's Σ) — a plain symbol before the title, not a button
+            (owner 2026-08-01). */}
+        <Text style={styles.sigma} accessibilityElementsHidden importantForAccessibility="no">
+          Σ
+        </Text>
         <View style={{ flexShrink: 1 }}>
           <Text style={styles.title}>AUDIO CALCULATOR LABORATORY</Text>
           <Text style={styles.subtitle}>Calculate · understand · chain results between tools</Text>
@@ -82,6 +88,7 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
   header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 8 },
   back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
+  sigma: { fontFamily: fonts.oswaldSemiBold, fontSize: 24, lineHeight: 28, color: colors.purple },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.2, color: colors.textPrimary },
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
   scroll: { padding: 16, paddingBottom: 34, gap: 14 },
