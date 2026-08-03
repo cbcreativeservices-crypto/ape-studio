@@ -1,0 +1,62 @@
+# .easignore — files excluded from the EAS Build upload archive.
+# NOTE: when this file exists, EAS uses it INSTEAD of .gitignore for the
+# upload, so the .gitignore patterns are mirrored here first, then the
+# large local-only artifacts that were bloating the archive (~327 MB) are
+# added below. Keep in sync with .gitignore.
+
+# ── mirror of .gitignore ──
+# dependencies (EAS installs deps on the build server)
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files (dev client loads .env from Metro at runtime, not the build)
+.env
+.env*.local
+
+# typescript
+*.tsbuildinfo
+
+# python (utility scripts under docs/)
+__pycache__/
+*.pyc
+
+# generated native folders (EAS prebuilds these; module dirs under modules/ are unaffected)
+/ios
+/android
+docs/service_key.txt
+
+# ── local-only artifacts NOT needed for the build (archive-size trim) ──
+# handoff / cross-machine transfer material and archived app snapshots
+audio_app_archive/
+machineA_ingest/
+docs/ccode_exports/
+HANDOFF_*/
+*_HANDOFF_*.zip
+APE_STRUCTURE_WORKBENCH_*.html
+SUB90_*.csv
