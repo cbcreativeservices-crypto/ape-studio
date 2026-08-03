@@ -603,6 +603,12 @@ export function GlossaryScreen({ route, navigation }: Props) {
   const [courses, setCourses] = useState<CourseRef[]>([]);
   const [topics, setTopics] = useState<TopicRef[]>([]);
   const [loading, setLoading] = useState(true);
+  // Cached total term count (owner 2026-08-02): the corpus load pages ~21k rows
+  // before visible.length can show a number, so the "N Terms" header lagged. A
+  // nightly DB job (get_glossary_term_count RPC, refreshed ~1:30 AM PT) gives an
+  // instant total to display while the full corpus is still streaming in; once
+  // loaded we fall through to the exact live visible.length below.
+  const [cachedCount, setCachedCount] = useState<number | null>(null);
   const [search, setSearch] = useState('');
   const searchRef = useRef<TextInput>(null);
   // Search-field colour (owner 2026-08-01): the typed query goes GREEN once the
@@ -624,6 +630,19 @@ export function GlossaryScreen({ route, navigation }: Props) {
     setSearchGreen(false);
     setSearch('');
   };
+  // Fetch the precomputed daily total once on mount — a single cheap RPC that
+  // returns instantly, unlike the full corpus paging below. Non-fatal: if it
+  // fails, the header just waits for visible.length like before.
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      const { data, error } = await supabase.rpc('get_glossary_term_count');
+      if (alive && !error && typeof data === 'number') setCachedCount(data);
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
   useEffect(() => () => {
     if (settleTimer.current) clearTimeout(settleTimer.current);
   }, []);
@@ -1256,8 +1275,17 @@ export function GlossaryScreen({ route, navigation }: Props) {
         </Pressable>
         <View style={{ flex: 1 }} />
         {/* Current # of terms, WHITE — labeled "# of Terms" in the title font
-            (user request 2026-07-24). */}
-        <Text style={styles.count}>{loading ? '… Terms' : `${visible.length} Terms`}</Text>
+            (user request 2026-07-24). While the corpus is still paging in, show
+            the cached daily total (owner 2026-08-02) in the default ALL/no-search
+            state so the number appears instantly; once loaded, or when a
+            filter/search narrows the set, show the exact live visible.length. */}
+        <Text style={styles.count}>
+          {loading
+            ? filter === 'all' && !search.trim() && cachedCount != null
+              ? `${cachedCount} Terms`
+              : '… Terms'
+            : `${visible.length} Terms`}
+        </Text>
       </View>
 
       <View style={styles.searchBox}>
