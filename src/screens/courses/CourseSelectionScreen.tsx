@@ -730,6 +730,9 @@ export function CourseSelectionScreen() {
   const navigation = useNavigation();
   const [cards, setCards] = useState<Card[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // A persisted session with no student record / no enrollment: self-healed to
+  // the public catalog, with a non-blocking banner (register or sign out).
+  const [strandedSession, setStrandedSession] = useState(false);
   const [activeIdx, setActiveIdx] = useState(0);
   const listRef = useRef<FlatList<Card>>(null);
   // CM2 — commercial mode + entitlement (mock provider; server truth later).
@@ -751,6 +754,7 @@ export function CourseSelectionScreen() {
 
   const load = useCallback(async () => {
     setError(null);
+    setStrandedSession(false);
     warmCardArt(); // prefetch card art up front
     // A GUEST (no auth session) OR commercialMode seeds the carousel from the
     // PUBLIC catalog — [Audio Tools] [Glossary] [Lab] + free topics + courses —
@@ -762,7 +766,9 @@ export function CourseSelectionScreen() {
     const { data: sessData } = await supabase.auth.getSession();
     const isGuest = !sessData.session;
     setIsGuest(isGuest);
-    if (commercialMode || isGuest) {
+    // The PUBLIC-catalog builder — used for guests/commercial mode AND as the
+    // self-heal fallback when an authed load fails on a broken session.
+    const buildPublicCatalog = async () => {
       // v2.13: catalog from public_courses/public_course_topics (seed fallback).
       const catalog = await getPublicCatalog();
       // Skip Pro Audio Safety (order 1) — the green free card already covers it.
@@ -829,6 +835,9 @@ export function CourseSelectionScreen() {
         // Far-right tally card (only when there's more to tease).
         ...(otherCount > 0 ? [{ kind: 'more' as const, id: 'more' as const, count: otherCount }] : []),
       ]);
+    };
+    if (commercialMode || isGuest) {
+      await buildPublicCatalog();
       return;
     }
     try {
@@ -891,6 +900,20 @@ export function CourseSelectionScreen() {
         ...(otherCount > 0 ? [{ kind: 'more' as const, id: 'more' as const, count: otherCount }] : []),
       ]);
     } catch (e: any) {
+      // SELF-HEAL (owner 2026-08-06): a session persisted on-device whose
+      // account has no student record (user_not_found) or no enrollment
+      // (not_enrolled) threw here and stranded the HOME tab on a retry
+      // dead-end no restart could clear. Fall back to the public catalog so
+      // Home is usable; a banner offers registration / sign-out.
+      if (e?.message === 'user_not_found' || e?.message === 'not_enrolled') {
+        try {
+          await buildPublicCatalog();
+          setStrandedSession(true);
+          return;
+        } catch {
+          // even the public catalog failed — fall through to the error state
+        }
+      }
       setError(
         e?.message === 'user_not_found'
           ? 'This account is not linked to a student record. Complete registration first.'
@@ -1245,6 +1268,37 @@ export function CourseSelectionScreen() {
 
       <Text style={styles.academyTitle}>Start Learning</Text>
 
+      {/* Stranded-session banner (owner 2026-08-06): shown when a persisted
+          session had no student record / no enrollment and we self-healed to
+          the public catalog. Non-blocking — the catalog is usable below. */}
+      {strandedSession ? (
+        <View style={styles.strandedBanner}>
+          <Text style={styles.strandedText}>
+            You’re signed in, but this account isn’t set up for study yet — showing the public catalog.
+            Finish registration to save progress, or sign out to switch accounts.
+          </Text>
+          <View style={styles.strandedRow}>
+            <StudioButton
+              label="Complete Registration"
+              variant="primary"
+              small
+              onPress={() => (navigation as any).navigate('Auth')}
+            />
+            <StudioButton
+              label="Sign Out"
+              variant="secondary"
+              small
+              onPress={() => {
+                void supabase.auth
+                  .signOut()
+                  .catch(() => {})
+                  .then(() => (navigation as any).navigate('Auth'));
+              }}
+            />
+          </View>
+        </View>
+      ) : null}
+
       <FlatList
         ref={listRef}
         data={displayDeck}
@@ -1356,6 +1410,19 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   errorText: { fontFamily: fonts.barlowRegular, fontSize: 14, color: colors.textSub, textAlign: 'center' },
+  // Stranded-session self-heal banner.
+  strandedBanner: {
+    marginHorizontal: 16,
+    marginBottom: 6,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255,180,0,.5)',
+    backgroundColor: 'rgba(255,180,0,.08)',
+    padding: 12,
+    gap: 10,
+  },
+  strandedText: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 19, color: colors.textSecondary },
+  strandedRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center' },
   hero: { alignItems: 'center', gap: 8, marginTop: 6, paddingHorizontal: 24 },
   // Curriculum + Awards links row above the carousel (user request 2026-07-17).
   awards: { marginTop: 8, paddingHorizontal: 20, gap: 6, alignItems: 'center' },
